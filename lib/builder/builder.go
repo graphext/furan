@@ -223,7 +223,7 @@ func (ib *ImageBuilder) getFullImageNames(ctx context.Context, req *lib.BuildReq
 	return names, nil
 }
 
-// tagCheck checks the existance of tags in the registry or the S3 object
+// tagCheck checks the existence of tags in the registry or the S3 object
 // returns true if build/push should be performed
 func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bool, error) {
 	if !req.SkipIfExists {

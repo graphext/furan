@@ -11,7 +11,7 @@ import (
 	newrelic "github.com/newrelic/go-agent"
 )
 
-// DataLayer describes an object that interacts with the persistant data store
+// DataLayer describes an object that interacts with the persistent data store
 type DataLayer interface {
 	CreateBuild(newrelic.Transaction, *lib.BuildRequest) (gocql.UUID, error)
 	GetBuildByID(newrelic.Transaction, gocql.UUID) (*lib.BuildStatusResponse, error)

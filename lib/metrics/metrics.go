@@ -102,7 +102,7 @@ func (dc *DatadogCollector) KafkaConsumerFailure() error {
 	return dc.c.Count("kafka.consumer.failure", 1, nil, 1)
 }
 
-// GCFailure reports an occurance of GC failure
+// GCFailure reports an occurence of GC failure
 func (dc *DatadogCollector) GCFailure() error {
 	return dc.c.Count("gc.failure", 1, nil, 1)
 }
