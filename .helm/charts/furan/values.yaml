@@ -39,6 +39,10 @@ consulAddr: "consul:8500"
 ramdisk:
   enabled: false
 
+datadog:
+  statsdAddr: "some-dogstatsdaddr"
+  envTagValue: ""
+
 app:
   useNewRelic: false
   newRelicAppName: furan-dev

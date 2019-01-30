@@ -149,7 +149,7 @@ func server(cmd *cobra.Command, args []string) {
 
 	setupServerLogger()
 	setupDB(initializeDB)
-	mc, err := metrics.NewDatadogCollector(dogstatsdAddr)
+	mc, err := metrics.NewDatadogCollector(dogstatsdAddr, dogStatsdEnvTag)
 	if err != nil {
 		log.Fatalf("error creating Datadog collector: %v", err)
 	}

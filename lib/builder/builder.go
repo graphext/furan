@@ -17,7 +17,7 @@ import (
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
-	"github.com/dollarshaveclub/furan/lib/github_fetch"
+	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/s3"
@@ -28,6 +28,14 @@ import (
 
 // ErrBuildNotNecessary indicates that the build was skipped due to not being necessary
 var ErrBuildNotNecessary = fmt.Errorf("build not necessary: tags or object exist")
+
+// errBuildNonZeroExitCode indicates that the docker engine returned a nonzero
+// exit code when attempting to build the image from the provided dockerfile
+var errBuildNonZeroExitCode = fmt.Errorf("docker build resulted in nonzero exit code")
+
+// errMalformedDockerfile indicates a user error, such as a malformed Dockerfile or
+// a Docker build that exited with a nonzero exit code
+var errMalformedDockerfile = fmt.Errorf("dockerfile could not be parsed")
 
 //go:generate stringer -type=actionType
 type actionType int
@@ -76,6 +84,7 @@ type ImageBuildPusher interface {
 	CleanImage(context.Context, string) error
 	PushBuildToRegistry(context.Context, *lib.BuildRequest) error
 	PushBuildToS3(context.Context, string, *lib.BuildRequest) error
+	IsUserError(error) bool
 }
 
 type S3ErrorLogConfig struct {
@@ -367,7 +376,8 @@ func (ib *ImageBuilder) saveEventLogToS3(ctx context.Context, repo string, ref s
 }
 
 const (
-	buildSuccessEventPrefix = "Successfully built "
+	buildSuccessEventPrefix        = "Successfully built "
+	malformedDockerfileEventPrefix = "Error response from daemon: Dockerfile parse error"
 )
 
 // doBuild executes the archive file GET and triggers the Docker build
@@ -396,22 +406,35 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	}
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
-		return imageid, fmt.Errorf("error starting build: %v", err)
+		dockerBuildStartError := fmt.Errorf("error starting build: %v", err)
+		if strings.HasPrefix(err.Error(), malformedDockerfileEventPrefix) {
+			ib.logger.Printf("malformed dockerfile: %v", err)
+			dockerBuildStartError = errMalformedDockerfile
+		}
+		return imageid, dockerBuildStartError
 	}
 	output, err := ib.monitorDockerAction(ctx, ibr.Body, Build)
 	err2 := ib.saveOutput(ctx, Build, output) // we want to save output even if error
 	if err != nil {
 		le := output[len(output)-1]
+		dockerBuildError := fmt.Errorf("build failed: %v", le.Message)
 		if le.EventError.ErrorType == lib.BuildEventError_FATAL && ib.s3errorcfg.PushToS3 {
 			ib.logf(ctx, "pushing failed build log to S3: %v", id.String())
 			loc, err3 := ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
 			if err3 != nil {
 				ib.logf(ctx, "error saving build events to S3: %v", err3)
-				return imageid, err
 			}
-			return imageid, fmt.Errorf("build failed: log saved to: %v", loc)
+			ib.logf(ctx, "build failed: log saved to: %v", loc)
 		}
-		return imageid, fmt.Errorf("build failed: %v", le.Message)
+		var errorEvent dockerStreamEvent
+		if err := json.Unmarshal([]byte(le.Message), &errorEvent); err != nil {
+			ib.logger.Printf("error unmarshaling final build event: %v", err)
+		}
+		if errorEvent.ErrorDetail.Code != 0 {
+			ib.logger.Printf("docker build resulted in nonzero exit code: %v", errorEvent.ErrorDetail)
+			dockerBuildError = errBuildNonZeroExitCode
+		}
+		return imageid, dockerBuildError
 	}
 	if err2 != nil {
 		return imageid, fmt.Errorf("error saving action output: %v", err2)
@@ -706,4 +729,10 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 		return fmt.Errorf("squash/push failed: %v", strings.Join(errstrs, ", "))
 	}
 	return nil
+}
+
+// IsUserError will determine if the supplied error has been tagged as an error
+// that was caused by invalid use (like an invalid Dockerfile).
+func (ib *ImageBuilder) IsUserError(err error) bool {
+	return err == errBuildNonZeroExitCode || err == errMalformedDockerfile
 }

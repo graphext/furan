@@ -35,6 +35,7 @@ var initializeDB bool
 var kafkaBrokerStr string
 var awscredsprefix string
 var dogstatsdAddr string
+var dogStatsdEnvTag string
 
 var logger *log.Logger
 
@@ -63,7 +64,7 @@ func Execute() {
 	}
 }
 
-// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 't', 'u', 'v', 'x', 'z']
+// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', 't', 'u', 'v', 'x', 'z']
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Addr, "vault-addr", "a", os.Getenv("VAULT_ADDR"), "Vault URL")
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Token, "vault-token", "t", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth)")
@@ -88,6 +89,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&awscredsprefix, "aws-creds-vault-prefix", "c", "/aws", "Vault path prefix for AWS credentials (paths: {vault prefix}/{aws creds prefix}/access_key_id|secret_access_key)")
 	RootCmd.PersistentFlags().UintVarP(&awsConfig.Concurrency, "s3-concurrency", "o", 10, "Number of concurrent upload/download threads for S3 transfers")
 	RootCmd.PersistentFlags().StringVarP(&dogstatsdAddr, "dogstatsd-addr", "q", "127.0.0.1:8125", "Address of dogstatsd for metrics")
+	RootCmd.PersistentFlags().StringVarP(&dogStatsdEnvTag, "dogstatsd-env-tag", "s", "qa", "Tag value for \"env\" tag key.")
 }
 
 func clierr(msg string, params ...interface{}) {

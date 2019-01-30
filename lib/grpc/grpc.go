@@ -95,6 +95,13 @@ func newActiveBuildMap(logger *log.Logger) activeBuildMap {
 	}
 }
 
+// Perform necessary checks to determine if a build failed
+func buildFailed(state lib.BuildStatusResponse_BuildState) bool {
+	return state == lib.BuildStatusResponse_BUILD_FAILURE ||
+		state == lib.BuildStatusResponse_PUSH_FAILURE ||
+		state == lib.BuildStatusResponse_USER_ERROR
+}
+
 // GrpcServer represents an object that responds to gRPC calls
 type GrpcServer struct {
 	ib         builder.ImageBuildPusher
@@ -305,7 +312,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	go gr.monitorCancelled(ctx, cf)
 	// Finalize build and send event. Failures should set err and return the appropriate build state.
 	defer func(id gocql.UUID) {
-		failed = outcome == lib.BuildStatusResponse_BUILD_FAILURE || outcome == lib.BuildStatusResponse_PUSH_FAILURE
+		failed = buildFailed(outcome)
 		flags := map[string]bool{
 			"failed":   failed,
 			"finished": true,
@@ -313,7 +320,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		var eet lib.BuildEventError_ErrorType
 		if failed {
 			eet = lib.BuildEventError_FATAL
-			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref)
+			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, outcome == lib.BuildStatusResponse_USER_ERROR)
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
@@ -369,6 +376,8 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	if err != nil {
 		if err == builder.ErrBuildNotNecessary {
 			return lib.BuildStatusResponse_NOT_NECESSARY
+		} else if gr.ib.IsUserError(err) {
+			return lib.BuildStatusResponse_USER_ERROR
 		}
 		err = fmt.Errorf("error performing build: %v", err)
 		return lib.BuildStatusResponse_BUILD_FAILURE
