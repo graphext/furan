@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/DataDog/datadog-go/statsd"
 )
@@ -31,33 +30,32 @@ type MetricsCollector interface {
 
 // DatadogCollector represents a collector that pushes metrics to Datadog
 type DatadogCollector struct {
-	c      *statsd.Client
-	envTag string
+	c           *statsd.Client
+	defaultTags []string
 }
 
 // NewDatadogCollector returns a DatadogCollector using dogstatsd at addr
-func NewDatadogCollector(addr, envTag string) (*DatadogCollector, error) {
+func NewDatadogCollector(addr string, defaultTags []string) (*DatadogCollector, error) {
 	c, err := statsd.New(addr)
 	if err != nil {
 		return nil, err
 	}
 	c.Namespace = namespace
 	return &DatadogCollector{
-		c:      c,
-		envTag: envTag,
+		c:           c,
+		defaultTags: defaultTags,
 	}, nil
 }
 
 func (dc *DatadogCollector) tags(repo, ref string) []string {
-	return []string{
+	return append([]string{
 		fmt.Sprintf("repo:%v", repo),
 		fmt.Sprintf("ref:%v", ref),
-		fmt.Sprintf("env:%v", dc.envTag),
-	}
+	}, dc.defaultTags...)
 }
 
 func (dc *DatadogCollector) buildErrorTags(repo, ref string, userError bool) []string {
-	errorTag := fmt.Sprintf("user_error:%v", strconv.FormatBool(userError))
+	errorTag := fmt.Sprintf("user_error:%v", userError)
 	return append(dc.tags(repo, ref), errorTag)
 }
 

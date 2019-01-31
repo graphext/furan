@@ -13,7 +13,6 @@ import (
 	"github.com/dollarshaveclub/furan/lib/consul"
 	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/grpc"
-	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/mocks"
 	"github.com/dollarshaveclub/furan/lib/s3"
 	"github.com/dollarshaveclub/furan/lib/squasher"
@@ -130,7 +129,7 @@ func build(cmd *cobra.Command, args []string) {
 	logger = log.New(dnull, "", log.LstdFlags)
 	clogger := log.New(os.Stderr, "", log.LstdFlags)
 
-	mc, err := metrics.NewDatadogCollector(dogstatsdAddr, dogStatsdEnvTag)
+	mc, err := newDatadogCollector()
 	if err != nil {
 		log.Fatalf("error creating Datadog collector: %v", err)
 	}

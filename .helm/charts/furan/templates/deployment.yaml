@@ -96,8 +96,8 @@ spec:
         {{ if .Values.datadog.statsdAddr }}
           - --dogstatsd-addr={{ .Values.datadog.statsdAddr }}
         {{ end }}
-        {{ if .Values.datadog.envTagValue }}
-          - --dogstatsd-env-tag=$(POD_NAMESPACE)_{{ .Values.envTagValue }}
+        {{ if .Values.datadog.overrideDefaultTags }}
+          - --default-metrics-tags=env:{{ .Values.env }},namespace:{{ .Release.Namespace }}
         {{ end }}
           - --consul-addr={{ .Values.consulAddr }}
         {{ if eq .Values.app.useNewRelic true }}
@@ -113,10 +113,6 @@ spec:
           value: {{ .Values.vault.token }}
         - name: CONSUL_HTTP_ADDR
           value: {{ .Values.consulAddr }}
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
         ports:
         - containerPort: {{ .Values.service.httpInternalPort }}
         - containerPort: {{ .Values.service.grpcInternalPort }}

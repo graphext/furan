@@ -13,6 +13,7 @@ import (
 	"github.com/dollarshaveclub/furan/lib/builder"
 	"github.com/dollarshaveclub/furan/lib/consul"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
+	"github.com/dollarshaveclub/furan/lib/errors"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/mocks"
@@ -93,13 +94,6 @@ func newActiveBuildMap(logger *log.Logger) activeBuildMap {
 		m:          make(map[gocql.UUID]context.CancelFunc),
 		loggerFunc: logger.Printf,
 	}
-}
-
-// Perform necessary checks to determine if a build failed
-func buildFailed(state lib.BuildStatusResponse_BuildState) bool {
-	return state == lib.BuildStatusResponse_BUILD_FAILURE ||
-		state == lib.BuildStatusResponse_PUSH_FAILURE ||
-		state == lib.BuildStatusResponse_USER_ERROR
 }
 
 // GrpcServer represents an object that responds to gRPC calls
@@ -286,6 +280,7 @@ func (gr *GrpcServer) monitorCancelled(ctx context.Context, cf context.CancelFun
 func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (outcome lib.BuildStatusResponse_BuildState) {
 	var err error // so deferred finalize function has access to any error
 	var failed bool
+	var userError bool
 	var cf context.CancelFunc
 	ctx, cf = context.WithCancel(ctx)
 	defer cf()
@@ -312,7 +307,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	go gr.monitorCancelled(ctx, cf)
 	// Finalize build and send event. Failures should set err and return the appropriate build state.
 	defer func(id gocql.UUID) {
-		failed = buildFailed(outcome)
+		failed = outcome == lib.BuildStatusResponse_BUILD_FAILURE || outcome == lib.BuildStatusResponse_PUSH_FAILURE
 		flags := map[string]bool{
 			"failed":   failed,
 			"finished": true,
@@ -320,7 +315,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		var eet lib.BuildEventError_ErrorType
 		if failed {
 			eet = lib.BuildEventError_FATAL
-			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, outcome == lib.BuildStatusResponse_USER_ERROR)
+			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, userError)
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
@@ -376,9 +371,8 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	if err != nil {
 		if err == builder.ErrBuildNotNecessary {
 			return lib.BuildStatusResponse_NOT_NECESSARY
-		} else if gr.ib.IsUserError(err) {
-			return lib.BuildStatusResponse_USER_ERROR
 		}
+		userError = errors.IsUserError(err)
 		err = fmt.Errorf("error performing build: %v", err)
 		return lib.BuildStatusResponse_BUILD_FAILURE
 	}

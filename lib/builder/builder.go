@@ -11,12 +11,14 @@ import (
 	"strings"
 	"time"
 
+	pkgerror "github.com/pkg/errors"
 	"golang.org/x/net/context"
 
 	dtypes "github.com/docker/engine-api/types"
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
+	"github.com/dollarshaveclub/furan/lib/errors"
 	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
@@ -28,14 +30,6 @@ import (
 
 // ErrBuildNotNecessary indicates that the build was skipped due to not being necessary
 var ErrBuildNotNecessary = fmt.Errorf("build not necessary: tags or object exist")
-
-// errBuildNonZeroExitCode indicates that the docker engine returned a nonzero
-// exit code when attempting to build the image from the provided dockerfile
-var errBuildNonZeroExitCode = fmt.Errorf("docker build resulted in nonzero exit code")
-
-// errMalformedDockerfile indicates a user error, such as a malformed Dockerfile or
-// a Docker build that exited with a nonzero exit code
-var errMalformedDockerfile = fmt.Errorf("dockerfile could not be parsed")
 
 //go:generate stringer -type=actionType
 type actionType int
@@ -84,7 +78,6 @@ type ImageBuildPusher interface {
 	CleanImage(context.Context, string) error
 	PushBuildToRegistry(context.Context, *lib.BuildRequest) error
 	PushBuildToS3(context.Context, string, *lib.BuildRequest) error
-	IsUserError(error) bool
 }
 
 type S3ErrorLogConfig struct {
@@ -406,10 +399,9 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	}
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
-		dockerBuildStartError := fmt.Errorf("error starting build: %v", err)
+		dockerBuildStartError := pkgerror.Wrapf(err, "error starting build: ")
 		if strings.HasPrefix(err.Error(), malformedDockerfileEventPrefix) {
-			ib.logger.Printf("malformed dockerfile: %v", err)
-			dockerBuildStartError = errMalformedDockerfile
+			dockerBuildStartError = errors.UserError(fmt.Sprintf("malformed dockerfile: %v", err))
 		}
 		return imageid, dockerBuildStartError
 	}
@@ -431,8 +423,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 			ib.logger.Printf("error unmarshaling final build event: %v", err)
 		}
 		if errorEvent.ErrorDetail.Code != 0 {
-			ib.logger.Printf("docker build resulted in nonzero exit code: %v", errorEvent.ErrorDetail)
-			dockerBuildError = errBuildNonZeroExitCode
+			dockerBuildError = errors.UserError(le.Message)
 		}
 		return imageid, dockerBuildError
 	}
@@ -729,10 +720,4 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 		return fmt.Errorf("squash/push failed: %v", strings.Join(errstrs, ", "))
 	}
 	return nil
-}
-
-// IsUserError will determine if the supplied error has been tagged as an error
-// that was caused by invalid use (like an invalid Dockerfile).
-func (ib *ImageBuilder) IsUserError(err error) bool {
-	return err == errBuildNonZeroExitCode || err == errMalformedDockerfile
 }

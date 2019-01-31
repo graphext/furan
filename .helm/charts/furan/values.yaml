@@ -40,8 +40,7 @@ ramdisk:
   enabled: false
 
 datadog:
-  statsdAddr: "some-dogstatsdaddr"
-  envTagValue: ""
+  overrideDefaultTags: true
 
 app:
   useNewRelic: false
