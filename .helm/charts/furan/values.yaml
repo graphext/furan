@@ -39,6 +39,9 @@ consulAddr: "consul:8500"
 ramdisk:
   enabled: false
 
+datadog:
+  overrideDefaultTags: true
+
 app:
   useNewRelic: false
   newRelicAppName: furan-dev

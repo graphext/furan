@@ -11,10 +11,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	docker "github.com/docker/engine-api/client"
-	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/s3"
 	"github.com/dollarshaveclub/furan/lib/vault"
-	"github.com/dustin/go-humanize"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 )
 
@@ -67,7 +66,7 @@ func init() {
 
 func s3pull(cmd *cobra.Command, args []string) {
 	logger = log.New(os.Stderr, "", log.LstdFlags)
-	mc, err := metrics.NewDatadogCollector(dogstatsdAddr)
+	mc, err := newDatadogCollector()
 	if err != nil {
 		clierr("error creating Datadog collector: %v", err)
 	}

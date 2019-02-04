@@ -93,8 +93,11 @@ spec:
         {{ end }}
           - --docker-storage-path
           - /opt/docker-storage
-        {{ if .Values.dogstatsdAddr }}
-          - --dogstatsd-addr={{ .Values.dogstatsdAddr }}
+        {{ if .Values.datadog.statsdAddr }}
+          - --dogstatsd-addr={{ .Values.datadog.statsdAddr }}
+        {{ end }}
+        {{ if .Values.datadog.overrideDefaultTags }}
+          - --default-metrics-tags=env:{{ .Values.env }},namespace:{{ .Release.Namespace }}
         {{ end }}
           - --consul-addr={{ .Values.consulAddr }}
         {{ if eq .Values.app.useNewRelic true }}

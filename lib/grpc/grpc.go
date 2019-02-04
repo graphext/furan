@@ -13,6 +13,7 @@ import (
 	"github.com/dollarshaveclub/furan/lib/builder"
 	"github.com/dollarshaveclub/furan/lib/consul"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
+	"github.com/dollarshaveclub/furan/lib/errors"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/mocks"
@@ -279,6 +280,7 @@ func (gr *GrpcServer) monitorCancelled(ctx context.Context, cf context.CancelFun
 func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (outcome lib.BuildStatusResponse_BuildState) {
 	var err error // so deferred finalize function has access to any error
 	var failed bool
+	var userError bool
 	var cf context.CancelFunc
 	ctx, cf = context.WithCancel(ctx)
 	defer cf()
@@ -313,7 +315,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		var eet lib.BuildEventError_ErrorType
 		if failed {
 			eet = lib.BuildEventError_FATAL
-			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref)
+			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, userError)
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
@@ -370,6 +372,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		if err == builder.ErrBuildNotNecessary {
 			return lib.BuildStatusResponse_NOT_NECESSARY
 		}
+		userError = errors.IsUserError(err)
 		err = fmt.Errorf("error performing build: %v", err)
 		return lib.BuildStatusResponse_BUILD_FAILURE
 	}

@@ -11,13 +11,15 @@ import (
 	"strings"
 	"time"
 
+	pkgerror "github.com/pkg/errors"
 	"golang.org/x/net/context"
 
 	dtypes "github.com/docker/engine-api/types"
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
-	"github.com/dollarshaveclub/furan/lib/github_fetch"
+	"github.com/dollarshaveclub/furan/lib/errors"
+	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
 	"github.com/dollarshaveclub/furan/lib/s3"
@@ -367,7 +369,8 @@ func (ib *ImageBuilder) saveEventLogToS3(ctx context.Context, repo string, ref s
 }
 
 const (
-	buildSuccessEventPrefix = "Successfully built "
+	buildSuccessEventPrefix        = "Successfully built "
+	malformedDockerfileEventPrefix = "Error response from daemon: Dockerfile parse error"
 )
 
 // doBuild executes the archive file GET and triggers the Docker build
@@ -396,22 +399,33 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	}
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
-		return imageid, fmt.Errorf("error starting build: %v", err)
+		dockerBuildStartError := pkgerror.Wrapf(err, "error starting build: ")
+		if strings.HasPrefix(err.Error(), malformedDockerfileEventPrefix) {
+			dockerBuildStartError = errors.UserError(fmt.Sprintf("malformed dockerfile: %v", err))
+		}
+		return imageid, dockerBuildStartError
 	}
 	output, err := ib.monitorDockerAction(ctx, ibr.Body, Build)
 	err2 := ib.saveOutput(ctx, Build, output) // we want to save output even if error
 	if err != nil {
 		le := output[len(output)-1]
+		dockerBuildError := fmt.Errorf("build failed: %v", le.Message)
 		if le.EventError.ErrorType == lib.BuildEventError_FATAL && ib.s3errorcfg.PushToS3 {
 			ib.logf(ctx, "pushing failed build log to S3: %v", id.String())
 			loc, err3 := ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
 			if err3 != nil {
 				ib.logf(ctx, "error saving build events to S3: %v", err3)
-				return imageid, err
 			}
-			return imageid, fmt.Errorf("build failed: log saved to: %v", loc)
+			ib.logf(ctx, "build failed: log saved to: %v", loc)
 		}
-		return imageid, fmt.Errorf("build failed: %v", le.Message)
+		var errorEvent dockerStreamEvent
+		if err := json.Unmarshal([]byte(le.Message), &errorEvent); err != nil {
+			ib.logger.Printf("error unmarshaling final build event: %v", err)
+		}
+		if errorEvent.ErrorDetail.Code != 0 {
+			dockerBuildError = errors.UserError(le.Message)
+		}
+		return imageid, dockerBuildError
 	}
 	if err2 != nil {
 		return imageid, fmt.Errorf("error saving action output: %v", err2)

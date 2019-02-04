@@ -22,7 +22,7 @@ import (
 	"github.com/dollarshaveclub/furan/lib/config"
 	"github.com/dollarshaveclub/furan/lib/consul"
 	"github.com/dollarshaveclub/furan/lib/gc"
-	"github.com/dollarshaveclub/furan/lib/github_fetch"
+	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/grpc"
 	"github.com/dollarshaveclub/furan/lib/httphandlers"
 	flogger "github.com/dollarshaveclub/furan/lib/logger"
@@ -149,7 +149,7 @@ func server(cmd *cobra.Command, args []string) {
 
 	setupServerLogger()
 	setupDB(initializeDB)
-	mc, err := metrics.NewDatadogCollector(dogstatsdAddr)
+	mc, err := newDatadogCollector()
 	if err != nil {
 		log.Fatalf("error creating Datadog collector: %v", err)
 	}
