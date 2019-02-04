@@ -14,5 +14,8 @@ func (e UserError) Error() string { return "user error: " + string(e) }
 // IsUserError returns true if err is caused by the user
 func IsUserError(err error) bool {
 	e, ok := err.(user)
-	return ok && e.User()
+	if ok {
+		return e.User()
+	}
+	return false
 }
