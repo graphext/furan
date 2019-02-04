@@ -13,7 +13,6 @@ import (
 	"github.com/dollarshaveclub/furan/lib/consul"
 	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/grpc"
-	"github.com/dollarshaveclub/furan/lib/mocks"
 	"github.com/dollarshaveclub/furan/lib/s3"
 	"github.com/dollarshaveclub/furan/lib/squasher"
 	streamadapter "github.com/dollarshaveclub/furan/lib/stream_adapter"
@@ -166,9 +165,7 @@ func build(cmd *cobra.Command, args []string) {
 
 	logger = log.New(dnull, "", log.LstdFlags)
 
-	nrapp := mocks.NullNewRelicApp{}
-
-	gs := grpc.NewGRPCServer(ib, dbConfig.Datalayer, kafkaConfig.Manager, kafkaConfig.Manager, mc, kvo, 1, 1, logger, nrapp)
+	gs := grpc.NewGRPCServer(ib, dbConfig.Datalayer, kafkaConfig.Manager, kafkaConfig.Manager, mc, kvo, 1, 1, logger)
 
 	resp, err := gs.StartBuild(ctx, &cliBuildRequest)
 	if err != nil {

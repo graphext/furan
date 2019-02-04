@@ -42,9 +42,5 @@ ramdisk:
 datadog:
   overrideDefaultTags: true
 
-app:
-  useNewRelic: false
-  newRelicAppName: furan-dev
-
 dnsPolicy: ClusterFirst
 dnsConfig: {}

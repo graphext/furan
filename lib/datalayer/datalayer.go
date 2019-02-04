@@ -8,21 +8,20 @@ import (
 	"github.com/dollarshaveclub/furan/lib/db"
 	"github.com/gocql/gocql"
 	"github.com/golang/protobuf/proto"
-	newrelic "github.com/newrelic/go-agent"
 )
 
 // DataLayer describes an object that interacts with the persistent data store
 type DataLayer interface {
-	CreateBuild(newrelic.Transaction, *lib.BuildRequest) (gocql.UUID, error)
-	GetBuildByID(newrelic.Transaction, gocql.UUID) (*lib.BuildStatusResponse, error)
-	SetBuildFlags(newrelic.Transaction, gocql.UUID, map[string]bool) error
-	SetBuildCompletedTimestamp(newrelic.Transaction, gocql.UUID) error
-	SetBuildState(newrelic.Transaction, gocql.UUID, lib.BuildStatusResponse_BuildState) error
-	DeleteBuild(newrelic.Transaction, gocql.UUID) error
-	SetBuildTimeMetric(newrelic.Transaction, gocql.UUID, string) error
-	SetDockerImageSizesMetric(newrelic.Transaction, gocql.UUID, int64, int64) error
-	SaveBuildOutput(newrelic.Transaction, gocql.UUID, []lib.BuildEvent, string) error
-	GetBuildOutput(newrelic.Transaction, gocql.UUID, string) ([]lib.BuildEvent, error)
+	CreateBuild(*lib.BuildRequest) (gocql.UUID, error)
+	GetBuildByID(gocql.UUID) (*lib.BuildStatusResponse, error)
+	SetBuildFlags(gocql.UUID, map[string]bool) error
+	SetBuildCompletedTimestamp(gocql.UUID) error
+	SetBuildState(gocql.UUID, lib.BuildStatusResponse_BuildState) error
+	DeleteBuild(gocql.UUID) error
+	SetBuildTimeMetric(gocql.UUID, string) error
+	SetDockerImageSizesMetric(gocql.UUID, int64, int64) error
+	SaveBuildOutput(gocql.UUID, []lib.BuildEvent, string) error
+	GetBuildOutput(gocql.UUID, string) ([]lib.BuildEvent, error)
 }
 
 // DBLayer is an DataLayer instance that interacts with the Cassandra database
@@ -36,15 +35,7 @@ func NewDBLayer(s *gocql.Session) *DBLayer {
 }
 
 // CreateBuild inserts a new build into the DB returning the ID
-func (dl *DBLayer) CreateBuild(txn newrelic.Transaction, req *lib.BuildRequest) (gocql.UUID, error) {
-	ds := newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "builds_by_id",
-		Operation:  "INSERT",
-	}
-	defer ds.End()
-
+func (dl *DBLayer) CreateBuild(req *lib.BuildRequest) (gocql.UUID, error) {
 	q := `INSERT INTO builds_by_id (id, request, state, finished, failed, cancelled, started)
         VALUES (?,{github_repo: ?, dockerfile_path: ?, tags: ?, tag_with_commit_sha: ?, ref: ?,
 					push_registry_repo: ?, push_s3_region: ?, push_s3_bucket: ?,
@@ -61,10 +52,6 @@ func (dl *DBLayer) CreateBuild(txn newrelic.Transaction, req *lib.BuildRequest) 
 		return id, err
 	}
 
-	ds.End()
-	ds.Collection = "build_metrics_by_id"
-	ds.StartTime = newrelic.StartSegmentNow(txn)
-
 	q = `INSERT INTO build_metrics_by_id (id) VALUES (?);`
 	err = dl.s.Query(q, id).Exec()
 	if err != nil {
@@ -75,14 +62,7 @@ func (dl *DBLayer) CreateBuild(txn newrelic.Transaction, req *lib.BuildRequest) 
 }
 
 // GetBuildByID fetches a build object from the DB
-func (dl *DBLayer) GetBuildByID(txn newrelic.Transaction, id gocql.UUID) (*lib.BuildStatusResponse, error) {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "builds_by_id",
-		Operation:  "SELECT",
-	}.End()
-
+func (dl *DBLayer) GetBuildByID(id gocql.UUID) (*lib.BuildStatusResponse, error) {
 	q := `SELECT request, state, finished, failed, cancelled, started, completed,
 	      duration FROM builds_by_id WHERE id = ?;`
 	var udt db.BuildRequestUDT
@@ -105,14 +85,7 @@ func (dl *DBLayer) GetBuildByID(txn newrelic.Transaction, id gocql.UUID) (*lib.B
 
 // SetBuildFlags sets the boolean flags on the build object
 // Caller must ensure that the flags passed in are valid
-func (dl *DBLayer) SetBuildFlags(txn newrelic.Transaction, id gocql.UUID, flags map[string]bool) error {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "builds_by_id",
-		Operation:  "UPDATE",
-	}.End()
-
+func (dl *DBLayer) SetBuildFlags(id gocql.UUID, flags map[string]bool) error {
 	var err error
 	q := `UPDATE builds_by_id SET %v = ? WHERE id = ?;`
 	for k, v := range flags {
@@ -125,14 +98,7 @@ func (dl *DBLayer) SetBuildFlags(txn newrelic.Transaction, id gocql.UUID, flags 
 }
 
 // SetBuildCompletedTimestamp sets the completed timestamp on a build to time.Now()
-func (dl *DBLayer) SetBuildCompletedTimestamp(txn newrelic.Transaction, id gocql.UUID) error {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "builds_by_id",
-		Operation:  "UPDATE",
-	}.End()
-
+func (dl *DBLayer) SetBuildCompletedTimestamp(id gocql.UUID) error {
 	var started time.Time
 	now := time.Now()
 	q := `SELECT started FROM builds_by_id WHERE id = ?;`
@@ -146,32 +112,19 @@ func (dl *DBLayer) SetBuildCompletedTimestamp(txn newrelic.Transaction, id gocql
 }
 
 // SetBuildState sets the state of a build
-func (dl *DBLayer) SetBuildState(txn newrelic.Transaction, id gocql.UUID, state lib.BuildStatusResponse_BuildState) error {
+func (dl *DBLayer) SetBuildState(id gocql.UUID, state lib.BuildStatusResponse_BuildState) error {
 	q := `UPDATE builds_by_id SET state = ? WHERE id = ?;`
 	return dl.s.Query(q, state.String(), id).Exec()
 }
 
 // DeleteBuild removes a build from the DB.
 // Only used in case of queue full when we can't actually do a build
-func (dl *DBLayer) DeleteBuild(txn newrelic.Transaction, id gocql.UUID) error {
-	ds := newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "builds_by_id",
-		Operation:  "DELETE",
-	}
-	defer ds.End()
-
+func (dl *DBLayer) DeleteBuild(id gocql.UUID) error {
 	q := `DELETE FROM builds_by_id WHERE id = ?;`
 	err := dl.s.Query(q, id).Exec()
 	if err != nil {
 		return err
 	}
-
-	ds.End()
-	ds.Collection = "build_metrics_by_id"
-	ds.StartTime = newrelic.StartSegmentNow(txn)
-
 	q = `DELETE FROM build_metrics_by_id WHERE id = ?;`
 	return dl.s.Query(q, id).Exec()
 }
@@ -179,15 +132,7 @@ func (dl *DBLayer) DeleteBuild(txn newrelic.Transaction, id gocql.UUID) error {
 // SetBuildTimeMetric sets a build metric to time.Now()
 // metric is the name of the column to update
 // if metric is a *_completed column, it will also compute and persist the duration
-func (dl *DBLayer) SetBuildTimeMetric(txn newrelic.Transaction, id gocql.UUID, metric string) error {
-	ds := newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "build_metrics_by_id",
-		Operation:  "UPDATE",
-	}
-	defer ds.End()
-
+func (dl *DBLayer) SetBuildTimeMetric(id gocql.UUID, metric string) error {
 	var started time.Time
 	now := time.Now()
 	getstarted := true
@@ -212,21 +157,12 @@ func (dl *DBLayer) SetBuildTimeMetric(txn newrelic.Transaction, id gocql.UUID, m
 		return err
 	}
 	if getstarted {
-
-		ds.End()
-		ds.Operation = "SELECT"
-		ds.StartTime = newrelic.StartSegmentNow(txn)
-
 		q := `SELECT %v FROM build_metrics_by_id WHERE id = ?;`
 		err := dl.s.Query(fmt.Sprintf(q, startedcolumn), id).Scan(&started)
 		if err != nil {
 			return err
 		}
 		duration := now.Sub(started).Seconds()
-
-		ds.End()
-		ds.Operation = "UPDATE"
-		ds.StartTime = newrelic.StartSegmentNow(txn)
 
 		q = `UPDATE build_metrics_by_id SET %v = ? WHERE id = ?;`
 		return dl.s.Query(fmt.Sprintf(q, durationcolumn), duration, id).Exec()
@@ -235,27 +171,13 @@ func (dl *DBLayer) SetBuildTimeMetric(txn newrelic.Transaction, id gocql.UUID, m
 }
 
 // SetDockerImageSizesMetric sets the docker image sizes for a build
-func (dl *DBLayer) SetDockerImageSizesMetric(txn newrelic.Transaction, id gocql.UUID, size int64, vsize int64) error {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "build_metrics_by_id",
-		Operation:  "UPDATE",
-	}.End()
-
+func (dl *DBLayer) SetDockerImageSizesMetric(id gocql.UUID, size int64, vsize int64) error {
 	q := `UPDATE build_metrics_by_id SET docker_image_size = ?, docker_image_vsize = ? WHERE id = ?;`
 	return dl.s.Query(q, size, vsize, id).Exec()
 }
 
 // SaveBuildOutput serializes an array of stream events to the database
-func (dl *DBLayer) SaveBuildOutput(txn newrelic.Transaction, id gocql.UUID, output []lib.BuildEvent, column string) error {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "build_events_by_id",
-		Operation:  "UPDATE",
-	}.End()
-
+func (dl *DBLayer) SaveBuildOutput(id gocql.UUID, output []lib.BuildEvent, column string) error {
 	serialized := make([][]byte, len(output))
 	var err error
 	var b []byte
@@ -271,14 +193,7 @@ func (dl *DBLayer) SaveBuildOutput(txn newrelic.Transaction, id gocql.UUID, outp
 }
 
 // GetBuildOutput returns an array of stream events from the database
-func (dl *DBLayer) GetBuildOutput(txn newrelic.Transaction, id gocql.UUID, column string) ([]lib.BuildEvent, error) {
-	defer newrelic.DatastoreSegment{
-		StartTime:  newrelic.StartSegmentNow(txn),
-		Product:    newrelic.DatastoreCassandra,
-		Collection: "build_events_by_id",
-		Operation:  "SELECT",
-	}.End()
-
+func (dl *DBLayer) GetBuildOutput(id gocql.UUID, column string) ([]lib.BuildEvent, error) {
 	var rawoutput [][]byte
 	output := []lib.BuildEvent{}
 	q := `SELECT %v FROM build_events_by_id WHERE id = ?;`

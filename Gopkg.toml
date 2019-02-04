@@ -58,8 +58,8 @@
   name = "github.com/docker/engine-api"
 
 [[override]]
-  branch = "master"
   name = "github.com/golang/mock"
+  version = "1.2.0"
 
 [[override]]
   branch = "master"

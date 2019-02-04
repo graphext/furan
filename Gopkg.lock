@@ -235,12 +235,12 @@
   revision = "da4a50306e7bb46de0d077d7ac78c297de9aaac4"
 
 [[projects]]
-  branch = "master"
-  digest = "1:0d103385f308f241bd1ac92992111ecd570a53a52bcccbdd5a88971a9de13a6c"
+  digest = "1:530233672f656641b365f8efb38ed9fba80e420baff2ce87633813ab3755ed6d"
   name = "github.com/golang/mock"
   packages = ["gomock"]
   pruneopts = ""
-  revision = "93f6609a15b7de76bd49259f1f9a6b58df358936"
+  revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -431,21 +431,6 @@
   packages = ["."]
   pruneopts = ""
   revision = "d0303fe809921458f417bcf828397a65db30a7e4"
-
-[[projects]]
-  digest = "1:6921a84aa66af28f35794c0369fc5eb98081d6e23afd4c592e99ed8e7c90b11d"
-  name = "github.com/newrelic/go-agent"
-  packages = [
-    ".",
-    "internal",
-    "internal/jsonx",
-    "internal/logger",
-    "internal/sysinfo",
-    "internal/utilization",
-  ]
-  pruneopts = ""
-  revision = "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17"
-  version = "v1.9.0"
 
 [[projects]]
   digest = "1:fa19ddee0e5ee5951a6a450a4b6ec635a42957f86bfc87d9d778eeee04ad2036"
@@ -668,7 +653,6 @@
     "github.com/google/go-github/github",
     "github.com/gorilla/mux",
     "github.com/hashicorp/consul/api",
-    "github.com/newrelic/go-agent",
     "github.com/pkg/errors",
     "github.com/spf13/cobra",
     "golang.org/x/net/context",

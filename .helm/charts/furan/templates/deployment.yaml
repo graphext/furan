@@ -100,10 +100,6 @@ spec:
           - --default-metrics-tags=env:{{ .Values.env }},namespace:{{ .Release.Namespace }}
         {{ end }}
           - --consul-addr={{ .Values.consulAddr }}
-        {{ if eq .Values.app.useNewRelic true }}
-          - --enable-newrelic
-          - --newrelic-app={{ .Values.app.newRelicAppName }}
-        {{ end }}
         env:
         - name: DOCKER_HOST
           value: unix:///var/run/docker.sock

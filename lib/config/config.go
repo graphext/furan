@@ -62,32 +62,28 @@ type DBconfig struct {
 }
 
 type Serverconfig struct {
-	HTTPSPort               uint
-	GRPCPort                uint
-	PPROFPort               uint
-	HTTPSAddr               string
-	GRPCAddr                string
-	HealthcheckAddr         string
-	Concurrency             uint
-	Queuesize               uint
-	VaultTLSCertPath        string
-	VaultTLSKeyPath         string
-	TLSCert                 []byte
-	TLSKey                  []byte
-	LogToSumo               bool
-	SumoURL                 string
-	VaultSumoURLPath        string
-	HealthcheckHTTPport     uint
-	S3ErrorLogs             bool
-	S3ErrorLogBucket        string
-	S3ErrorLogRegion        string
-	S3PresignTTL            uint
-	GCIntervalSecs          uint
-	DockerDiskPath          string
-	NewRelicAPIKeyVaultPath string
-	NewRelicAPIKey          string
-	EnableNewRelic          bool
-	NewRelicApp             string
+	HTTPSPort           uint
+	GRPCPort            uint
+	PPROFPort           uint
+	HTTPSAddr           string
+	GRPCAddr            string
+	HealthcheckAddr     string
+	Concurrency         uint
+	Queuesize           uint
+	VaultTLSCertPath    string
+	VaultTLSKeyPath     string
+	TLSCert             []byte
+	TLSKey              []byte
+	LogToSumo           bool
+	SumoURL             string
+	VaultSumoURLPath    string
+	HealthcheckHTTPport uint
+	S3ErrorLogs         bool
+	S3ErrorLogBucket    string
+	S3ErrorLogRegion    string
+	S3PresignTTL        uint
+	GCIntervalSecs      uint
+	DockerDiskPath      string
 }
 
 type Consulconfig struct {

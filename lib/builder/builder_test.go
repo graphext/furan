@@ -55,7 +55,7 @@ func TestImageBuildTagCheckRegistrySkip(t *testing.T) {
 	defer ctrl.Finish()
 
 	id, _ := gocql.RandomUUID()
-	ctx := buildcontext.NewBuildIDContext(context.Background(), id, &mocks.NullNewRelicTxn{})
+	ctx := buildcontext.NewBuildIDContext(context.Background(), id)
 
 	deps.mdl.EXPECT().SetBuildTimeMetric(gomock.Any(), id, gomock.Any()).Times(1)
 	deps.mcf.EXPECT().GetCommitSHA(gomock.Any(), "dollarshaveclub", "furan", "master").Return("asdf1234", nil).Times(1)
@@ -90,7 +90,7 @@ func TestImageBuildTagCheckS3Skip(t *testing.T) {
 	defer ctrl.Finish()
 
 	id, _ := gocql.RandomUUID()
-	ctx := buildcontext.NewBuildIDContext(context.Background(), id, &mocks.NullNewRelicTxn{})
+	ctx := buildcontext.NewBuildIDContext(context.Background(), id)
 
 	deps.mdl.EXPECT().SetBuildTimeMetric(gomock.Any(), id, gomock.Any()).Times(1)
 	deps.mcf.EXPECT().GetCommitSHA(gomock.Any(), "dollarshaveclub", "furan", "master").Return("asdf1234", nil).Times(1)

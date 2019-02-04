@@ -11,6 +11,5 @@ data:
       "{{ .Values.keyPrefix }}aws/secret_access_key": "bar",
       "{{ .Values.keyPrefix }}github/token": "asdf",
       "{{ .Values.keyPrefix }}dockercfg": "{}",
-      "{{ .Values.keyPrefix }}sumologic/url": "https://example.com",
-      "{{ .Values.keyPrefix }}newrelic/api_key": "some-api-key"
+      "{{ .Values.keyPrefix }}sumologic/url": "https://example.com"
     }

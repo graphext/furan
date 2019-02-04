@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/google/go-github/github"
-	newrelic "github.com/newrelic/go-agent"
 	"golang.org/x/oauth2"
 )
 
@@ -26,8 +25,8 @@ const (
 // CodeFetcher represents an object capable of fetching code and returning a
 // gzip-compressed tarball io.Reader
 type CodeFetcher interface {
-	GetCommitSHA(newrelic.Transaction, string, string, string) (string, error)
-	Get(newrelic.Transaction, string, string, string) (io.Reader, error)
+	GetCommitSHA(string, string, string) (string, error)
+	Get(string, string, string) (io.Reader, error)
 }
 
 // GitHubFetcher represents a github data fetcher
@@ -46,11 +45,7 @@ func NewGitHubFetcher(token string) *GitHubFetcher {
 }
 
 // GetCommitSHA returns the commit SHA for a reference
-func (gf *GitHubFetcher) GetCommitSHA(txn newrelic.Transaction, owner string, repo string, ref string) (string, error) {
-	defer newrelic.ExternalSegment{
-		StartTime: newrelic.StartSegmentNow(txn),
-		URL:       fmt.Sprintf("https://api.github.com/repo/%v/%v/%v/get_commit_sha?this-is-a-fake-url", owner, repo, ref),
-	}.End()
+func (gf *GitHubFetcher) GetCommitSHA(owner string, repo string, ref string) (string, error) {
 	ctx, cf := context.WithTimeout(context.Background(), githubDownloadTimeoutSecs*time.Second)
 	defer cf()
 	csha, _, err := gf.c.Repositories.GetCommitSHA1(ctx, owner, repo, ref, "")
@@ -59,11 +54,7 @@ func (gf *GitHubFetcher) GetCommitSHA(txn newrelic.Transaction, owner string, re
 
 // Get fetches contents of GitHub repo and returns the processed contents as
 // an in-memory io.Reader.
-func (gf *GitHubFetcher) Get(txn newrelic.Transaction, owner string, repo string, ref string) (tarball io.Reader, err error) {
-	defer newrelic.ExternalSegment{
-		StartTime: newrelic.StartSegmentNow(txn),
-		URL:       fmt.Sprintf("https://api.github.com/repo/%v/%v/%v/get_archive?this-is-a-fake-url", owner, repo, ref),
-	}.End()
+func (gf *GitHubFetcher) Get(owner string, repo string, ref string) (tarball io.Reader, err error) {
 	opt := &github.RepositoryContentGetOptions{
 		Ref: ref,
 	}
