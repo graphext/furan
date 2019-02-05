@@ -19,6 +19,7 @@ import (
 	"github.com/gocql/gocql"
 	consul "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var vaultConfig config.Vaultconfig
@@ -36,6 +37,8 @@ var kafkaBrokerStr string
 var awscredsprefix string
 var dogstatsdAddr string
 var defaultMetricsTags string
+var datadogServiceName string
+var datadogTracingAgentAddr string
 
 var logger *log.Logger
 
@@ -64,7 +67,7 @@ func Execute() {
 	}
 }
 
-// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', 't', 'u', 'v', 'x', 'z']
+// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', t', 'u', 'v', 'w', 'x', 'z']
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Addr, "vault-addr", "a", os.Getenv("VAULT_ADDR"), "Vault URL")
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Token, "vault-token", "t", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth)")
@@ -90,6 +93,8 @@ func init() {
 	RootCmd.PersistentFlags().UintVarP(&awsConfig.Concurrency, "s3-concurrency", "o", 10, "Number of concurrent upload/download threads for S3 transfers")
 	RootCmd.PersistentFlags().StringVarP(&dogstatsdAddr, "dogstatsd-addr", "q", "127.0.0.1:8125", "Address of dogstatsd for metrics")
 	RootCmd.PersistentFlags().StringVarP(&defaultMetricsTags, "default-metrics-tags", "s", "env:qa", "Comma-delimited list of tag keys and values in the form key:value")
+	RootCmd.PersistentFlags().StringVarP(&datadogServiceName, "datadog-service-name", "w", "furan", "Datadog APM service name")
+	RootCmd.PersistentFlags().StringVarP(&datadogTracingAgentAddr, "datadog-tracing-agent-addr", "y", "127.0.0.1:8126", "Address of datadog tracing agent")
 }
 
 func clierr(msg string, params ...interface{}) {
@@ -215,4 +220,18 @@ func setupKafka(mc metrics.MetricsCollector) {
 func newDatadogCollector() (*metrics.DatadogCollector, error) {
 	defaultDogstatsdTags := strings.Split(defaultMetricsTags, ",")
 	return metrics.NewDatadogCollector(dogstatsdAddr, defaultDogstatsdTags)
+}
+
+func startDatadogTracer() {
+	opts := []tracer.StartOption{tracer.WithAgentAddr(datadogTracingAgentAddr)}
+	opts = append(opts, tracer.WithServiceName(datadogServiceName))
+	for _, tag := range strings.Split(defaultMetricsTags, ",") {
+		keyValPair := strings.Split(tag, ":")
+		if len(keyValPair) != 2 {
+			log.Fatalf("invalid default metrics tags: %v", defaultMetricsTags)
+		}
+		key, val := keyValPair[0], keyValPair[1]
+		opts = append(opts, tracer.WithGlobalTag(key, val))
+	}
+	tracer.Start(opts...)
 }

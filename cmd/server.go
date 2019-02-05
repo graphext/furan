@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -33,6 +34,7 @@ import (
 	"github.com/dollarshaveclub/furan/lib/vault"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var serverConfig config.Serverconfig
@@ -136,6 +138,7 @@ func server(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("error creating Datadog collector: %v", err)
 	}
+	startDatadogTracer()
 	setupKafka(mc)
 	certPath, keyPath := vault.WriteTLSCert(&vaultConfig, &serverConfig)
 	defer vault.RmTempFiles(certPath, keyPath)
@@ -168,8 +171,8 @@ func server(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("error creating key value orchestrator: %v", err)
 	}
-
-	grpcSvr := grpc.NewGRPCServer(imageBuilder, dbConfig.Datalayer, kafkaConfig.Manager, kafkaConfig.Manager, mc, kvo, serverConfig.Queuesize, serverConfig.Concurrency, logger)
+	grpcServiceName := strings.Join([]string{datadogServiceName, "grpc"}, ".")
+	grpcSvr := grpc.NewGRPCServer(imageBuilder, dbConfig.Datalayer, kafkaConfig.Manager, kafkaConfig.Manager, mc, kvo, serverConfig.Queuesize, serverConfig.Concurrency, logger, grpcServiceName)
 	go grpcSvr.ListenRPC(serverConfig.GRPCAddr, serverConfig.GRPCPort)
 
 	ha := httphandlers.NewHTTPAdapter(grpcSvr)
@@ -202,6 +205,7 @@ func server(cmd *cobra.Command, args []string) {
 	logger.Printf("HTTPS REST listening on: %v", addr)
 	logger.Println(server.ListenAndServeTLS(certPath, keyPath))
 	logger.Printf("shutting down GRPC and aborting builds...")
+	tracer.Stop()
 	grpcSvr.Shutdown()
 	close(stop)
 	logger.Printf("done, exiting")
