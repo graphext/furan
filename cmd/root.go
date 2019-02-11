@@ -38,6 +38,7 @@ var awscredsprefix string
 var dogstatsdAddr string
 var defaultMetricsTags string
 var datadogServiceName string
+var datadogGrpcServiceName string
 var datadogTracingAgentAddr string
 
 var logger *log.Logger
@@ -67,7 +68,7 @@ func Execute() {
 	}
 }
 
-// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', t', 'u', 'v', 'w', 'x', 'y', 'z']
+// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Addr, "vault-addr", "a", os.Getenv("VAULT_ADDR"), "Vault URL")
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Token, "vault-token", "t", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth)")
@@ -95,6 +96,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&defaultMetricsTags, "default-metrics-tags", "s", "env:qa", "Comma-delimited list of tag keys and values in the form key:value")
 	RootCmd.PersistentFlags().StringVarP(&datadogServiceName, "datadog-service-name", "w", "furan", "Datadog APM service name")
 	RootCmd.PersistentFlags().StringVarP(&datadogTracingAgentAddr, "datadog-tracing-agent-addr", "y", "127.0.0.1:8126", "Address of datadog tracing agent")
+	datadogGrpcServiceName = strings.Join([]string{datadogServiceName, "grpc"}, ".")
 }
 
 func clierr(msg string, params ...interface{}) {
