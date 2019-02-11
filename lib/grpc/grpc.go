@@ -479,8 +479,9 @@ func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRe
 }
 
 // Reconstruct the stream of events for a build from the data layer
-func (gr *GrpcServer) eventsFromDL(parentSpan tracer.Span, stream lib.FuranExecutor_MonitorBuildServer, id gocql.UUID) error {
+func (gr *GrpcServer) eventsFromDL(parentSpan tracer.Span, stream lib.FuranExecutor_MonitorBuildServer, id gocql.UUID) (err error) {
 	span := tracer.StartSpan("events.from.dl", tracer.ChildOf(parentSpan.Context()))
+	defer span.Finish(tracer.WithError(err))
 	bo, err := gr.dl.GetBuildOutput(span, id, "build_output")
 	if err != nil {
 		return fmt.Errorf("error getting build output: %v", err)
