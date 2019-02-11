@@ -67,7 +67,7 @@ func Execute() {
 	}
 }
 
-// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', t', 'u', 'v', 'w', 'x', 'z']
+// shorthands in use: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', t', 'u', 'v', 'w', 'x', 'y', 'z']
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Addr, "vault-addr", "a", os.Getenv("VAULT_ADDR"), "Vault URL")
 	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Token, "vault-token", "t", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth)")
