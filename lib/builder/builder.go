@@ -271,7 +271,7 @@ func (ib *ImageBuilder) Build(ctx context.Context, req *lib.BuildRequest, id goc
 	ib.logf(ctx, "starting build")
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return "", fmt.Errorf("span missing from context")
+		return "", fmt.Errorf("cannot start build: span missing from context")
 	}
 	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "docker_build_started")
 	if err != nil {
@@ -327,7 +327,7 @@ func (ib *ImageBuilder) saveOutput(ctx context.Context, action actionType, event
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("span missing from context")
+		return fmt.Errorf("cannot save output: span missing from context")
 	}
 	var column string
 	switch action {
@@ -387,7 +387,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return imageid, fmt.Errorf("span missing from context")
+		return imageid, fmt.Errorf("cannot perform build: span missing from context")
 	}
 	opts := dtypes.ImageBuildOptions{
 		Tags:        rbi.Tags,
@@ -465,7 +465,7 @@ func (ib *ImageBuilder) writeDockerImageSizeMetrics(ctx context.Context, imageid
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("span missing from context")
+		return fmt.Errorf("cannot write docker image metrics: span missing from context")
 	}
 	res, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
@@ -548,7 +548,7 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err err
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("span missing from context")
+		return fmt.Errorf("cannot clean image: span missing from context")
 	}
 	cleanSpan := tracer.StartSpan("image_builder.clean", tracer.ChildOf(parentSpan.Context()))
 	defer cleanSpan.Finish(tracer.WithError(err))
@@ -584,7 +584,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("span missing from context")
+		return fmt.Errorf("cannot push to registry: span missing from context")
 	}
 	ib.logf(ctx, "pushing")
 	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
@@ -655,7 +655,7 @@ func (ib *ImageBuilder) getCommitSHA(ctx context.Context, repo, ref string) (str
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return "", fmt.Errorf("span missing from context")
+		return "", fmt.Errorf("cannot get commit SHA: span missing from context")
 	}
 	csha, err := ib.gf.GetCommitSHA(parentSpan, rl[0], rl[1], ref)
 	if err != nil {
@@ -671,7 +671,7 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 	}
 	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("span missing from context")
+		return fmt.Errorf("cannot push build to s3: span missing from context")
 	}
 	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
 	defer pushSpan.Finish(tracer.WithError(err))
