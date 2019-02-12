@@ -7,15 +7,23 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
   type: {{ .Values.service.type }}
-  ports:
-  - port: {{ .Values.service.httpExternalPort }}
-    targetPort: {{ .Values.service.httpInternalPort }}
-    protocol: TCP
-    name: http
-  - port: {{ .Values.service.grpcExternalPort }}
-    targetPort: {{ .Values.service.grpcInternalPort }}
-    protocol: TCP
-    name: grpc
   selector:
     appsel: furan
+  ports:
+  {{ if and .Values.service.type (eq .Values.service.type "NodePort") }}
+    - port: {{ .Values.service.grpcExternalPort }}
+      targetPort: {{ .Values.service.grpcInternalPort }}
+      protocol: TCP
+      name: grpc
+      nodePort: {{ .Values.service.nodePort }}
+  {{ else }}
+    - port: {{ .Values.service.httpExternalPort }}
+      targetPort: {{ .Values.service.httpInternalPort }}
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.grpcExternalPort }}
+      targetPort: {{ .Values.service.grpcInternalPort }}
+      protocol: TCP
+      name: grpc
+  {{ end }}
 {{- end -}}
