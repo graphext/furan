@@ -25,12 +25,15 @@ service:
   httpHealthcheckPath: /health
   performanceProfilingPort: 4003
 
-dbNodes: "scylladb"
-initializeDb: true
+db:
+  useConsulDiscovery: false
+  nodes: "scylladb"
+  initialize: true
 kafkaBrokers: "kafka-furan:9092"
 
 vault:
-  useTokenBasedAuth: true
+  useTokenAuth: true
+  useK8sAuth: false
   addr: "http://vault:8200"
   token: "root"
 
