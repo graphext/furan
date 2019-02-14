@@ -58,17 +58,17 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
           - /go/bin/furan
-        {{ if eq .Values.vault.useTokenBasedAuth true }}
+        {{ if eq .Values.vault.useTokenAuth true }}
           - -k
         {{ end }}
-        {{ if eq .Values.initializeDb true }}
+        {{ if eq .Values.db.initialize true }}
           - -i
         {{ end }}
-        {{ if .Values.dbNodes }}
-          - -n
-          - {{ .Values.dbNodes }}
-        {{ else }}
+        {{ if eq .Values.db.useConsulDiscovery true }}
           - -z
+        {{ else }}
+          - -n
+          - {{ .Values.db.nodes }}
         {{ end }}
           - -f
           - {{ .Values.kafkaBrokers }}
@@ -76,13 +76,13 @@ spec:
           - -x
           - {{ .Values.vault.prefix }}
         {{ end }}
-        {{ if .Values.vault.k8s_auth }}
+        {{ if eq .Values.vault.useK8sAuth true }}
           - '--vault-k8s-jwt-path'
           - /var/run/secrets/kubernetes.io/serviceaccount/token
           - '--vault-k8s-role'
           - '{{ .Values.vault.role }}'
           - '--vault-k8s-auth-path'
-          - '{{ .Values.vault.auth_path }}'
+          - '{{ .Values.vault.authPath }}'
         {{ end }}
           - server
           - --log-to-sumo=false
@@ -109,8 +109,10 @@ spec:
           value: unix:///var/run/docker.sock
         - name: VAULT_ADDR
           value: {{ .Values.vault.addr }}
+      {{ if eq .Values.vault.useTokenAuth true }}
         - name: VAULT_TOKEN
           value: {{ .Values.vault.token }}
+      {{ end }}
         - name: CONSUL_HTTP_ADDR
           value: {{ .Values.consulAddr }}
         ports:
