@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
 	pkgerror "github.com/pkg/errors"
 	"golang.org/x/net/context"
 
@@ -265,13 +267,13 @@ func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bo
 }
 
 // Build builds an image accourding to the request
-func (ib *ImageBuilder) Build(ctx context.Context, req *lib.BuildRequest, id gocql.UUID) (string, error) {
+func (ib *ImageBuilder) Build(ctx context.Context, req *lib.BuildRequest, id gocql.UUID) (_ string, err error) {
 	ib.logf(ctx, "starting build")
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return "", fmt.Errorf("New Relic transaction missing from context")
+		return "", fmt.Errorf("cannot start build: span missing from context")
 	}
-	err := ib.dl.SetBuildTimeMetric(txn, id, "docker_build_started")
+	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "docker_build_started")
 	if err != nil {
 		return "", fmt.Errorf("error setting build time metric in DB: %v", err)
 	}
@@ -292,7 +294,7 @@ func (ib *ImageBuilder) Build(ctx context.Context, req *lib.BuildRequest, id goc
 		return "", fmt.Errorf("build was cancelled: %v", ctx.Err())
 	}
 	ib.logf(ctx, "fetching github repo: %v", req.Build.GithubRepo)
-	contents, err := ib.gf.Get(txn, owner, repo, req.Build.Ref)
+	contents, err := ib.gf.Get(parentSpan, owner, repo, req.Build.Ref)
 	if err != nil {
 		return "", fmt.Errorf("error fetching repo: %v", err)
 	}
@@ -323,9 +325,9 @@ func (ib *ImageBuilder) saveOutput(ctx context.Context, action actionType, event
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("New Relic transaction missing from context")
+		return fmt.Errorf("cannot save output: span missing from context")
 	}
 	var column string
 	switch action {
@@ -336,7 +338,7 @@ func (ib *ImageBuilder) saveOutput(ctx context.Context, action actionType, event
 	default:
 		return fmt.Errorf("unknown action: %v", action)
 	}
-	return ib.dl.SaveBuildOutput(txn, id, events, column)
+	return ib.dl.SaveBuildOutput(parentSpan, id, events, column)
 }
 
 // saveEventLogToS3 writes a stream of events to S3 and returns the S3 HTTP URL
@@ -374,7 +376,7 @@ const (
 )
 
 // doBuild executes the archive file GET and triggers the Docker build
-func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi *RepoBuildData) (string, error) {
+func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi *RepoBuildData) (_ string, err error) {
 	var imageid string
 	if buildcontext.IsCancelled(ctx.Done()) {
 		return imageid, fmt.Errorf("build was cancelled: %v", ctx.Err())
@@ -383,9 +385,9 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	if !ok {
 		return imageid, fmt.Errorf("build id missing from context")
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return imageid, fmt.Errorf("New Relic transaction missing from context")
+		return imageid, fmt.Errorf("cannot perform build: span missing from context")
 	}
 	opts := dtypes.ImageBuildOptions{
 		Tags:        rbi.Tags,
@@ -397,6 +399,8 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		NoCache:     true,
 		BuildArgs:   req.Build.Args,
 	}
+	buildSpan := tracer.StartSpan("image_builder.dobuild", tracer.ChildOf(parentSpan.Context()))
+	defer buildSpan.Finish(tracer.WithError(err))
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
 		dockerBuildStartError := pkgerror.Wrapf(err, "error starting build: ")
@@ -441,7 +445,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		if strings.HasPrefix(dse.Stream, buildSuccessEventPrefix) {
 			imageid = strings.TrimRight(dse.Stream[len(buildSuccessEventPrefix):len(dse.Stream)], "\n")
 			ib.logf(ctx, "built image ID %v", imageid)
-			err = ib.dl.SetBuildTimeMetric(txn, id, "docker_build_completed")
+			err = ib.dl.SetBuildTimeMetric(buildSpan, id, "docker_build_completed")
 			if err != nil {
 				return imageid, err
 			}
@@ -459,9 +463,9 @@ func (ib *ImageBuilder) writeDockerImageSizeMetrics(ctx context.Context, imageid
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("New Relic transaction missing from context")
+		return fmt.Errorf("cannot write docker image metrics: span missing from context")
 	}
 	res, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
@@ -471,7 +475,7 @@ func (ib *ImageBuilder) writeDockerImageSizeMetrics(ctx context.Context, imageid
 	if err != nil {
 		ib.logger.Printf("error pushing image size metrics: %v", err)
 	}
-	return ib.dl.SetDockerImageSizesMetric(txn, id, res.Size, res.VirtualSize)
+	return ib.dl.SetDockerImageSizesMetric(parentSpan, id, res.Size, res.VirtualSize)
 }
 
 // Models for the JSON objects the Docker API returns
@@ -534,7 +538,7 @@ func (ib *ImageBuilder) monitorDockerAction(ctx context.Context, rc io.ReadClose
 }
 
 // CleanImage cleans up the built image after it's been pushed
-func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) error {
+func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err error) {
 	if buildcontext.IsCancelled(ctx.Done()) {
 		return fmt.Errorf("clean was cancelled: %v", ctx.Err())
 	}
@@ -542,12 +546,14 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) error {
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("New Relic transaction missing from context")
+		return fmt.Errorf("cannot clean image: span missing from context")
 	}
+	cleanSpan := tracer.StartSpan("image_builder.clean", tracer.ChildOf(parentSpan.Context()))
+	defer cleanSpan.Finish(tracer.WithError(err))
 	ib.logf(ctx, "cleaning up images")
-	err := ib.dl.SetBuildTimeMetric(txn, id, "clean_started")
+	err = ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_started")
 	if err != nil {
 		return err
 	}
@@ -562,13 +568,13 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) error {
 	if err != nil {
 		return err
 	}
-	return ib.dl.SetBuildTimeMetric(txn, id, "clean_completed")
+	return ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_completed")
 }
 
 // PushBuildToRegistry pushes the already built image and all associated tags to the
 // configured remote Docker registry. Caller must ensure the image has already
 // been built successfully
-func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildRequest) error {
+func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildRequest) (err error) {
 	if buildcontext.IsCancelled(ctx.Done()) {
 		return fmt.Errorf("push was cancelled: %v", ctx.Err())
 	}
@@ -576,12 +582,14 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return fmt.Errorf("New Relic transaction missing from context")
+		return fmt.Errorf("cannot push to registry: span missing from context")
 	}
 	ib.logf(ctx, "pushing")
-	err := ib.dl.SetBuildTimeMetric(txn, id, "push_started")
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer pushSpan.Finish(tracer.WithError(err))
+	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_started")
 	if err != nil {
 		return err
 	}
@@ -632,7 +640,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 			return err
 		}
 	}
-	err = ib.dl.SetBuildTimeMetric(txn, id, "push_completed")
+	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_completed")
 	if err != nil {
 		return err
 	}
@@ -645,11 +653,11 @@ func (ib *ImageBuilder) getCommitSHA(ctx context.Context, repo, ref string) (str
 	if len(rl) != 2 {
 		return "", fmt.Errorf("malformed GitHub repo: %v", repo)
 	}
-	txn, ok := buildcontext.NRTxnFromContext(ctx)
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
 	if !ok {
-		return "", fmt.Errorf("New Relic transaction missing from context")
+		return "", fmt.Errorf("cannot get commit SHA: span missing from context")
 	}
-	csha, err := ib.gf.GetCommitSHA(txn, rl[0], rl[1], ref)
+	csha, err := ib.gf.GetCommitSHA(parentSpan, rl[0], rl[1], ref)
 	if err != nil {
 		return "", fmt.Errorf("error getting commit SHA: %v", err)
 	}
@@ -657,10 +665,16 @@ func (ib *ImageBuilder) getCommitSHA(ctx context.Context, repo, ref string) (str
 }
 
 // PushBuildToS3 exports and uploads the already built image to the configured S3 bucket/key
-func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *lib.BuildRequest) error {
+func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *lib.BuildRequest) (err error) {
 	if buildcontext.IsCancelled(ctx.Done()) {
 		return fmt.Errorf("push was cancelled: %v", ctx.Err())
 	}
+	parentSpan, ok := buildcontext.SpanFromContext(ctx)
+	if !ok {
+		return fmt.Errorf("cannot push build to s3: span missing from context")
+	}
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer pushSpan.Finish(tracer.WithError(err))
 	csha, err := ib.getCommitSHA(ctx, req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {
 		return err

@@ -53,13 +53,8 @@ func SetupVault(vaultConfig *config.Vaultconfig, awsConfig *config.AWSConfig, do
 	if err != nil {
 		log.Fatalf("Error getting dockercfg: %v", err)
 	}
-	nrkey, err := sc.Get(serverConfig.NewRelicAPIKeyVaultPath)
-	if err != nil {
-		log.Fatalf("Error getting New Relic API key: %v", err)
-	}
 	gitConfig.Token = string(ght)
 	dockerConfig.DockercfgRaw = string(dcc)
-	serverConfig.NewRelicAPIKey = string(nrkey)
 	ak, err := sc.Get(awscredsprefix + "/access_key_id")
 	if err != nil {
 		log.Fatalf("Error getting AWS access key ID: %v", err)
