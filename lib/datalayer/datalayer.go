@@ -90,7 +90,7 @@ func (dl *DBLayer) GetBuildByID(parentSpan tracer.Span, id gocql.UUID) (bi *lib.
 // SetBuildFlags sets the boolean flags on the build object
 // Caller must ensure that the flags passed in are valid
 func (dl *DBLayer) SetBuildFlags(parentSpan tracer.Span, id gocql.UUID, flags map[string]bool) (err error) {
-	span := tracer.StartSpan("datalayer.set.build.flags", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.set_build_flags", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	q := `UPDATE builds_by_id SET %v = ? WHERE id = ?;`
 	for k, v := range flags {
@@ -104,7 +104,7 @@ func (dl *DBLayer) SetBuildFlags(parentSpan tracer.Span, id gocql.UUID, flags ma
 
 // SetBuildCompletedTimestamp sets the completed timestamp on a build to time.Now()
 func (dl *DBLayer) SetBuildCompletedTimestamp(parentSpan tracer.Span, id gocql.UUID) (err error) {
-	span := tracer.StartSpan("datalayer.set.build.flags", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.set_build_completed_timestamp", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	var started time.Time
 	now := time.Now()
@@ -120,7 +120,7 @@ func (dl *DBLayer) SetBuildCompletedTimestamp(parentSpan tracer.Span, id gocql.U
 
 // SetBuildState sets the state of a build
 func (dl *DBLayer) SetBuildState(parentSpan tracer.Span, id gocql.UUID, state lib.BuildStatusResponse_BuildState) (err error) {
-	span := tracer.StartSpan("datalayer.set.build.state", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.set_build_state", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	q := `UPDATE builds_by_id SET state = ? WHERE id = ?;`
 	return dl.s.Query(q, state.String(), id).Exec()
@@ -129,7 +129,7 @@ func (dl *DBLayer) SetBuildState(parentSpan tracer.Span, id gocql.UUID, state li
 // DeleteBuild removes a build from the DB.
 // Only used in case of queue full when we can't actually do a build
 func (dl *DBLayer) DeleteBuild(parentSpan tracer.Span, id gocql.UUID) (err error) {
-	span := tracer.StartSpan("datalayer.set.build.flags", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.delete_build", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	q := `DELETE FROM builds_by_id WHERE id = ?;`
 	err = dl.s.Query(q, id).Exec()
@@ -144,7 +144,7 @@ func (dl *DBLayer) DeleteBuild(parentSpan tracer.Span, id gocql.UUID) (err error
 // metric is the name of the column to update
 // if metric is a *_completed column, it will also compute and persist the duration
 func (dl *DBLayer) SetBuildTimeMetric(parentSpan tracer.Span, id gocql.UUID, metric string) (err error) {
-	span := tracer.StartSpan("datalayer.set.build.time.metric", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.set_build_time_metric", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	var started time.Time
 	now := time.Now()
@@ -185,7 +185,7 @@ func (dl *DBLayer) SetBuildTimeMetric(parentSpan tracer.Span, id gocql.UUID, met
 
 // SetDockerImageSizesMetric sets the docker image sizes for a build
 func (dl *DBLayer) SetDockerImageSizesMetric(parentSpan tracer.Span, id gocql.UUID, size int64, vsize int64) (err error) {
-	span := tracer.StartSpan("datalayer.set.docker.image.size.metric", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.set_docker_image_size_metric", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	q := `UPDATE build_metrics_by_id SET docker_image_size = ?, docker_image_vsize = ? WHERE id = ?;`
 	return dl.s.Query(q, size, vsize, id).Exec()
@@ -193,7 +193,7 @@ func (dl *DBLayer) SetDockerImageSizesMetric(parentSpan tracer.Span, id gocql.UU
 
 // SaveBuildOutput serializes an array of stream events to the database
 func (dl *DBLayer) SaveBuildOutput(parentSpan tracer.Span, id gocql.UUID, output []lib.BuildEvent, column string) (err error) {
-	span := tracer.StartSpan("datalayer.save.build.output", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.save_build_output", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	serialized := make([][]byte, len(output))
 	var b []byte
@@ -210,7 +210,7 @@ func (dl *DBLayer) SaveBuildOutput(parentSpan tracer.Span, id gocql.UUID, output
 
 // GetBuildOutput returns an array of stream events from the database
 func (dl *DBLayer) GetBuildOutput(parentSpan tracer.Span, id gocql.UUID, column string) (output []lib.BuildEvent, err error) {
-	span := tracer.StartSpan("datalayer.save.build.output", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("datalayer.get_build_output", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	var rawoutput [][]byte
 	output = []lib.BuildEvent{}

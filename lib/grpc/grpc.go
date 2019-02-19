@@ -426,7 +426,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 // gRPC handlers
 func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ *lib.BuildRequestResponse, err error) {
 	resp := &lib.BuildRequestResponse{}
-	rootSpan := tracer.StartSpan("start.build")
+	rootSpan := tracer.StartSpan("start_build")
 	defer rootSpan.Finish(tracer.WithError(err))
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
@@ -460,7 +460,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 }
 
 func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRequest) (_ *lib.BuildStatusResponse, err error) {
-	rootSpan := tracer.StartSpan("get.build.status")
+	rootSpan := tracer.StartSpan("get_build_status")
 	defer rootSpan.Finish(tracer.WithError(err))
 	resp := &lib.BuildStatusResponse{}
 	id, err := gocql.ParseUUID(req.BuildId)
@@ -480,7 +480,7 @@ func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRe
 
 // Reconstruct the stream of events for a build from the data layer
 func (gr *GrpcServer) eventsFromDL(parentSpan tracer.Span, stream lib.FuranExecutor_MonitorBuildServer, id gocql.UUID) (err error) {
-	span := tracer.StartSpan("events.from.dl", tracer.ChildOf(parentSpan.Context()))
+	span := tracer.StartSpan("events_from_dl", tracer.ChildOf(parentSpan.Context()))
 	defer span.Finish(tracer.WithError(err))
 	bo, err := gr.dl.GetBuildOutput(span, id, "build_output")
 	if err != nil {
@@ -531,7 +531,7 @@ func (gr *GrpcServer) eventsFromEventBus(stream lib.FuranExecutor_MonitorBuildSe
 
 // MonitorBuild streams events from a specified build
 func (gr *GrpcServer) MonitorBuild(req *lib.BuildStatusRequest, stream lib.FuranExecutor_MonitorBuildServer) (err error) {
-	rootSpan := tracer.StartSpan("monitor.build")
+	rootSpan := tracer.StartSpan("monitor_build")
 	defer rootSpan.Finish(tracer.WithError(err))
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {
@@ -549,7 +549,7 @@ func (gr *GrpcServer) MonitorBuild(req *lib.BuildStatusRequest, stream lib.Furan
 
 // CancelBuild stops a currently-running build
 func (gr *GrpcServer) CancelBuild(ctx context.Context, req *lib.BuildCancelRequest) (_ *lib.BuildCancelResponse, err error) {
-	rootSpan := tracer.StartSpan("cancel.build")
+	rootSpan := tracer.StartSpan("cancel_build")
 	defer rootSpan.Finish(tracer.WithError(err))
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {
