@@ -99,7 +99,7 @@ spec:
         {{ if .Values.datadog.overrideDefaultTags }}
           - --default-metrics-tags=env:{{ .Values.env }},namespace:{{ .Release.Namespace }}
         {{ end }}
-        {{ if .Values.datadog.datadogTracingAgent }}
+        {{ if .Values.datadog.tracingAgentAddr }}
           - --datadog-tracing-agent-addr:{{ .Values.datadog.tracingAgentAddr }}
         {{ end }}
         {{ if .Values.datadog.serviceName }}
