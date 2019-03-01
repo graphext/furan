@@ -322,11 +322,11 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		if failed {
 			eet = lib.BuildEventError_FATAL
 			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, userError)
+			rootSpan.Finish(tracer.WithError(err))
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
 		}
-		rootSpan.Finish(tracer.WithError(err))
 		if err := gr.totalDuration(ctx, req); err != nil {
 			gr.logger.Printf("error pushing total duration: %v", err)
 		}
@@ -357,6 +357,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 			gr.logf("failBuild: error publishing event: %v", err2)
 		}
 		gr.logf("%v: %v: failed: %v", id.String(), msg, flags["failed"])
+		rootSpan.Finish()
 	}(id)
 	err = gr.mc.BuildStarted(req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {

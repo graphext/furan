@@ -673,12 +673,12 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 	if !ok {
 		return fmt.Errorf("cannot push build to s3: span missing from context")
 	}
-	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
-	defer pushSpan.Finish(tracer.WithError(err))
 	csha, err := ib.getCommitSHA(ctx, req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {
 		return err
 	}
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer pushSpan.Finish(tracer.WithError(err))
 	info, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
 		return err
