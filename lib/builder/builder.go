@@ -413,7 +413,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	err2 := ib.saveOutput(ctx, Build, output) // we want to save output even if error
 	if err != nil {
 		le := output[len(output)-1]
-		dockerBuildError := fmt.Errorf("build failed: %v", le.Message)
+		dockerBuildError := fmt.Errorf("build failed: %v, %(v) ", err, le.Message)
 		if le.EventError.ErrorType == lib.BuildEventError_FATAL && ib.s3errorcfg.PushToS3 {
 			ib.logf(ctx, "pushing failed build log to S3: %v", id.String())
 			loc, err3 := ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
