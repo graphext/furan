@@ -587,9 +587,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 		return fmt.Errorf("cannot push to registry: span missing from context")
 	}
 	ib.logf(ctx, "pushing")
-	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
-	defer pushSpan.Finish(tracer.WithError(err))
-	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_started")
+	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_started")
 	if err != nil {
 		return err
 	}
@@ -626,6 +624,12 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	if err != nil {
 		return err
 	}
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer func() {
+		if err != nil {
+			pushSpan.Finish(tracer.WithError(err))
+		}
+	}()
 	for _, name := range inames {
 		if buildcontext.IsCancelled(ctx.Done()) {
 			return fmt.Errorf("push was cancelled: %v", ctx.Err())
@@ -640,7 +644,8 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 			return err
 		}
 	}
-	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_completed")
+	pushSpan.Finish()
+	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_completed")
 	if err != nil {
 		return err
 	}
