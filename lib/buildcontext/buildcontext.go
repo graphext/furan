@@ -13,12 +13,11 @@ type ctxKeyType string
 var ctxIDKey ctxKeyType = "id"
 var ctxStartedKey ctxKeyType = "started"
 var ctxPushStartedkey ctxKeyType = "push_started"
-var ctxSpanKey ctxKeyType = "span_key"
 
 // NewBuildIDContext returns a context with the current build ID and time started
 // stored as values
 func NewBuildIDContext(ctx context.Context, id gocql.UUID, span tracer.Span) context.Context {
-	ctxWithSpan := NewSpanContext(ctx, span)
+	ctxWithSpan := tracer.ContextWithSpan(ctx, span)
 	return context.WithValue(context.WithValue(ctxWithSpan, ctxIDKey, id), ctxStartedKey, time.Now().UTC())
 }
 
@@ -26,11 +25,6 @@ func NewBuildIDContext(ctx context.Context, id gocql.UUID, span tracer.Span) con
 // as a value
 func NewPushStartedContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, ctxPushStartedkey, time.Now().UTC())
-}
-
-// NewSpanContext returns a context with a Span sotred as a value
-func NewSpanContext(ctx context.Context, span tracer.Span) context.Context {
-	return context.WithValue(ctx, ctxSpanKey, span)
 }
 
 // BuildIDFromContext returns the ID stored in ctx, if any
@@ -49,12 +43,6 @@ func StartedFromContext(ctx context.Context) (time.Time, bool) {
 func PushStartedFromContext(ctx context.Context) (time.Time, bool) {
 	ps, ok := ctx.Value(ctxPushStartedkey).(time.Time)
 	return ps, ok
-}
-
-// SpanFromContext returns the Span stored in ctx, if any
-func SpanFromContext(ctx context.Context) (tracer.Span, bool) {
-	span, ok := ctx.Value(ctxSpanKey).(tracer.Span)
-	return span, ok
 }
 
 // IsCancelled checks if the provided done channel is closed
