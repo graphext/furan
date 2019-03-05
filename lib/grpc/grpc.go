@@ -322,11 +322,12 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		if failed {
 			eet = lib.BuildEventError_FATAL
 			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, userError)
+			rootSpan.Finish(tracer.WithError(err))
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
+			rootSpan.Finish()
 		}
-		rootSpan.Finish(tracer.WithError(err))
 		if err := gr.totalDuration(ctx, req); err != nil {
 			gr.logger.Printf("error pushing total duration: %v", err)
 		}

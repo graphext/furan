@@ -413,7 +413,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	err2 := ib.saveOutput(ctx, Build, output) // we want to save output even if error
 	if err != nil {
 		le := output[len(output)-1]
-		dockerBuildError := fmt.Errorf("build failed: %v", le.Message)
+		dockerBuildError := fmt.Errorf("build failed: %v, %(v) ", err, le.Message)
 		if le.EventError.ErrorType == lib.BuildEventError_FATAL && ib.s3errorcfg.PushToS3 {
 			ib.logf(ctx, "pushing failed build log to S3: %v", id.String())
 			loc, err3 := ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
@@ -587,9 +587,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 		return fmt.Errorf("cannot push to registry: span missing from context")
 	}
 	ib.logf(ctx, "pushing")
-	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
-	defer pushSpan.Finish(tracer.WithError(err))
-	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_started")
+	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_started")
 	if err != nil {
 		return err
 	}
@@ -626,6 +624,12 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	if err != nil {
 		return err
 	}
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer func() {
+		if err != nil {
+			pushSpan.Finish(tracer.WithError(err))
+		}
+	}()
 	for _, name := range inames {
 		if buildcontext.IsCancelled(ctx.Done()) {
 			return fmt.Errorf("push was cancelled: %v", ctx.Err())
@@ -640,7 +644,8 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 			return err
 		}
 	}
-	err = ib.dl.SetBuildTimeMetric(pushSpan, id, "push_completed")
+	pushSpan.Finish()
+	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_completed")
 	if err != nil {
 		return err
 	}
@@ -673,12 +678,12 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 	if !ok {
 		return fmt.Errorf("cannot push build to s3: span missing from context")
 	}
-	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
-	defer pushSpan.Finish(tracer.WithError(err))
 	csha, err := ib.getCommitSHA(ctx, req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {
 		return err
 	}
+	pushSpan := tracer.StartSpan("image_builder.push", tracer.ChildOf(parentSpan.Context()))
+	defer pushSpan.Finish(tracer.WithError(err))
 	info, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
 		return err
