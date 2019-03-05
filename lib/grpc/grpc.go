@@ -97,14 +97,13 @@ func newActiveBuildMap(logger *log.Logger) activeBuildMap {
 	}
 }
 
-func startRootBuildSpan(req *lib.BuildRequest, id gocql.UUID) tracer.Span {
-	rootSpan := tracer.StartSpan("build")
-	rootSpan.SetTag("repo", req.GetBuild().GetGithubRepo())
-	rootSpan.SetTag("ref", req.GetBuild().GetRef())
-	rootSpan.SetTag("build_id", id.String())
-	rootSpan.SetTag("s3", req.GetPush().GetS3())
-	rootSpan.SetTag("registry", req.GetPush().GetRegistry())
-	return rootSpan
+func setTagsForBuildSpan(span tracer.Span, req *lib.BuildRequest, id gocql.UUID) tracer.Span {
+	span.SetTag("repo", req.GetBuild().GetGithubRepo())
+	span.SetTag("ref", req.GetBuild().GetRef())
+	span.SetTag("build_id", id.String())
+	span.SetTag("s3", req.GetPush().GetS3())
+	span.SetTag("registry", req.GetPush().GetRegistry())
+	return span
 }
 
 // GrpcServer represents an object that responds to gRPC calls
@@ -302,8 +301,9 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		return
 	}
 	defer gr.abm.RemoveBuild(id)
-	rootSpan := startRootBuildSpan(req, id)
-	ctx = tracer.ContextWithSpan(ctx, rootSpan)
+	parentSpan, _ := tracer.SpanFromContext(ctx)
+	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build")
+	setTagsForBuildSpan(buildSpan, req, id)
 	gr.logf("syncBuild started: %v", id.String())
 	if err := gr.kvo.SetBuildRunning(id); err != nil {
 		gr.logf("error setting build as running in KV: %v", err)
@@ -322,11 +322,11 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		if failed {
 			eet = lib.BuildEventError_FATAL
 			gr.mc.BuildFailed(req.Build.GithubRepo, req.Build.Ref, userError)
-			rootSpan.Finish(tracer.WithError(err))
+			buildSpan.Finish(tracer.WithError(err))
 		} else {
 			eet = lib.BuildEventError_NO_ERROR
 			gr.mc.BuildSucceeded(req.Build.GithubRepo, req.Build.Ref)
-			rootSpan.Finish()
+			buildSpan.Finish()
 		}
 		if err := gr.totalDuration(ctx, req); err != nil {
 			gr.logger.Printf("error pushing total duration: %v", err)
@@ -338,10 +338,10 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 			msg = "build finished"
 		}
 		gr.logf("syncBuild: finished: %v", msg)
-		if err2 := gr.dl.SetBuildState(rootSpan, id, outcome); err2 != nil {
+		if err2 := gr.dl.SetBuildState(parentSpan, id, outcome); err2 != nil {
 			gr.logf("failBuild: error setting build state: %v", err2)
 		}
-		if err2 := gr.dl.SetBuildFlags(rootSpan, id, flags); err2 != nil {
+		if err2 := gr.dl.SetBuildFlags(parentSpan, id, flags); err2 != nil {
 			gr.logf("failBuild: error setting build flags: %v", err2)
 		}
 		event := &lib.BuildEvent{
@@ -367,7 +367,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		err = fmt.Errorf("build was cancelled")
 		return lib.BuildStatusResponse_BUILD_FAILURE
 	}
-	err = gr.dl.SetBuildState(rootSpan, id, lib.BuildStatusResponse_BUILDING)
+	err = gr.dl.SetBuildState(buildSpan, id, lib.BuildStatusResponse_BUILDING)
 	if err != nil {
 		err = fmt.Errorf("error setting build state to building: %v", err)
 		return lib.BuildStatusResponse_BUILD_FAILURE
@@ -388,7 +388,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		err = fmt.Errorf("build was cancelled")
 		return lib.BuildStatusResponse_BUILD_FAILURE
 	}
-	err = gr.dl.SetBuildState(rootSpan, id, lib.BuildStatusResponse_PUSHING)
+	err = gr.dl.SetBuildState(buildSpan, id, lib.BuildStatusResponse_PUSHING)
 	if err != nil {
 		err = fmt.Errorf("error setting build state to pushing: %v", err)
 		return lib.BuildStatusResponse_BUILD_FAILURE
@@ -411,12 +411,12 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	if err != nil { // Cleaning images is non-fatal because concurrent builds can cause failures here
 		gr.logger.Printf("CleanImage error (non-fatal): %v", err)
 	}
-	err = gr.dl.SetBuildState(rootSpan, id, lib.BuildStatusResponse_SUCCESS)
+	err = gr.dl.SetBuildState(buildSpan, id, lib.BuildStatusResponse_SUCCESS)
 	if err != nil {
 		err = fmt.Errorf("error setting build state to success: %v", err)
 		return lib.BuildStatusResponse_PUSH_FAILURE
 	}
-	err = gr.dl.SetBuildCompletedTimestamp(rootSpan, id)
+	err = gr.dl.SetBuildCompletedTimestamp(buildSpan, id)
 	if err != nil {
 		err = fmt.Errorf("error setting build completed timestamp: %v", err)
 		return lib.BuildStatusResponse_PUSH_FAILURE
@@ -427,7 +427,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 // gRPC handlers
 func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ *lib.BuildRequestResponse, err error) {
 	resp := &lib.BuildRequestResponse{}
-	rootSpan := tracer.StartSpan("start_build")
+	rootSpan, ctx := tracer.StartSpanFromContext(ctx, "start_build")
 	defer rootSpan.Finish(tracer.WithError(err))
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
@@ -461,7 +461,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 }
 
 func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRequest) (_ *lib.BuildStatusResponse, err error) {
-	rootSpan := tracer.StartSpan("get_build_status")
+	rootSpan, ctx := tracer.StartSpanFromContext(ctx, "get_build_status")
 	defer rootSpan.Finish(tracer.WithError(err))
 	resp := &lib.BuildStatusResponse{}
 	id, err := gocql.ParseUUID(req.BuildId)
@@ -550,7 +550,7 @@ func (gr *GrpcServer) MonitorBuild(req *lib.BuildStatusRequest, stream lib.Furan
 
 // CancelBuild stops a currently-running build
 func (gr *GrpcServer) CancelBuild(ctx context.Context, req *lib.BuildCancelRequest) (_ *lib.BuildCancelResponse, err error) {
-	rootSpan := tracer.StartSpan("cancel_build")
+	rootSpan, ctx := tracer.StartSpanFromContext(ctx, "cancel_build")
 	defer rootSpan.Finish(tracer.WithError(err))
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {

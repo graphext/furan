@@ -230,9 +230,12 @@ func (ib *ImageBuilder) getFullImageNames(ctx context.Context, req *lib.BuildReq
 // tagCheck checks the existence of tags in the registry or the S3 object
 // returns true if build/push should be performed
 func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bool, error) {
+	var err error
 	if !req.SkipIfExists {
 		return true, nil
 	}
+	tagCheckSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.tag_check")
+	defer tagCheckSpan.Finish(tracer.WithError(err))
 	csha, err := ib.getCommitSHA(ctx, req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {
 		return false, fmt.Errorf("error getting latest commit SHA: %v", err)
@@ -389,7 +392,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		NoCache:     true,
 		BuildArgs:   req.Build.Args,
 	}
-	buildSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.dobuild")
+	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.dobuild")
 	defer buildSpan.Finish(tracer.WithError(err))
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
