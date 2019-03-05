@@ -379,7 +379,6 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	if !ok {
 		return imageid, fmt.Errorf("build id missing from context")
 	}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
 	opts := dtypes.ImageBuildOptions{
 		Tags:        rbi.Tags,
 		Remove:      true,
@@ -390,7 +389,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		NoCache:     true,
 		BuildArgs:   req.Build.Args,
 	}
-	buildSpan := tracer.StartSpan("image_builder.dobuild", tracer.ChildOf(parentSpan.Context()))
+	buildSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.dobuild")
 	defer buildSpan.Finish(tracer.WithError(err))
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
@@ -534,8 +533,7 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err err
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
-	cleanSpan := tracer.StartSpan("image_builder.clean", tracer.ChildOf(parentSpan.Context()))
+	cleanSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.clean")
 	defer cleanSpan.Finish(tracer.WithError(err))
 	ib.logf(ctx, "cleaning up images")
 	err = ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_started")
@@ -567,8 +565,8 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
 	ib.logf(ctx, "pushing")
+	parentSpan, _ := tracer.SpanFromContext(ctx)
 	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_started")
 	if err != nil {
 		return err
