@@ -303,7 +303,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	}
 	defer gr.abm.RemoveBuild(id)
 	rootSpan := startRootBuildSpan(req, id)
-	ctx = buildcontext.NewSpanContext(ctx, rootSpan)
+	ctx = tracer.ContextWithSpan(ctx, rootSpan)
 	gr.logf("syncBuild started: %v", id.String())
 	if err := gr.kvo.SetBuildRunning(id); err != nil {
 		gr.logf("error setting build as running in KV: %v", err)
