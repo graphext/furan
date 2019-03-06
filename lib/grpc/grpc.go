@@ -303,7 +303,7 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 	}
 	defer gr.abm.RemoveBuild(id)
 	parentSpan, _ := tracer.SpanFromContext(ctx)
-	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build")
+	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build", tracer.ResourceName("build"))
 	gr.logf("syncBuild started: %v", id.String())
 	if err := gr.kvo.SetBuildRunning(id); err != nil {
 		gr.logf("error setting build as running in KV: %v", err)
@@ -427,19 +427,19 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 // gRPC handlers
 func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ *lib.BuildRequestResponse, err error) {
 	resp := &lib.BuildRequestResponse{}
-	rootSpan, _ := tracer.SpanFromContext(ctx)
+	parentSpan, _ := tracer.SpanFromContext(ctx)
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
 			return nil, grpc.Errorf(codes.InvalidArgument, "must specify either registry repo or S3 region/bucket/key-prefix")
 		}
 	}
-	id, err := gr.dl.CreateBuild(rootSpan, req)
+	id, err := gr.dl.CreateBuild(parentSpan, req)
 	if err != nil {
 		return nil, grpc.Errorf(codes.Internal, "error creating build in DB: %v", err)
 	}
-	setTagsForSpan(rootSpan, req.GetBuild(), req.GetPush(), id)
+	setTagsForSpan(parentSpan, req.GetBuild(), req.GetPush(), id)
 	var cf context.CancelFunc
-	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, rootSpan))
+	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, parentSpan))
 	wreq := workerRequest{
 		ctx: ctx,
 		req: req,
@@ -452,7 +452,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 		return resp, nil
 	default:
 		gr.logf("build id %v cannot run because queue is full", id.String())
-		err = gr.dl.DeleteBuild(rootSpan, id)
+		err = gr.dl.DeleteBuild(parentSpan, id)
 		if err != nil {
 			gr.logf("error deleting build from DB: %v", err)
 		}
@@ -461,13 +461,13 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 }
 
 func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRequest) (_ *lib.BuildStatusResponse, err error) {
-	rootSpan, _ := tracer.SpanFromContext(ctx)
+	parentSpan, _ := tracer.SpanFromContext(ctx)
 	resp := &lib.BuildStatusResponse{}
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {
 		return nil, grpc.Errorf(codes.InvalidArgument, "bad id: %v", err)
 	}
-	resp, err = gr.dl.GetBuildByID(rootSpan, id)
+	resp, err = gr.dl.GetBuildByID(parentSpan, id)
 	if err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, grpc.Errorf(codes.InvalidArgument, "build not found")
@@ -476,7 +476,7 @@ func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRe
 		}
 	}
 	buildReq := resp.GetBuildRequest()
-	setTagsForSpan(rootSpan, buildReq.GetBuild(), buildReq.GetPush(), id)
+	setTagsForSpan(parentSpan, buildReq.GetBuild(), buildReq.GetPush(), id)
 	return resp, nil
 }
 
@@ -549,8 +549,8 @@ func (gr *GrpcServer) MonitorBuild(req *lib.BuildStatusRequest, stream lib.Furan
 
 // CancelBuild stops a currently-running build
 func (gr *GrpcServer) CancelBuild(ctx context.Context, req *lib.BuildCancelRequest) (_ *lib.BuildCancelResponse, err error) {
-	rootSpan, _ := tracer.SpanFromContext(ctx)
-	rootSpan.SetTag("build_id", req.GetBuildId())
+	parentSpan, _ := tracer.SpanFromContext(ctx)
+	parentSpan.SetTag("build_id", req.GetBuildId())
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {
 		return nil, grpc.Errorf(codes.InvalidArgument, "invalid BuildId")
