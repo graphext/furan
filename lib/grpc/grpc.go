@@ -206,6 +206,8 @@ func (gr *GrpcServer) ListenRPC(addr string, port uint) error {
 		gr.logf("error starting gRPC listener: %v", err)
 		return err
 	}
+	// Note (mk): We should consider upgrading our go grpc package so that we
+	// can take advantage of stream interceptor
 	ui := grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(gr.serviceName))
 	s := grpc.NewServer(grpc.UnaryInterceptor(ui))
 	gr.s = s
@@ -481,13 +483,12 @@ func (gr *GrpcServer) GetBuildStatus(ctx context.Context, req *lib.BuildStatusRe
 
 // Reconstruct the stream of events for a build from the data layer
 func (gr *GrpcServer) eventsFromDL(parentSpan tracer.Span, stream lib.FuranExecutor_MonitorBuildServer, id gocql.UUID) (err error) {
-	span := tracer.StartSpan("events_from_dl", tracer.ChildOf(parentSpan.Context()))
-	defer span.Finish(tracer.WithError(err))
-	bo, err := gr.dl.GetBuildOutput(span, id, "build_output")
+	noOpSpan, _ := tracer.SpanFromContext(context.Background())
+	bo, err := gr.dl.GetBuildOutput(noOpSpan, id, "build_output")
 	if err != nil {
 		return fmt.Errorf("error getting build output: %v", err)
 	}
-	po, err := gr.dl.GetBuildOutput(span, id, "push_output")
+	po, err := gr.dl.GetBuildOutput(noOpSpan, id, "push_output")
 	if err != nil {
 		return fmt.Errorf("error getting push output: %v", err)
 	}
@@ -532,18 +533,17 @@ func (gr *GrpcServer) eventsFromEventBus(stream lib.FuranExecutor_MonitorBuildSe
 
 // MonitorBuild streams events from a specified build
 func (gr *GrpcServer) MonitorBuild(req *lib.BuildStatusRequest, stream lib.FuranExecutor_MonitorBuildServer) (err error) {
-	rootSpan := tracer.StartSpan("monitor_build")
-	defer rootSpan.Finish(tracer.WithError(err))
+	noOpSpan, _ := tracer.SpanFromContext(context.Background())
 	id, err := gocql.ParseUUID(req.BuildId)
 	if err != nil {
 		return grpc.Errorf(codes.InvalidArgument, "bad build id: %v", err)
 	}
-	build, err := gr.dl.GetBuildByID(rootSpan, id)
+	build, err := gr.dl.GetBuildByID(noOpSpan, id)
 	if err != nil {
 		return grpc.Errorf(codes.Internal, "error getting build: %v", err)
 	}
 	if build.Finished { // No need to use Kafka, just stream events from the data layer
-		return gr.eventsFromDL(rootSpan, stream, id)
+		return gr.eventsFromDL(noOpSpan, stream, id)
 	}
 	return gr.eventsFromEventBus(stream, id)
 }
