@@ -235,7 +235,9 @@ func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bo
 		return true, nil
 	}
 	tagCheckSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.tag_check")
-	defer tagCheckSpan.Finish(tracer.WithError(err))
+	defer func() {
+		tagCheckSpan.Finish(tracer.WithError(err))
+	}()
 	csha, err := ib.getCommitSHA(ctx, req.Build.GithubRepo, req.Build.Ref)
 	if err != nil {
 		return false, fmt.Errorf("error getting latest commit SHA: %v", err)
@@ -393,7 +395,9 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		BuildArgs:   req.Build.Args,
 	}
 	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.dobuild")
-	defer buildSpan.Finish(tracer.WithError(err))
+	defer func() {
+		buildSpan.Finish(tracer.WithError(err))
+	}()
 	ibr, err := ib.c.ImageBuild(ctx, rbi.Context, opts)
 	if err != nil {
 		dockerBuildStartError := pkgerror.Wrapf(err, "error starting build: ")
@@ -537,7 +541,9 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err err
 		return fmt.Errorf("build id missing from context")
 	}
 	cleanSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.clean")
-	defer cleanSpan.Finish(tracer.WithError(err))
+	defer func() {
+		cleanSpan.Finish(tracer.WithError(err))
+	}()
 	ib.logf(ctx, "cleaning up images")
 	err = ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_started")
 	if err != nil {
@@ -659,7 +665,9 @@ func (ib *ImageBuilder) PushBuildToS3(ctx context.Context, imageid string, req *
 		return err
 	}
 	pushSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.push")
-	defer pushSpan.Finish(tracer.WithError(err))
+	defer func() {
+		pushSpan.Finish(tracer.WithError(err))
+	}()
 	info, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
 		return err
