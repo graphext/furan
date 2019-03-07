@@ -437,7 +437,8 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 	}
 	setTagsForSpan(parentSpan, req.GetBuild(), req.GetPush(), id)
 	var cf context.CancelFunc
-	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id))
+	ctx = tracer.ContextWithSpan(context.Background(), parentSpan)
+	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(ctx, id))
 	wreq := workerRequest{
 		ctx: ctx,
 		req: req,
