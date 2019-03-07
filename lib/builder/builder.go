@@ -275,7 +275,7 @@ func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bo
 func (ib *ImageBuilder) Build(ctx context.Context, req *lib.BuildRequest, id gocql.UUID) (_ string, err error) {
 	ib.logf(ctx, "starting build")
 	parentSpan, _ := tracer.SpanFromContext(ctx)
-	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "docker_build_started")
+	err = ib.dl.SetBuildTimeMetric(ctx, id, "docker_build_started")
 	if err != nil {
 		return "", fmt.Errorf("error setting build time metric in DB: %v", err)
 	}
@@ -327,7 +327,6 @@ func (ib *ImageBuilder) saveOutput(ctx context.Context, action actionType, event
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
 	var column string
 	switch action {
 	case Build:
@@ -337,7 +336,7 @@ func (ib *ImageBuilder) saveOutput(ctx context.Context, action actionType, event
 	default:
 		return fmt.Errorf("unknown action: %v", action)
 	}
-	return ib.dl.SaveBuildOutput(parentSpan, id, events, column)
+	return ib.dl.SaveBuildOutput(ctx, id, events, column)
 }
 
 // saveEventLogToS3 writes a stream of events to S3 and returns the S3 HTTP URL
@@ -442,7 +441,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		if strings.HasPrefix(dse.Stream, buildSuccessEventPrefix) {
 			imageid = strings.TrimRight(dse.Stream[len(buildSuccessEventPrefix):len(dse.Stream)], "\n")
 			ib.logf(ctx, "built image ID %v", imageid)
-			err = ib.dl.SetBuildTimeMetric(buildSpan, id, "docker_build_completed")
+			err = ib.dl.SetBuildTimeMetric(ctx, id, "docker_build_completed")
 			if err != nil {
 				return imageid, err
 			}
@@ -460,7 +459,6 @@ func (ib *ImageBuilder) writeDockerImageSizeMetrics(ctx context.Context, imageid
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
 	res, _, err := ib.c.ImageInspectWithRaw(ctx, imageid)
 	if err != nil {
 		return err
@@ -469,7 +467,7 @@ func (ib *ImageBuilder) writeDockerImageSizeMetrics(ctx context.Context, imageid
 	if err != nil {
 		ib.logger.Printf("error pushing image size metrics: %v", err)
 	}
-	return ib.dl.SetDockerImageSizesMetric(parentSpan, id, res.Size, res.VirtualSize)
+	return ib.dl.SetDockerImageSizesMetric(ctx, id, res.Size, res.VirtualSize)
 }
 
 // Models for the JSON objects the Docker API returns
@@ -540,12 +538,12 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err err
 	if !ok {
 		return fmt.Errorf("build id missing from context")
 	}
-	cleanSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.clean")
+	cleanSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.clean")
 	defer func() {
 		cleanSpan.Finish(tracer.WithError(err))
 	}()
 	ib.logf(ctx, "cleaning up images")
-	err = ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_started")
+	err = ib.dl.SetBuildTimeMetric(ctx, id, "clean_started")
 	if err != nil {
 		return err
 	}
@@ -560,7 +558,7 @@ func (ib *ImageBuilder) CleanImage(ctx context.Context, imageid string) (err err
 	if err != nil {
 		return err
 	}
-	return ib.dl.SetBuildTimeMetric(cleanSpan, id, "clean_completed")
+	return ib.dl.SetBuildTimeMetric(ctx, id, "clean_completed")
 }
 
 // PushBuildToRegistry pushes the already built image and all associated tags to the
@@ -575,8 +573,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 		return fmt.Errorf("build id missing from context")
 	}
 	ib.logf(ctx, "pushing")
-	parentSpan, _ := tracer.SpanFromContext(ctx)
-	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_started")
+	err = ib.dl.SetBuildTimeMetric(ctx, id, "push_started")
 	if err != nil {
 		return err
 	}
@@ -613,7 +610,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	if err != nil {
 		return err
 	}
-	pushSpan, _ := tracer.StartSpanFromContext(ctx, "image_builder.push")
+	pushSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.push")
 	defer func() {
 		if err != nil {
 			pushSpan.Finish(tracer.WithError(err))
@@ -634,7 +631,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 		}
 	}
 	pushSpan.Finish()
-	err = ib.dl.SetBuildTimeMetric(parentSpan, id, "push_completed")
+	err = ib.dl.SetBuildTimeMetric(ctx, id, "push_completed")
 	if err != nil {
 		return err
 	}
