@@ -425,7 +425,10 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 // gRPC handlers
 func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ *lib.BuildRequestResponse, err error) {
 	resp := &lib.BuildRequestResponse{}
-	parentSpan, _ := tracer.SpanFromContext(ctx)
+	queueSpan, ctx := tracer.StartSpanFromContext(ctx, "queue_build")
+	defer func() {
+		queueSpan.Finish(tracer.WithError(err))
+	}()
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
 			return nil, grpc.Errorf(codes.InvalidArgument, "must specify either registry repo or S3 region/bucket/key-prefix")
@@ -435,10 +438,9 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 	if err != nil {
 		return nil, grpc.Errorf(codes.Internal, "error creating build in DB: %v", err)
 	}
-	setTagsForSpan(parentSpan, req.GetBuild(), req.GetPush(), id)
+	setTagsForSpan(queueSpan, req.GetBuild(), req.GetPush(), id)
 	var cf context.CancelFunc
-	ctx = tracer.ContextWithSpan(context.Background(), parentSpan)
-	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(ctx, id))
+	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, queueSpan))
 	wreq := workerRequest{
 		ctx: ctx,
 		req: req,

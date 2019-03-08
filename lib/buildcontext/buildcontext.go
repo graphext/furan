@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
 	"github.com/gocql/gocql"
 )
 
@@ -15,7 +17,8 @@ var ctxPushStartedkey ctxKeyType = "push_started"
 
 // NewBuildIDContext returns a context with the current build ID and time started
 // stored as values
-func NewBuildIDContext(ctx context.Context, id gocql.UUID) context.Context {
+func NewBuildIDContext(ctx context.Context, id gocql.UUID, span tracer.Span) context.Context {
+	ctx = tracer.ContextWithSpan(ctx, span)
 	return context.WithValue(context.WithValue(ctx, ctxIDKey, id), ctxStartedKey, time.Now().UTC())
 }
 
