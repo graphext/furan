@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
 	"github.com/dollarshaveclub/furan/lib/builder"
@@ -425,10 +427,25 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 // gRPC handlers
 func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ *lib.BuildRequestResponse, err error) {
 	resp := &lib.BuildRequestResponse{}
-	queueSpan, ctx := tracer.StartSpanFromContext(ctx, "queue_build")
+
+	parentSpan, ok := tracer.SpanFromContext(ctx)
+	if !ok {
+		gr.logf("Couldnt find span in start build context!!!\n")
+	} else {
+		gr.logf("Found span in start build context!!!! : %v\n", parentSpan.Context().SpanID())
+	}
+	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build")
 	defer func() {
-		queueSpan.Finish(tracer.WithError(err))
+		buildSpan.Finish(tracer.WithError(err))
 	}()
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		gr.logf("Metadata from grpc ctx was not ok!!!\n")
+	} else {
+		for key, val := range md {
+			gr.logf("metadata key: %v = %v\n", key, val)
+		}
+	}
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
 			return nil, grpc.Errorf(codes.InvalidArgument, "must specify either registry repo or S3 region/bucket/key-prefix")
@@ -438,9 +455,9 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 	if err != nil {
 		return nil, grpc.Errorf(codes.Internal, "error creating build in DB: %v", err)
 	}
-	setTagsForSpan(queueSpan, req.GetBuild(), req.GetPush(), id)
+	setTagsForSpan(buildSpan, req.GetBuild(), req.GetPush(), id)
 	var cf context.CancelFunc
-	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, queueSpan))
+	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, buildSpan))
 	wreq := workerRequest{
 		ctx: ctx,
 		req: req,
