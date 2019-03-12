@@ -20,7 +20,10 @@ import (
 	"google.golang.org/grpc/codes"
 
 	"google.golang.org/grpc"
-	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc.v12"
+	// Note (mk): while furan server uses grpc.v12, we have to use the grpc
+	// package here because Acyl is on a different version of gRPC that is not compatible
+	// with dd-trace-go/...grpc.v12
+	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 
 	consul "github.com/hashicorp/consul/api"
 	"golang.org/x/net/context"
