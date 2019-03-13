@@ -443,7 +443,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 		}
 	}
 
-	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build", tracer.ChildOf(sctx))
+	buildSpan := tracer.StartSpan("build", tracer.ChildOf(sctx))
 	defer func() {
 		buildSpan.Finish(tracer.WithError(err))
 	}()
