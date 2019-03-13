@@ -435,7 +435,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 		for key, val := range md {
 			gr.logf("metadata key: %v = %v\n", key, val)
 		}
-		sctx, err := tracer.Extract(MDCarrier(md))
+		sctx, err = tracer.Extract(MDCarrier(md))
 		if err != nil {
 			gr.logf("couldnt extract tracer metadata: %v", err)
 		} else {
@@ -443,7 +443,8 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 		}
 	}
 
-	buildSpan := tracer.StartSpan("build", tracer.ChildOf(sctx))
+	gr.logf("!!!metadata: %v", sctx)
+	buildSpan := tracer.StartSpan("starting_build", tracer.ChildOf(sctx))
 	defer func() {
 		buildSpan.Finish(tracer.WithError(err))
 	}()
