@@ -18,7 +18,6 @@ import (
 	"github.com/dollarshaveclub/furan/lib/errors"
 	"github.com/dollarshaveclub/furan/lib/kafka"
 	"github.com/dollarshaveclub/furan/lib/metrics"
-	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc.v12"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
 	"github.com/gocql/gocql"
@@ -208,9 +207,9 @@ func (gr *GrpcServer) ListenRPC(addr string, port uint) error {
 	}
 	// Note (mk): We should consider upgrading our go grpc package so that we
 	// can take advantage of stream interceptor
-	ui := grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(gr.serviceName))
-	s := grpc.NewServer(grpc.UnaryInterceptor(ui))
-	gr.s = s
+	// ui := grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(gr.serviceName))
+	s := grpc.NewServer()
+	// gr.s = s
 	lib.RegisterFuranExecutorServer(s, gr)
 	gr.logf("gRPC listening on: %v", addr)
 	return s.Serve(l)
