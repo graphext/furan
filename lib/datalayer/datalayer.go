@@ -9,7 +9,6 @@ import (
 	"github.com/dollarshaveclub/furan/lib/db"
 	"github.com/gocql/gocql"
 	"github.com/golang/protobuf/proto"
-	gocqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gocql/gocql"
 )
 
 // DataLayer describes an object that interacts with the persistent data store
@@ -37,8 +36,9 @@ func NewDBLayer(s *gocql.Session, sname string) *DBLayer {
 	return &DBLayer{s: s, sname: sname}
 }
 
-func (dl *DBLayer) wrapQuery(ctx context.Context, query *gocql.Query) *gocqltrace.Query {
-	return gocqltrace.WrapQuery(query, gocqltrace.WithServiceName(dl.sname)).WithContext(ctx)
+func (dl *DBLayer) wrapQuery(ctx context.Context, query *gocql.Query) *gocql.Query {
+	return query
+	//return gocqltrace.WrapQuery(query, gocqltrace.WithServiceName(dl.sname)).WithContext(ctx)
 }
 
 // CreateBuild inserts a new build into the DB returning the ID
