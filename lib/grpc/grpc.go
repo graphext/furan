@@ -303,7 +303,14 @@ func (gr *GrpcServer) syncBuild(ctx context.Context, req *lib.BuildRequest) (out
 		return
 	}
 	defer gr.abm.RemoveBuild(id)
+	parentSpan, ok := tracer.SpanFromContext(ctx)
+	if !ok {
+		gr.logf("mikey: could not find span in context")
+	} else {
+		gr.logf("mikey: found span in context!!! %v", parentSpan.Context())
+	}
 	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "build")
+	setTagsForSpan(buildSpan, req.GetBuild(), req.GetPush(), id)
 	gr.logf("syncBuild started: %v", id.String())
 	if err := gr.kvo.SetBuildRunning(id); err != nil {
 		gr.logf("error setting build as running in KV: %v", err)
@@ -448,6 +455,7 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 	defer func() {
 		buildSpan.Finish(tracer.WithError(err))
 	}()
+	ctx = tracer.ContextWithSpan(ctx, buildSpan)
 
 	if req.Push.Registry.Repo == "" {
 		if req.Push.S3.Bucket == "" || req.Push.S3.KeyPrefix == "" || req.Push.S3.Region == "" {
@@ -458,7 +466,6 @@ func (gr *GrpcServer) StartBuild(ctx context.Context, req *lib.BuildRequest) (_ 
 	if err != nil {
 		return nil, grpc.Errorf(codes.Internal, "error creating build in DB: %v", err)
 	}
-	setTagsForSpan(buildSpan, req.GetBuild(), req.GetPush(), id)
 	var cf context.CancelFunc
 	ctx, cf = context.WithCancel(buildcontext.NewBuildIDContext(context.Background(), id, buildSpan))
 	wreq := workerRequest{
