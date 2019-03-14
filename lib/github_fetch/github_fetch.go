@@ -48,7 +48,9 @@ func NewGitHubFetcher(token string) *GitHubFetcher {
 // GetCommitSHA returns the commit SHA for a reference
 func (gf *GitHubFetcher) GetCommitSHA(parentSpan tracer.Span, owner string, repo string, ref string) (csha string, err error) {
 	span := tracer.StartSpan("github_fetcher.get_commit_sha", tracer.ChildOf(parentSpan.Context()))
-	defer span.Finish(tracer.WithError(err))
+	defer func() {
+		span.Finish(tracer.WithError(err))
+	}()
 	ctx, cf := context.WithTimeout(context.Background(), githubDownloadTimeoutSecs*time.Second)
 	defer cf()
 	csha, _, err = gf.c.Repositories.GetCommitSHA1(ctx, owner, repo, ref, "")
@@ -59,7 +61,9 @@ func (gf *GitHubFetcher) GetCommitSHA(parentSpan tracer.Span, owner string, repo
 // an in-memory io.Reader.
 func (gf *GitHubFetcher) Get(parentSpan tracer.Span, owner string, repo string, ref string) (tarball io.Reader, err error) {
 	span := tracer.StartSpan("github_fetcher.get", tracer.ChildOf(parentSpan.Context()))
-	defer span.Finish(tracer.WithError(err))
+	defer func() {
+		span.Finish(tracer.WithError(err))
+	}()
 	opt := &github.RepositoryContentGetOptions{
 		Ref: ref,
 	}

@@ -39,6 +39,7 @@ var dogstatsdAddr string
 var defaultMetricsTags string
 var datadogServiceName string
 var datadogGrpcServiceName string
+var datadogCassandaServiceName string
 var datadogTracingAgentAddr string
 
 var logger *log.Logger
@@ -97,6 +98,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&datadogServiceName, "datadog-service-name", "w", "furan", "Datadog APM service name")
 	RootCmd.PersistentFlags().StringVarP(&datadogTracingAgentAddr, "datadog-tracing-agent-addr", "y", "127.0.0.1:8126", "Address of datadog tracing agent")
 	datadogGrpcServiceName = strings.Join([]string{datadogServiceName, "grpc"}, ".")
+	datadogCassandaServiceName = strings.Join([]string{datadogServiceName, "cassandra"}, ".")
 }
 
 func clierr(msg string, params ...interface{}) {
@@ -174,7 +176,7 @@ func setupDataLayer() {
 	if err != nil {
 		log.Fatalf("error creating DB session: %v", err)
 	}
-	dbConfig.Datalayer = datalayer.NewDBLayer(s)
+	dbConfig.Datalayer = datalayer.NewDBLayer(s, datadogCassandaServiceName)
 }
 
 func initDB() {
