@@ -408,6 +408,8 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 	output, err := ib.monitorDockerAction(ctx, ibr.Body, Build)
 	err2 := ib.saveOutput(ctx, Build, output) // we want to save output even if error
 	if err != nil {
+		var s3LogURL string
+		var saveLogError error
 		if buildcontext.IsCancelled(ctx.Done()) {
 			return imageid, errors.UserError(fmt.Sprintf("build was cancelled: %v", ctx.Err()))
 		}
@@ -415,18 +417,19 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		dockerBuildError := fmt.Errorf("build failed: %v, (%v) ", err, le.Message)
 		if le.EventError.ErrorType == lib.BuildEventError_FATAL && ib.s3errorcfg.PushToS3 {
 			ib.logf(ctx, "pushing failed build log to S3: %v", id.String())
-			loc, err3 := ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
-			if err3 != nil {
-				ib.logf(ctx, "error saving build events to S3: %v", err3)
+			s3LogURL, saveLogError = ib.saveEventLogToS3(ctx, req.Build.GithubRepo, req.Build.Ref, Build, output)
+			if saveLogError != nil {
+				ib.logf(ctx, "error saving build events to S3: %v", saveLogError)
 			}
-			ib.logf(ctx, "build failed: log saved to: %v", loc)
+			dockerBuildError = fmt.Errorf("build failed: %v, link to logs: %v", err, s3LogURL)
+			ib.logf(ctx, "build failed: log saved to: %v", s3LogURL)
 		}
 		var errorEvent dockerStreamEvent
 		if err := json.Unmarshal([]byte(le.Message), &errorEvent); err != nil {
 			ib.logger.Printf("error unmarshaling final build event: %v", err)
 		}
 		if errorEvent.ErrorDetail.Code != 0 {
-			dockerBuildError = errors.UserError(le.Message)
+			dockerBuildError = errors.UserError(fmt.Sprintf("last event message: %v, link to logs: %v", le.Message, s3LogURL))
 		}
 		return imageid, dockerBuildError
 	}
