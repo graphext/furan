@@ -14,6 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/docker/docker/builder/dockerignore"
+	"github.com/docker/docker/pkg/fileutils"
+
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
@@ -21,6 +24,7 @@ import (
 
 const (
 	githubDownloadTimeoutSecs = 300
+	dockerIgnorePath          = ".dockerignore"
 )
 
 // CodeFetcher represents an object capable of fetching code and returning a
@@ -69,6 +73,11 @@ func (gf *GitHubFetcher) Get(parentSpan tracer.Span, owner string, repo string, 
 	}
 	ctx, cf := context.WithTimeout(context.Background(), githubDownloadTimeoutSecs*time.Second)
 	defer cf()
+
+	excludes, err := gf.parseDockerIgnoreIfExists(ctx, owner, repo, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing %v file: %v", dockerIgnorePath, err)
+	}
 	url, resp, err := gf.c.Repositories.GetArchiveLink(ctx, owner, repo, github.Tarball, opt)
 	if err != nil {
 		return nil, fmt.Errorf("error getting archive link: %v", err)
@@ -79,10 +88,32 @@ func (gf *GitHubFetcher) Get(parentSpan tracer.Span, owner string, repo string, 
 	if url == nil {
 		return nil, fmt.Errorf("url is nil")
 	}
-	return gf.getArchive(url)
+	return gf.getArchive(url, excludes)
 }
 
-func (gf *GitHubFetcher) getArchive(archiveURL *url.URL) (io.Reader, error) {
+// parseDockerIgnoreIfExists will parse the docker ignore file if it exists in order to determine which patterns should be excluded.
+// The excluded patterns are intended to be used with a pattern matcher.
+func (gf *GitHubFetcher) parseDockerIgnoreIfExists(ctx context.Context, owner, repo string, opt *github.RepositoryContentGetOptions) ([]string, error) {
+	fc, _, resp, err := gf.c.Repositories.GetContents(ctx, owner, repo, dockerIgnorePath, opt)
+	if err != nil {
+		if resp.StatusCode == 404 {
+			// Not all repos will have dockerignore, just move along
+			return []string{}, nil
+		}
+		return nil, fmt.Errorf("error getting .dockerignore: %v", err)
+	}
+	content, err := fc.GetContent()
+	if err != nil {
+		return nil, fmt.Errorf("error getting content from %v, %v", dockerIgnorePath, err)
+	}
+	excludes, err := dockerignore.ReadAll(strings.NewReader(content))
+	if err != nil {
+		return nil, fmt.Errorf("error parsing %v, %v", dockerIgnorePath, err)
+	}
+	return excludes, nil
+}
+
+func (gf *GitHubFetcher) getArchive(archiveURL *url.URL, excludes []string) (io.Reader, error) {
 	hc := http.Client{
 		Timeout: githubDownloadTimeoutSecs * time.Second,
 	}
@@ -100,7 +131,7 @@ func (gf *GitHubFetcher) getArchive(archiveURL *url.URL) (io.Reader, error) {
 	if resp.StatusCode > 299 {
 		return nil, fmt.Errorf("archive http request failed: %v", resp.StatusCode)
 	}
-	return newTarPrefixStripper(resp.Body), nil
+	return newTarPrefixStripper(resp.Body, excludes), nil
 }
 
 func (gf *GitHubFetcher) debugWriteTar(contents []byte) {
@@ -123,14 +154,16 @@ type tarPrefixStripper struct {
 	pipeReader       *io.PipeReader
 	pipeWriter       *io.PipeWriter
 	strippingStarted bool
+	excludes         []string
 }
 
-func newTarPrefixStripper(tarball io.ReadCloser) io.Reader {
+func newTarPrefixStripper(tarball io.ReadCloser, excludes []string) io.Reader {
 	reader, writer := io.Pipe()
 	return &tarPrefixStripper{
 		tarball:    tarball,
 		pipeReader: reader,
 		pipeWriter: writer,
+		excludes:   excludes,
 	}
 }
 
@@ -140,6 +173,14 @@ func (t *tarPrefixStripper) Read(p []byte) (n int, err error) {
 		t.strippingStarted = true
 	}
 	return t.pipeReader.Read(p)
+}
+
+func (t *tarPrefixStripper) shouldSkipDockerIgnoredFile(h *tar.Header) (bool, error) {
+	match, err := fileutils.Matches(h.Name, t.excludes)
+	if err != nil {
+		return false, fmt.Errorf("error matching file name to docker ignored files: %v", h.Name)
+	}
+	return match, nil
 }
 
 func (t *tarPrefixStripper) processHeader(h *tar.Header) (bool, error) {
@@ -158,7 +199,7 @@ func (t *tarPrefixStripper) processHeader(h *tar.Header) (bool, error) {
 	}
 	h.Name = strings.Join(spath[1:len(spath)], "/")
 
-	return false, nil
+	return t.shouldSkipDockerIgnoredFile(h)
 }
 
 func (t *tarPrefixStripper) startStrippingPipe() {
