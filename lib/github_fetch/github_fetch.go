@@ -105,6 +105,9 @@ func (gf *GitHubFetcher) getArchive(archiveURL *url.URL) (io.Reader, error) {
 
 func (gf *GitHubFetcher) debugWriteTar(contents []byte) {
 	f, err := ioutil.TempFile("", "output-tar")
+	if err != nil {
+		log.Printf("debug: error creating TempFile: %v", err)
+	}
 	defer f.Close()
 	log.Printf("debug: saving tar output to %v", f.Name())
 	_, err = f.Write(contents)
