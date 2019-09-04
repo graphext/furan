@@ -14,12 +14,12 @@ spec:
   selector:
     matchLabels:
       app: {{ template "fullname" . }}
-      appsel: furan
+      appsel: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: {{ template "fullname" . }}
-        appsel: furan
+        appsel: {{ .Release.Name }}
     spec:
       {{ if .Values.vault.k8s_auth }}
       serviceAccountName: {{ .Values.vault.serviceaccount }}
@@ -118,10 +118,10 @@ spec:
         - name: CONSUL_HTTP_ADDR
           value: {{ .Values.consulAddr }}
         ports:
-        - containerPort: {{ .Values.service.httpInternalPort }}
-        - containerPort: {{ .Values.service.grpcInternalPort }}
-        - containerPort: {{ .Values.service.httpHealthcheckPort }}
-        - containerPort: {{ .Values.service.performanceProfilingPort }}
+        - containerPort: {{ .Values.furaninterface.service.httpInternalPort }}
+        - containerPort: {{ .Values.furaninterface.service.grpcInternalPort }}
+        - containerPort: {{ .Values.furaninterface.service.httpHealthcheckPort }}
+        - containerPort: {{ .Values.furaninterface.service.performanceProfilingPort }}
         volumeMounts:
         - name: docker-engine
           mountPath: /var/run
@@ -132,8 +132,8 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           httpGet:
-            path: {{ .Values.service.httpHealthcheckPath }}
-            port: {{ .Values.service.httpHealthcheckPort }}
+            path: {{ .Values.furaninterface.service.httpHealthcheckPath }}
+            port: {{ .Values.furaninterface.service.httpHealthcheckPort }}
         readinessProbe:
           initialDelaySeconds: 10
           timeoutSeconds: 1
@@ -141,7 +141,7 @@ spec:
           successThreshold: 1
           failureThreshold: 1
           httpGet:
-            path: {{ .Values.service.httpHealthcheckPath }}
-            port: {{ .Values.service.httpHealthcheckPort }}
+            path: {{ .Values.furaninterface.service.httpHealthcheckPath }}
+            port: {{ .Values.furaninterface.service.httpHealthcheckPort }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}

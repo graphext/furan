@@ -1,0 +1,15 @@
+enabled: true
+
+service:
+  name: furan
+  type: ClusterIP
+
+  httpInternalPort: 4000
+  httpExternalPort: 4000
+
+  grpcInternalPort: 4001
+  grpcExternalPort: 4001
+
+  httpHealthcheckPort: 4002
+  httpHealthcheckPath: /health
+  performanceProfilingPort: 4003

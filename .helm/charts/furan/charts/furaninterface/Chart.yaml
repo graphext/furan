@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Resources that other services depend on. Typically a combination of services, service accounts, and ingresses.
+name: furaninterface
+version: 0.1.0
