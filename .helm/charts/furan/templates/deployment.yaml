@@ -1,3 +1,4 @@
+{{ if .Values.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +22,7 @@ spec:
         app: {{ template "fullname" . }}
         appsel: furan
     spec:
-      {{ if .Values.vault.k8s_auth }}
+      {{ if .Values.vault.useK8sAuth }}
       serviceAccountName: {{ .Values.vault.serviceaccount }}
       {{ end }}
       dnsPolicy: {{ .Values.dnsPolicy }}
@@ -145,3 +146,4 @@ spec:
             port: {{ .Values.service.httpHealthcheckPort }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+{{ end }}
