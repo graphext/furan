@@ -4,7 +4,6 @@
 replicaCount: 8
 maxSurge: 25%
 maxUnavailable: 25%
-enabled: true
 image:
   repository: quay.io/dollarshaveclub/furan
   tag: master
