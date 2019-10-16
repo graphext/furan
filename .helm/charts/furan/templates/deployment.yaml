@@ -21,7 +21,7 @@ spec:
         app: {{ template "fullname" . }}
         appsel: furan
     spec:
-      {{ if .Values.vault.k8s_auth }}
+      {{ if .Values.vault.useK8sAuth }}
       serviceAccountName: {{ .Values.vault.serviceaccount }}
       {{ end }}
       dnsPolicy: {{ .Values.dnsPolicy }}
