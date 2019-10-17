@@ -70,22 +70,25 @@ func (dl *DBLayer) CreateBuild(ctx context.Context, req *lib.BuildRequest) (id g
 
 // GetBuildByID fetches a build object from the DB
 func (dl *DBLayer) GetBuildByID(ctx context.Context, id gocql.UUID) (bi *lib.BuildStatusResponse, err error) {
-	q := `SELECT request, state, finished, failed, cancelled, started, completed,
+	q := `SELECT state, finished, failed, cancelled, started, completed,
 	      duration FROM builds_by_id WHERE id = ?;`
-	var udt db.BuildRequestUDT
 	var state string
 	var started, completed time.Time
 	bi = &lib.BuildStatusResponse{
 		BuildId: id.String(),
 	}
 	query := dl.s.Query(q, id)
-	err = dl.wrapQuery(ctx, query).Scan(&udt, &state, &bi.Finished, &bi.Failed,
+	err = dl.wrapQuery(ctx, query).Scan(&state, &bi.Finished, &bi.Failed,
 		&bi.Cancelled, &started, &completed, &bi.Duration)
 	if err != nil {
 		return bi, err
 	}
 	bi.State = db.BuildStateFromString(state)
-	bi.BuildRequest = db.BuildRequestFromUDT(&udt)
+	// We don't actually use this data except for metrics for datadog APM; can ignore for now and send back empty request...
+	bi.BuildRequest = &lib.BuildRequest{
+		Build: &lib.BuildDefinition{},
+		Push: &lib.PushDefinition{},
+	}
 	bi.Started = started.Format(time.RFC3339)
 	bi.Completed = completed.Format(time.RFC3339)
 	return bi, nil
