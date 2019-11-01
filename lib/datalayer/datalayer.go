@@ -79,7 +79,8 @@ func (dl *DBLayer) GetBuildByID(ctx context.Context, id gocql.UUID) (bi *lib.Bui
 		BuildId: id.String(),
 	}
 	query := dl.s.Query(q, id)
-	err = dl.wrapQuery(ctx, query).Scan(&udt, &state, &bi.Finished, &bi.Failed,
+	err = dl.wrapQuery(ctx, query).Scan(&udt.GithubRepo, &udt.DockerfilePath, udt.Tags, udt.TagWithCommitSha, udt.Ref,
+		udt.PushRegistryRepo, udt.PushS3Region, udt.PushS3Bucket, udt.PushS3KeyPrefix, &state, &bi.Finished, &bi.Failed,
 		&bi.Cancelled, &started, &completed, &bi.Duration)
 	if err != nil {
 		return bi, err
