@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/dollarshaveclub/furan/lib/metrics"
 	"io"
 	"log"
 	"math/big"
@@ -54,10 +55,10 @@ func init() {
 	RootCmd.AddCommand(triggerCmd)
 }
 
-func rpcerr(err error, msg string, params ...interface{}) {
+func rpcerr(err error, msg string, mc metrics.MetricsCollector) {
 	code := grpc.Code(err)
-	msg = fmt.Sprintf(msg, params...)
-	clierr("rpc error: %v: %v: %v", msg, code.String(), err)
+	err = fmt.Errorf("rpc error: %v: %v: %v", msg, code.String(), err)
+	triggerFailed(err, mc)
 }
 
 type furanNode struct {
@@ -101,6 +102,22 @@ func getFuranServerFromConsul(svc string) (*furanNode, error) {
 	return &nodes[i], nil
 }
 
+func triggerFailed(err error, mc metrics.MetricsCollector) {
+	if (mc != nil) {
+		mc.TriggerFailed(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref)
+	}
+	fmt.Fprintf(os.Stderr, "trigger failed: %v", err)
+	os.Exit(1)
+}
+
+func triggerSucceeded(mc metrics.MetricsCollector) {
+	if (mc != nil) {
+		mc.TriggerSucceeded(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref)
+	}
+	os.Exit(0)
+}
+
+
 func trigger(cmd *cobra.Command, args []string) {
 	if remoteFuranHost == "" {
 		if !discoverFuranHost || consulFuranSvcName == "" {
@@ -128,11 +145,15 @@ func trigger(cmd *cobra.Command, args []string) {
 	defer conn.Close()
 
 	c := lib.NewFuranExecutorClient(conn)
+	mc, err := newDatadogCollector()
+	if err != nil {
+		log.Printf("unabled to create datadog collector: %v, continuing...", err)
+	}
 
 	log.Printf("triggering build")
 	resp, err := c.StartBuild(context.Background(), &cliBuildRequest)
 	if err != nil {
-		rpcerr(err, "StartBuild")
+		rpcerr(err, "StartBuild", mc)
 	}
 
 	if !monitorBuild {
@@ -147,7 +168,7 @@ func trigger(cmd *cobra.Command, args []string) {
 	log.Printf("monitoring build: %v", resp.BuildId)
 	stream, err := c.MonitorBuild(context.Background(), &mreq)
 	if err != nil {
-		rpcerr(err, "MonitorBuild")
+		rpcerr(err, "MonitorBuild", mc)
 	}
 
 	// In the event of a Kafka failure, instead of hanging indefinitely we concurrently
@@ -162,14 +183,14 @@ func trigger(cmd *cobra.Command, args []string) {
 			case <-ticker.C:
 				sresp, err := c.GetBuildStatus(context.Background(), &sreq)
 				if err != nil {
-					rpcerr(err, "GetBuildStatus")
+					rpcerr(err, "GetBuildStatus", mc)
 				}
 				log.Printf("build status: %v", sresp.State.String())
 				if sresp.Finished {
 					if sresp.Failed {
-						os.Exit(1)
+						triggerFailed	(fmt.Errorf("build failed: %v", err), mc)
 					}
-					os.Exit(0)
+					triggerSucceeded(mc)
 				}
 			}
 		}
@@ -181,11 +202,10 @@ func trigger(cmd *cobra.Command, args []string) {
 			if err == io.EOF {
 				break
 			}
-			rpcerr(err, "stream.Recv")
+			rpcerr(err, "stream.Recv", mc)
 		}
-		fmt.Println(event.Message)
 		if event.EventError.IsError {
-			os.Exit(1)
+			triggerFailed(fmt.Errorf("build failed: %v", event.Message), mc)
 		}
 	}
 }
