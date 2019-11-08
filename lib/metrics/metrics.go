@@ -19,6 +19,7 @@ type MetricsCollector interface {
 	BuildStarted(string, string) error
 	BuildFailed(string, string, bool) error
 	BuildSucceeded(string, string) error
+	TriggerCompleted(string, string, bool) error
 	KafkaProducerFailure() error
 	KafkaConsumerFailure() error
 	GCFailure() error
@@ -132,4 +133,10 @@ func (dc *DatadogCollector) DiskFree(bytes uint64) error {
 // FileNodesFree reports the number of file nodes (inodes) left on the Docker volume
 func (dc *DatadogCollector) FileNodesFree(nodes uint64) error {
 	return dc.c.Gauge("file_nodes_free", float64(nodes), nil, 1)
+}
+
+// TriggerCompleted reports the completion of the "trigger" subcommand
+func (dc *DatadogCollector) TriggerCompleted(repo, ref string, failed bool) error {
+	failedTag := fmt.Sprintf("failed=%v", failed)
+	return dc.c.Count("trigger.completed", 1, append(dc.tags(repo,ref), failedTag), 1)
 }

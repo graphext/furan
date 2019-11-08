@@ -227,3 +227,17 @@ func (mr *MockMetricsCollectorMockRecorder) Size(arg0, arg1, arg2, arg3, arg4 in
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Size", reflect.TypeOf((*MockMetricsCollector)(nil).Size), arg0, arg1, arg2, arg3, arg4)
 }
+
+// TriggerCompleted mocks base method
+func (m *MockMetricsCollector) TriggerCompleted(arg0, arg1 string, arg2 bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TriggerCompleted", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// TriggerCompleted indicates an expected call of TriggerCompleted
+func (mr *MockMetricsCollectorMockRecorder) TriggerCompleted(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TriggerCompleted", reflect.TypeOf((*MockMetricsCollector)(nil).TriggerCompleted), arg0, arg1, arg2)
+}

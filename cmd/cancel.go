@@ -62,7 +62,7 @@ func cancel(cmd *cobra.Command, args []string) {
 
 	resp, err := c.CancelBuild(context.Background(), cancelReq)
 	if err != nil {
-		rpcerr(err, "CancelBuild")
+		rpcerr(err, "CancelBuild", nil)
 	}
 	log.Printf("%v\n", *resp)
 }
