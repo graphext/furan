@@ -104,7 +104,7 @@ func getFuranServerFromConsul(svc string) (*furanNode, error) {
 
 func triggerFailed(err error, mc metrics.MetricsCollector) {
 	if (mc != nil) {
-		mc.TriggerFailed(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref)
+		mc.TriggerCompleted(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref, true)
 	}
 	fmt.Fprintf(os.Stderr, "trigger failed: %v", err)
 	os.Exit(1)
@@ -112,7 +112,7 @@ func triggerFailed(err error, mc metrics.MetricsCollector) {
 
 func triggerSucceeded(mc metrics.MetricsCollector) {
 	if (mc != nil) {
-		mc.TriggerSucceeded(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref)
+		mc.TriggerCompleted(cliBuildRequest.Build.GithubRepo, cliBuildRequest.Build.Ref, false)
 	}
 	os.Exit(0)
 }

@@ -228,30 +228,16 @@ func (mr *MockMetricsCollectorMockRecorder) Size(arg0, arg1, arg2, arg3, arg4 in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Size", reflect.TypeOf((*MockMetricsCollector)(nil).Size), arg0, arg1, arg2, arg3, arg4)
 }
 
-// TriggerFailed mocks base method
-func (m *MockMetricsCollector) TriggerFailed(arg0, arg1 string) error {
+// TriggerCompleted mocks base method
+func (m *MockMetricsCollector) TriggerCompleted(arg0, arg1 string, arg2 bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "TriggerFailed", arg0, arg1)
+	ret := m.ctrl.Call(m, "TriggerCompleted", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// TriggerFailed indicates an expected call of TriggerFailed
-func (mr *MockMetricsCollectorMockRecorder) TriggerFailed(arg0, arg1 interface{}) *gomock.Call {
+// TriggerCompleted indicates an expected call of TriggerCompleted
+func (mr *MockMetricsCollectorMockRecorder) TriggerCompleted(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TriggerFailed", reflect.TypeOf((*MockMetricsCollector)(nil).TriggerFailed), arg0, arg1)
-}
-
-// TriggerSucceeded mocks base method
-func (m *MockMetricsCollector) TriggerSucceeded(arg0, arg1 string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "TriggerSucceeded", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// TriggerSucceeded indicates an expected call of TriggerSucceeded
-func (mr *MockMetricsCollectorMockRecorder) TriggerSucceeded(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TriggerSucceeded", reflect.TypeOf((*MockMetricsCollector)(nil).TriggerSucceeded), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TriggerCompleted", reflect.TypeOf((*MockMetricsCollector)(nil).TriggerCompleted), arg0, arg1, arg2)
 }
