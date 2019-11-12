@@ -188,7 +188,7 @@ func trigger(cmd *cobra.Command, args []string) {
 				log.Printf("build status: %v", sresp.State.String())
 				if sresp.Finished {
 					if sresp.Failed {
-						triggerFailed	(fmt.Errorf("build failed: %v", err), mc)
+						triggerFailed(fmt.Errorf("build failed: %v", err), mc)
 					}
 					triggerSucceeded(mc)
 				}
@@ -204,6 +204,7 @@ func trigger(cmd *cobra.Command, args []string) {
 			}
 			rpcerr(err, "stream.Recv", mc)
 		}
+		fmt.Println(event.Message)
 		if event.EventError.IsError {
 			triggerFailed(fmt.Errorf("build failed: %v", event.Message), mc)
 		}
