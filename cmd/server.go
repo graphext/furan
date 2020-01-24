@@ -77,6 +77,7 @@ func init() {
 	serverCmd.PersistentFlags().StringVar(&serverConfig.DockerDiskPath, "docker-storage-path", "/var/lib/docker", "Path to Docker storage for monitoring free space (optional)")
 	serverCmd.PersistentFlags().StringVar(&consulConfig.Addr, "consul-addr", "127.0.0.1:8500", "Consul address (IP:port)")
 	serverCmd.PersistentFlags().StringVar(&consulConfig.KVPrefix, "consul-kv-prefix", "furan", "Consul KV prefix")
+	serverCmd.PersistentFlags().BoolVar(&serverConfig.DisableMetrics, "disable-metrics", false, "Disable Datadog metrics collection")
 	RootCmd.AddCommand(serverCmd)
 }
 
@@ -133,11 +134,16 @@ func server(cmd *cobra.Command, args []string) {
 
 	setupServerLogger()
 	setupDB(initializeDB)
-	mc, err := newDatadogCollector()
-	if err != nil {
-		log.Fatalf("error creating Datadog collector: %v", err)
+	var mc metrics.MetricsCollector
+	if serverConfig.DisableMetrics {
+		mc = &metrics.FakeCollector{}
+	} else {
+		mc, err = newDatadogCollector()
+		if err != nil {
+			log.Fatalf("error creating Datadog collector: %v", err)
+		}
+		startDatadogTracer()
 	}
-	startDatadogTracer()
 	setupKafka(mc)
 	certPath, keyPath := vault.WriteTLSCert(&vaultConfig, &serverConfig)
 	defer vault.RmTempFiles(certPath, keyPath)

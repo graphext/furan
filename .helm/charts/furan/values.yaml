@@ -24,6 +24,14 @@ service:
   httpHealthcheckPath: /health
   performanceProfilingPort: 4003
 
+metrics_disabled: true
+
+datadog:
+  overrideDefaultTags: 'env:dev'
+  statsdAddr: datadog.tools.svc.cluster.local:8125
+  tracingAgentAddr: datadog.tools.svc.cluster.local:8126
+  serviceName: furan-dqa
+
 db:
   useConsulDiscovery: false
   nodes: "scylladb"
