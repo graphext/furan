@@ -27,23 +27,23 @@ spec:
     {{ toYaml .Values.resources | indent 10 }}
           ports:
           - containerPort: {{ .Values.service.cqlInternalPort }}
+          command:
+            - /bin/bash
           args:
-          {{- if .Values.app.overprovisioned }}
-          - --overprovisioned
-          - {{ .Values.app.overprovisioned | quote }}
-          {{- end }}
+            - '-c'
+            - '/start-scylla; tail -f /dev/null'
           volumeMounts:
             - name: scylla-scripts
               mountPath: /k8s
           livenessProbe:
             exec:
-              command: ["/bin/sh", "-c", "/k8s/liveness-probe.sh"]
+              command: ["/bin/sh", "-c", ". /k8s/liveness-probe.sh"]
             initialDelaySeconds: 60
             failureThreshold: 2
             successThreshold: 1
           readinessProbe:
             exec:
-              command: ["/bin/sh", "-c", "/k8s/liveness-probe.sh"]
+              command: ["/bin/sh", "-c", ". /k8s/liveness-probe.sh"]
             failureThreshold: 2
             successThreshold: 1
             initialDelaySeconds: 10
