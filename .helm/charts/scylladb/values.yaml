@@ -10,7 +10,7 @@ app:
   overprovisioned: 1
 
 service:
-  name: cql
+  name: scylladb
   type: ClusterIP
   cqlInternalPort: 9042
   cqlExternalPort: 9042

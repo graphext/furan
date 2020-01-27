@@ -15,6 +15,9 @@ application:
     - "docker_resources.requests.cpu=20m"
     - "image.pullPolicy=IfNotPresent"
     - "metrics_disabled=true"
+    - "vault.addr=http://furan-vault:8200"
+    - "db.nodes=furan-scylladb"
+    - "kafkaBrokers=furan-kafka-furan:9092"
 
 dependencies:
   direct:
