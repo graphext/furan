@@ -4,7 +4,7 @@ metadata:
   {{ if .Values.env_name }}
   name: 'furan-{{ .Values.service.name }}'
   {{- else }}
-  name: {{ template "vault.fullname" . }}
+  name: {{ .Values.service.name }}
   {{- end }}
   labels:
     app: {{ template "vault.name" . }}

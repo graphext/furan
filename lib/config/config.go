@@ -84,7 +84,7 @@ type Serverconfig struct {
 	S3PresignTTL        uint
 	GCIntervalSecs      uint
 	DockerDiskPath      string
-	DisableMetrics bool
+	DisableMetrics 		bool
 }
 
 type Consulconfig struct {
