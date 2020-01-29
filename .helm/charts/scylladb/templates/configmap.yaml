@@ -5,4 +5,4 @@ metadata:
 data:
   liveness-probe.sh: |
     #!/bin/bash
-    cqlsh -e "CREATE KEYSPACE IF NOT EXISTS furan WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 1 } AND DURABLE_WRITES = true;"
+    CQLSH_HOST=$(hostname -i) cqlsh -e "CREATE KEYSPACE IF NOT EXISTS furan WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 1 } AND DURABLE_WRITES = true;"

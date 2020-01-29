@@ -41,7 +41,7 @@ spec:
       containers:
       - name: docker
         image: docker:17.06.1-ce-dind
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         args:
           - --storage-driver=overlay2
         securityContext:
@@ -93,6 +93,9 @@ spec:
         {{ end }}
           - --docker-storage-path
           - /opt/docker-storage
+        {{ if .Values.metrics_disabled }}
+          - '--disable-metrics'
+        {{ end }}
         {{ if .Values.datadog.statsdAddr }}
           - --dogstatsd-addr={{ .Values.datadog.statsdAddr }}
         {{ end }}

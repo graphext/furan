@@ -9,7 +9,7 @@ image:
   pullPolicy: Always
 
 service:
-  name: http
+  name: vault
   type: ClusterIP
   ports:
     internalPort: 8200

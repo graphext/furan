@@ -30,8 +30,9 @@ app:
 
 service:
   type: ClusterIP
-  # Note: This cannot be "kafka", otherwise, it will overwrite the env
-  # "KAFKA_PORT", which is used by the underyling docker container.
+  # Note: This cannot be "kafka", otherwise the service discovery env vars created automatically by k8s will collide
+  # with "KAFKA_PORT", which is used by the underyling docker container for configuration purposes.
+  # see https://kubernetes.io/docs/concepts/services-networking/service/#environment-variables
   name: kafka-furan
   internalPort: 9092
   externalPort: 9092

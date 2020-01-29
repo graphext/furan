@@ -35,6 +35,8 @@ type DatadogCollector struct {
 	defaultTags []string
 }
 
+var _ MetricsCollector = &DatadogCollector{}
+
 // NewDatadogCollector returns a DatadogCollector using dogstatsd at addr
 func NewDatadogCollector(addr string, defaultTags []string) (*DatadogCollector, error) {
 	c, err := statsd.New(addr)

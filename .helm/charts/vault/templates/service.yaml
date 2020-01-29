@@ -1,7 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "vault.fullname" . }}
+  {{ if .Values.env_name }}
+  name: 'furan-{{ .Values.service.name }}'
+  {{- else }}
+  name: {{ .Values.service.name }}
+  {{- end }}
   labels:
     app: {{ template "vault.name" . }}
     chart: {{ template "vault.chart" . }}

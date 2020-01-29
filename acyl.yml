@@ -8,6 +8,16 @@ application:
   chart_path: '.helm/charts/furan'
   chart_vars_repo_path: 'dollarshaveclub/helm-charts@master:releases/kube-uw2-110/furan/dqa.yaml'
   image: quay.io/dollarshaveclub/furan
+  value_overrides:
+    - "resources.requests.memory=100M"
+    - "resources.requests.cpu=10m"
+    - "docker_resources.requests.memory=200M"
+    - "docker_resources.requests.cpu=20m"
+    - "image.pullPolicy=IfNotPresent"
+    - "metrics_disabled=true"
+    - "vault.addr=http://furan-vault:8200"
+    - "db.nodes=furan-scylladb"
+    - "kafkaBrokers=furan-kafka-furan:9092"
 
 dependencies:
   direct:

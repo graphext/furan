@@ -24,19 +24,27 @@ service:
   httpHealthcheckPath: /health
   performanceProfilingPort: 4003
 
+metrics_disabled: true
+
+datadog:
+  overrideDefaultTags: 'env:dev'
+  statsdAddr: datadog.tools.svc.cluster.local:8125
+  tracingAgentAddr: datadog.tools.svc.cluster.local:8126
+  serviceName: furan-dqa
+
 db:
   useConsulDiscovery: false
-  nodes: "scylladb"
+  nodes: "furan-scylladb"
   initialize: true
-kafkaBrokers: "kafka-furan:9092"
+kafkaBrokers: "furan-kafka-furan:9092"
 
 vault:
   useTokenAuth: true
   useK8sAuth: false
-  addr: "http://vault:8200"
+  addr: "http://furan-vault:8200"
   token: "root"
 
-consulAddr: "consul:8500"
+consulAddr: "furan-consul:8500"
 
 ramdisk:
   enabled: false
