@@ -49,5 +49,8 @@ consulAddr: "furan-consul:8500"
 ramdisk:
   enabled: false
 
+dind:
+  mtu: 1500
+
 dnsPolicy: ClusterFirst
 dnsConfig: {}
