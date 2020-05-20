@@ -2,6 +2,10 @@
 
 package xray
 
+import (
+	"github.com/aws/aws-sdk-go/private/protocol"
+)
+
 const (
 
 	// ErrCodeInvalidRequestException for service response error code
@@ -10,9 +14,21 @@ const (
 	// The request is missing required parameters or has invalid parameters.
 	ErrCodeInvalidRequestException = "InvalidRequestException"
 
+	// ErrCodeRuleLimitExceededException for service response error code
+	// "RuleLimitExceededException".
+	//
+	// You have reached the maximum number of sampling rules.
+	ErrCodeRuleLimitExceededException = "RuleLimitExceededException"
+
 	// ErrCodeThrottledException for service response error code
 	// "ThrottledException".
 	//
 	// The request exceeds the maximum number of requests per second.
 	ErrCodeThrottledException = "ThrottledException"
 )
+
+var exceptionFromCode = map[string]func(protocol.ResponseMetadata) error{
+	"InvalidRequestException":    newErrorInvalidRequestException,
+	"RuleLimitExceededException": newErrorRuleLimitExceededException,
+	"ThrottledException":         newErrorThrottledException,
+}

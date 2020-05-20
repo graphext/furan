@@ -3,10 +3,11 @@ package s3crypto
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
+	"io"
 	"io/ioutil"
+	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 // AES GCM
@@ -46,28 +47,125 @@ func TestAES_GCM_NIST_gcmEncryptExtIV256_PTLen_408_Test_8(t *testing.T) {
 	aesgcmTest(t, iv, key, plaintext, expected, tag)
 }
 
+func TestGCMEncryptReader_SourceError(t *testing.T) {
+	gcm := &gcmEncryptReader{
+		encrypter: &mockCipherAEAD{},
+		src:       &mockSourceReader{err: fmt.Errorf("test read error")},
+	}
+
+	b := make([]byte, 10)
+	n, err := gcm.Read(b)
+	if err == nil {
+		t.Fatalf("expected error, but got nil")
+	} else if err != nil && !strings.Contains(err.Error(), "test read error") {
+		t.Fatalf("expected source read error, but got %v", err)
+	}
+
+	if n != 0 {
+		t.Errorf("expected number of read bytes to be zero, but got %v", n)
+	}
+}
+
+func TestGCMDecryptReader_SourceError(t *testing.T) {
+	gcm := &gcmDecryptReader{
+		decrypter: &mockCipherAEAD{},
+		src:       &mockSourceReader{err: fmt.Errorf("test read error")},
+	}
+
+	b := make([]byte, 10)
+	n, err := gcm.Read(b)
+	if err == nil {
+		t.Fatalf("expected error, but got nil")
+	} else if err != nil && !strings.Contains(err.Error(), "test read error") {
+		t.Fatalf("expected source read error, but got %v", err)
+	}
+
+	if n != 0 {
+		t.Errorf("expected number of read bytes to be zero, but got %v", n)
+	}
+}
+
+func TestGCMDecryptReader_DecrypterOpenError(t *testing.T) {
+	gcm := &gcmDecryptReader{
+		decrypter: &mockCipherAEAD{openError: fmt.Errorf("test open error")},
+		src:       &mockSourceReader{err: io.EOF},
+	}
+
+	b := make([]byte, 10)
+	n, err := gcm.Read(b)
+	if err == nil {
+		t.Fatalf("expected error, but got nil")
+	} else if err != nil && !strings.Contains(err.Error(), "test open error") {
+		t.Fatalf("expected source read error, but got %v", err)
+	}
+
+	if n != 0 {
+		t.Errorf("expected number of read bytes to be zero, but got %v", n)
+	}
+}
+
 func aesgcmTest(t *testing.T, iv, key, plaintext, expected, tag []byte) {
 	cd := CipherData{
 		Key: key,
 		IV:  iv,
 	}
 	gcm, err := newAESGCM(cd)
-	assert.NoError(t, err)
+	if err != nil {
+		t.Errorf("expected no error, but received %v", err)
+	}
+
 	cipherdata := gcm.Encrypt(bytes.NewReader(plaintext))
 
 	ciphertext, err := ioutil.ReadAll(cipherdata)
-	assert.NoError(t, err)
+	if err != nil {
+		t.Errorf("expected no error, but received %v", err)
+	}
 
 	// splitting tag and ciphertext
 	etag := ciphertext[len(ciphertext)-16:]
-	assert.Equal(t, etag, tag)
-	assert.Equal(t, len(ciphertext), len(expected))
-	assert.Equal(t, ciphertext, expected)
+	if !bytes.Equal(etag, tag) {
+		t.Errorf("expected tags to be equivalent")
+	}
+	if !bytes.Equal(ciphertext, expected) {
+		t.Errorf("expected ciphertext to be equivalent")
+	}
 
 	data := gcm.Decrypt(bytes.NewReader(ciphertext))
-	assert.NoError(t, err)
 	text, err := ioutil.ReadAll(data)
-	assert.NoError(t, err)
-	assert.Equal(t, len(text), len(plaintext))
-	assert.Equal(t, text, plaintext)
+	if err != nil {
+		t.Errorf("expected no error, but received %v", err)
+	}
+	if !bytes.Equal(plaintext, text) {
+		t.Errorf("expected ciphertext to be equivalent")
+	}
+}
+
+type mockSourceReader struct {
+	n   int
+	err error
+}
+
+func (b mockSourceReader) Read(p []byte) (n int, err error) {
+	return b.n, b.err
+}
+
+type mockCipherAEAD struct {
+	seal      []byte
+	openError error
+}
+
+func (m mockCipherAEAD) NonceSize() int {
+	panic("implement me")
+}
+
+func (m mockCipherAEAD) Overhead() int {
+	panic("implement me")
+}
+
+func (m mockCipherAEAD) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
+	return m.seal
+}
+
+func (m mockCipherAEAD) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, error) {
+	return []byte("mocked decrypt"), m.openError
 }

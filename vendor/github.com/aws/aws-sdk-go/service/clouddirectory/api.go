@@ -17,19 +17,18 @@ const opAddFacetToObject = "AddFacetToObject"
 
 // AddFacetToObjectRequest generates a "aws/request.Request" representing the
 // client's request for the AddFacetToObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AddFacetToObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AddFacetToObject method directly
-// instead.
+// See AddFacetToObject for more information on using the AddFacetToObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AddFacetToObjectRequest method.
 //    req, resp := client.AddFacetToObjectRequest(params)
@@ -39,7 +38,7 @@ const opAddFacetToObject = "AddFacetToObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AddFacetToObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AddFacetToObject
 func (c *CloudDirectory) AddFacetToObjectRequest(input *AddFacetToObjectInput) (req *request.Request, output *AddFacetToObjectOutput) {
 	op := &request.Operation{
 		Name:       opAddFacetToObject,
@@ -53,12 +52,14 @@ func (c *CloudDirectory) AddFacetToObjectRequest(input *AddFacetToObjectInput) (
 
 	output = &AddFacetToObjectOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // AddFacetToObject API operation for Amazon CloudDirectory.
 //
-// Adds a new Facet to an object.
+// Adds a new Facet to an object. An object can have more than one facet applied
+// on it.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -67,17 +68,17 @@ func (c *CloudDirectory) AddFacetToObjectRequest(input *AddFacetToObjectInput) (
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation AddFacetToObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -85,28 +86,28 @@ func (c *CloudDirectory) AddFacetToObjectRequest(input *AddFacetToObjectInput) (
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AddFacetToObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AddFacetToObject
 func (c *CloudDirectory) AddFacetToObject(input *AddFacetToObjectInput) (*AddFacetToObjectOutput, error) {
 	req, out := c.AddFacetToObjectRequest(input)
 	return out, req.Send()
@@ -132,19 +133,18 @@ const opApplySchema = "ApplySchema"
 
 // ApplySchemaRequest generates a "aws/request.Request" representing the
 // client's request for the ApplySchema operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ApplySchema for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ApplySchema method directly
-// instead.
+// See ApplySchema for more information on using the ApplySchema
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ApplySchemaRequest method.
 //    req, resp := client.ApplySchemaRequest(params)
@@ -154,7 +154,7 @@ const opApplySchema = "ApplySchema"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ApplySchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ApplySchema
 func (c *CloudDirectory) ApplySchemaRequest(input *ApplySchemaInput) (req *request.Request, output *ApplySchemaOutput) {
 	op := &request.Operation{
 		Name:       opApplySchema,
@@ -173,8 +173,8 @@ func (c *CloudDirectory) ApplySchemaRequest(input *ApplySchemaInput) (req *reque
 
 // ApplySchema API operation for Amazon CloudDirectory.
 //
-// Copies the input published schema into the Directory with the same name and
-// version as that of the published schema .
+// Copies the input published schema, at the specified version, into the Directory
+// with the same name and version as that of the published schema.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -183,17 +183,17 @@ func (c *CloudDirectory) ApplySchemaRequest(input *ApplySchemaInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ApplySchema for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -201,26 +201,30 @@ func (c *CloudDirectory) ApplySchemaRequest(input *ApplySchemaInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * SchemaAlreadyExistsException
+//   Indicates that a schema could not be created due to a naming conflict. Please
+//   select a different name and then try again.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidAttachmentException "InvalidAttachmentException"
-//   Indicates that an attempt to attach an object with the same link name or
-//   to apply a schema with the same name has occurred. Rename the link or the
-//   schema and then try again.
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ApplySchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ApplySchema
 func (c *CloudDirectory) ApplySchema(input *ApplySchemaInput) (*ApplySchemaOutput, error) {
 	req, out := c.ApplySchemaRequest(input)
 	return out, req.Send()
@@ -246,19 +250,18 @@ const opAttachObject = "AttachObject"
 
 // AttachObjectRequest generates a "aws/request.Request" representing the
 // client's request for the AttachObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AttachObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AttachObject method directly
-// instead.
+// See AttachObject for more information on using the AttachObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AttachObjectRequest method.
 //    req, resp := client.AttachObjectRequest(params)
@@ -268,7 +271,7 @@ const opAttachObject = "AttachObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachObject
 func (c *CloudDirectory) AttachObjectRequest(input *AttachObjectInput) (req *request.Request, output *AttachObjectOutput) {
 	op := &request.Operation{
 		Name:       opAttachObject,
@@ -301,17 +304,17 @@ func (c *CloudDirectory) AttachObjectRequest(input *AttachObjectInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation AttachObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -319,41 +322,41 @@ func (c *CloudDirectory) AttachObjectRequest(input *AttachObjectInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeLinkNameAlreadyInUseException "LinkNameAlreadyInUseException"
+//   * LinkNameAlreadyInUseException
 //   Indicates that a link could not be created due to a naming conflict. Choose
 //   a different name and then try again.
 //
-//   * ErrCodeInvalidAttachmentException "InvalidAttachmentException"
-//   Indicates that an attempt to attach an object with the same link name or
-//   to apply a schema with the same name has occurred. Rename the link or the
-//   schema and then try again.
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachObject
 func (c *CloudDirectory) AttachObject(input *AttachObjectInput) (*AttachObjectOutput, error) {
 	req, out := c.AttachObjectRequest(input)
 	return out, req.Send()
@@ -379,19 +382,18 @@ const opAttachPolicy = "AttachPolicy"
 
 // AttachPolicyRequest generates a "aws/request.Request" representing the
 // client's request for the AttachPolicy operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AttachPolicy for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AttachPolicy method directly
-// instead.
+// See AttachPolicy for more information on using the AttachPolicy
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AttachPolicyRequest method.
 //    req, resp := client.AttachPolicyRequest(params)
@@ -401,7 +403,7 @@ const opAttachPolicy = "AttachPolicy"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachPolicy
 func (c *CloudDirectory) AttachPolicyRequest(input *AttachPolicyInput) (req *request.Request, output *AttachPolicyOutput) {
 	op := &request.Operation{
 		Name:       opAttachPolicy,
@@ -415,6 +417,7 @@ func (c *CloudDirectory) AttachPolicyRequest(input *AttachPolicyInput) (req *req
 
 	output = &AttachPolicyOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -430,17 +433,17 @@ func (c *CloudDirectory) AttachPolicyRequest(input *AttachPolicyInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation AttachPolicy for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -448,30 +451,27 @@ func (c *CloudDirectory) AttachPolicyRequest(input *AttachPolicyInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeNotPolicyException "NotPolicyException"
+//   * NotPolicyException
 //   Indicates that the requested operation can only operate on policy objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachPolicy
 func (c *CloudDirectory) AttachPolicy(input *AttachPolicyInput) (*AttachPolicyOutput, error) {
 	req, out := c.AttachPolicyRequest(input)
 	return out, req.Send()
@@ -497,19 +497,18 @@ const opAttachToIndex = "AttachToIndex"
 
 // AttachToIndexRequest generates a "aws/request.Request" representing the
 // client's request for the AttachToIndex operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AttachToIndex for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AttachToIndex method directly
-// instead.
+// See AttachToIndex for more information on using the AttachToIndex
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AttachToIndexRequest method.
 //    req, resp := client.AttachToIndexRequest(params)
@@ -519,7 +518,7 @@ const opAttachToIndex = "AttachToIndex"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachToIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachToIndex
 func (c *CloudDirectory) AttachToIndexRequest(input *AttachToIndexInput) (req *request.Request, output *AttachToIndexOutput) {
 	op := &request.Operation{
 		Name:       opAttachToIndex,
@@ -547,17 +546,17 @@ func (c *CloudDirectory) AttachToIndexRequest(input *AttachToIndexInput) (req *r
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation AttachToIndex for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -565,35 +564,40 @@ func (c *CloudDirectory) AttachToIndexRequest(input *AttachToIndexInput) (req *r
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeLinkNameAlreadyInUseException "LinkNameAlreadyInUseException"
+//   * LinkNameAlreadyInUseException
 //   Indicates that a link could not be created due to a naming conflict. Choose
 //   a different name and then try again.
 //
-//   * ErrCodeIndexedAttributeMissingException "IndexedAttributeMissingException"
+//   * IndexedAttributeMissingException
 //   An object has been attempted to be attached to an object that does not have
 //   the appropriate attribute value.
 //
-//   * ErrCodeNotIndexException "NotIndexException"
+//   * NotIndexException
 //   Indicates that the requested operation can only operate on index objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachToIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachToIndex
 func (c *CloudDirectory) AttachToIndex(input *AttachToIndexInput) (*AttachToIndexOutput, error) {
 	req, out := c.AttachToIndexRequest(input)
 	return out, req.Send()
@@ -619,19 +623,18 @@ const opAttachTypedLink = "AttachTypedLink"
 
 // AttachTypedLinkRequest generates a "aws/request.Request" representing the
 // client's request for the AttachTypedLink operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AttachTypedLink for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AttachTypedLink method directly
-// instead.
+// See AttachTypedLink for more information on using the AttachTypedLink
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AttachTypedLinkRequest method.
 //    req, resp := client.AttachTypedLinkRequest(params)
@@ -641,7 +644,7 @@ const opAttachTypedLink = "AttachTypedLink"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachTypedLink
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachTypedLink
 func (c *CloudDirectory) AttachTypedLinkRequest(input *AttachTypedLinkInput) (req *request.Request, output *AttachTypedLinkOutput) {
 	op := &request.Operation{
 		Name:       opAttachTypedLink,
@@ -661,7 +664,7 @@ func (c *CloudDirectory) AttachTypedLinkRequest(input *AttachTypedLinkInput) (re
 // AttachTypedLink API operation for Amazon CloudDirectory.
 //
 // Attaches a typed link to a specified source and target object. For more information,
-// see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -670,17 +673,17 @@ func (c *CloudDirectory) AttachTypedLinkRequest(input *AttachTypedLinkInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation AttachTypedLink for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -688,34 +691,37 @@ func (c *CloudDirectory) AttachTypedLinkRequest(input *AttachTypedLinkInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidAttachmentException "InvalidAttachmentException"
-//   Indicates that an attempt to attach an object with the same link name or
-//   to apply a schema with the same name has occurred. Rename the link or the
-//   schema and then try again.
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachTypedLink
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/AttachTypedLink
 func (c *CloudDirectory) AttachTypedLink(input *AttachTypedLinkInput) (*AttachTypedLinkOutput, error) {
 	req, out := c.AttachTypedLinkRequest(input)
 	return out, req.Send()
@@ -741,19 +747,18 @@ const opBatchRead = "BatchRead"
 
 // BatchReadRequest generates a "aws/request.Request" representing the
 // client's request for the BatchRead operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See BatchRead for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the BatchRead method directly
-// instead.
+// See BatchRead for more information on using the BatchRead
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the BatchReadRequest method.
 //    req, resp := client.BatchReadRequest(params)
@@ -763,7 +768,7 @@ const opBatchRead = "BatchRead"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchRead
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/BatchRead
 func (c *CloudDirectory) BatchReadRequest(input *BatchReadInput) (req *request.Request, output *BatchReadOutput) {
 	op := &request.Operation{
 		Name:       opBatchRead,
@@ -791,17 +796,17 @@ func (c *CloudDirectory) BatchReadRequest(input *BatchReadInput) (req *request.R
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation BatchRead for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -809,21 +814,21 @@ func (c *CloudDirectory) BatchReadRequest(input *BatchReadInput) (req *request.R
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchRead
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/BatchRead
 func (c *CloudDirectory) BatchRead(input *BatchReadInput) (*BatchReadOutput, error) {
 	req, out := c.BatchReadRequest(input)
 	return out, req.Send()
@@ -849,19 +854,18 @@ const opBatchWrite = "BatchWrite"
 
 // BatchWriteRequest generates a "aws/request.Request" representing the
 // client's request for the BatchWrite operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See BatchWrite for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the BatchWrite method directly
-// instead.
+// See BatchWrite for more information on using the BatchWrite
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the BatchWriteRequest method.
 //    req, resp := client.BatchWriteRequest(params)
@@ -871,7 +875,7 @@ const opBatchWrite = "BatchWrite"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWrite
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/BatchWrite
 func (c *CloudDirectory) BatchWriteRequest(input *BatchWriteInput) (req *request.Request, output *BatchWriteOutput) {
 	op := &request.Operation{
 		Name:       opBatchWrite,
@@ -891,7 +895,7 @@ func (c *CloudDirectory) BatchWriteRequest(input *BatchWriteInput) (req *request
 // BatchWrite API operation for Amazon CloudDirectory.
 //
 // Performs all the write operations in a batch. Either all the operations succeed
-// or none. Batch writes supports only object-related operations.
+// or none.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -900,17 +904,17 @@ func (c *CloudDirectory) BatchWriteRequest(input *BatchWriteInput) (req *request
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation BatchWrite for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -918,24 +922,24 @@ func (c *CloudDirectory) BatchWriteRequest(input *BatchWriteInput) (req *request
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeBatchWriteException "BatchWriteException"
+//   * BatchWriteException
 //   A BatchWrite exception has occurred.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWrite
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/BatchWrite
 func (c *CloudDirectory) BatchWrite(input *BatchWriteInput) (*BatchWriteOutput, error) {
 	req, out := c.BatchWriteRequest(input)
 	return out, req.Send()
@@ -961,19 +965,18 @@ const opCreateDirectory = "CreateDirectory"
 
 // CreateDirectoryRequest generates a "aws/request.Request" representing the
 // client's request for the CreateDirectory operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateDirectory for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateDirectory method directly
-// instead.
+// See CreateDirectory for more information on using the CreateDirectory
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateDirectoryRequest method.
 //    req, resp := client.CreateDirectoryRequest(params)
@@ -983,7 +986,7 @@ const opCreateDirectory = "CreateDirectory"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateDirectory
 func (c *CloudDirectory) CreateDirectoryRequest(input *CreateDirectoryInput) (req *request.Request, output *CreateDirectoryOutput) {
 	op := &request.Operation{
 		Name:       opCreateDirectory,
@@ -1005,6 +1008,10 @@ func (c *CloudDirectory) CreateDirectoryRequest(input *CreateDirectoryInput) (re
 // Creates a Directory by copying the published schema into the directory. A
 // directory cannot be created without a schema.
 //
+// You can also quickly create a directory using a managed schema, called the
+// QuickStartSchema. For more information, see Managed Schema (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_managed.html)
+// in the Amazon Cloud Directory Developer Guide.
+//
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
 // the error.
@@ -1012,17 +1019,17 @@ func (c *CloudDirectory) CreateDirectoryRequest(input *CreateDirectoryInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateDirectory for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1030,28 +1037,25 @@ func (c *CloudDirectory) CreateDirectoryRequest(input *CreateDirectoryInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryAlreadyExistsException "DirectoryAlreadyExistsException"
+//   * DirectoryAlreadyExistsException
 //   Indicates that a Directory could not be created due to a naming conflict.
 //   Choose a different name and try again.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateDirectory
 func (c *CloudDirectory) CreateDirectory(input *CreateDirectoryInput) (*CreateDirectoryOutput, error) {
 	req, out := c.CreateDirectoryRequest(input)
 	return out, req.Send()
@@ -1077,19 +1081,18 @@ const opCreateFacet = "CreateFacet"
 
 // CreateFacetRequest generates a "aws/request.Request" representing the
 // client's request for the CreateFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateFacet method directly
-// instead.
+// See CreateFacet for more information on using the CreateFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateFacetRequest method.
 //    req, resp := client.CreateFacetRequest(params)
@@ -1099,7 +1102,7 @@ const opCreateFacet = "CreateFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateFacet
 func (c *CloudDirectory) CreateFacetRequest(input *CreateFacetInput) (req *request.Request, output *CreateFacetOutput) {
 	op := &request.Operation{
 		Name:       opCreateFacet,
@@ -1113,6 +1116,7 @@ func (c *CloudDirectory) CreateFacetRequest(input *CreateFacetInput) (req *reque
 
 	output = &CreateFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1128,17 +1132,17 @@ func (c *CloudDirectory) CreateFacetRequest(input *CreateFacetInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1146,31 +1150,31 @@ func (c *CloudDirectory) CreateFacetRequest(input *CreateFacetInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetAlreadyExistsException "FacetAlreadyExistsException"
+//   * FacetAlreadyExistsException
 //   A facet with the same name already exists.
 //
-//   * ErrCodeInvalidRuleException "InvalidRuleException"
+//   * InvalidRuleException
 //   Occurs when any of the rule parameter keys or values are invalid.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateFacet
 func (c *CloudDirectory) CreateFacet(input *CreateFacetInput) (*CreateFacetOutput, error) {
 	req, out := c.CreateFacetRequest(input)
 	return out, req.Send()
@@ -1196,19 +1200,18 @@ const opCreateIndex = "CreateIndex"
 
 // CreateIndexRequest generates a "aws/request.Request" representing the
 // client's request for the CreateIndex operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateIndex for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateIndex method directly
-// instead.
+// See CreateIndex for more information on using the CreateIndex
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateIndexRequest method.
 //    req, resp := client.CreateIndexRequest(params)
@@ -1218,7 +1221,7 @@ const opCreateIndex = "CreateIndex"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateIndex
 func (c *CloudDirectory) CreateIndexRequest(input *CreateIndexInput) (req *request.Request, output *CreateIndexOutput) {
 	op := &request.Operation{
 		Name:       opCreateIndex,
@@ -1237,7 +1240,7 @@ func (c *CloudDirectory) CreateIndexRequest(input *CreateIndexInput) (req *reque
 
 // CreateIndex API operation for Amazon CloudDirectory.
 //
-// Creates an index object. See Indexing (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_indexing.html)
+// Creates an index object. See Indexing and search (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/indexing_search.html)
 // for more information.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -1247,17 +1250,17 @@ func (c *CloudDirectory) CreateIndexRequest(input *CreateIndexInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateIndex for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1265,35 +1268,35 @@ func (c *CloudDirectory) CreateIndexRequest(input *CreateIndexInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-//   * ErrCodeLinkNameAlreadyInUseException "LinkNameAlreadyInUseException"
+//   * LinkNameAlreadyInUseException
 //   Indicates that a link could not be created due to a naming conflict. Choose
 //   a different name and then try again.
 //
-//   * ErrCodeUnsupportedIndexTypeException "UnsupportedIndexTypeException"
+//   * UnsupportedIndexTypeException
 //   Indicates that the requested index type is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateIndex
 func (c *CloudDirectory) CreateIndex(input *CreateIndexInput) (*CreateIndexOutput, error) {
 	req, out := c.CreateIndexRequest(input)
 	return out, req.Send()
@@ -1319,19 +1322,18 @@ const opCreateObject = "CreateObject"
 
 // CreateObjectRequest generates a "aws/request.Request" representing the
 // client's request for the CreateObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateObject method directly
-// instead.
+// See CreateObject for more information on using the CreateObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateObjectRequest method.
 //    req, resp := client.CreateObjectRequest(params)
@@ -1341,7 +1343,7 @@ const opCreateObject = "CreateObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateObject
 func (c *CloudDirectory) CreateObjectRequest(input *CreateObjectInput) (req *request.Request, output *CreateObjectOutput) {
 	op := &request.Operation{
 		Name:       opCreateObject,
@@ -1372,17 +1374,17 @@ func (c *CloudDirectory) CreateObjectRequest(input *CreateObjectInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1390,38 +1392,35 @@ func (c *CloudDirectory) CreateObjectRequest(input *CreateObjectInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-//   * ErrCodeLinkNameAlreadyInUseException "LinkNameAlreadyInUseException"
+//   * LinkNameAlreadyInUseException
 //   Indicates that a link could not be created due to a naming conflict. Choose
 //   a different name and then try again.
 //
-//   * ErrCodeUnsupportedIndexTypeException "UnsupportedIndexTypeException"
+//   * UnsupportedIndexTypeException
 //   Indicates that the requested index type is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateObject
 func (c *CloudDirectory) CreateObject(input *CreateObjectInput) (*CreateObjectOutput, error) {
 	req, out := c.CreateObjectRequest(input)
 	return out, req.Send()
@@ -1447,19 +1446,18 @@ const opCreateSchema = "CreateSchema"
 
 // CreateSchemaRequest generates a "aws/request.Request" representing the
 // client's request for the CreateSchema operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateSchema for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateSchema method directly
-// instead.
+// See CreateSchema for more information on using the CreateSchema
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateSchemaRequest method.
 //    req, resp := client.CreateSchemaRequest(params)
@@ -1469,7 +1467,7 @@ const opCreateSchema = "CreateSchema"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateSchema
 func (c *CloudDirectory) CreateSchemaRequest(input *CreateSchemaInput) (req *request.Request, output *CreateSchemaOutput) {
 	op := &request.Operation{
 		Name:       opCreateSchema,
@@ -1509,17 +1507,17 @@ func (c *CloudDirectory) CreateSchemaRequest(input *CreateSchemaInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateSchema for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1527,25 +1525,25 @@ func (c *CloudDirectory) CreateSchemaRequest(input *CreateSchemaInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeSchemaAlreadyExistsException "SchemaAlreadyExistsException"
+//   * SchemaAlreadyExistsException
 //   Indicates that a schema could not be created due to a naming conflict. Please
 //   select a different name and then try again.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateSchema
 func (c *CloudDirectory) CreateSchema(input *CreateSchemaInput) (*CreateSchemaOutput, error) {
 	req, out := c.CreateSchemaRequest(input)
 	return out, req.Send()
@@ -1571,19 +1569,18 @@ const opCreateTypedLinkFacet = "CreateTypedLinkFacet"
 
 // CreateTypedLinkFacetRequest generates a "aws/request.Request" representing the
 // client's request for the CreateTypedLinkFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateTypedLinkFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateTypedLinkFacet method directly
-// instead.
+// See CreateTypedLinkFacet for more information on using the CreateTypedLinkFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateTypedLinkFacetRequest method.
 //    req, resp := client.CreateTypedLinkFacetRequest(params)
@@ -1593,7 +1590,7 @@ const opCreateTypedLinkFacet = "CreateTypedLinkFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateTypedLinkFacet
 func (c *CloudDirectory) CreateTypedLinkFacetRequest(input *CreateTypedLinkFacetInput) (req *request.Request, output *CreateTypedLinkFacetOutput) {
 	op := &request.Operation{
 		Name:       opCreateTypedLinkFacet,
@@ -1607,12 +1604,13 @@ func (c *CloudDirectory) CreateTypedLinkFacetRequest(input *CreateTypedLinkFacet
 
 	output = &CreateTypedLinkFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // CreateTypedLinkFacet API operation for Amazon CloudDirectory.
 //
-// Creates a TypedLinkFacet. For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// Creates a TypedLinkFacet. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1621,17 +1619,17 @@ func (c *CloudDirectory) CreateTypedLinkFacetRequest(input *CreateTypedLinkFacet
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation CreateTypedLinkFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1639,31 +1637,31 @@ func (c *CloudDirectory) CreateTypedLinkFacetRequest(input *CreateTypedLinkFacet
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetAlreadyExistsException "FacetAlreadyExistsException"
+//   * FacetAlreadyExistsException
 //   A facet with the same name already exists.
 //
-//   * ErrCodeInvalidRuleException "InvalidRuleException"
+//   * InvalidRuleException
 //   Occurs when any of the rule parameter keys or values are invalid.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/CreateTypedLinkFacet
 func (c *CloudDirectory) CreateTypedLinkFacet(input *CreateTypedLinkFacetInput) (*CreateTypedLinkFacetOutput, error) {
 	req, out := c.CreateTypedLinkFacetRequest(input)
 	return out, req.Send()
@@ -1689,19 +1687,18 @@ const opDeleteDirectory = "DeleteDirectory"
 
 // DeleteDirectoryRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteDirectory operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteDirectory for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteDirectory method directly
-// instead.
+// See DeleteDirectory for more information on using the DeleteDirectory
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteDirectoryRequest method.
 //    req, resp := client.DeleteDirectoryRequest(params)
@@ -1711,7 +1708,7 @@ const opDeleteDirectory = "DeleteDirectory"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteDirectory
 func (c *CloudDirectory) DeleteDirectoryRequest(input *DeleteDirectoryInput) (req *request.Request, output *DeleteDirectoryOutput) {
 	op := &request.Operation{
 		Name:       opDeleteDirectory,
@@ -1740,35 +1737,35 @@ func (c *CloudDirectory) DeleteDirectoryRequest(input *DeleteDirectoryInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DeleteDirectory for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeDirectoryNotDisabledException "DirectoryNotDisabledException"
+//   * DirectoryNotDisabledException
 //   An operation can only operate on a disabled directory.
 //
-//   * ErrCodeInternalServiceException "InternalServiceException"
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryDeletedException "DirectoryDeletedException"
+//   * DirectoryDeletedException
 //   A directory that has been deleted and to which access has been attempted.
 //   Note: The requested resource will eventually cease to exist.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1776,10 +1773,10 @@ func (c *CloudDirectory) DeleteDirectoryRequest(input *DeleteDirectoryInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteDirectory
 func (c *CloudDirectory) DeleteDirectory(input *DeleteDirectoryInput) (*DeleteDirectoryOutput, error) {
 	req, out := c.DeleteDirectoryRequest(input)
 	return out, req.Send()
@@ -1805,19 +1802,18 @@ const opDeleteFacet = "DeleteFacet"
 
 // DeleteFacetRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteFacet method directly
-// instead.
+// See DeleteFacet for more information on using the DeleteFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteFacetRequest method.
 //    req, resp := client.DeleteFacetRequest(params)
@@ -1827,7 +1823,7 @@ const opDeleteFacet = "DeleteFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteFacet
 func (c *CloudDirectory) DeleteFacetRequest(input *DeleteFacetInput) (req *request.Request, output *DeleteFacetOutput) {
 	op := &request.Operation{
 		Name:       opDeleteFacet,
@@ -1841,6 +1837,7 @@ func (c *CloudDirectory) DeleteFacetRequest(input *DeleteFacetInput) (req *reque
 
 	output = &DeleteFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1856,17 +1853,17 @@ func (c *CloudDirectory) DeleteFacetRequest(input *DeleteFacetInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DeleteFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1874,28 +1871,28 @@ func (c *CloudDirectory) DeleteFacetRequest(input *DeleteFacetInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-//   * ErrCodeFacetInUseException "FacetInUseException"
+//   * FacetInUseException
 //   Occurs when deleting a facet that contains an attribute that is a target
 //   to an attribute reference in a different facet.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteFacet
 func (c *CloudDirectory) DeleteFacet(input *DeleteFacetInput) (*DeleteFacetOutput, error) {
 	req, out := c.DeleteFacetRequest(input)
 	return out, req.Send()
@@ -1921,19 +1918,18 @@ const opDeleteObject = "DeleteObject"
 
 // DeleteObjectRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteObject method directly
-// instead.
+// See DeleteObject for more information on using the DeleteObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteObjectRequest method.
 //    req, resp := client.DeleteObjectRequest(params)
@@ -1943,7 +1939,7 @@ const opDeleteObject = "DeleteObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteObject
 func (c *CloudDirectory) DeleteObjectRequest(input *DeleteObjectInput) (req *request.Request, output *DeleteObjectOutput) {
 	op := &request.Operation{
 		Name:       opDeleteObject,
@@ -1957,13 +1953,16 @@ func (c *CloudDirectory) DeleteObjectRequest(input *DeleteObjectInput) (req *req
 
 	output = &DeleteObjectOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // DeleteObject API operation for Amazon CloudDirectory.
 //
 // Deletes an object and its associated attributes. Only objects with no children
-// and no parents can be deleted.
+// and no parents can be deleted. The maximum number of attributes that can
+// be deleted during an object deletion is 30. For more information, see Amazon
+// Cloud Directory Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1972,17 +1971,17 @@ func (c *CloudDirectory) DeleteObjectRequest(input *DeleteObjectInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DeleteObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -1990,28 +1989,28 @@ func (c *CloudDirectory) DeleteObjectRequest(input *DeleteObjectInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeObjectNotDetachedException "ObjectNotDetachedException"
+//   * ObjectNotDetachedException
 //   Indicates that the requested operation cannot be completed because the object
 //   has not been detached from the tree.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteObject
 func (c *CloudDirectory) DeleteObject(input *DeleteObjectInput) (*DeleteObjectOutput, error) {
 	req, out := c.DeleteObjectRequest(input)
 	return out, req.Send()
@@ -2037,19 +2036,18 @@ const opDeleteSchema = "DeleteSchema"
 
 // DeleteSchemaRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteSchema operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteSchema for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteSchema method directly
-// instead.
+// See DeleteSchema for more information on using the DeleteSchema
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteSchemaRequest method.
 //    req, resp := client.DeleteSchemaRequest(params)
@@ -2059,7 +2057,7 @@ const opDeleteSchema = "DeleteSchema"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteSchema
 func (c *CloudDirectory) DeleteSchemaRequest(input *DeleteSchemaInput) (req *request.Request, output *DeleteSchemaOutput) {
 	op := &request.Operation{
 		Name:       opDeleteSchema,
@@ -2088,17 +2086,17 @@ func (c *CloudDirectory) DeleteSchemaRequest(input *DeleteSchemaInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DeleteSchema for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2106,25 +2104,25 @@ func (c *CloudDirectory) DeleteSchemaRequest(input *DeleteSchemaInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeStillContainsLinksException "StillContainsLinksException"
+//   * StillContainsLinksException
 //   The object could not be deleted because links still exist. Remove the links
 //   and then try the operation again.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteSchema
 func (c *CloudDirectory) DeleteSchema(input *DeleteSchemaInput) (*DeleteSchemaOutput, error) {
 	req, out := c.DeleteSchemaRequest(input)
 	return out, req.Send()
@@ -2150,19 +2148,18 @@ const opDeleteTypedLinkFacet = "DeleteTypedLinkFacet"
 
 // DeleteTypedLinkFacetRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteTypedLinkFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteTypedLinkFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteTypedLinkFacet method directly
-// instead.
+// See DeleteTypedLinkFacet for more information on using the DeleteTypedLinkFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteTypedLinkFacetRequest method.
 //    req, resp := client.DeleteTypedLinkFacetRequest(params)
@@ -2172,7 +2169,7 @@ const opDeleteTypedLinkFacet = "DeleteTypedLinkFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteTypedLinkFacet
 func (c *CloudDirectory) DeleteTypedLinkFacetRequest(input *DeleteTypedLinkFacetInput) (req *request.Request, output *DeleteTypedLinkFacetOutput) {
 	op := &request.Operation{
 		Name:       opDeleteTypedLinkFacet,
@@ -2186,12 +2183,13 @@ func (c *CloudDirectory) DeleteTypedLinkFacetRequest(input *DeleteTypedLinkFacet
 
 	output = &DeleteTypedLinkFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // DeleteTypedLinkFacet API operation for Amazon CloudDirectory.
 //
-// Deletes a TypedLinkFacet. For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// Deletes a TypedLinkFacet. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -2200,17 +2198,17 @@ func (c *CloudDirectory) DeleteTypedLinkFacetRequest(input *DeleteTypedLinkFacet
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DeleteTypedLinkFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2218,24 +2216,24 @@ func (c *CloudDirectory) DeleteTypedLinkFacetRequest(input *DeleteTypedLinkFacet
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DeleteTypedLinkFacet
 func (c *CloudDirectory) DeleteTypedLinkFacet(input *DeleteTypedLinkFacetInput) (*DeleteTypedLinkFacetOutput, error) {
 	req, out := c.DeleteTypedLinkFacetRequest(input)
 	return out, req.Send()
@@ -2261,19 +2259,18 @@ const opDetachFromIndex = "DetachFromIndex"
 
 // DetachFromIndexRequest generates a "aws/request.Request" representing the
 // client's request for the DetachFromIndex operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DetachFromIndex for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DetachFromIndex method directly
-// instead.
+// See DetachFromIndex for more information on using the DetachFromIndex
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DetachFromIndexRequest method.
 //    req, resp := client.DetachFromIndexRequest(params)
@@ -2283,7 +2280,7 @@ const opDetachFromIndex = "DetachFromIndex"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachFromIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachFromIndex
 func (c *CloudDirectory) DetachFromIndexRequest(input *DetachFromIndexInput) (req *request.Request, output *DetachFromIndexOutput) {
 	op := &request.Operation{
 		Name:       opDetachFromIndex,
@@ -2311,17 +2308,17 @@ func (c *CloudDirectory) DetachFromIndexRequest(input *DetachFromIndexInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DetachFromIndex for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2329,30 +2326,30 @@ func (c *CloudDirectory) DetachFromIndexRequest(input *DetachFromIndexInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeObjectAlreadyDetachedException "ObjectAlreadyDetachedException"
+//   * ObjectAlreadyDetachedException
 //   Indicates that the object is not attached to the index.
 //
-//   * ErrCodeNotIndexException "NotIndexException"
+//   * NotIndexException
 //   Indicates that the requested operation can only operate on index objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachFromIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachFromIndex
 func (c *CloudDirectory) DetachFromIndex(input *DetachFromIndexInput) (*DetachFromIndexOutput, error) {
 	req, out := c.DetachFromIndexRequest(input)
 	return out, req.Send()
@@ -2378,19 +2375,18 @@ const opDetachObject = "DetachObject"
 
 // DetachObjectRequest generates a "aws/request.Request" representing the
 // client's request for the DetachObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DetachObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DetachObject method directly
-// instead.
+// See DetachObject for more information on using the DetachObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DetachObjectRequest method.
 //    req, resp := client.DetachObjectRequest(params)
@@ -2400,7 +2396,7 @@ const opDetachObject = "DetachObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachObject
 func (c *CloudDirectory) DetachObjectRequest(input *DetachObjectInput) (req *request.Request, output *DetachObjectOutput) {
 	op := &request.Operation{
 		Name:       opDetachObject,
@@ -2429,17 +2425,17 @@ func (c *CloudDirectory) DetachObjectRequest(input *DetachObjectInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DetachObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2447,24 +2443,28 @@ func (c *CloudDirectory) DetachObjectRequest(input *DetachObjectInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachObject
+//   * NotNodeException
+//   Occurs when any invalid operations are performed on an object that is not
+//   a node, such as calling ListObjectChildren for a leaf node object.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachObject
 func (c *CloudDirectory) DetachObject(input *DetachObjectInput) (*DetachObjectOutput, error) {
 	req, out := c.DetachObjectRequest(input)
 	return out, req.Send()
@@ -2490,19 +2490,18 @@ const opDetachPolicy = "DetachPolicy"
 
 // DetachPolicyRequest generates a "aws/request.Request" representing the
 // client's request for the DetachPolicy operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DetachPolicy for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DetachPolicy method directly
-// instead.
+// See DetachPolicy for more information on using the DetachPolicy
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DetachPolicyRequest method.
 //    req, resp := client.DetachPolicyRequest(params)
@@ -2512,7 +2511,7 @@ const opDetachPolicy = "DetachPolicy"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachPolicy
 func (c *CloudDirectory) DetachPolicyRequest(input *DetachPolicyInput) (req *request.Request, output *DetachPolicyOutput) {
 	op := &request.Operation{
 		Name:       opDetachPolicy,
@@ -2526,6 +2525,7 @@ func (c *CloudDirectory) DetachPolicyRequest(input *DetachPolicyInput) (req *req
 
 	output = &DetachPolicyOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -2540,17 +2540,17 @@ func (c *CloudDirectory) DetachPolicyRequest(input *DetachPolicyInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DetachPolicy for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2558,30 +2558,27 @@ func (c *CloudDirectory) DetachPolicyRequest(input *DetachPolicyInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeNotPolicyException "NotPolicyException"
+//   * NotPolicyException
 //   Indicates that the requested operation can only operate on policy objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachPolicy
 func (c *CloudDirectory) DetachPolicy(input *DetachPolicyInput) (*DetachPolicyOutput, error) {
 	req, out := c.DetachPolicyRequest(input)
 	return out, req.Send()
@@ -2607,19 +2604,18 @@ const opDetachTypedLink = "DetachTypedLink"
 
 // DetachTypedLinkRequest generates a "aws/request.Request" representing the
 // client's request for the DetachTypedLink operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DetachTypedLink for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DetachTypedLink method directly
-// instead.
+// See DetachTypedLink for more information on using the DetachTypedLink
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DetachTypedLinkRequest method.
 //    req, resp := client.DetachTypedLinkRequest(params)
@@ -2629,7 +2625,7 @@ const opDetachTypedLink = "DetachTypedLink"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachTypedLink
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachTypedLink
 func (c *CloudDirectory) DetachTypedLinkRequest(input *DetachTypedLinkInput) (req *request.Request, output *DetachTypedLinkOutput) {
 	op := &request.Operation{
 		Name:       opDetachTypedLink,
@@ -2643,15 +2639,14 @@ func (c *CloudDirectory) DetachTypedLinkRequest(input *DetachTypedLinkInput) (re
 
 	output = &DetachTypedLinkOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // DetachTypedLink API operation for Amazon CloudDirectory.
 //
 // Detaches a typed link from a specified source and target object. For more
-// information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -2660,17 +2655,17 @@ func (c *CloudDirectory) DetachTypedLinkRequest(input *DetachTypedLinkInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DetachTypedLink for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2678,25 +2673,28 @@ func (c *CloudDirectory) DetachTypedLinkRequest(input *DetachTypedLinkInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachTypedLink
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DetachTypedLink
 func (c *CloudDirectory) DetachTypedLink(input *DetachTypedLinkInput) (*DetachTypedLinkOutput, error) {
 	req, out := c.DetachTypedLinkRequest(input)
 	return out, req.Send()
@@ -2722,19 +2720,18 @@ const opDisableDirectory = "DisableDirectory"
 
 // DisableDirectoryRequest generates a "aws/request.Request" representing the
 // client's request for the DisableDirectory operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DisableDirectory for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DisableDirectory method directly
-// instead.
+// See DisableDirectory for more information on using the DisableDirectory
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DisableDirectoryRequest method.
 //    req, resp := client.DisableDirectoryRequest(params)
@@ -2744,7 +2741,7 @@ const opDisableDirectory = "DisableDirectory"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DisableDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DisableDirectory
 func (c *CloudDirectory) DisableDirectoryRequest(input *DisableDirectoryInput) (req *request.Request, output *DisableDirectoryOutput) {
 	op := &request.Operation{
 		Name:       opDisableDirectory,
@@ -2774,32 +2771,32 @@ func (c *CloudDirectory) DisableDirectoryRequest(input *DisableDirectoryInput) (
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation DisableDirectory for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeDirectoryDeletedException "DirectoryDeletedException"
+//   * DirectoryDeletedException
 //   A directory that has been deleted and to which access has been attempted.
 //   Note: The requested resource will eventually cease to exist.
 //
-//   * ErrCodeInternalServiceException "InternalServiceException"
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2807,10 +2804,10 @@ func (c *CloudDirectory) DisableDirectoryRequest(input *DisableDirectoryInput) (
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DisableDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/DisableDirectory
 func (c *CloudDirectory) DisableDirectory(input *DisableDirectoryInput) (*DisableDirectoryOutput, error) {
 	req, out := c.DisableDirectoryRequest(input)
 	return out, req.Send()
@@ -2836,19 +2833,18 @@ const opEnableDirectory = "EnableDirectory"
 
 // EnableDirectoryRequest generates a "aws/request.Request" representing the
 // client's request for the EnableDirectory operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See EnableDirectory for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the EnableDirectory method directly
-// instead.
+// See EnableDirectory for more information on using the EnableDirectory
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the EnableDirectoryRequest method.
 //    req, resp := client.EnableDirectoryRequest(params)
@@ -2858,7 +2854,7 @@ const opEnableDirectory = "EnableDirectory"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/EnableDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/EnableDirectory
 func (c *CloudDirectory) EnableDirectoryRequest(input *EnableDirectoryInput) (req *request.Request, output *EnableDirectoryOutput) {
 	op := &request.Operation{
 		Name:       opEnableDirectory,
@@ -2887,32 +2883,32 @@ func (c *CloudDirectory) EnableDirectoryRequest(input *EnableDirectoryInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation EnableDirectory for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeDirectoryDeletedException "DirectoryDeletedException"
+//   * DirectoryDeletedException
 //   A directory that has been deleted and to which access has been attempted.
 //   Note: The requested resource will eventually cease to exist.
 //
-//   * ErrCodeInternalServiceException "InternalServiceException"
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -2920,10 +2916,10 @@ func (c *CloudDirectory) EnableDirectoryRequest(input *EnableDirectoryInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/EnableDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/EnableDirectory
 func (c *CloudDirectory) EnableDirectory(input *EnableDirectoryInput) (*EnableDirectoryOutput, error) {
 	req, out := c.EnableDirectoryRequest(input)
 	return out, req.Send()
@@ -2945,23 +2941,130 @@ func (c *CloudDirectory) EnableDirectoryWithContext(ctx aws.Context, input *Enab
 	return out, req.Send()
 }
 
+const opGetAppliedSchemaVersion = "GetAppliedSchemaVersion"
+
+// GetAppliedSchemaVersionRequest generates a "aws/request.Request" representing the
+// client's request for the GetAppliedSchemaVersion operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetAppliedSchemaVersion for more information on using the GetAppliedSchemaVersion
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetAppliedSchemaVersionRequest method.
+//    req, resp := client.GetAppliedSchemaVersionRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetAppliedSchemaVersion
+func (c *CloudDirectory) GetAppliedSchemaVersionRequest(input *GetAppliedSchemaVersionInput) (req *request.Request, output *GetAppliedSchemaVersionOutput) {
+	op := &request.Operation{
+		Name:       opGetAppliedSchemaVersion,
+		HTTPMethod: "POST",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/schema/getappliedschema",
+	}
+
+	if input == nil {
+		input = &GetAppliedSchemaVersionInput{}
+	}
+
+	output = &GetAppliedSchemaVersionOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetAppliedSchemaVersion API operation for Amazon CloudDirectory.
+//
+// Returns current applied schema version ARN, including the minor version in
+// use.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation GetAppliedSchemaVersion for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+//   for more information.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetAppliedSchemaVersion
+func (c *CloudDirectory) GetAppliedSchemaVersion(input *GetAppliedSchemaVersionInput) (*GetAppliedSchemaVersionOutput, error) {
+	req, out := c.GetAppliedSchemaVersionRequest(input)
+	return out, req.Send()
+}
+
+// GetAppliedSchemaVersionWithContext is the same as GetAppliedSchemaVersion with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetAppliedSchemaVersion for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) GetAppliedSchemaVersionWithContext(ctx aws.Context, input *GetAppliedSchemaVersionInput, opts ...request.Option) (*GetAppliedSchemaVersionOutput, error) {
+	req, out := c.GetAppliedSchemaVersionRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opGetDirectory = "GetDirectory"
 
 // GetDirectoryRequest generates a "aws/request.Request" representing the
 // client's request for the GetDirectory operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetDirectory for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetDirectory method directly
-// instead.
+// See GetDirectory for more information on using the GetDirectory
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetDirectoryRequest method.
 //    req, resp := client.GetDirectoryRequest(params)
@@ -2971,7 +3074,7 @@ const opGetDirectory = "GetDirectory"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetDirectory
 func (c *CloudDirectory) GetDirectoryRequest(input *GetDirectoryInput) (req *request.Request, output *GetDirectoryOutput) {
 	op := &request.Operation{
 		Name:       opGetDirectory,
@@ -2999,17 +3102,17 @@ func (c *CloudDirectory) GetDirectoryRequest(input *GetDirectoryInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation GetDirectory for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3017,18 +3120,18 @@ func (c *CloudDirectory) GetDirectoryRequest(input *GetDirectoryInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetDirectory
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetDirectory
 func (c *CloudDirectory) GetDirectory(input *GetDirectoryInput) (*GetDirectoryOutput, error) {
 	req, out := c.GetDirectoryRequest(input)
 	return out, req.Send()
@@ -3054,19 +3157,18 @@ const opGetFacet = "GetFacet"
 
 // GetFacetRequest generates a "aws/request.Request" representing the
 // client's request for the GetFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetFacet method directly
-// instead.
+// See GetFacet for more information on using the GetFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetFacetRequest method.
 //    req, resp := client.GetFacetRequest(params)
@@ -3076,7 +3178,7 @@ const opGetFacet = "GetFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetFacet
 func (c *CloudDirectory) GetFacetRequest(input *GetFacetInput) (req *request.Request, output *GetFacetOutput) {
 	op := &request.Operation{
 		Name:       opGetFacet,
@@ -3106,17 +3208,17 @@ func (c *CloudDirectory) GetFacetRequest(input *GetFacetInput) (req *request.Req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation GetFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3124,24 +3226,24 @@ func (c *CloudDirectory) GetFacetRequest(input *GetFacetInput) (req *request.Req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetFacet
 func (c *CloudDirectory) GetFacet(input *GetFacetInput) (*GetFacetOutput, error) {
 	req, out := c.GetFacetRequest(input)
 	return out, req.Send()
@@ -3163,23 +3265,250 @@ func (c *CloudDirectory) GetFacetWithContext(ctx aws.Context, input *GetFacetInp
 	return out, req.Send()
 }
 
+const opGetLinkAttributes = "GetLinkAttributes"
+
+// GetLinkAttributesRequest generates a "aws/request.Request" representing the
+// client's request for the GetLinkAttributes operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetLinkAttributes for more information on using the GetLinkAttributes
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetLinkAttributesRequest method.
+//    req, resp := client.GetLinkAttributesRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetLinkAttributes
+func (c *CloudDirectory) GetLinkAttributesRequest(input *GetLinkAttributesInput) (req *request.Request, output *GetLinkAttributesOutput) {
+	op := &request.Operation{
+		Name:       opGetLinkAttributes,
+		HTTPMethod: "POST",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/typedlink/attributes/get",
+	}
+
+	if input == nil {
+		input = &GetLinkAttributesInput{}
+	}
+
+	output = &GetLinkAttributesOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetLinkAttributes API operation for Amazon CloudDirectory.
+//
+// Retrieves attributes that are associated with a typed link.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation GetLinkAttributes for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+//   for more information.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * FacetValidationException
+//   The Facet that you provided was not well formed or could not be validated
+//   with the schema.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetLinkAttributes
+func (c *CloudDirectory) GetLinkAttributes(input *GetLinkAttributesInput) (*GetLinkAttributesOutput, error) {
+	req, out := c.GetLinkAttributesRequest(input)
+	return out, req.Send()
+}
+
+// GetLinkAttributesWithContext is the same as GetLinkAttributes with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetLinkAttributes for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) GetLinkAttributesWithContext(ctx aws.Context, input *GetLinkAttributesInput, opts ...request.Option) (*GetLinkAttributesOutput, error) {
+	req, out := c.GetLinkAttributesRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opGetObjectAttributes = "GetObjectAttributes"
+
+// GetObjectAttributesRequest generates a "aws/request.Request" representing the
+// client's request for the GetObjectAttributes operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetObjectAttributes for more information on using the GetObjectAttributes
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetObjectAttributesRequest method.
+//    req, resp := client.GetObjectAttributesRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetObjectAttributes
+func (c *CloudDirectory) GetObjectAttributesRequest(input *GetObjectAttributesInput) (req *request.Request, output *GetObjectAttributesOutput) {
+	op := &request.Operation{
+		Name:       opGetObjectAttributes,
+		HTTPMethod: "POST",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/object/attributes/get",
+	}
+
+	if input == nil {
+		input = &GetObjectAttributesInput{}
+	}
+
+	output = &GetObjectAttributesOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetObjectAttributes API operation for Amazon CloudDirectory.
+//
+// Retrieves attributes within a facet that are associated with an object.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation GetObjectAttributes for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+//   for more information.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * FacetValidationException
+//   The Facet that you provided was not well formed or could not be validated
+//   with the schema.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetObjectAttributes
+func (c *CloudDirectory) GetObjectAttributes(input *GetObjectAttributesInput) (*GetObjectAttributesOutput, error) {
+	req, out := c.GetObjectAttributesRequest(input)
+	return out, req.Send()
+}
+
+// GetObjectAttributesWithContext is the same as GetObjectAttributes with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetObjectAttributes for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) GetObjectAttributesWithContext(ctx aws.Context, input *GetObjectAttributesInput, opts ...request.Option) (*GetObjectAttributesOutput, error) {
+	req, out := c.GetObjectAttributesRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opGetObjectInformation = "GetObjectInformation"
 
 // GetObjectInformationRequest generates a "aws/request.Request" representing the
 // client's request for the GetObjectInformation operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetObjectInformation for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetObjectInformation method directly
-// instead.
+// See GetObjectInformation for more information on using the GetObjectInformation
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetObjectInformationRequest method.
 //    req, resp := client.GetObjectInformationRequest(params)
@@ -3189,7 +3518,7 @@ const opGetObjectInformation = "GetObjectInformation"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetObjectInformation
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetObjectInformation
 func (c *CloudDirectory) GetObjectInformationRequest(input *GetObjectInformationInput) (req *request.Request, output *GetObjectInformationOutput) {
 	op := &request.Operation{
 		Name:       opGetObjectInformation,
@@ -3217,17 +3546,17 @@ func (c *CloudDirectory) GetObjectInformationRequest(input *GetObjectInformation
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation GetObjectInformation for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3235,24 +3564,24 @@ func (c *CloudDirectory) GetObjectInformationRequest(input *GetObjectInformation
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetObjectInformation
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetObjectInformation
 func (c *CloudDirectory) GetObjectInformation(input *GetObjectInformationInput) (*GetObjectInformationOutput, error) {
 	req, out := c.GetObjectInformationRequest(input)
 	return out, req.Send()
@@ -3278,19 +3607,18 @@ const opGetSchemaAsJson = "GetSchemaAsJson"
 
 // GetSchemaAsJsonRequest generates a "aws/request.Request" representing the
 // client's request for the GetSchemaAsJson operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetSchemaAsJson for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetSchemaAsJson method directly
-// instead.
+// See GetSchemaAsJson for more information on using the GetSchemaAsJson
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetSchemaAsJsonRequest method.
 //    req, resp := client.GetSchemaAsJsonRequest(params)
@@ -3300,7 +3628,7 @@ const opGetSchemaAsJson = "GetSchemaAsJson"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetSchemaAsJson
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetSchemaAsJson
 func (c *CloudDirectory) GetSchemaAsJsonRequest(input *GetSchemaAsJsonInput) (req *request.Request, output *GetSchemaAsJsonOutput) {
 	op := &request.Operation{
 		Name:       opGetSchemaAsJson,
@@ -3319,7 +3647,7 @@ func (c *CloudDirectory) GetSchemaAsJsonRequest(input *GetSchemaAsJsonInput) (re
 
 // GetSchemaAsJson API operation for Amazon CloudDirectory.
 //
-// Retrieves a JSON representation of the schema. See JSON Schema Format (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_schemas.html#jsonformat)
+// Retrieves a JSON representation of the schema. See JSON Schema Format (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_jsonformat.html#schemas_json)
 // for more information.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -3329,17 +3657,17 @@ func (c *CloudDirectory) GetSchemaAsJsonRequest(input *GetSchemaAsJsonInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation GetSchemaAsJson for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3347,25 +3675,25 @@ func (c *CloudDirectory) GetSchemaAsJsonRequest(input *GetSchemaAsJsonInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetSchemaAsJson
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetSchemaAsJson
 func (c *CloudDirectory) GetSchemaAsJson(input *GetSchemaAsJsonInput) (*GetSchemaAsJsonOutput, error) {
 	req, out := c.GetSchemaAsJsonRequest(input)
 	return out, req.Send()
@@ -3391,19 +3719,18 @@ const opGetTypedLinkFacetInformation = "GetTypedLinkFacetInformation"
 
 // GetTypedLinkFacetInformationRequest generates a "aws/request.Request" representing the
 // client's request for the GetTypedLinkFacetInformation operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetTypedLinkFacetInformation for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetTypedLinkFacetInformation method directly
-// instead.
+// See GetTypedLinkFacetInformation for more information on using the GetTypedLinkFacetInformation
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetTypedLinkFacetInformationRequest method.
 //    req, resp := client.GetTypedLinkFacetInformationRequest(params)
@@ -3413,7 +3740,7 @@ const opGetTypedLinkFacetInformation = "GetTypedLinkFacetInformation"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetTypedLinkFacetInformation
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetTypedLinkFacetInformation
 func (c *CloudDirectory) GetTypedLinkFacetInformationRequest(input *GetTypedLinkFacetInformationInput) (req *request.Request, output *GetTypedLinkFacetInformationOutput) {
 	op := &request.Operation{
 		Name:       opGetTypedLinkFacetInformation,
@@ -3433,7 +3760,7 @@ func (c *CloudDirectory) GetTypedLinkFacetInformationRequest(input *GetTypedLink
 // GetTypedLinkFacetInformation API operation for Amazon CloudDirectory.
 //
 // Returns the identity attribute order for a specific TypedLinkFacet. For more
-// information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -3442,17 +3769,17 @@ func (c *CloudDirectory) GetTypedLinkFacetInformationRequest(input *GetTypedLink
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation GetTypedLinkFacetInformation for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3460,27 +3787,27 @@ func (c *CloudDirectory) GetTypedLinkFacetInformationRequest(input *GetTypedLink
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetTypedLinkFacetInformation
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/GetTypedLinkFacetInformation
 func (c *CloudDirectory) GetTypedLinkFacetInformation(input *GetTypedLinkFacetInformationInput) (*GetTypedLinkFacetInformationOutput, error) {
 	req, out := c.GetTypedLinkFacetInformationRequest(input)
 	return out, req.Send()
@@ -3506,19 +3833,18 @@ const opListAppliedSchemaArns = "ListAppliedSchemaArns"
 
 // ListAppliedSchemaArnsRequest generates a "aws/request.Request" representing the
 // client's request for the ListAppliedSchemaArns operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListAppliedSchemaArns for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListAppliedSchemaArns method directly
-// instead.
+// See ListAppliedSchemaArns for more information on using the ListAppliedSchemaArns
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListAppliedSchemaArnsRequest method.
 //    req, resp := client.ListAppliedSchemaArnsRequest(params)
@@ -3528,7 +3854,7 @@ const opListAppliedSchemaArns = "ListAppliedSchemaArns"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAppliedSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListAppliedSchemaArns
 func (c *CloudDirectory) ListAppliedSchemaArnsRequest(input *ListAppliedSchemaArnsInput) (req *request.Request, output *ListAppliedSchemaArnsOutput) {
 	op := &request.Operation{
 		Name:       opListAppliedSchemaArns,
@@ -3553,7 +3879,8 @@ func (c *CloudDirectory) ListAppliedSchemaArnsRequest(input *ListAppliedSchemaAr
 
 // ListAppliedSchemaArns API operation for Amazon CloudDirectory.
 //
-// Lists schemas applied to a directory.
+// Lists schema major versions applied to a directory. If SchemaArn is provided,
+// lists the minor version.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -3562,17 +3889,17 @@ func (c *CloudDirectory) ListAppliedSchemaArnsRequest(input *ListAppliedSchemaAr
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListAppliedSchemaArns for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3580,24 +3907,24 @@ func (c *CloudDirectory) ListAppliedSchemaArnsRequest(input *ListAppliedSchemaAr
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAppliedSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListAppliedSchemaArns
 func (c *CloudDirectory) ListAppliedSchemaArns(input *ListAppliedSchemaArnsInput) (*ListAppliedSchemaArnsOutput, error) {
 	req, out := c.ListAppliedSchemaArnsRequest(input)
 	return out, req.Send()
@@ -3630,7 +3957,7 @@ func (c *CloudDirectory) ListAppliedSchemaArnsWithContext(ctx aws.Context, input
 //    // Example iterating over at most 3 pages of a ListAppliedSchemaArns operation.
 //    pageNum := 0
 //    err := client.ListAppliedSchemaArnsPages(params,
-//        func(page *ListAppliedSchemaArnsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListAppliedSchemaArnsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -3662,10 +3989,12 @@ func (c *CloudDirectory) ListAppliedSchemaArnsPagesWithContext(ctx aws.Context, 
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListAppliedSchemaArnsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListAppliedSchemaArnsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -3673,19 +4002,18 @@ const opListAttachedIndices = "ListAttachedIndices"
 
 // ListAttachedIndicesRequest generates a "aws/request.Request" representing the
 // client's request for the ListAttachedIndices operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListAttachedIndices for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListAttachedIndices method directly
-// instead.
+// See ListAttachedIndices for more information on using the ListAttachedIndices
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListAttachedIndicesRequest method.
 //    req, resp := client.ListAttachedIndicesRequest(params)
@@ -3695,7 +4023,7 @@ const opListAttachedIndices = "ListAttachedIndices"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAttachedIndices
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListAttachedIndices
 func (c *CloudDirectory) ListAttachedIndicesRequest(input *ListAttachedIndicesInput) (req *request.Request, output *ListAttachedIndicesOutput) {
 	op := &request.Operation{
 		Name:       opListAttachedIndices,
@@ -3720,7 +4048,7 @@ func (c *CloudDirectory) ListAttachedIndicesRequest(input *ListAttachedIndicesIn
 
 // ListAttachedIndices API operation for Amazon CloudDirectory.
 //
-// Lists indices attached to an object.
+// Lists indices attached to the specified object.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -3729,17 +4057,17 @@ func (c *CloudDirectory) ListAttachedIndicesRequest(input *ListAttachedIndicesIn
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListAttachedIndices for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3747,24 +4075,24 @@ func (c *CloudDirectory) ListAttachedIndicesRequest(input *ListAttachedIndicesIn
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAttachedIndices
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListAttachedIndices
 func (c *CloudDirectory) ListAttachedIndices(input *ListAttachedIndicesInput) (*ListAttachedIndicesOutput, error) {
 	req, out := c.ListAttachedIndicesRequest(input)
 	return out, req.Send()
@@ -3797,7 +4125,7 @@ func (c *CloudDirectory) ListAttachedIndicesWithContext(ctx aws.Context, input *
 //    // Example iterating over at most 3 pages of a ListAttachedIndices operation.
 //    pageNum := 0
 //    err := client.ListAttachedIndicesPages(params,
-//        func(page *ListAttachedIndicesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListAttachedIndicesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -3829,10 +4157,12 @@ func (c *CloudDirectory) ListAttachedIndicesPagesWithContext(ctx aws.Context, in
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListAttachedIndicesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListAttachedIndicesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -3840,19 +4170,18 @@ const opListDevelopmentSchemaArns = "ListDevelopmentSchemaArns"
 
 // ListDevelopmentSchemaArnsRequest generates a "aws/request.Request" representing the
 // client's request for the ListDevelopmentSchemaArns operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListDevelopmentSchemaArns for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListDevelopmentSchemaArns method directly
-// instead.
+// See ListDevelopmentSchemaArns for more information on using the ListDevelopmentSchemaArns
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListDevelopmentSchemaArnsRequest method.
 //    req, resp := client.ListDevelopmentSchemaArnsRequest(params)
@@ -3862,7 +4191,7 @@ const opListDevelopmentSchemaArns = "ListDevelopmentSchemaArns"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDevelopmentSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListDevelopmentSchemaArns
 func (c *CloudDirectory) ListDevelopmentSchemaArnsRequest(input *ListDevelopmentSchemaArnsInput) (req *request.Request, output *ListDevelopmentSchemaArnsOutput) {
 	op := &request.Operation{
 		Name:       opListDevelopmentSchemaArns,
@@ -3896,17 +4225,17 @@ func (c *CloudDirectory) ListDevelopmentSchemaArnsRequest(input *ListDevelopment
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListDevelopmentSchemaArns for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -3914,24 +4243,24 @@ func (c *CloudDirectory) ListDevelopmentSchemaArnsRequest(input *ListDevelopment
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDevelopmentSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListDevelopmentSchemaArns
 func (c *CloudDirectory) ListDevelopmentSchemaArns(input *ListDevelopmentSchemaArnsInput) (*ListDevelopmentSchemaArnsOutput, error) {
 	req, out := c.ListDevelopmentSchemaArnsRequest(input)
 	return out, req.Send()
@@ -3964,7 +4293,7 @@ func (c *CloudDirectory) ListDevelopmentSchemaArnsWithContext(ctx aws.Context, i
 //    // Example iterating over at most 3 pages of a ListDevelopmentSchemaArns operation.
 //    pageNum := 0
 //    err := client.ListDevelopmentSchemaArnsPages(params,
-//        func(page *ListDevelopmentSchemaArnsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListDevelopmentSchemaArnsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -3996,10 +4325,12 @@ func (c *CloudDirectory) ListDevelopmentSchemaArnsPagesWithContext(ctx aws.Conte
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListDevelopmentSchemaArnsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListDevelopmentSchemaArnsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -4007,19 +4338,18 @@ const opListDirectories = "ListDirectories"
 
 // ListDirectoriesRequest generates a "aws/request.Request" representing the
 // client's request for the ListDirectories operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListDirectories for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListDirectories method directly
-// instead.
+// See ListDirectories for more information on using the ListDirectories
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListDirectoriesRequest method.
 //    req, resp := client.ListDirectoriesRequest(params)
@@ -4029,7 +4359,7 @@ const opListDirectories = "ListDirectories"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDirectories
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListDirectories
 func (c *CloudDirectory) ListDirectoriesRequest(input *ListDirectoriesInput) (req *request.Request, output *ListDirectoriesOutput) {
 	op := &request.Operation{
 		Name:       opListDirectories,
@@ -4063,17 +4393,17 @@ func (c *CloudDirectory) ListDirectoriesRequest(input *ListDirectoriesInput) (re
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListDirectories for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4081,21 +4411,21 @@ func (c *CloudDirectory) ListDirectoriesRequest(input *ListDirectoriesInput) (re
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDirectories
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListDirectories
 func (c *CloudDirectory) ListDirectories(input *ListDirectoriesInput) (*ListDirectoriesOutput, error) {
 	req, out := c.ListDirectoriesRequest(input)
 	return out, req.Send()
@@ -4128,7 +4458,7 @@ func (c *CloudDirectory) ListDirectoriesWithContext(ctx aws.Context, input *List
 //    // Example iterating over at most 3 pages of a ListDirectories operation.
 //    pageNum := 0
 //    err := client.ListDirectoriesPages(params,
-//        func(page *ListDirectoriesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListDirectoriesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -4160,10 +4490,12 @@ func (c *CloudDirectory) ListDirectoriesPagesWithContext(ctx aws.Context, input 
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListDirectoriesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListDirectoriesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -4171,19 +4503,18 @@ const opListFacetAttributes = "ListFacetAttributes"
 
 // ListFacetAttributesRequest generates a "aws/request.Request" representing the
 // client's request for the ListFacetAttributes operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListFacetAttributes for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListFacetAttributes method directly
-// instead.
+// See ListFacetAttributes for more information on using the ListFacetAttributes
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListFacetAttributesRequest method.
 //    req, resp := client.ListFacetAttributesRequest(params)
@@ -4193,7 +4524,7 @@ const opListFacetAttributes = "ListFacetAttributes"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListFacetAttributes
 func (c *CloudDirectory) ListFacetAttributesRequest(input *ListFacetAttributesInput) (req *request.Request, output *ListFacetAttributesOutput) {
 	op := &request.Operation{
 		Name:       opListFacetAttributes,
@@ -4227,17 +4558,17 @@ func (c *CloudDirectory) ListFacetAttributesRequest(input *ListFacetAttributesIn
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListFacetAttributes for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4245,27 +4576,27 @@ func (c *CloudDirectory) ListFacetAttributesRequest(input *ListFacetAttributesIn
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListFacetAttributes
 func (c *CloudDirectory) ListFacetAttributes(input *ListFacetAttributesInput) (*ListFacetAttributesOutput, error) {
 	req, out := c.ListFacetAttributesRequest(input)
 	return out, req.Send()
@@ -4298,7 +4629,7 @@ func (c *CloudDirectory) ListFacetAttributesWithContext(ctx aws.Context, input *
 //    // Example iterating over at most 3 pages of a ListFacetAttributes operation.
 //    pageNum := 0
 //    err := client.ListFacetAttributesPages(params,
-//        func(page *ListFacetAttributesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListFacetAttributesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -4330,10 +4661,12 @@ func (c *CloudDirectory) ListFacetAttributesPagesWithContext(ctx aws.Context, in
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListFacetAttributesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListFacetAttributesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -4341,19 +4674,18 @@ const opListFacetNames = "ListFacetNames"
 
 // ListFacetNamesRequest generates a "aws/request.Request" representing the
 // client's request for the ListFacetNames operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListFacetNames for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListFacetNames method directly
-// instead.
+// See ListFacetNames for more information on using the ListFacetNames
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListFacetNamesRequest method.
 //    req, resp := client.ListFacetNamesRequest(params)
@@ -4363,7 +4695,7 @@ const opListFacetNames = "ListFacetNames"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetNames
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListFacetNames
 func (c *CloudDirectory) ListFacetNamesRequest(input *ListFacetNamesInput) (req *request.Request, output *ListFacetNamesOutput) {
 	op := &request.Operation{
 		Name:       opListFacetNames,
@@ -4397,17 +4729,17 @@ func (c *CloudDirectory) ListFacetNamesRequest(input *ListFacetNamesInput) (req 
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListFacetNames for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4415,24 +4747,24 @@ func (c *CloudDirectory) ListFacetNamesRequest(input *ListFacetNamesInput) (req 
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetNames
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListFacetNames
 func (c *CloudDirectory) ListFacetNames(input *ListFacetNamesInput) (*ListFacetNamesOutput, error) {
 	req, out := c.ListFacetNamesRequest(input)
 	return out, req.Send()
@@ -4465,7 +4797,7 @@ func (c *CloudDirectory) ListFacetNamesWithContext(ctx aws.Context, input *ListF
 //    // Example iterating over at most 3 pages of a ListFacetNames operation.
 //    pageNum := 0
 //    err := client.ListFacetNamesPages(params,
-//        func(page *ListFacetNamesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListFacetNamesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -4497,10 +4829,12 @@ func (c *CloudDirectory) ListFacetNamesPagesWithContext(ctx aws.Context, input *
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListFacetNamesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListFacetNamesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -4508,19 +4842,18 @@ const opListIncomingTypedLinks = "ListIncomingTypedLinks"
 
 // ListIncomingTypedLinksRequest generates a "aws/request.Request" representing the
 // client's request for the ListIncomingTypedLinks operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListIncomingTypedLinks for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListIncomingTypedLinks method directly
-// instead.
+// See ListIncomingTypedLinks for more information on using the ListIncomingTypedLinks
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListIncomingTypedLinksRequest method.
 //    req, resp := client.ListIncomingTypedLinksRequest(params)
@@ -4530,7 +4863,7 @@ const opListIncomingTypedLinks = "ListIncomingTypedLinks"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIncomingTypedLinks
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListIncomingTypedLinks
 func (c *CloudDirectory) ListIncomingTypedLinksRequest(input *ListIncomingTypedLinksInput) (req *request.Request, output *ListIncomingTypedLinksOutput) {
 	op := &request.Operation{
 		Name:       opListIncomingTypedLinks,
@@ -4551,7 +4884,7 @@ func (c *CloudDirectory) ListIncomingTypedLinksRequest(input *ListIncomingTypedL
 //
 // Returns a paginated list of all the incoming TypedLinkSpecifier information
 // for an object. It also supports filtering by typed link facet and identity
-// attributes. For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -4560,17 +4893,17 @@ func (c *CloudDirectory) ListIncomingTypedLinksRequest(input *ListIncomingTypedL
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListIncomingTypedLinks for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4578,28 +4911,31 @@ func (c *CloudDirectory) ListIncomingTypedLinksRequest(input *ListIncomingTypedL
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIncomingTypedLinks
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListIncomingTypedLinks
 func (c *CloudDirectory) ListIncomingTypedLinks(input *ListIncomingTypedLinksInput) (*ListIncomingTypedLinksOutput, error) {
 	req, out := c.ListIncomingTypedLinksRequest(input)
 	return out, req.Send()
@@ -4625,19 +4961,18 @@ const opListIndex = "ListIndex"
 
 // ListIndexRequest generates a "aws/request.Request" representing the
 // client's request for the ListIndex operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListIndex for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListIndex method directly
-// instead.
+// See ListIndex for more information on using the ListIndex
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListIndexRequest method.
 //    req, resp := client.ListIndexRequest(params)
@@ -4647,7 +4982,7 @@ const opListIndex = "ListIndex"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListIndex
 func (c *CloudDirectory) ListIndexRequest(input *ListIndexInput) (req *request.Request, output *ListIndexOutput) {
 	op := &request.Operation{
 		Name:       opListIndex,
@@ -4681,17 +5016,17 @@ func (c *CloudDirectory) ListIndexRequest(input *ListIndexInput) (req *request.R
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListIndex for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4699,27 +5034,34 @@ func (c *CloudDirectory) ListIndexRequest(input *ListIndexInput) (req *request.R
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * FacetValidationException
+//   The Facet that you provided was not well formed or could not be validated
+//   with the schema.
+//
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * InvalidNextTokenException
+//   Indicates that the NextToken value is not valid.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeNotIndexException "NotIndexException"
+//   * NotIndexException
 //   Indicates that the requested operation can only operate on index objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIndex
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListIndex
 func (c *CloudDirectory) ListIndex(input *ListIndexInput) (*ListIndexOutput, error) {
 	req, out := c.ListIndexRequest(input)
 	return out, req.Send()
@@ -4752,7 +5094,7 @@ func (c *CloudDirectory) ListIndexWithContext(ctx aws.Context, input *ListIndexI
 //    // Example iterating over at most 3 pages of a ListIndex operation.
 //    pageNum := 0
 //    err := client.ListIndexPages(params,
-//        func(page *ListIndexOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListIndexOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -4784,10 +5126,170 @@ func (c *CloudDirectory) ListIndexPagesWithContext(ctx aws.Context, input *ListI
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListIndexOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListIndexOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
+	return p.Err()
+}
+
+const opListManagedSchemaArns = "ListManagedSchemaArns"
+
+// ListManagedSchemaArnsRequest generates a "aws/request.Request" representing the
+// client's request for the ListManagedSchemaArns operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ListManagedSchemaArns for more information on using the ListManagedSchemaArns
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ListManagedSchemaArnsRequest method.
+//    req, resp := client.ListManagedSchemaArnsRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListManagedSchemaArns
+func (c *CloudDirectory) ListManagedSchemaArnsRequest(input *ListManagedSchemaArnsInput) (req *request.Request, output *ListManagedSchemaArnsOutput) {
+	op := &request.Operation{
+		Name:       opListManagedSchemaArns,
+		HTTPMethod: "POST",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/schema/managed",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"NextToken"},
+			OutputTokens:    []string{"NextToken"},
+			LimitToken:      "MaxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &ListManagedSchemaArnsInput{}
+	}
+
+	output = &ListManagedSchemaArnsOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ListManagedSchemaArns API operation for Amazon CloudDirectory.
+//
+// Lists the major version families of each managed schema. If a major version
+// ARN is provided as SchemaArn, the minor version revisions in that family
+// are listed instead.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation ListManagedSchemaArns for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * InvalidNextTokenException
+//   Indicates that the NextToken value is not valid.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListManagedSchemaArns
+func (c *CloudDirectory) ListManagedSchemaArns(input *ListManagedSchemaArnsInput) (*ListManagedSchemaArnsOutput, error) {
+	req, out := c.ListManagedSchemaArnsRequest(input)
+	return out, req.Send()
+}
+
+// ListManagedSchemaArnsWithContext is the same as ListManagedSchemaArns with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ListManagedSchemaArns for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) ListManagedSchemaArnsWithContext(ctx aws.Context, input *ListManagedSchemaArnsInput, opts ...request.Option) (*ListManagedSchemaArnsOutput, error) {
+	req, out := c.ListManagedSchemaArnsRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// ListManagedSchemaArnsPages iterates over the pages of a ListManagedSchemaArns operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See ListManagedSchemaArns method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a ListManagedSchemaArns operation.
+//    pageNum := 0
+//    err := client.ListManagedSchemaArnsPages(params,
+//        func(page *clouddirectory.ListManagedSchemaArnsOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *CloudDirectory) ListManagedSchemaArnsPages(input *ListManagedSchemaArnsInput, fn func(*ListManagedSchemaArnsOutput, bool) bool) error {
+	return c.ListManagedSchemaArnsPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// ListManagedSchemaArnsPagesWithContext same as ListManagedSchemaArnsPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) ListManagedSchemaArnsPagesWithContext(ctx aws.Context, input *ListManagedSchemaArnsInput, fn func(*ListManagedSchemaArnsOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *ListManagedSchemaArnsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.ListManagedSchemaArnsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*ListManagedSchemaArnsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
 	return p.Err()
 }
 
@@ -4795,19 +5297,18 @@ const opListObjectAttributes = "ListObjectAttributes"
 
 // ListObjectAttributesRequest generates a "aws/request.Request" representing the
 // client's request for the ListObjectAttributes operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListObjectAttributes for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListObjectAttributes method directly
-// instead.
+// See ListObjectAttributes for more information on using the ListObjectAttributes
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListObjectAttributesRequest method.
 //    req, resp := client.ListObjectAttributesRequest(params)
@@ -4817,7 +5318,7 @@ const opListObjectAttributes = "ListObjectAttributes"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectAttributes
 func (c *CloudDirectory) ListObjectAttributesRequest(input *ListObjectAttributesInput) (req *request.Request, output *ListObjectAttributesOutput) {
 	op := &request.Operation{
 		Name:       opListObjectAttributes,
@@ -4851,17 +5352,17 @@ func (c *CloudDirectory) ListObjectAttributesRequest(input *ListObjectAttributes
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListObjectAttributes for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -4869,34 +5370,31 @@ func (c *CloudDirectory) ListObjectAttributesRequest(input *ListObjectAttributes
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectAttributes
 func (c *CloudDirectory) ListObjectAttributes(input *ListObjectAttributesInput) (*ListObjectAttributesOutput, error) {
 	req, out := c.ListObjectAttributesRequest(input)
 	return out, req.Send()
@@ -4929,7 +5427,7 @@ func (c *CloudDirectory) ListObjectAttributesWithContext(ctx aws.Context, input 
 //    // Example iterating over at most 3 pages of a ListObjectAttributes operation.
 //    pageNum := 0
 //    err := client.ListObjectAttributesPages(params,
-//        func(page *ListObjectAttributesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListObjectAttributesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -4961,10 +5459,12 @@ func (c *CloudDirectory) ListObjectAttributesPagesWithContext(ctx aws.Context, i
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListObjectAttributesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListObjectAttributesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -4972,19 +5472,18 @@ const opListObjectChildren = "ListObjectChildren"
 
 // ListObjectChildrenRequest generates a "aws/request.Request" representing the
 // client's request for the ListObjectChildren operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListObjectChildren for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListObjectChildren method directly
-// instead.
+// See ListObjectChildren for more information on using the ListObjectChildren
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListObjectChildrenRequest method.
 //    req, resp := client.ListObjectChildrenRequest(params)
@@ -4994,7 +5493,7 @@ const opListObjectChildren = "ListObjectChildren"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectChildren
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectChildren
 func (c *CloudDirectory) ListObjectChildrenRequest(input *ListObjectChildrenInput) (req *request.Request, output *ListObjectChildrenOutput) {
 	op := &request.Operation{
 		Name:       opListObjectChildren,
@@ -5029,17 +5528,17 @@ func (c *CloudDirectory) ListObjectChildrenRequest(input *ListObjectChildrenInpu
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListObjectChildren for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5047,34 +5546,31 @@ func (c *CloudDirectory) ListObjectChildrenRequest(input *ListObjectChildrenInpu
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeNotNodeException "NotNodeException"
+//   * NotNodeException
 //   Occurs when any invalid operations are performed on an object that is not
 //   a node, such as calling ListObjectChildren for a leaf node object.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectChildren
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectChildren
 func (c *CloudDirectory) ListObjectChildren(input *ListObjectChildrenInput) (*ListObjectChildrenOutput, error) {
 	req, out := c.ListObjectChildrenRequest(input)
 	return out, req.Send()
@@ -5107,7 +5603,7 @@ func (c *CloudDirectory) ListObjectChildrenWithContext(ctx aws.Context, input *L
 //    // Example iterating over at most 3 pages of a ListObjectChildren operation.
 //    pageNum := 0
 //    err := client.ListObjectChildrenPages(params,
-//        func(page *ListObjectChildrenOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListObjectChildrenOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5139,10 +5635,12 @@ func (c *CloudDirectory) ListObjectChildrenPagesWithContext(ctx aws.Context, inp
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListObjectChildrenOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListObjectChildrenOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -5150,19 +5648,18 @@ const opListObjectParentPaths = "ListObjectParentPaths"
 
 // ListObjectParentPathsRequest generates a "aws/request.Request" representing the
 // client's request for the ListObjectParentPaths operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListObjectParentPaths for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListObjectParentPaths method directly
-// instead.
+// See ListObjectParentPaths for more information on using the ListObjectParentPaths
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListObjectParentPathsRequest method.
 //    req, resp := client.ListObjectParentPathsRequest(params)
@@ -5172,7 +5669,7 @@ const opListObjectParentPaths = "ListObjectParentPaths"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentPaths
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectParentPaths
 func (c *CloudDirectory) ListObjectParentPathsRequest(input *ListObjectParentPathsInput) (req *request.Request, output *ListObjectParentPathsOutput) {
 	op := &request.Operation{
 		Name:       opListObjectParentPaths,
@@ -5199,7 +5696,7 @@ func (c *CloudDirectory) ListObjectParentPathsRequest(input *ListObjectParentPat
 //
 // Retrieves all available parent paths for any object type such as node, leaf
 // node, policy node, and index node objects. For more information about objects,
-// see Directory Structure (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_key_concepts.html#dirstructure).
+// see Directory Structure (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directorystructure.html).
 //
 // Use this API to evaluate all parents for an object. The call returns all
 // objects from the root of the directory up to the requested object. The API
@@ -5216,17 +5713,17 @@ func (c *CloudDirectory) ListObjectParentPathsRequest(input *ListObjectParentPat
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListObjectParentPaths for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5234,27 +5731,27 @@ func (c *CloudDirectory) ListObjectParentPathsRequest(input *ListObjectParentPat
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentPaths
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectParentPaths
 func (c *CloudDirectory) ListObjectParentPaths(input *ListObjectParentPathsInput) (*ListObjectParentPathsOutput, error) {
 	req, out := c.ListObjectParentPathsRequest(input)
 	return out, req.Send()
@@ -5287,7 +5784,7 @@ func (c *CloudDirectory) ListObjectParentPathsWithContext(ctx aws.Context, input
 //    // Example iterating over at most 3 pages of a ListObjectParentPaths operation.
 //    pageNum := 0
 //    err := client.ListObjectParentPathsPages(params,
-//        func(page *ListObjectParentPathsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListObjectParentPathsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5319,10 +5816,12 @@ func (c *CloudDirectory) ListObjectParentPathsPagesWithContext(ctx aws.Context, 
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListObjectParentPathsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListObjectParentPathsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -5330,19 +5829,18 @@ const opListObjectParents = "ListObjectParents"
 
 // ListObjectParentsRequest generates a "aws/request.Request" representing the
 // client's request for the ListObjectParents operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListObjectParents for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListObjectParents method directly
-// instead.
+// See ListObjectParents for more information on using the ListObjectParents
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListObjectParentsRequest method.
 //    req, resp := client.ListObjectParentsRequest(params)
@@ -5352,7 +5850,7 @@ const opListObjectParents = "ListObjectParents"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectParents
 func (c *CloudDirectory) ListObjectParentsRequest(input *ListObjectParentsInput) (req *request.Request, output *ListObjectParentsOutput) {
 	op := &request.Operation{
 		Name:       opListObjectParents,
@@ -5387,17 +5885,17 @@ func (c *CloudDirectory) ListObjectParentsRequest(input *ListObjectParentsInput)
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListObjectParents for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5405,33 +5903,30 @@ func (c *CloudDirectory) ListObjectParentsRequest(input *ListObjectParentsInput)
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeCannotListParentOfRootException "CannotListParentOfRootException"
+//   * CannotListParentOfRootException
 //   Cannot list the parents of a Directory root.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectParents
 func (c *CloudDirectory) ListObjectParents(input *ListObjectParentsInput) (*ListObjectParentsOutput, error) {
 	req, out := c.ListObjectParentsRequest(input)
 	return out, req.Send()
@@ -5464,7 +5959,7 @@ func (c *CloudDirectory) ListObjectParentsWithContext(ctx aws.Context, input *Li
 //    // Example iterating over at most 3 pages of a ListObjectParents operation.
 //    pageNum := 0
 //    err := client.ListObjectParentsPages(params,
-//        func(page *ListObjectParentsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListObjectParentsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5496,10 +5991,12 @@ func (c *CloudDirectory) ListObjectParentsPagesWithContext(ctx aws.Context, inpu
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListObjectParentsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListObjectParentsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -5507,19 +6004,18 @@ const opListObjectPolicies = "ListObjectPolicies"
 
 // ListObjectPoliciesRequest generates a "aws/request.Request" representing the
 // client's request for the ListObjectPolicies operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListObjectPolicies for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListObjectPolicies method directly
-// instead.
+// See ListObjectPolicies for more information on using the ListObjectPolicies
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListObjectPoliciesRequest method.
 //    req, resp := client.ListObjectPoliciesRequest(params)
@@ -5529,7 +6025,7 @@ const opListObjectPolicies = "ListObjectPolicies"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectPolicies
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectPolicies
 func (c *CloudDirectory) ListObjectPoliciesRequest(input *ListObjectPoliciesInput) (req *request.Request, output *ListObjectPoliciesOutput) {
 	op := &request.Operation{
 		Name:       opListObjectPolicies,
@@ -5563,17 +6059,17 @@ func (c *CloudDirectory) ListObjectPoliciesRequest(input *ListObjectPoliciesInpu
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListObjectPolicies for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5581,27 +6077,27 @@ func (c *CloudDirectory) ListObjectPoliciesRequest(input *ListObjectPoliciesInpu
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectPolicies
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListObjectPolicies
 func (c *CloudDirectory) ListObjectPolicies(input *ListObjectPoliciesInput) (*ListObjectPoliciesOutput, error) {
 	req, out := c.ListObjectPoliciesRequest(input)
 	return out, req.Send()
@@ -5634,7 +6130,7 @@ func (c *CloudDirectory) ListObjectPoliciesWithContext(ctx aws.Context, input *L
 //    // Example iterating over at most 3 pages of a ListObjectPolicies operation.
 //    pageNum := 0
 //    err := client.ListObjectPoliciesPages(params,
-//        func(page *ListObjectPoliciesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListObjectPoliciesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5666,10 +6162,12 @@ func (c *CloudDirectory) ListObjectPoliciesPagesWithContext(ctx aws.Context, inp
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListObjectPoliciesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListObjectPoliciesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -5677,19 +6175,18 @@ const opListOutgoingTypedLinks = "ListOutgoingTypedLinks"
 
 // ListOutgoingTypedLinksRequest generates a "aws/request.Request" representing the
 // client's request for the ListOutgoingTypedLinks operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListOutgoingTypedLinks for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListOutgoingTypedLinks method directly
-// instead.
+// See ListOutgoingTypedLinks for more information on using the ListOutgoingTypedLinks
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListOutgoingTypedLinksRequest method.
 //    req, resp := client.ListOutgoingTypedLinksRequest(params)
@@ -5699,7 +6196,7 @@ const opListOutgoingTypedLinks = "ListOutgoingTypedLinks"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListOutgoingTypedLinks
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListOutgoingTypedLinks
 func (c *CloudDirectory) ListOutgoingTypedLinksRequest(input *ListOutgoingTypedLinksInput) (req *request.Request, output *ListOutgoingTypedLinksOutput) {
 	op := &request.Operation{
 		Name:       opListOutgoingTypedLinks,
@@ -5720,7 +6217,7 @@ func (c *CloudDirectory) ListOutgoingTypedLinksRequest(input *ListOutgoingTypedL
 //
 // Returns a paginated list of all the outgoing TypedLinkSpecifier information
 // for an object. It also supports filtering by typed link facet and identity
-// attributes. For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -5729,17 +6226,17 @@ func (c *CloudDirectory) ListOutgoingTypedLinksRequest(input *ListOutgoingTypedL
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListOutgoingTypedLinks for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5747,28 +6244,31 @@ func (c *CloudDirectory) ListOutgoingTypedLinksRequest(input *ListOutgoingTypedL
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListOutgoingTypedLinks
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListOutgoingTypedLinks
 func (c *CloudDirectory) ListOutgoingTypedLinks(input *ListOutgoingTypedLinksInput) (*ListOutgoingTypedLinksOutput, error) {
 	req, out := c.ListOutgoingTypedLinksRequest(input)
 	return out, req.Send()
@@ -5794,19 +6294,18 @@ const opListPolicyAttachments = "ListPolicyAttachments"
 
 // ListPolicyAttachmentsRequest generates a "aws/request.Request" representing the
 // client's request for the ListPolicyAttachments operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListPolicyAttachments for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListPolicyAttachments method directly
-// instead.
+// See ListPolicyAttachments for more information on using the ListPolicyAttachments
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListPolicyAttachmentsRequest method.
 //    req, resp := client.ListPolicyAttachmentsRequest(params)
@@ -5816,7 +6315,7 @@ const opListPolicyAttachments = "ListPolicyAttachments"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPolicyAttachments
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListPolicyAttachments
 func (c *CloudDirectory) ListPolicyAttachmentsRequest(input *ListPolicyAttachmentsInput) (req *request.Request, output *ListPolicyAttachmentsOutput) {
 	op := &request.Operation{
 		Name:       opListPolicyAttachments,
@@ -5850,17 +6349,17 @@ func (c *CloudDirectory) ListPolicyAttachmentsRequest(input *ListPolicyAttachmen
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListPolicyAttachments for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -5868,33 +6367,30 @@ func (c *CloudDirectory) ListPolicyAttachmentsRequest(input *ListPolicyAttachmen
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeNotPolicyException "NotPolicyException"
+//   * NotPolicyException
 //   Indicates that the requested operation can only operate on policy objects.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPolicyAttachments
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListPolicyAttachments
 func (c *CloudDirectory) ListPolicyAttachments(input *ListPolicyAttachmentsInput) (*ListPolicyAttachmentsOutput, error) {
 	req, out := c.ListPolicyAttachmentsRequest(input)
 	return out, req.Send()
@@ -5927,7 +6423,7 @@ func (c *CloudDirectory) ListPolicyAttachmentsWithContext(ctx aws.Context, input
 //    // Example iterating over at most 3 pages of a ListPolicyAttachments operation.
 //    pageNum := 0
 //    err := client.ListPolicyAttachmentsPages(params,
-//        func(page *ListPolicyAttachmentsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListPolicyAttachmentsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5959,10 +6455,12 @@ func (c *CloudDirectory) ListPolicyAttachmentsPagesWithContext(ctx aws.Context, 
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListPolicyAttachmentsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListPolicyAttachmentsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -5970,19 +6468,18 @@ const opListPublishedSchemaArns = "ListPublishedSchemaArns"
 
 // ListPublishedSchemaArnsRequest generates a "aws/request.Request" representing the
 // client's request for the ListPublishedSchemaArns operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListPublishedSchemaArns for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListPublishedSchemaArns method directly
-// instead.
+// See ListPublishedSchemaArns for more information on using the ListPublishedSchemaArns
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListPublishedSchemaArnsRequest method.
 //    req, resp := client.ListPublishedSchemaArnsRequest(params)
@@ -5992,7 +6489,7 @@ const opListPublishedSchemaArns = "ListPublishedSchemaArns"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPublishedSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListPublishedSchemaArns
 func (c *CloudDirectory) ListPublishedSchemaArnsRequest(input *ListPublishedSchemaArnsInput) (req *request.Request, output *ListPublishedSchemaArnsOutput) {
 	op := &request.Operation{
 		Name:       opListPublishedSchemaArns,
@@ -6017,7 +6514,9 @@ func (c *CloudDirectory) ListPublishedSchemaArnsRequest(input *ListPublishedSche
 
 // ListPublishedSchemaArns API operation for Amazon CloudDirectory.
 //
-// Retrieves each published schema Amazon Resource Name (ARN).
+// Lists the major version families of each published schema. If a major version
+// ARN is provided as SchemaArn, the minor version revisions in that family
+// are listed instead.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6026,17 +6525,17 @@ func (c *CloudDirectory) ListPublishedSchemaArnsRequest(input *ListPublishedSche
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListPublishedSchemaArns for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6044,24 +6543,24 @@ func (c *CloudDirectory) ListPublishedSchemaArnsRequest(input *ListPublishedSche
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPublishedSchemaArns
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListPublishedSchemaArns
 func (c *CloudDirectory) ListPublishedSchemaArns(input *ListPublishedSchemaArnsInput) (*ListPublishedSchemaArnsOutput, error) {
 	req, out := c.ListPublishedSchemaArnsRequest(input)
 	return out, req.Send()
@@ -6094,7 +6593,7 @@ func (c *CloudDirectory) ListPublishedSchemaArnsWithContext(ctx aws.Context, inp
 //    // Example iterating over at most 3 pages of a ListPublishedSchemaArns operation.
 //    pageNum := 0
 //    err := client.ListPublishedSchemaArnsPages(params,
-//        func(page *ListPublishedSchemaArnsOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListPublishedSchemaArnsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -6126,10 +6625,12 @@ func (c *CloudDirectory) ListPublishedSchemaArnsPagesWithContext(ctx aws.Context
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListPublishedSchemaArnsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListPublishedSchemaArnsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -6137,19 +6638,18 @@ const opListTagsForResource = "ListTagsForResource"
 
 // ListTagsForResourceRequest generates a "aws/request.Request" representing the
 // client's request for the ListTagsForResource operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListTagsForResource for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListTagsForResource method directly
-// instead.
+// See ListTagsForResource for more information on using the ListTagsForResource
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListTagsForResourceRequest method.
 //    req, resp := client.ListTagsForResourceRequest(params)
@@ -6159,7 +6659,7 @@ const opListTagsForResource = "ListTagsForResource"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTagsForResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTagsForResource
 func (c *CloudDirectory) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *request.Request, output *ListTagsForResourceOutput) {
 	op := &request.Operation{
 		Name:       opListTagsForResource,
@@ -6195,17 +6695,17 @@ func (c *CloudDirectory) ListTagsForResourceRequest(input *ListTagsForResourceIn
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListTagsForResource for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6213,26 +6713,26 @@ func (c *CloudDirectory) ListTagsForResourceRequest(input *ListTagsForResourceIn
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidTaggingRequestException "InvalidTaggingRequestException"
+//   * InvalidTaggingRequestException
 //   Can occur for multiple reasons such as when you tag a resource that doesn’t
 //   exist or if you specify a higher number of tags for a resource than the allowed
 //   limit. Allowed limit is 50 tags per resource.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTagsForResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTagsForResource
 func (c *CloudDirectory) ListTagsForResource(input *ListTagsForResourceInput) (*ListTagsForResourceOutput, error) {
 	req, out := c.ListTagsForResourceRequest(input)
 	return out, req.Send()
@@ -6265,7 +6765,7 @@ func (c *CloudDirectory) ListTagsForResourceWithContext(ctx aws.Context, input *
 //    // Example iterating over at most 3 pages of a ListTagsForResource operation.
 //    pageNum := 0
 //    err := client.ListTagsForResourcePages(params,
-//        func(page *ListTagsForResourceOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListTagsForResourceOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -6297,10 +6797,12 @@ func (c *CloudDirectory) ListTagsForResourcePagesWithContext(ctx aws.Context, in
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListTagsForResourceOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListTagsForResourceOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -6308,19 +6810,18 @@ const opListTypedLinkFacetAttributes = "ListTypedLinkFacetAttributes"
 
 // ListTypedLinkFacetAttributesRequest generates a "aws/request.Request" representing the
 // client's request for the ListTypedLinkFacetAttributes operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListTypedLinkFacetAttributes for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListTypedLinkFacetAttributes method directly
-// instead.
+// See ListTypedLinkFacetAttributes for more information on using the ListTypedLinkFacetAttributes
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListTypedLinkFacetAttributesRequest method.
 //    req, resp := client.ListTypedLinkFacetAttributesRequest(params)
@@ -6330,7 +6831,7 @@ const opListTypedLinkFacetAttributes = "ListTypedLinkFacetAttributes"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTypedLinkFacetAttributes
 func (c *CloudDirectory) ListTypedLinkFacetAttributesRequest(input *ListTypedLinkFacetAttributesInput) (req *request.Request, output *ListTypedLinkFacetAttributesOutput) {
 	op := &request.Operation{
 		Name:       opListTypedLinkFacetAttributes,
@@ -6356,7 +6857,7 @@ func (c *CloudDirectory) ListTypedLinkFacetAttributesRequest(input *ListTypedLin
 // ListTypedLinkFacetAttributes API operation for Amazon CloudDirectory.
 //
 // Returns a paginated list of all attribute definitions for a particular TypedLinkFacet.
-// For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6365,17 +6866,17 @@ func (c *CloudDirectory) ListTypedLinkFacetAttributesRequest(input *ListTypedLin
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListTypedLinkFacetAttributes for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6383,27 +6884,27 @@ func (c *CloudDirectory) ListTypedLinkFacetAttributesRequest(input *ListTypedLin
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTypedLinkFacetAttributes
 func (c *CloudDirectory) ListTypedLinkFacetAttributes(input *ListTypedLinkFacetAttributesInput) (*ListTypedLinkFacetAttributesOutput, error) {
 	req, out := c.ListTypedLinkFacetAttributesRequest(input)
 	return out, req.Send()
@@ -6436,7 +6937,7 @@ func (c *CloudDirectory) ListTypedLinkFacetAttributesWithContext(ctx aws.Context
 //    // Example iterating over at most 3 pages of a ListTypedLinkFacetAttributes operation.
 //    pageNum := 0
 //    err := client.ListTypedLinkFacetAttributesPages(params,
-//        func(page *ListTypedLinkFacetAttributesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListTypedLinkFacetAttributesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -6468,10 +6969,12 @@ func (c *CloudDirectory) ListTypedLinkFacetAttributesPagesWithContext(ctx aws.Co
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListTypedLinkFacetAttributesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListTypedLinkFacetAttributesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -6479,19 +6982,18 @@ const opListTypedLinkFacetNames = "ListTypedLinkFacetNames"
 
 // ListTypedLinkFacetNamesRequest generates a "aws/request.Request" representing the
 // client's request for the ListTypedLinkFacetNames operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListTypedLinkFacetNames for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListTypedLinkFacetNames method directly
-// instead.
+// See ListTypedLinkFacetNames for more information on using the ListTypedLinkFacetNames
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListTypedLinkFacetNamesRequest method.
 //    req, resp := client.ListTypedLinkFacetNamesRequest(params)
@@ -6501,7 +7003,7 @@ const opListTypedLinkFacetNames = "ListTypedLinkFacetNames"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetNames
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTypedLinkFacetNames
 func (c *CloudDirectory) ListTypedLinkFacetNamesRequest(input *ListTypedLinkFacetNamesInput) (req *request.Request, output *ListTypedLinkFacetNamesOutput) {
 	op := &request.Operation{
 		Name:       opListTypedLinkFacetNames,
@@ -6527,7 +7029,7 @@ func (c *CloudDirectory) ListTypedLinkFacetNamesRequest(input *ListTypedLinkFace
 // ListTypedLinkFacetNames API operation for Amazon CloudDirectory.
 //
 // Returns a paginated list of TypedLink facet names for a particular schema.
-// For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6536,17 +7038,17 @@ func (c *CloudDirectory) ListTypedLinkFacetNamesRequest(input *ListTypedLinkFace
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation ListTypedLinkFacetNames for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6554,24 +7056,24 @@ func (c *CloudDirectory) ListTypedLinkFacetNamesRequest(input *ListTypedLinkFace
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetNames
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/ListTypedLinkFacetNames
 func (c *CloudDirectory) ListTypedLinkFacetNames(input *ListTypedLinkFacetNamesInput) (*ListTypedLinkFacetNamesOutput, error) {
 	req, out := c.ListTypedLinkFacetNamesRequest(input)
 	return out, req.Send()
@@ -6604,7 +7106,7 @@ func (c *CloudDirectory) ListTypedLinkFacetNamesWithContext(ctx aws.Context, inp
 //    // Example iterating over at most 3 pages of a ListTypedLinkFacetNames operation.
 //    pageNum := 0
 //    err := client.ListTypedLinkFacetNamesPages(params,
-//        func(page *ListTypedLinkFacetNamesOutput, lastPage bool) bool {
+//        func(page *clouddirectory.ListTypedLinkFacetNamesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -6636,10 +7138,12 @@ func (c *CloudDirectory) ListTypedLinkFacetNamesPagesWithContext(ctx aws.Context
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*ListTypedLinkFacetNamesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*ListTypedLinkFacetNamesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -6647,19 +7151,18 @@ const opLookupPolicy = "LookupPolicy"
 
 // LookupPolicyRequest generates a "aws/request.Request" representing the
 // client's request for the LookupPolicy operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See LookupPolicy for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the LookupPolicy method directly
-// instead.
+// See LookupPolicy for more information on using the LookupPolicy
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the LookupPolicyRequest method.
 //    req, resp := client.LookupPolicyRequest(params)
@@ -6669,7 +7172,7 @@ const opLookupPolicy = "LookupPolicy"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/LookupPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/LookupPolicy
 func (c *CloudDirectory) LookupPolicyRequest(input *LookupPolicyInput) (req *request.Request, output *LookupPolicyOutput) {
 	op := &request.Operation{
 		Name:       opLookupPolicy,
@@ -6700,7 +7203,7 @@ func (c *CloudDirectory) LookupPolicyRequest(input *LookupPolicyInput) (req *req
 // the ObjectIdentifier for such objects. If policies are present, it returns
 // ObjectIdentifier, policyId, and policyType. Paths that don't lead to the
 // root from the target object are ignored. For more information, see Policies
-// (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_key_concepts.html#policies).
+// (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6709,17 +7212,17 @@ func (c *CloudDirectory) LookupPolicyRequest(input *LookupPolicyInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation LookupPolicy for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6727,30 +7230,27 @@ func (c *CloudDirectory) LookupPolicyRequest(input *LookupPolicyInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
-//   Indicates that the provided ARN value is not valid.
-//
-//   * ErrCodeInvalidNextTokenException "InvalidNextTokenException"
+//   * InvalidNextTokenException
 //   Indicates that the NextToken value is not valid.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/LookupPolicy
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/LookupPolicy
 func (c *CloudDirectory) LookupPolicy(input *LookupPolicyInput) (*LookupPolicyOutput, error) {
 	req, out := c.LookupPolicyRequest(input)
 	return out, req.Send()
@@ -6783,7 +7283,7 @@ func (c *CloudDirectory) LookupPolicyWithContext(ctx aws.Context, input *LookupP
 //    // Example iterating over at most 3 pages of a LookupPolicy operation.
 //    pageNum := 0
 //    err := client.LookupPolicyPages(params,
-//        func(page *LookupPolicyOutput, lastPage bool) bool {
+//        func(page *clouddirectory.LookupPolicyOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -6815,10 +7315,12 @@ func (c *CloudDirectory) LookupPolicyPagesWithContext(ctx aws.Context, input *Lo
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*LookupPolicyOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*LookupPolicyOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -6826,19 +7328,18 @@ const opPublishSchema = "PublishSchema"
 
 // PublishSchemaRequest generates a "aws/request.Request" representing the
 // client's request for the PublishSchema operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See PublishSchema for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the PublishSchema method directly
-// instead.
+// See PublishSchema for more information on using the PublishSchema
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the PublishSchemaRequest method.
 //    req, resp := client.PublishSchemaRequest(params)
@@ -6848,7 +7349,7 @@ const opPublishSchema = "PublishSchema"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PublishSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/PublishSchema
 func (c *CloudDirectory) PublishSchemaRequest(input *PublishSchemaInput) (req *request.Request, output *PublishSchemaOutput) {
 	op := &request.Operation{
 		Name:       opPublishSchema,
@@ -6867,10 +7368,8 @@ func (c *CloudDirectory) PublishSchemaRequest(input *PublishSchemaInput) (req *r
 
 // PublishSchema API operation for Amazon CloudDirectory.
 //
-// Publishes a development schema with a version. If description and attributes
-// are specified, PublishSchema overrides the development schema description
-// and attributes. If not, the development schema description and attributes
-// are used.
+// Publishes a development schema with a major version and a recommended minor
+// version.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6879,17 +7378,17 @@ func (c *CloudDirectory) PublishSchemaRequest(input *PublishSchemaInput) (req *r
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation PublishSchema for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -6897,24 +7396,24 @@ func (c *CloudDirectory) PublishSchemaRequest(input *PublishSchemaInput) (req *r
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeSchemaAlreadyPublishedException "SchemaAlreadyPublishedException"
+//   * SchemaAlreadyPublishedException
 //   Indicates that a schema is already published.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PublishSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/PublishSchema
 func (c *CloudDirectory) PublishSchema(input *PublishSchemaInput) (*PublishSchemaOutput, error) {
 	req, out := c.PublishSchemaRequest(input)
 	return out, req.Send()
@@ -6940,19 +7439,18 @@ const opPutSchemaFromJson = "PutSchemaFromJson"
 
 // PutSchemaFromJsonRequest generates a "aws/request.Request" representing the
 // client's request for the PutSchemaFromJson operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See PutSchemaFromJson for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the PutSchemaFromJson method directly
-// instead.
+// See PutSchemaFromJson for more information on using the PutSchemaFromJson
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the PutSchemaFromJsonRequest method.
 //    req, resp := client.PutSchemaFromJsonRequest(params)
@@ -6962,7 +7460,7 @@ const opPutSchemaFromJson = "PutSchemaFromJson"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PutSchemaFromJson
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/PutSchemaFromJson
 func (c *CloudDirectory) PutSchemaFromJsonRequest(input *PutSchemaFromJsonInput) (req *request.Request, output *PutSchemaFromJsonOutput) {
 	op := &request.Operation{
 		Name:       opPutSchemaFromJson,
@@ -6982,7 +7480,7 @@ func (c *CloudDirectory) PutSchemaFromJsonRequest(input *PutSchemaFromJsonInput)
 // PutSchemaFromJson API operation for Amazon CloudDirectory.
 //
 // Allows a schema to be updated using JSON upload. Only available for development
-// schemas. See JSON Schema Format (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_schemas.html#jsonformat)
+// schemas. See JSON Schema Format (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_jsonformat.html#schemas_json)
 // for more information.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -6992,17 +7490,17 @@ func (c *CloudDirectory) PutSchemaFromJsonRequest(input *PutSchemaFromJsonInput)
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation PutSchemaFromJson for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7010,24 +7508,24 @@ func (c *CloudDirectory) PutSchemaFromJsonRequest(input *PutSchemaFromJsonInput)
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeInvalidSchemaDocException "InvalidSchemaDocException"
+//   * InvalidSchemaDocException
 //   Indicates that the provided SchemaDoc value is not valid.
 //
-//   * ErrCodeInvalidRuleException "InvalidRuleException"
+//   * InvalidRuleException
 //   Occurs when any of the rule parameter keys or values are invalid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PutSchemaFromJson
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/PutSchemaFromJson
 func (c *CloudDirectory) PutSchemaFromJson(input *PutSchemaFromJsonInput) (*PutSchemaFromJsonOutput, error) {
 	req, out := c.PutSchemaFromJsonRequest(input)
 	return out, req.Send()
@@ -7053,19 +7551,18 @@ const opRemoveFacetFromObject = "RemoveFacetFromObject"
 
 // RemoveFacetFromObjectRequest generates a "aws/request.Request" representing the
 // client's request for the RemoveFacetFromObject operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See RemoveFacetFromObject for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the RemoveFacetFromObject method directly
-// instead.
+// See RemoveFacetFromObject for more information on using the RemoveFacetFromObject
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the RemoveFacetFromObjectRequest method.
 //    req, resp := client.RemoveFacetFromObjectRequest(params)
@@ -7075,7 +7572,7 @@ const opRemoveFacetFromObject = "RemoveFacetFromObject"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/RemoveFacetFromObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/RemoveFacetFromObject
 func (c *CloudDirectory) RemoveFacetFromObjectRequest(input *RemoveFacetFromObjectInput) (req *request.Request, output *RemoveFacetFromObjectOutput) {
 	op := &request.Operation{
 		Name:       opRemoveFacetFromObject,
@@ -7089,6 +7586,7 @@ func (c *CloudDirectory) RemoveFacetFromObjectRequest(input *RemoveFacetFromObje
 
 	output = &RemoveFacetFromObjectOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -7103,17 +7601,17 @@ func (c *CloudDirectory) RemoveFacetFromObjectRequest(input *RemoveFacetFromObje
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation RemoveFacetFromObject for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7121,28 +7619,28 @@ func (c *CloudDirectory) RemoveFacetFromObjectRequest(input *RemoveFacetFromObje
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/RemoveFacetFromObject
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/RemoveFacetFromObject
 func (c *CloudDirectory) RemoveFacetFromObject(input *RemoveFacetFromObjectInput) (*RemoveFacetFromObjectOutput, error) {
 	req, out := c.RemoveFacetFromObjectRequest(input)
 	return out, req.Send()
@@ -7168,19 +7666,18 @@ const opTagResource = "TagResource"
 
 // TagResourceRequest generates a "aws/request.Request" representing the
 // client's request for the TagResource operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See TagResource for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the TagResource method directly
-// instead.
+// See TagResource for more information on using the TagResource
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the TagResourceRequest method.
 //    req, resp := client.TagResourceRequest(params)
@@ -7190,7 +7687,7 @@ const opTagResource = "TagResource"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/TagResource
 func (c *CloudDirectory) TagResourceRequest(input *TagResourceInput) (req *request.Request, output *TagResourceOutput) {
 	op := &request.Operation{
 		Name:       opTagResource,
@@ -7204,6 +7701,7 @@ func (c *CloudDirectory) TagResourceRequest(input *TagResourceInput) (req *reque
 
 	output = &TagResourceOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -7218,17 +7716,17 @@ func (c *CloudDirectory) TagResourceRequest(input *TagResourceInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation TagResource for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7236,26 +7734,26 @@ func (c *CloudDirectory) TagResourceRequest(input *TagResourceInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidTaggingRequestException "InvalidTaggingRequestException"
+//   * InvalidTaggingRequestException
 //   Can occur for multiple reasons such as when you tag a resource that doesn’t
 //   exist or if you specify a higher number of tags for a resource than the allowed
 //   limit. Allowed limit is 50 tags per resource.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/TagResource
 func (c *CloudDirectory) TagResource(input *TagResourceInput) (*TagResourceOutput, error) {
 	req, out := c.TagResourceRequest(input)
 	return out, req.Send()
@@ -7281,19 +7779,18 @@ const opUntagResource = "UntagResource"
 
 // UntagResourceRequest generates a "aws/request.Request" representing the
 // client's request for the UntagResource operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UntagResource for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UntagResource method directly
-// instead.
+// See UntagResource for more information on using the UntagResource
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UntagResourceRequest method.
 //    req, resp := client.UntagResourceRequest(params)
@@ -7303,7 +7800,7 @@ const opUntagResource = "UntagResource"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UntagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UntagResource
 func (c *CloudDirectory) UntagResourceRequest(input *UntagResourceInput) (req *request.Request, output *UntagResourceOutput) {
 	op := &request.Operation{
 		Name:       opUntagResource,
@@ -7317,6 +7814,7 @@ func (c *CloudDirectory) UntagResourceRequest(input *UntagResourceInput) (req *r
 
 	output = &UntagResourceOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -7331,17 +7829,17 @@ func (c *CloudDirectory) UntagResourceRequest(input *UntagResourceInput) (req *r
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation UntagResource for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7349,26 +7847,26 @@ func (c *CloudDirectory) UntagResourceRequest(input *UntagResourceInput) (req *r
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeInvalidTaggingRequestException "InvalidTaggingRequestException"
+//   * InvalidTaggingRequestException
 //   Can occur for multiple reasons such as when you tag a resource that doesn’t
 //   exist or if you specify a higher number of tags for a resource than the allowed
 //   limit. Allowed limit is 50 tags per resource.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UntagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UntagResource
 func (c *CloudDirectory) UntagResource(input *UntagResourceInput) (*UntagResourceOutput, error) {
 	req, out := c.UntagResourceRequest(input)
 	return out, req.Send()
@@ -7394,19 +7892,18 @@ const opUpdateFacet = "UpdateFacet"
 
 // UpdateFacetRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateFacet method directly
-// instead.
+// See UpdateFacet for more information on using the UpdateFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateFacetRequest method.
 //    req, resp := client.UpdateFacetRequest(params)
@@ -7416,7 +7913,7 @@ const opUpdateFacet = "UpdateFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateFacet
 func (c *CloudDirectory) UpdateFacetRequest(input *UpdateFacetInput) (req *request.Request, output *UpdateFacetOutput) {
 	op := &request.Operation{
 		Name:       opUpdateFacet,
@@ -7430,6 +7927,7 @@ func (c *CloudDirectory) UpdateFacetRequest(input *UpdateFacetInput) (req *reque
 
 	output = &UpdateFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -7450,17 +7948,17 @@ func (c *CloudDirectory) UpdateFacetRequest(input *UpdateFacetInput) (req *reque
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation UpdateFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7468,30 +7966,34 @@ func (c *CloudDirectory) UpdateFacetRequest(input *UpdateFacetInput) (req *reque
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeInvalidFacetUpdateException "InvalidFacetUpdateException"
+//   * InvalidFacetUpdateException
 //   An attempt to modify a Facet resulted in an invalid schema exception.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * FacetValidationException
+//   The Facet that you provided was not well formed or could not be validated
+//   with the schema.
+//
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-//   * ErrCodeInvalidRuleException "InvalidRuleException"
+//   * InvalidRuleException
 //   Occurs when any of the rule parameter keys or values are invalid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateFacet
 func (c *CloudDirectory) UpdateFacet(input *UpdateFacetInput) (*UpdateFacetOutput, error) {
 	req, out := c.UpdateFacetRequest(input)
 	return out, req.Send()
@@ -7513,23 +8015,138 @@ func (c *CloudDirectory) UpdateFacetWithContext(ctx aws.Context, input *UpdateFa
 	return out, req.Send()
 }
 
+const opUpdateLinkAttributes = "UpdateLinkAttributes"
+
+// UpdateLinkAttributesRequest generates a "aws/request.Request" representing the
+// client's request for the UpdateLinkAttributes operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See UpdateLinkAttributes for more information on using the UpdateLinkAttributes
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the UpdateLinkAttributesRequest method.
+//    req, resp := client.UpdateLinkAttributesRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateLinkAttributes
+func (c *CloudDirectory) UpdateLinkAttributesRequest(input *UpdateLinkAttributesInput) (req *request.Request, output *UpdateLinkAttributesOutput) {
+	op := &request.Operation{
+		Name:       opUpdateLinkAttributes,
+		HTTPMethod: "POST",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/typedlink/attributes/update",
+	}
+
+	if input == nil {
+		input = &UpdateLinkAttributesInput{}
+	}
+
+	output = &UpdateLinkAttributesOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// UpdateLinkAttributes API operation for Amazon CloudDirectory.
+//
+// Updates a given typed link’s attributes. Attributes to be updated must
+// not contribute to the typed link’s identity, as defined by its IdentityAttributeOrder.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation UpdateLinkAttributes for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+//   for more information.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * FacetValidationException
+//   The Facet that you provided was not well formed or could not be validated
+//   with the schema.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateLinkAttributes
+func (c *CloudDirectory) UpdateLinkAttributes(input *UpdateLinkAttributesInput) (*UpdateLinkAttributesOutput, error) {
+	req, out := c.UpdateLinkAttributesRequest(input)
+	return out, req.Send()
+}
+
+// UpdateLinkAttributesWithContext is the same as UpdateLinkAttributes with the addition of
+// the ability to pass a context and additional request options.
+//
+// See UpdateLinkAttributes for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) UpdateLinkAttributesWithContext(ctx aws.Context, input *UpdateLinkAttributesInput, opts ...request.Option) (*UpdateLinkAttributesOutput, error) {
+	req, out := c.UpdateLinkAttributesRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opUpdateObjectAttributes = "UpdateObjectAttributes"
 
 // UpdateObjectAttributesRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateObjectAttributes operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateObjectAttributes for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateObjectAttributes method directly
-// instead.
+// See UpdateObjectAttributes for more information on using the UpdateObjectAttributes
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateObjectAttributesRequest method.
 //    req, resp := client.UpdateObjectAttributesRequest(params)
@@ -7539,7 +8156,7 @@ const opUpdateObjectAttributes = "UpdateObjectAttributes"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateObjectAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateObjectAttributes
 func (c *CloudDirectory) UpdateObjectAttributesRequest(input *UpdateObjectAttributesInput) (req *request.Request, output *UpdateObjectAttributesOutput) {
 	op := &request.Operation{
 		Name:       opUpdateObjectAttributes,
@@ -7567,17 +8184,17 @@ func (c *CloudDirectory) UpdateObjectAttributesRequest(input *UpdateObjectAttrib
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation UpdateObjectAttributes for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7585,28 +8202,32 @@ func (c *CloudDirectory) UpdateObjectAttributesRequest(input *UpdateObjectAttrib
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeDirectoryNotEnabledException "DirectoryNotEnabledException"
-//   An operation can only operate on a directory that is not enabled.
+//   * DirectoryNotEnabledException
+//   Operations are only permitted on enabled directories.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * LinkNameAlreadyInUseException
+//   Indicates that a link could not be created due to a naming conflict. Choose
+//   a different name and then try again.
+//
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateObjectAttributes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateObjectAttributes
 func (c *CloudDirectory) UpdateObjectAttributes(input *UpdateObjectAttributesInput) (*UpdateObjectAttributesOutput, error) {
 	req, out := c.UpdateObjectAttributesRequest(input)
 	return out, req.Send()
@@ -7632,19 +8253,18 @@ const opUpdateSchema = "UpdateSchema"
 
 // UpdateSchemaRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateSchema operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateSchema for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateSchema method directly
-// instead.
+// See UpdateSchema for more information on using the UpdateSchema
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateSchemaRequest method.
 //    req, resp := client.UpdateSchemaRequest(params)
@@ -7654,7 +8274,7 @@ const opUpdateSchema = "UpdateSchema"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateSchema
 func (c *CloudDirectory) UpdateSchemaRequest(input *UpdateSchemaInput) (req *request.Request, output *UpdateSchemaOutput) {
 	op := &request.Operation{
 		Name:       opUpdateSchema,
@@ -7683,17 +8303,17 @@ func (c *CloudDirectory) UpdateSchemaRequest(input *UpdateSchemaInput) (req *req
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation UpdateSchema for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7701,21 +8321,21 @@ func (c *CloudDirectory) UpdateSchemaRequest(input *UpdateSchemaInput) (req *req
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateSchema
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateSchema
 func (c *CloudDirectory) UpdateSchema(input *UpdateSchemaInput) (*UpdateSchemaOutput, error) {
 	req, out := c.UpdateSchemaRequest(input)
 	return out, req.Send()
@@ -7741,19 +8361,18 @@ const opUpdateTypedLinkFacet = "UpdateTypedLinkFacet"
 
 // UpdateTypedLinkFacetRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateTypedLinkFacet operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateTypedLinkFacet for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateTypedLinkFacet method directly
-// instead.
+// See UpdateTypedLinkFacet for more information on using the UpdateTypedLinkFacet
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateTypedLinkFacetRequest method.
 //    req, resp := client.UpdateTypedLinkFacetRequest(params)
@@ -7763,7 +8382,7 @@ const opUpdateTypedLinkFacet = "UpdateTypedLinkFacet"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateTypedLinkFacet
 func (c *CloudDirectory) UpdateTypedLinkFacetRequest(input *UpdateTypedLinkFacetInput) (req *request.Request, output *UpdateTypedLinkFacetOutput) {
 	op := &request.Operation{
 		Name:       opUpdateTypedLinkFacet,
@@ -7777,12 +8396,13 @@ func (c *CloudDirectory) UpdateTypedLinkFacetRequest(input *UpdateTypedLinkFacet
 
 	output = &UpdateTypedLinkFacetOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
 // UpdateTypedLinkFacet API operation for Amazon CloudDirectory.
 //
-// Updates a TypedLinkFacet. For more information, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+// Updates a TypedLinkFacet. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -7791,17 +8411,17 @@ func (c *CloudDirectory) UpdateTypedLinkFacetRequest(input *UpdateTypedLinkFacet
 // See the AWS API reference guide for Amazon CloudDirectory's
 // API operation UpdateTypedLinkFacet for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInternalServiceException "InternalServiceException"
+// Returned Error Types:
+//   * InternalServiceException
 //   Indicates a problem that must be resolved by Amazon Web Services. This might
 //   be a transient error in which case you can retry your request until it succeeds.
 //   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
 //   site to see if there are any operational issues with the service.
 //
-//   * ErrCodeInvalidArnException "InvalidArnException"
+//   * InvalidArnException
 //   Indicates that the provided ARN value is not valid.
 //
-//   * ErrCodeRetryableConflictException "RetryableConflictException"
+//   * RetryableConflictException
 //   Occurs when a conflict with a previous successful write is detected. For
 //   example, if a write operation occurs on an object and then an attempt is
 //   made to read the object using “SERIALIZABLE” consistency, this exception
@@ -7809,34 +8429,34 @@ func (c *CloudDirectory) UpdateTypedLinkFacetRequest(input *UpdateTypedLinkFacet
 //   to propagate to the host serving the current request. A retry (with appropriate
 //   backoff logic) is the recommended response to this exception.
 //
-//   * ErrCodeValidationException "ValidationException"
+//   * ValidationException
 //   Indicates that your request is malformed in some manner. See the exception
 //   message.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
-//   Indicates that limits are exceeded. See Limits (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/limits.html)
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
 //   for more information.
 //
-//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   * AccessDeniedException
 //   Access denied. Check your permissions.
 //
-//   * ErrCodeFacetValidationException "FacetValidationException"
+//   * FacetValidationException
 //   The Facet that you provided was not well formed or could not be validated
 //   with the schema.
 //
-//   * ErrCodeInvalidFacetUpdateException "InvalidFacetUpdateException"
+//   * InvalidFacetUpdateException
 //   An attempt to modify a Facet resulted in an invalid schema exception.
 //
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   * ResourceNotFoundException
 //   The specified resource could not be found.
 //
-//   * ErrCodeFacetNotFoundException "FacetNotFoundException"
+//   * FacetNotFoundException
 //   The specified Facet could not be found.
 //
-//   * ErrCodeInvalidRuleException "InvalidRuleException"
+//   * InvalidRuleException
 //   Occurs when any of the rule parameter keys or values are invalid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateTypedLinkFacet
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpdateTypedLinkFacet
 func (c *CloudDirectory) UpdateTypedLinkFacet(input *UpdateTypedLinkFacetInput) (*UpdateTypedLinkFacetOutput, error) {
 	req, out := c.UpdateTypedLinkFacetRequest(input)
 	return out, req.Send()
@@ -7858,7 +8478,302 @@ func (c *CloudDirectory) UpdateTypedLinkFacetWithContext(ctx aws.Context, input 
 	return out, req.Send()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AddFacetToObjectRequest
+const opUpgradeAppliedSchema = "UpgradeAppliedSchema"
+
+// UpgradeAppliedSchemaRequest generates a "aws/request.Request" representing the
+// client's request for the UpgradeAppliedSchema operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See UpgradeAppliedSchema for more information on using the UpgradeAppliedSchema
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the UpgradeAppliedSchemaRequest method.
+//    req, resp := client.UpgradeAppliedSchemaRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpgradeAppliedSchema
+func (c *CloudDirectory) UpgradeAppliedSchemaRequest(input *UpgradeAppliedSchemaInput) (req *request.Request, output *UpgradeAppliedSchemaOutput) {
+	op := &request.Operation{
+		Name:       opUpgradeAppliedSchema,
+		HTTPMethod: "PUT",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/schema/upgradeapplied",
+	}
+
+	if input == nil {
+		input = &UpgradeAppliedSchemaInput{}
+	}
+
+	output = &UpgradeAppliedSchemaOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// UpgradeAppliedSchema API operation for Amazon CloudDirectory.
+//
+// Upgrades a single directory in-place using the PublishedSchemaArn with schema
+// updates found in MinorVersion. Backwards-compatible minor version upgrades
+// are instantaneously available for readers on all objects in the directory.
+// Note: This is a synchronous API call and upgrades only one schema on a given
+// directory per call. To upgrade multiple directories from one schema, you
+// would need to call this API on each directory.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation UpgradeAppliedSchema for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * IncompatibleSchemaException
+//   Indicates a failure occurred while performing a check for backward compatibility
+//   between the specified schema and the schema that is currently applied to
+//   the directory.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
+//
+//   * SchemaAlreadyExistsException
+//   Indicates that a schema could not be created due to a naming conflict. Please
+//   select a different name and then try again.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpgradeAppliedSchema
+func (c *CloudDirectory) UpgradeAppliedSchema(input *UpgradeAppliedSchemaInput) (*UpgradeAppliedSchemaOutput, error) {
+	req, out := c.UpgradeAppliedSchemaRequest(input)
+	return out, req.Send()
+}
+
+// UpgradeAppliedSchemaWithContext is the same as UpgradeAppliedSchema with the addition of
+// the ability to pass a context and additional request options.
+//
+// See UpgradeAppliedSchema for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) UpgradeAppliedSchemaWithContext(ctx aws.Context, input *UpgradeAppliedSchemaInput, opts ...request.Option) (*UpgradeAppliedSchemaOutput, error) {
+	req, out := c.UpgradeAppliedSchemaRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opUpgradePublishedSchema = "UpgradePublishedSchema"
+
+// UpgradePublishedSchemaRequest generates a "aws/request.Request" representing the
+// client's request for the UpgradePublishedSchema operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See UpgradePublishedSchema for more information on using the UpgradePublishedSchema
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the UpgradePublishedSchemaRequest method.
+//    req, resp := client.UpgradePublishedSchemaRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpgradePublishedSchema
+func (c *CloudDirectory) UpgradePublishedSchemaRequest(input *UpgradePublishedSchemaInput) (req *request.Request, output *UpgradePublishedSchemaOutput) {
+	op := &request.Operation{
+		Name:       opUpgradePublishedSchema,
+		HTTPMethod: "PUT",
+		HTTPPath:   "/amazonclouddirectory/2017-01-11/schema/upgradepublished",
+	}
+
+	if input == nil {
+		input = &UpgradePublishedSchemaInput{}
+	}
+
+	output = &UpgradePublishedSchemaOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// UpgradePublishedSchema API operation for Amazon CloudDirectory.
+//
+// Upgrades a published schema under a new minor version revision using the
+// current contents of DevelopmentSchemaArn.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon CloudDirectory's
+// API operation UpgradePublishedSchema for usage and error information.
+//
+// Returned Error Types:
+//   * InternalServiceException
+//   Indicates a problem that must be resolved by Amazon Web Services. This might
+//   be a transient error in which case you can retry your request until it succeeds.
+//   Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+//   site to see if there are any operational issues with the service.
+//
+//   * InvalidArnException
+//   Indicates that the provided ARN value is not valid.
+//
+//   * RetryableConflictException
+//   Occurs when a conflict with a previous successful write is detected. For
+//   example, if a write operation occurs on an object and then an attempt is
+//   made to read the object using “SERIALIZABLE” consistency, this exception
+//   may result. This generally occurs when the previous write did not have time
+//   to propagate to the host serving the current request. A retry (with appropriate
+//   backoff logic) is the recommended response to this exception.
+//
+//   * ValidationException
+//   Indicates that your request is malformed in some manner. See the exception
+//   message.
+//
+//   * IncompatibleSchemaException
+//   Indicates a failure occurred while performing a check for backward compatibility
+//   between the specified schema and the schema that is currently applied to
+//   the directory.
+//
+//   * AccessDeniedException
+//   Access denied. Check your permissions.
+//
+//   * ResourceNotFoundException
+//   The specified resource could not be found.
+//
+//   * InvalidAttachmentException
+//   Indicates that an attempt to make an attachment was invalid. For example,
+//   attaching two nodes with a link type that is not applicable to the nodes
+//   or attempting to apply a schema to a directory a second time.
+//
+//   * LimitExceededException
+//   Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+//   for more information.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2017-01-11/UpgradePublishedSchema
+func (c *CloudDirectory) UpgradePublishedSchema(input *UpgradePublishedSchemaInput) (*UpgradePublishedSchemaOutput, error) {
+	req, out := c.UpgradePublishedSchemaRequest(input)
+	return out, req.Send()
+}
+
+// UpgradePublishedSchemaWithContext is the same as UpgradePublishedSchema with the addition of
+// the ability to pass a context and additional request options.
+//
+// See UpgradePublishedSchema for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *CloudDirectory) UpgradePublishedSchemaWithContext(ctx aws.Context, input *UpgradePublishedSchemaInput, opts ...request.Option) (*UpgradePublishedSchemaOutput, error) {
+	req, out := c.UpgradePublishedSchemaRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// Access denied. Check your permissions.
+type AccessDeniedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s AccessDeniedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s AccessDeniedException) GoString() string {
+	return s.String()
+}
+
+func newErrorAccessDeniedException(v protocol.ResponseMetadata) error {
+	return &AccessDeniedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *AccessDeniedException) Code() string {
+	return "AccessDeniedException"
+}
+
+// Message returns the exception's message.
+func (s *AccessDeniedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *AccessDeniedException) OrigErr() error {
+	return nil
+}
+
+func (s *AccessDeniedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *AccessDeniedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *AccessDeniedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type AddFacetToObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -7876,7 +8791,8 @@ type AddFacetToObjectInput struct {
 	// ObjectReference is a required field
 	ObjectReference *ObjectReference `type:"structure" required:"true"`
 
-	// Identifiers for the facet that you are adding to the object.
+	// Identifiers for the facet that you are adding to the object. See SchemaFacet
+	// for details.
 	//
 	// SchemaFacet is a required field
 	SchemaFacet *SchemaFacet `type:"structure" required:"true"`
@@ -7950,7 +8866,6 @@ func (s *AddFacetToObjectInput) SetSchemaFacet(v *SchemaFacet) *AddFacetToObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AddFacetToObjectResponse
 type AddFacetToObjectOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -7965,7 +8880,6 @@ func (s AddFacetToObjectOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ApplySchemaRequest
 type ApplySchemaInput struct {
 	_ struct{} `type:"structure"`
 
@@ -8020,7 +8934,6 @@ func (s *ApplySchemaInput) SetPublishedSchemaArn(v string) *ApplySchemaInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ApplySchemaResponse
 type ApplySchemaOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8056,7 +8969,6 @@ func (s *ApplySchemaOutput) SetDirectoryArn(v string) *ApplySchemaOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachObjectRequest
 type AttachObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -8141,7 +9053,6 @@ func (s *AttachObjectInput) SetParentReference(v *ObjectReference) *AttachObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachObjectResponse
 type AttachObjectOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8165,13 +9076,14 @@ func (s *AttachObjectOutput) SetAttachedObjectIdentifier(v string) *AttachObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachPolicyRequest
 type AttachPolicyInput struct {
 	_ struct{} `type:"structure"`
 
 	// The Amazon Resource Name (ARN) that is associated with the Directory where
 	// both objects reside. For more information, see arns.
-	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string"`
+	//
+	// DirectoryArn is a required field
+	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
 
 	// The reference that identifies the object to which the policy will be attached.
 	//
@@ -8197,6 +9109,9 @@ func (s AttachPolicyInput) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *AttachPolicyInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "AttachPolicyInput"}
+	if s.DirectoryArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DirectoryArn"))
+	}
 	if s.ObjectReference == nil {
 		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
 	}
@@ -8228,7 +9143,6 @@ func (s *AttachPolicyInput) SetPolicyReference(v *ObjectReference) *AttachPolicy
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachPolicyResponse
 type AttachPolicyOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -8243,7 +9157,6 @@ func (s AttachPolicyOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachToIndexRequest
 type AttachToIndexInput struct {
 	_ struct{} `type:"structure"`
 
@@ -8311,7 +9224,6 @@ func (s *AttachToIndexInput) SetTargetReference(v *ObjectReference) *AttachToInd
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachToIndexResponse
 type AttachToIndexOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8335,7 +9247,6 @@ func (s *AttachToIndexOutput) SetAttachedObjectIdentifier(v string) *AttachToInd
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachTypedLinkRequest
 type AttachTypedLinkInput struct {
 	_ struct{} `type:"structure"`
 
@@ -8446,7 +9357,6 @@ func (s *AttachTypedLinkInput) SetTypedLinkFacet(v *TypedLinkSchemaAndFacetName)
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttachTypedLinkResponse
 type AttachTypedLinkOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8471,7 +9381,6 @@ func (s *AttachTypedLinkOutput) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *At
 }
 
 // A unique identifier for an attribute.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttributeKey
 type AttributeKey struct {
 	_ struct{} `type:"structure"`
 
@@ -8546,7 +9455,6 @@ func (s *AttributeKey) SetSchemaArn(v string) *AttributeKey {
 }
 
 // The combination of an attribute key and an attribute value.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttributeKeyAndValue
 type AttributeKeyAndValue struct {
 	_ struct{} `type:"structure"`
 
@@ -8605,7 +9513,6 @@ func (s *AttributeKeyAndValue) SetValue(v *TypedAttributeValue) *AttributeKeyAnd
 }
 
 // Identifies the attribute name and value for a typed link.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/AttributeNameAndValue
 type AttributeNameAndValue struct {
 	_ struct{} `type:"structure"`
 
@@ -8662,7 +9569,6 @@ func (s *AttributeNameAndValue) SetValue(v *TypedAttributeValue) *AttributeNameA
 }
 
 // Represents the output of a batch add facet to object operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchAddFacetToObject
 type BatchAddFacetToObject struct {
 	_ struct{} `type:"structure"`
 
@@ -8745,7 +9651,6 @@ func (s *BatchAddFacetToObject) SetSchemaFacet(v *SchemaFacet) *BatchAddFacetToO
 }
 
 // The result of a batch add facet to object operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchAddFacetToObjectResponse
 type BatchAddFacetToObjectResponse struct {
 	_ struct{} `type:"structure"`
 }
@@ -8761,7 +9666,6 @@ func (s BatchAddFacetToObjectResponse) GoString() string {
 }
 
 // Represents the output of an AttachObject operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchAttachObject
 type BatchAttachObject struct {
 	_ struct{} `type:"structure"`
 
@@ -8832,7 +9736,6 @@ func (s *BatchAttachObject) SetParentReference(v *ObjectReference) *BatchAttachO
 }
 
 // Represents the output batch AttachObject response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchAttachObjectResponse
 type BatchAttachObjectResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -8856,21 +9759,405 @@ func (s *BatchAttachObjectResponse) SetAttachedObjectIdentifier(v string) *Batch
 	return s
 }
 
+// Attaches a policy object to a regular object inside a BatchRead operation.
+// For more information, see AttachPolicy and BatchReadRequest$Operations.
+type BatchAttachPolicy struct {
+	_ struct{} `type:"structure"`
+
+	// The reference that identifies the object to which the policy will be attached.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// The reference that is associated with the policy object.
+	//
+	// PolicyReference is a required field
+	PolicyReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchAttachPolicy) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachPolicy) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchAttachPolicy) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchAttachPolicy"}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.PolicyReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("PolicyReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchAttachPolicy) SetObjectReference(v *ObjectReference) *BatchAttachPolicy {
+	s.ObjectReference = v
+	return s
+}
+
+// SetPolicyReference sets the PolicyReference field's value.
+func (s *BatchAttachPolicy) SetPolicyReference(v *ObjectReference) *BatchAttachPolicy {
+	s.PolicyReference = v
+	return s
+}
+
+// Represents the output of an AttachPolicy response operation.
+type BatchAttachPolicyResponse struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchAttachPolicyResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachPolicyResponse) GoString() string {
+	return s.String()
+}
+
+// Attaches the specified object to the specified index inside a BatchRead operation.
+// For more information, see AttachToIndex and BatchReadRequest$Operations.
+type BatchAttachToIndex struct {
+	_ struct{} `type:"structure"`
+
+	// A reference to the index that you are attaching the object to.
+	//
+	// IndexReference is a required field
+	IndexReference *ObjectReference `type:"structure" required:"true"`
+
+	// A reference to the object that you are attaching to the index.
+	//
+	// TargetReference is a required field
+	TargetReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchAttachToIndex) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachToIndex) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchAttachToIndex) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchAttachToIndex"}
+	if s.IndexReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("IndexReference"))
+	}
+	if s.TargetReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("TargetReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetIndexReference sets the IndexReference field's value.
+func (s *BatchAttachToIndex) SetIndexReference(v *ObjectReference) *BatchAttachToIndex {
+	s.IndexReference = v
+	return s
+}
+
+// SetTargetReference sets the TargetReference field's value.
+func (s *BatchAttachToIndex) SetTargetReference(v *ObjectReference) *BatchAttachToIndex {
+	s.TargetReference = v
+	return s
+}
+
+// Represents the output of a AttachToIndex response operation.
+type BatchAttachToIndexResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The ObjectIdentifier of the object that was attached to the index.
+	AttachedObjectIdentifier *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchAttachToIndexResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachToIndexResponse) GoString() string {
+	return s.String()
+}
+
+// SetAttachedObjectIdentifier sets the AttachedObjectIdentifier field's value.
+func (s *BatchAttachToIndexResponse) SetAttachedObjectIdentifier(v string) *BatchAttachToIndexResponse {
+	s.AttachedObjectIdentifier = &v
+	return s
+}
+
+// Attaches a typed link to a specified source and target object inside a BatchRead
+// operation. For more information, see AttachTypedLink and BatchReadRequest$Operations.
+type BatchAttachTypedLink struct {
+	_ struct{} `type:"structure"`
+
+	// A set of attributes that are associated with the typed link.
+	//
+	// Attributes is a required field
+	Attributes []*AttributeNameAndValue `type:"list" required:"true"`
+
+	// Identifies the source object that the typed link will attach to.
+	//
+	// SourceObjectReference is a required field
+	SourceObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// Identifies the target object that the typed link will attach to.
+	//
+	// TargetObjectReference is a required field
+	TargetObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// Identifies the typed link facet that is associated with the typed link.
+	//
+	// TypedLinkFacet is a required field
+	TypedLinkFacet *TypedLinkSchemaAndFacetName `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchAttachTypedLink) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachTypedLink) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchAttachTypedLink) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchAttachTypedLink"}
+	if s.Attributes == nil {
+		invalidParams.Add(request.NewErrParamRequired("Attributes"))
+	}
+	if s.SourceObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("SourceObjectReference"))
+	}
+	if s.TargetObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("TargetObjectReference"))
+	}
+	if s.TypedLinkFacet == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkFacet"))
+	}
+	if s.Attributes != nil {
+		for i, v := range s.Attributes {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Attributes", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.TypedLinkFacet != nil {
+		if err := s.TypedLinkFacet.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkFacet", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributes sets the Attributes field's value.
+func (s *BatchAttachTypedLink) SetAttributes(v []*AttributeNameAndValue) *BatchAttachTypedLink {
+	s.Attributes = v
+	return s
+}
+
+// SetSourceObjectReference sets the SourceObjectReference field's value.
+func (s *BatchAttachTypedLink) SetSourceObjectReference(v *ObjectReference) *BatchAttachTypedLink {
+	s.SourceObjectReference = v
+	return s
+}
+
+// SetTargetObjectReference sets the TargetObjectReference field's value.
+func (s *BatchAttachTypedLink) SetTargetObjectReference(v *ObjectReference) *BatchAttachTypedLink {
+	s.TargetObjectReference = v
+	return s
+}
+
+// SetTypedLinkFacet sets the TypedLinkFacet field's value.
+func (s *BatchAttachTypedLink) SetTypedLinkFacet(v *TypedLinkSchemaAndFacetName) *BatchAttachTypedLink {
+	s.TypedLinkFacet = v
+	return s
+}
+
+// Represents the output of a AttachTypedLink response operation.
+type BatchAttachTypedLinkResponse struct {
+	_ struct{} `type:"structure"`
+
+	// Returns a typed link specifier as output.
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchAttachTypedLinkResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchAttachTypedLinkResponse) GoString() string {
+	return s.String()
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *BatchAttachTypedLinkResponse) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *BatchAttachTypedLinkResponse {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+// Creates an index object inside of a BatchRead operation. For more information,
+// see CreateIndex and BatchReadRequest$Operations.
+type BatchCreateIndex struct {
+	_ struct{} `type:"structure"`
+
+	// The batch reference name. See Transaction Support (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/transaction_support.html)
+	// for more information.
+	BatchReferenceName *string `type:"string"`
+
+	// Indicates whether the attribute that is being indexed has unique values or
+	// not.
+	//
+	// IsUnique is a required field
+	IsUnique *bool `type:"boolean" required:"true"`
+
+	// The name of the link between the parent object and the index object.
+	LinkName *string `min:"1" type:"string"`
+
+	// Specifies the attributes that should be indexed on. Currently only a single
+	// attribute is supported.
+	//
+	// OrderedIndexedAttributeList is a required field
+	OrderedIndexedAttributeList []*AttributeKey `type:"list" required:"true"`
+
+	// A reference to the parent object that contains the index object.
+	ParentReference *ObjectReference `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchCreateIndex) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchCreateIndex) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchCreateIndex) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchCreateIndex"}
+	if s.IsUnique == nil {
+		invalidParams.Add(request.NewErrParamRequired("IsUnique"))
+	}
+	if s.LinkName != nil && len(*s.LinkName) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("LinkName", 1))
+	}
+	if s.OrderedIndexedAttributeList == nil {
+		invalidParams.Add(request.NewErrParamRequired("OrderedIndexedAttributeList"))
+	}
+	if s.OrderedIndexedAttributeList != nil {
+		for i, v := range s.OrderedIndexedAttributeList {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "OrderedIndexedAttributeList", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetBatchReferenceName sets the BatchReferenceName field's value.
+func (s *BatchCreateIndex) SetBatchReferenceName(v string) *BatchCreateIndex {
+	s.BatchReferenceName = &v
+	return s
+}
+
+// SetIsUnique sets the IsUnique field's value.
+func (s *BatchCreateIndex) SetIsUnique(v bool) *BatchCreateIndex {
+	s.IsUnique = &v
+	return s
+}
+
+// SetLinkName sets the LinkName field's value.
+func (s *BatchCreateIndex) SetLinkName(v string) *BatchCreateIndex {
+	s.LinkName = &v
+	return s
+}
+
+// SetOrderedIndexedAttributeList sets the OrderedIndexedAttributeList field's value.
+func (s *BatchCreateIndex) SetOrderedIndexedAttributeList(v []*AttributeKey) *BatchCreateIndex {
+	s.OrderedIndexedAttributeList = v
+	return s
+}
+
+// SetParentReference sets the ParentReference field's value.
+func (s *BatchCreateIndex) SetParentReference(v *ObjectReference) *BatchCreateIndex {
+	s.ParentReference = v
+	return s
+}
+
+// Represents the output of a CreateIndex response operation.
+type BatchCreateIndexResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The ObjectIdentifier of the index created by this operation.
+	ObjectIdentifier *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchCreateIndexResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchCreateIndexResponse) GoString() string {
+	return s.String()
+}
+
+// SetObjectIdentifier sets the ObjectIdentifier field's value.
+func (s *BatchCreateIndexResponse) SetObjectIdentifier(v string) *BatchCreateIndexResponse {
+	s.ObjectIdentifier = &v
+	return s
+}
+
 // Represents the output of a CreateObject operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchCreateObject
 type BatchCreateObject struct {
 	_ struct{} `type:"structure"`
 
-	// The batch reference name. See Batches (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#batches)
+	// The batch reference name. See Transaction Support (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/transaction_support.html)
 	// for more information.
-	//
-	// BatchReferenceName is a required field
-	BatchReferenceName *string `type:"string" required:"true"`
+	BatchReferenceName *string `type:"string"`
 
 	// The name of the link.
-	//
-	// LinkName is a required field
-	LinkName *string `min:"1" type:"string" required:"true"`
+	LinkName *string `min:"1" type:"string"`
 
 	// An attribute map, which contains an attribute ARN as the key and attribute
 	// value as the map value.
@@ -8879,9 +10166,7 @@ type BatchCreateObject struct {
 	ObjectAttributeList []*AttributeKeyAndValue `type:"list" required:"true"`
 
 	// If specified, the parent reference to which this object will be attached.
-	//
-	// ParentReference is a required field
-	ParentReference *ObjectReference `type:"structure" required:"true"`
+	ParentReference *ObjectReference `type:"structure"`
 
 	// A list of FacetArns that will be associated with the object. For more information,
 	// see arns.
@@ -8903,20 +10188,11 @@ func (s BatchCreateObject) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *BatchCreateObject) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "BatchCreateObject"}
-	if s.BatchReferenceName == nil {
-		invalidParams.Add(request.NewErrParamRequired("BatchReferenceName"))
-	}
-	if s.LinkName == nil {
-		invalidParams.Add(request.NewErrParamRequired("LinkName"))
-	}
 	if s.LinkName != nil && len(*s.LinkName) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("LinkName", 1))
 	}
 	if s.ObjectAttributeList == nil {
 		invalidParams.Add(request.NewErrParamRequired("ObjectAttributeList"))
-	}
-	if s.ParentReference == nil {
-		invalidParams.Add(request.NewErrParamRequired("ParentReference"))
 	}
 	if s.SchemaFacet == nil {
 		invalidParams.Add(request.NewErrParamRequired("SchemaFacet"))
@@ -8979,7 +10255,6 @@ func (s *BatchCreateObject) SetSchemaFacet(v []*SchemaFacet) *BatchCreateObject 
 }
 
 // Represents the output of a CreateObject response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchCreateObjectResponse
 type BatchCreateObjectResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9004,7 +10279,6 @@ func (s *BatchCreateObjectResponse) SetObjectIdentifier(v string) *BatchCreateOb
 }
 
 // Represents the output of a DeleteObject operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchDeleteObject
 type BatchDeleteObject struct {
 	_ struct{} `type:"structure"`
 
@@ -9044,7 +10318,6 @@ func (s *BatchDeleteObject) SetObjectReference(v *ObjectReference) *BatchDeleteO
 }
 
 // Represents the output of a DeleteObject response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchDeleteObjectResponse
 type BatchDeleteObjectResponse struct {
 	_ struct{} `type:"structure"`
 }
@@ -9059,16 +10332,91 @@ func (s BatchDeleteObjectResponse) GoString() string {
 	return s.String()
 }
 
+// Detaches the specified object from the specified index inside a BatchRead
+// operation. For more information, see DetachFromIndex and BatchReadRequest$Operations.
+type BatchDetachFromIndex struct {
+	_ struct{} `type:"structure"`
+
+	// A reference to the index object.
+	//
+	// IndexReference is a required field
+	IndexReference *ObjectReference `type:"structure" required:"true"`
+
+	// A reference to the object being detached from the index.
+	//
+	// TargetReference is a required field
+	TargetReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchDetachFromIndex) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachFromIndex) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchDetachFromIndex) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchDetachFromIndex"}
+	if s.IndexReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("IndexReference"))
+	}
+	if s.TargetReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("TargetReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetIndexReference sets the IndexReference field's value.
+func (s *BatchDetachFromIndex) SetIndexReference(v *ObjectReference) *BatchDetachFromIndex {
+	s.IndexReference = v
+	return s
+}
+
+// SetTargetReference sets the TargetReference field's value.
+func (s *BatchDetachFromIndex) SetTargetReference(v *ObjectReference) *BatchDetachFromIndex {
+	s.TargetReference = v
+	return s
+}
+
+// Represents the output of a DetachFromIndex response operation.
+type BatchDetachFromIndexResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The ObjectIdentifier of the object that was detached from the index.
+	DetachedObjectIdentifier *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchDetachFromIndexResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachFromIndexResponse) GoString() string {
+	return s.String()
+}
+
+// SetDetachedObjectIdentifier sets the DetachedObjectIdentifier field's value.
+func (s *BatchDetachFromIndexResponse) SetDetachedObjectIdentifier(v string) *BatchDetachFromIndexResponse {
+	s.DetachedObjectIdentifier = &v
+	return s
+}
+
 // Represents the output of a DetachObject operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchDetachObject
 type BatchDetachObject struct {
 	_ struct{} `type:"structure"`
 
-	// The batch reference name. See Batches (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#batches)
+	// The batch reference name. See Transaction Support (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/transaction_support.html)
 	// for more information.
-	//
-	// BatchReferenceName is a required field
-	BatchReferenceName *string `type:"string" required:"true"`
+	BatchReferenceName *string `type:"string"`
 
 	// The name of the link.
 	//
@@ -9094,9 +10442,6 @@ func (s BatchDetachObject) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *BatchDetachObject) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "BatchDetachObject"}
-	if s.BatchReferenceName == nil {
-		invalidParams.Add(request.NewErrParamRequired("BatchReferenceName"))
-	}
 	if s.LinkName == nil {
 		invalidParams.Add(request.NewErrParamRequired("LinkName"))
 	}
@@ -9132,7 +10477,6 @@ func (s *BatchDetachObject) SetParentReference(v *ObjectReference) *BatchDetachO
 }
 
 // Represents the output of a DetachObject response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchDetachObjectResponse
 type BatchDetachObjectResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9156,8 +10500,730 @@ func (s *BatchDetachObjectResponse) SetDetachedObjectIdentifier(v string) *Batch
 	return s
 }
 
+// Detaches the specified policy from the specified directory inside a BatchWrite
+// operation. For more information, see DetachPolicy and BatchWriteRequest$Operations.
+type BatchDetachPolicy struct {
+	_ struct{} `type:"structure"`
+
+	// Reference that identifies the object whose policy object will be detached.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// Reference that identifies the policy object.
+	//
+	// PolicyReference is a required field
+	PolicyReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchDetachPolicy) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachPolicy) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchDetachPolicy) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchDetachPolicy"}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.PolicyReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("PolicyReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchDetachPolicy) SetObjectReference(v *ObjectReference) *BatchDetachPolicy {
+	s.ObjectReference = v
+	return s
+}
+
+// SetPolicyReference sets the PolicyReference field's value.
+func (s *BatchDetachPolicy) SetPolicyReference(v *ObjectReference) *BatchDetachPolicy {
+	s.PolicyReference = v
+	return s
+}
+
+// Represents the output of a DetachPolicy response operation.
+type BatchDetachPolicyResponse struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchDetachPolicyResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachPolicyResponse) GoString() string {
+	return s.String()
+}
+
+// Detaches a typed link from a specified source and target object inside a
+// BatchRead operation. For more information, see DetachTypedLink and BatchReadRequest$Operations.
+type BatchDetachTypedLink struct {
+	_ struct{} `type:"structure"`
+
+	// Used to accept a typed link specifier as input.
+	//
+	// TypedLinkSpecifier is a required field
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchDetachTypedLink) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachTypedLink) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchDetachTypedLink) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchDetachTypedLink"}
+	if s.TypedLinkSpecifier == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkSpecifier"))
+	}
+	if s.TypedLinkSpecifier != nil {
+		if err := s.TypedLinkSpecifier.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkSpecifier", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *BatchDetachTypedLink) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *BatchDetachTypedLink {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+// Represents the output of a DetachTypedLink response operation.
+type BatchDetachTypedLinkResponse struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchDetachTypedLinkResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchDetachTypedLinkResponse) GoString() string {
+	return s.String()
+}
+
+// Retrieves attributes that are associated with a typed link inside a BatchRead
+// operation. For more information, see GetLinkAttributes and BatchReadRequest$Operations.
+type BatchGetLinkAttributes struct {
+	_ struct{} `type:"structure"`
+
+	// A list of attribute names whose values will be retrieved.
+	//
+	// AttributeNames is a required field
+	AttributeNames []*string `type:"list" required:"true"`
+
+	// Allows a typed link specifier to be accepted as input.
+	//
+	// TypedLinkSpecifier is a required field
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchGetLinkAttributes) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetLinkAttributes) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchGetLinkAttributes) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchGetLinkAttributes"}
+	if s.AttributeNames == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeNames"))
+	}
+	if s.TypedLinkSpecifier == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkSpecifier"))
+	}
+	if s.TypedLinkSpecifier != nil {
+		if err := s.TypedLinkSpecifier.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkSpecifier", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeNames sets the AttributeNames field's value.
+func (s *BatchGetLinkAttributes) SetAttributeNames(v []*string) *BatchGetLinkAttributes {
+	s.AttributeNames = v
+	return s
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *BatchGetLinkAttributes) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *BatchGetLinkAttributes {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+// Represents the output of a GetLinkAttributes response operation.
+type BatchGetLinkAttributesResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The attributes that are associated with the typed link.
+	Attributes []*AttributeKeyAndValue `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchGetLinkAttributesResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetLinkAttributesResponse) GoString() string {
+	return s.String()
+}
+
+// SetAttributes sets the Attributes field's value.
+func (s *BatchGetLinkAttributesResponse) SetAttributes(v []*AttributeKeyAndValue) *BatchGetLinkAttributesResponse {
+	s.Attributes = v
+	return s
+}
+
+// Retrieves attributes within a facet that are associated with an object inside
+// an BatchRead operation. For more information, see GetObjectAttributes and
+// BatchReadRequest$Operations.
+type BatchGetObjectAttributes struct {
+	_ struct{} `type:"structure"`
+
+	// List of attribute names whose values will be retrieved.
+	//
+	// AttributeNames is a required field
+	AttributeNames []*string `type:"list" required:"true"`
+
+	// Reference that identifies the object whose attributes will be retrieved.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// Identifier for the facet whose attributes will be retrieved. See SchemaFacet
+	// for details.
+	//
+	// SchemaFacet is a required field
+	SchemaFacet *SchemaFacet `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchGetObjectAttributes) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetObjectAttributes) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchGetObjectAttributes) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchGetObjectAttributes"}
+	if s.AttributeNames == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeNames"))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.SchemaFacet == nil {
+		invalidParams.Add(request.NewErrParamRequired("SchemaFacet"))
+	}
+	if s.SchemaFacet != nil {
+		if err := s.SchemaFacet.Validate(); err != nil {
+			invalidParams.AddNested("SchemaFacet", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeNames sets the AttributeNames field's value.
+func (s *BatchGetObjectAttributes) SetAttributeNames(v []*string) *BatchGetObjectAttributes {
+	s.AttributeNames = v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchGetObjectAttributes) SetObjectReference(v *ObjectReference) *BatchGetObjectAttributes {
+	s.ObjectReference = v
+	return s
+}
+
+// SetSchemaFacet sets the SchemaFacet field's value.
+func (s *BatchGetObjectAttributes) SetSchemaFacet(v *SchemaFacet) *BatchGetObjectAttributes {
+	s.SchemaFacet = v
+	return s
+}
+
+// Represents the output of a GetObjectAttributes response operation.
+type BatchGetObjectAttributesResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The attribute values that are associated with an object.
+	Attributes []*AttributeKeyAndValue `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchGetObjectAttributesResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetObjectAttributesResponse) GoString() string {
+	return s.String()
+}
+
+// SetAttributes sets the Attributes field's value.
+func (s *BatchGetObjectAttributesResponse) SetAttributes(v []*AttributeKeyAndValue) *BatchGetObjectAttributesResponse {
+	s.Attributes = v
+	return s
+}
+
+// Retrieves metadata about an object inside a BatchRead operation. For more
+// information, see GetObjectInformation and BatchReadRequest$Operations.
+type BatchGetObjectInformation struct {
+	_ struct{} `type:"structure"`
+
+	// A reference to the object.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchGetObjectInformation) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetObjectInformation) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchGetObjectInformation) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchGetObjectInformation"}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchGetObjectInformation) SetObjectReference(v *ObjectReference) *BatchGetObjectInformation {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a GetObjectInformation response operation.
+type BatchGetObjectInformationResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The ObjectIdentifier of the specified object.
+	ObjectIdentifier *string `type:"string"`
+
+	// The facets attached to the specified object.
+	SchemaFacets []*SchemaFacet `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchGetObjectInformationResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchGetObjectInformationResponse) GoString() string {
+	return s.String()
+}
+
+// SetObjectIdentifier sets the ObjectIdentifier field's value.
+func (s *BatchGetObjectInformationResponse) SetObjectIdentifier(v string) *BatchGetObjectInformationResponse {
+	s.ObjectIdentifier = &v
+	return s
+}
+
+// SetSchemaFacets sets the SchemaFacets field's value.
+func (s *BatchGetObjectInformationResponse) SetSchemaFacets(v []*SchemaFacet) *BatchGetObjectInformationResponse {
+	s.SchemaFacets = v
+	return s
+}
+
+// Lists indices attached to an object inside a BatchRead operation. For more
+// information, see ListAttachedIndices and BatchReadRequest$Operations.
+type BatchListAttachedIndices struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// A reference to the object that has indices attached.
+	//
+	// TargetReference is a required field
+	TargetReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListAttachedIndices) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListAttachedIndices) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListAttachedIndices) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListAttachedIndices"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.TargetReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("TargetReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListAttachedIndices) SetMaxResults(v int64) *BatchListAttachedIndices {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListAttachedIndices) SetNextToken(v string) *BatchListAttachedIndices {
+	s.NextToken = &v
+	return s
+}
+
+// SetTargetReference sets the TargetReference field's value.
+func (s *BatchListAttachedIndices) SetTargetReference(v *ObjectReference) *BatchListAttachedIndices {
+	s.TargetReference = v
+	return s
+}
+
+// Represents the output of a ListAttachedIndices response operation.
+type BatchListAttachedIndicesResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The indices attached to the specified object.
+	IndexAttachments []*IndexAttachment `type:"list"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchListAttachedIndicesResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListAttachedIndicesResponse) GoString() string {
+	return s.String()
+}
+
+// SetIndexAttachments sets the IndexAttachments field's value.
+func (s *BatchListAttachedIndicesResponse) SetIndexAttachments(v []*IndexAttachment) *BatchListAttachedIndicesResponse {
+	s.IndexAttachments = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListAttachedIndicesResponse) SetNextToken(v string) *BatchListAttachedIndicesResponse {
+	s.NextToken = &v
+	return s
+}
+
+// Returns a paginated list of all the incoming TypedLinkSpecifier information
+// for an object inside a BatchRead operation. For more information, see ListIncomingTypedLinks
+// and BatchReadRequest$Operations.
+type BatchListIncomingTypedLinks struct {
+	_ struct{} `type:"structure"`
+
+	// Provides range filters for multiple attributes. When providing ranges to
+	// typed link selection, any inexact ranges must be specified at the end. Any
+	// attributes that do not have a range specified are presumed to match the entire
+	// range.
+	FilterAttributeRanges []*TypedLinkAttributeRange `type:"list"`
+
+	// Filters are interpreted in the order of the attributes on the typed link
+	// facet, not the order in which they are supplied to any API calls.
+	FilterTypedLink *TypedLinkSchemaAndFacetName `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The reference that identifies the object whose attributes will be listed.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListIncomingTypedLinks) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListIncomingTypedLinks) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListIncomingTypedLinks) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListIncomingTypedLinks"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.FilterAttributeRanges != nil {
+		for i, v := range s.FilterAttributeRanges {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "FilterAttributeRanges", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.FilterTypedLink != nil {
+		if err := s.FilterTypedLink.Validate(); err != nil {
+			invalidParams.AddNested("FilterTypedLink", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetFilterAttributeRanges sets the FilterAttributeRanges field's value.
+func (s *BatchListIncomingTypedLinks) SetFilterAttributeRanges(v []*TypedLinkAttributeRange) *BatchListIncomingTypedLinks {
+	s.FilterAttributeRanges = v
+	return s
+}
+
+// SetFilterTypedLink sets the FilterTypedLink field's value.
+func (s *BatchListIncomingTypedLinks) SetFilterTypedLink(v *TypedLinkSchemaAndFacetName) *BatchListIncomingTypedLinks {
+	s.FilterTypedLink = v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListIncomingTypedLinks) SetMaxResults(v int64) *BatchListIncomingTypedLinks {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListIncomingTypedLinks) SetNextToken(v string) *BatchListIncomingTypedLinks {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchListIncomingTypedLinks) SetObjectReference(v *ObjectReference) *BatchListIncomingTypedLinks {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a ListIncomingTypedLinks response operation.
+type BatchListIncomingTypedLinksResponse struct {
+	_ struct{} `type:"structure"`
+
+	// Returns one or more typed link specifiers as output.
+	LinkSpecifiers []*TypedLinkSpecifier `type:"list"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchListIncomingTypedLinksResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListIncomingTypedLinksResponse) GoString() string {
+	return s.String()
+}
+
+// SetLinkSpecifiers sets the LinkSpecifiers field's value.
+func (s *BatchListIncomingTypedLinksResponse) SetLinkSpecifiers(v []*TypedLinkSpecifier) *BatchListIncomingTypedLinksResponse {
+	s.LinkSpecifiers = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListIncomingTypedLinksResponse) SetNextToken(v string) *BatchListIncomingTypedLinksResponse {
+	s.NextToken = &v
+	return s
+}
+
+// Lists objects attached to the specified index inside a BatchRead operation.
+// For more information, see ListIndex and BatchReadRequest$Operations.
+type BatchListIndex struct {
+	_ struct{} `type:"structure"`
+
+	// The reference to the index to list.
+	//
+	// IndexReference is a required field
+	IndexReference *ObjectReference `type:"structure" required:"true"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// Specifies the ranges of indexed values that you want to query.
+	RangesOnIndexedValues []*ObjectAttributeRange `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchListIndex) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListIndex) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListIndex) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListIndex"}
+	if s.IndexReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("IndexReference"))
+	}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.RangesOnIndexedValues != nil {
+		for i, v := range s.RangesOnIndexedValues {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "RangesOnIndexedValues", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetIndexReference sets the IndexReference field's value.
+func (s *BatchListIndex) SetIndexReference(v *ObjectReference) *BatchListIndex {
+	s.IndexReference = v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListIndex) SetMaxResults(v int64) *BatchListIndex {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListIndex) SetNextToken(v string) *BatchListIndex {
+	s.NextToken = &v
+	return s
+}
+
+// SetRangesOnIndexedValues sets the RangesOnIndexedValues field's value.
+func (s *BatchListIndex) SetRangesOnIndexedValues(v []*ObjectAttributeRange) *BatchListIndex {
+	s.RangesOnIndexedValues = v
+	return s
+}
+
+// Represents the output of a ListIndex response operation.
+type BatchListIndexResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The objects and indexed values attached to the index.
+	IndexAttachments []*IndexAttachment `type:"list"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchListIndexResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListIndexResponse) GoString() string {
+	return s.String()
+}
+
+// SetIndexAttachments sets the IndexAttachments field's value.
+func (s *BatchListIndexResponse) SetIndexAttachments(v []*IndexAttachment) *BatchListIndexResponse {
+	s.IndexAttachments = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListIndexResponse) SetNextToken(v string) *BatchListIndexResponse {
+	s.NextToken = &v
+	return s
+}
+
 // Represents the output of a ListObjectAttributes operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchListObjectAttributes
 type BatchListObjectAttributes struct {
 	_ struct{} `type:"structure"`
 
@@ -9234,7 +11300,6 @@ func (s *BatchListObjectAttributes) SetObjectReference(v *ObjectReference) *Batc
 }
 
 // Represents the output of a ListObjectAttributes response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchListObjectAttributesResponse
 type BatchListObjectAttributesResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9269,7 +11334,6 @@ func (s *BatchListObjectAttributesResponse) SetNextToken(v string) *BatchListObj
 }
 
 // Represents the output of a ListObjectChildren operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchListObjectChildren
 type BatchListObjectChildren struct {
 	_ struct{} `type:"structure"`
 
@@ -9331,7 +11395,6 @@ func (s *BatchListObjectChildren) SetObjectReference(v *ObjectReference) *BatchL
 }
 
 // Represents the output of a ListObjectChildren response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchListObjectChildrenResponse
 type BatchListObjectChildrenResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9365,9 +11428,607 @@ func (s *BatchListObjectChildrenResponse) SetNextToken(v string) *BatchListObjec
 	return s
 }
 
+// Retrieves all available parent paths for any object type such as node, leaf
+// node, policy node, and index node objects inside a BatchRead operation. For
+// more information, see ListObjectParentPaths and BatchReadRequest$Operations.
+type BatchListObjectParentPaths struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The reference that identifies the object whose attributes will be listed.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListObjectParentPaths) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectParentPaths) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListObjectParentPaths) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListObjectParentPaths"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListObjectParentPaths) SetMaxResults(v int64) *BatchListObjectParentPaths {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectParentPaths) SetNextToken(v string) *BatchListObjectParentPaths {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchListObjectParentPaths) SetObjectReference(v *ObjectReference) *BatchListObjectParentPaths {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a ListObjectParentPaths response operation.
+type BatchListObjectParentPathsResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// Returns the path to the ObjectIdentifiers that are associated with the directory.
+	PathToObjectIdentifiersList []*PathToObjectIdentifiers `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchListObjectParentPathsResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectParentPathsResponse) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectParentPathsResponse) SetNextToken(v string) *BatchListObjectParentPathsResponse {
+	s.NextToken = &v
+	return s
+}
+
+// SetPathToObjectIdentifiersList sets the PathToObjectIdentifiersList field's value.
+func (s *BatchListObjectParentPathsResponse) SetPathToObjectIdentifiersList(v []*PathToObjectIdentifiers) *BatchListObjectParentPathsResponse {
+	s.PathToObjectIdentifiersList = v
+	return s
+}
+
+type BatchListObjectParents struct {
+	_ struct{} `type:"structure"`
+
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	NextToken *string `type:"string"`
+
+	// The reference that identifies an object.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListObjectParents) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectParents) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListObjectParents) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListObjectParents"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListObjectParents) SetMaxResults(v int64) *BatchListObjectParents {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectParents) SetNextToken(v string) *BatchListObjectParents {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchListObjectParents) SetObjectReference(v *ObjectReference) *BatchListObjectParents {
+	s.ObjectReference = v
+	return s
+}
+
+type BatchListObjectParentsResponse struct {
+	_ struct{} `type:"structure"`
+
+	NextToken *string `type:"string"`
+
+	ParentLinks []*ObjectIdentifierAndLinkNameTuple `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchListObjectParentsResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectParentsResponse) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectParentsResponse) SetNextToken(v string) *BatchListObjectParentsResponse {
+	s.NextToken = &v
+	return s
+}
+
+// SetParentLinks sets the ParentLinks field's value.
+func (s *BatchListObjectParentsResponse) SetParentLinks(v []*ObjectIdentifierAndLinkNameTuple) *BatchListObjectParentsResponse {
+	s.ParentLinks = v
+	return s
+}
+
+// Returns policies attached to an object in pagination fashion inside a BatchRead
+// operation. For more information, see ListObjectPolicies and BatchReadRequest$Operations.
+type BatchListObjectPolicies struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The reference that identifies the object whose attributes will be listed.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListObjectPolicies) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectPolicies) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListObjectPolicies) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListObjectPolicies"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListObjectPolicies) SetMaxResults(v int64) *BatchListObjectPolicies {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectPolicies) SetNextToken(v string) *BatchListObjectPolicies {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchListObjectPolicies) SetObjectReference(v *ObjectReference) *BatchListObjectPolicies {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a ListObjectPolicies response operation.
+type BatchListObjectPoliciesResponse struct {
+	_ struct{} `type:"structure"`
+
+	// A list of policy ObjectIdentifiers, that are attached to the object.
+	AttachedPolicyIds []*string `type:"list"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s BatchListObjectPoliciesResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListObjectPoliciesResponse) GoString() string {
+	return s.String()
+}
+
+// SetAttachedPolicyIds sets the AttachedPolicyIds field's value.
+func (s *BatchListObjectPoliciesResponse) SetAttachedPolicyIds(v []*string) *BatchListObjectPoliciesResponse {
+	s.AttachedPolicyIds = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListObjectPoliciesResponse) SetNextToken(v string) *BatchListObjectPoliciesResponse {
+	s.NextToken = &v
+	return s
+}
+
+// Returns a paginated list of all the outgoing TypedLinkSpecifier information
+// for an object inside a BatchRead operation. For more information, see ListOutgoingTypedLinks
+// and BatchReadRequest$Operations.
+type BatchListOutgoingTypedLinks struct {
+	_ struct{} `type:"structure"`
+
+	// Provides range filters for multiple attributes. When providing ranges to
+	// typed link selection, any inexact ranges must be specified at the end. Any
+	// attributes that do not have a range specified are presumed to match the entire
+	// range.
+	FilterAttributeRanges []*TypedLinkAttributeRange `type:"list"`
+
+	// Filters are interpreted in the order of the attributes defined on the typed
+	// link facet, not the order they are supplied to any API calls.
+	FilterTypedLink *TypedLinkSchemaAndFacetName `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The reference that identifies the object whose attributes will be listed.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListOutgoingTypedLinks) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListOutgoingTypedLinks) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListOutgoingTypedLinks) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListOutgoingTypedLinks"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.FilterAttributeRanges != nil {
+		for i, v := range s.FilterAttributeRanges {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "FilterAttributeRanges", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.FilterTypedLink != nil {
+		if err := s.FilterTypedLink.Validate(); err != nil {
+			invalidParams.AddNested("FilterTypedLink", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetFilterAttributeRanges sets the FilterAttributeRanges field's value.
+func (s *BatchListOutgoingTypedLinks) SetFilterAttributeRanges(v []*TypedLinkAttributeRange) *BatchListOutgoingTypedLinks {
+	s.FilterAttributeRanges = v
+	return s
+}
+
+// SetFilterTypedLink sets the FilterTypedLink field's value.
+func (s *BatchListOutgoingTypedLinks) SetFilterTypedLink(v *TypedLinkSchemaAndFacetName) *BatchListOutgoingTypedLinks {
+	s.FilterTypedLink = v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListOutgoingTypedLinks) SetMaxResults(v int64) *BatchListOutgoingTypedLinks {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListOutgoingTypedLinks) SetNextToken(v string) *BatchListOutgoingTypedLinks {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchListOutgoingTypedLinks) SetObjectReference(v *ObjectReference) *BatchListOutgoingTypedLinks {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a ListOutgoingTypedLinks response operation.
+type BatchListOutgoingTypedLinksResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// Returns a typed link specifier as output.
+	TypedLinkSpecifiers []*TypedLinkSpecifier `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchListOutgoingTypedLinksResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListOutgoingTypedLinksResponse) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListOutgoingTypedLinksResponse) SetNextToken(v string) *BatchListOutgoingTypedLinksResponse {
+	s.NextToken = &v
+	return s
+}
+
+// SetTypedLinkSpecifiers sets the TypedLinkSpecifiers field's value.
+func (s *BatchListOutgoingTypedLinksResponse) SetTypedLinkSpecifiers(v []*TypedLinkSpecifier) *BatchListOutgoingTypedLinksResponse {
+	s.TypedLinkSpecifiers = v
+	return s
+}
+
+// Returns all of the ObjectIdentifiers to which a given policy is attached
+// inside a BatchRead operation. For more information, see ListPolicyAttachments
+// and BatchReadRequest$Operations.
+type BatchListPolicyAttachments struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The reference that identifies the policy object.
+	//
+	// PolicyReference is a required field
+	PolicyReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchListPolicyAttachments) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListPolicyAttachments) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchListPolicyAttachments) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchListPolicyAttachments"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.PolicyReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("PolicyReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchListPolicyAttachments) SetMaxResults(v int64) *BatchListPolicyAttachments {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListPolicyAttachments) SetNextToken(v string) *BatchListPolicyAttachments {
+	s.NextToken = &v
+	return s
+}
+
+// SetPolicyReference sets the PolicyReference field's value.
+func (s *BatchListPolicyAttachments) SetPolicyReference(v *ObjectReference) *BatchListPolicyAttachments {
+	s.PolicyReference = v
+	return s
+}
+
+// Represents the output of a ListPolicyAttachments response operation.
+type BatchListPolicyAttachmentsResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// A list of ObjectIdentifiers to which the policy is attached.
+	ObjectIdentifiers []*string `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchListPolicyAttachmentsResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchListPolicyAttachmentsResponse) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchListPolicyAttachmentsResponse) SetNextToken(v string) *BatchListPolicyAttachmentsResponse {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectIdentifiers sets the ObjectIdentifiers field's value.
+func (s *BatchListPolicyAttachmentsResponse) SetObjectIdentifiers(v []*string) *BatchListPolicyAttachmentsResponse {
+	s.ObjectIdentifiers = v
+	return s
+}
+
+// Lists all policies from the root of the Directory to the object specified
+// inside a BatchRead operation. For more information, see LookupPolicy and
+// BatchReadRequest$Operations.
+type BatchLookupPolicy struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// Reference that identifies the object whose policies will be looked up.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchLookupPolicy) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchLookupPolicy) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchLookupPolicy) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchLookupPolicy"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *BatchLookupPolicy) SetMaxResults(v int64) *BatchLookupPolicy {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchLookupPolicy) SetNextToken(v string) *BatchLookupPolicy {
+	s.NextToken = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *BatchLookupPolicy) SetObjectReference(v *ObjectReference) *BatchLookupPolicy {
+	s.ObjectReference = v
+	return s
+}
+
+// Represents the output of a LookupPolicy response operation.
+type BatchLookupPolicyResponse struct {
+	_ struct{} `type:"structure"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// Provides list of path to policies. Policies contain PolicyId, ObjectIdentifier,
+	// and PolicyType. For more information, see Policies (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
+	PolicyToPathList []*PolicyToPath `type:"list"`
+}
+
+// String returns the string representation
+func (s BatchLookupPolicyResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchLookupPolicyResponse) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *BatchLookupPolicyResponse) SetNextToken(v string) *BatchLookupPolicyResponse {
+	s.NextToken = &v
+	return s
+}
+
+// SetPolicyToPathList sets the PolicyToPathList field's value.
+func (s *BatchLookupPolicyResponse) SetPolicyToPathList(v []*PolicyToPath) *BatchLookupPolicyResponse {
+	s.PolicyToPathList = v
+	return s
+}
+
 // The batch read exception structure, which contains the exception type and
 // message.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadException
 type BatchReadException struct {
 	_ struct{} `type:"structure"`
 
@@ -9400,7 +12061,6 @@ func (s *BatchReadException) SetType(v string) *BatchReadException {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadRequest
 type BatchReadInput struct {
 	_ struct{} `type:"structure"`
 
@@ -9475,9 +12135,28 @@ func (s *BatchReadInput) SetOperations(v []*BatchReadOperation) *BatchReadInput 
 }
 
 // Represents the output of a BatchRead operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadOperation
 type BatchReadOperation struct {
 	_ struct{} `type:"structure"`
+
+	// Retrieves attributes that are associated with a typed link.
+	GetLinkAttributes *BatchGetLinkAttributes `type:"structure"`
+
+	// Retrieves attributes within a facet that are associated with an object.
+	GetObjectAttributes *BatchGetObjectAttributes `type:"structure"`
+
+	// Retrieves metadata about an object.
+	GetObjectInformation *BatchGetObjectInformation `type:"structure"`
+
+	// Lists indices attached to an object.
+	ListAttachedIndices *BatchListAttachedIndices `type:"structure"`
+
+	// Returns a paginated list of all the incoming TypedLinkSpecifier information
+	// for an object. It also supports filtering by typed link facet and identity
+	// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	ListIncomingTypedLinks *BatchListIncomingTypedLinks `type:"structure"`
+
+	// Lists objects attached to the specified index.
+	ListIndex *BatchListIndex `type:"structure"`
 
 	// Lists all attributes that are associated with an object.
 	ListObjectAttributes *BatchListObjectAttributes `type:"structure"`
@@ -9485,6 +12164,33 @@ type BatchReadOperation struct {
 	// Returns a paginated list of child objects that are associated with a given
 	// object.
 	ListObjectChildren *BatchListObjectChildren `type:"structure"`
+
+	// Retrieves all available parent paths for any object type such as node, leaf
+	// node, policy node, and index node objects. For more information about objects,
+	// see Directory Structure (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directorystructure.html).
+	ListObjectParentPaths *BatchListObjectParentPaths `type:"structure"`
+
+	ListObjectParents *BatchListObjectParents `type:"structure"`
+
+	// Returns policies attached to an object in pagination fashion.
+	ListObjectPolicies *BatchListObjectPolicies `type:"structure"`
+
+	// Returns a paginated list of all the outgoing TypedLinkSpecifier information
+	// for an object. It also supports filtering by typed link facet and identity
+	// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	ListOutgoingTypedLinks *BatchListOutgoingTypedLinks `type:"structure"`
+
+	// Returns all of the ObjectIdentifiers to which a given policy is attached.
+	ListPolicyAttachments *BatchListPolicyAttachments `type:"structure"`
+
+	// Lists all policies from the root of the Directory to the object specified.
+	// If there are no policies present, an empty list is returned. If policies
+	// are present, and if some objects don't have the policies attached, it returns
+	// the ObjectIdentifier for such objects. If policies are present, it returns
+	// ObjectIdentifier, policyId, and policyType. Paths that don't lead to the
+	// root from the target object are ignored. For more information, see Policies
+	// (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
+	LookupPolicy *BatchLookupPolicy `type:"structure"`
 }
 
 // String returns the string representation
@@ -9500,6 +12206,36 @@ func (s BatchReadOperation) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *BatchReadOperation) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "BatchReadOperation"}
+	if s.GetLinkAttributes != nil {
+		if err := s.GetLinkAttributes.Validate(); err != nil {
+			invalidParams.AddNested("GetLinkAttributes", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.GetObjectAttributes != nil {
+		if err := s.GetObjectAttributes.Validate(); err != nil {
+			invalidParams.AddNested("GetObjectAttributes", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.GetObjectInformation != nil {
+		if err := s.GetObjectInformation.Validate(); err != nil {
+			invalidParams.AddNested("GetObjectInformation", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListAttachedIndices != nil {
+		if err := s.ListAttachedIndices.Validate(); err != nil {
+			invalidParams.AddNested("ListAttachedIndices", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListIncomingTypedLinks != nil {
+		if err := s.ListIncomingTypedLinks.Validate(); err != nil {
+			invalidParams.AddNested("ListIncomingTypedLinks", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListIndex != nil {
+		if err := s.ListIndex.Validate(); err != nil {
+			invalidParams.AddNested("ListIndex", err.(request.ErrInvalidParams))
+		}
+	}
 	if s.ListObjectAttributes != nil {
 		if err := s.ListObjectAttributes.Validate(); err != nil {
 			invalidParams.AddNested("ListObjectAttributes", err.(request.ErrInvalidParams))
@@ -9510,11 +12246,77 @@ func (s *BatchReadOperation) Validate() error {
 			invalidParams.AddNested("ListObjectChildren", err.(request.ErrInvalidParams))
 		}
 	}
+	if s.ListObjectParentPaths != nil {
+		if err := s.ListObjectParentPaths.Validate(); err != nil {
+			invalidParams.AddNested("ListObjectParentPaths", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListObjectParents != nil {
+		if err := s.ListObjectParents.Validate(); err != nil {
+			invalidParams.AddNested("ListObjectParents", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListObjectPolicies != nil {
+		if err := s.ListObjectPolicies.Validate(); err != nil {
+			invalidParams.AddNested("ListObjectPolicies", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListOutgoingTypedLinks != nil {
+		if err := s.ListOutgoingTypedLinks.Validate(); err != nil {
+			invalidParams.AddNested("ListOutgoingTypedLinks", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.ListPolicyAttachments != nil {
+		if err := s.ListPolicyAttachments.Validate(); err != nil {
+			invalidParams.AddNested("ListPolicyAttachments", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.LookupPolicy != nil {
+		if err := s.LookupPolicy.Validate(); err != nil {
+			invalidParams.AddNested("LookupPolicy", err.(request.ErrInvalidParams))
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
 	}
 	return nil
+}
+
+// SetGetLinkAttributes sets the GetLinkAttributes field's value.
+func (s *BatchReadOperation) SetGetLinkAttributes(v *BatchGetLinkAttributes) *BatchReadOperation {
+	s.GetLinkAttributes = v
+	return s
+}
+
+// SetGetObjectAttributes sets the GetObjectAttributes field's value.
+func (s *BatchReadOperation) SetGetObjectAttributes(v *BatchGetObjectAttributes) *BatchReadOperation {
+	s.GetObjectAttributes = v
+	return s
+}
+
+// SetGetObjectInformation sets the GetObjectInformation field's value.
+func (s *BatchReadOperation) SetGetObjectInformation(v *BatchGetObjectInformation) *BatchReadOperation {
+	s.GetObjectInformation = v
+	return s
+}
+
+// SetListAttachedIndices sets the ListAttachedIndices field's value.
+func (s *BatchReadOperation) SetListAttachedIndices(v *BatchListAttachedIndices) *BatchReadOperation {
+	s.ListAttachedIndices = v
+	return s
+}
+
+// SetListIncomingTypedLinks sets the ListIncomingTypedLinks field's value.
+func (s *BatchReadOperation) SetListIncomingTypedLinks(v *BatchListIncomingTypedLinks) *BatchReadOperation {
+	s.ListIncomingTypedLinks = v
+	return s
+}
+
+// SetListIndex sets the ListIndex field's value.
+func (s *BatchReadOperation) SetListIndex(v *BatchListIndex) *BatchReadOperation {
+	s.ListIndex = v
+	return s
 }
 
 // SetListObjectAttributes sets the ListObjectAttributes field's value.
@@ -9529,8 +12331,43 @@ func (s *BatchReadOperation) SetListObjectChildren(v *BatchListObjectChildren) *
 	return s
 }
 
+// SetListObjectParentPaths sets the ListObjectParentPaths field's value.
+func (s *BatchReadOperation) SetListObjectParentPaths(v *BatchListObjectParentPaths) *BatchReadOperation {
+	s.ListObjectParentPaths = v
+	return s
+}
+
+// SetListObjectParents sets the ListObjectParents field's value.
+func (s *BatchReadOperation) SetListObjectParents(v *BatchListObjectParents) *BatchReadOperation {
+	s.ListObjectParents = v
+	return s
+}
+
+// SetListObjectPolicies sets the ListObjectPolicies field's value.
+func (s *BatchReadOperation) SetListObjectPolicies(v *BatchListObjectPolicies) *BatchReadOperation {
+	s.ListObjectPolicies = v
+	return s
+}
+
+// SetListOutgoingTypedLinks sets the ListOutgoingTypedLinks field's value.
+func (s *BatchReadOperation) SetListOutgoingTypedLinks(v *BatchListOutgoingTypedLinks) *BatchReadOperation {
+	s.ListOutgoingTypedLinks = v
+	return s
+}
+
+// SetListPolicyAttachments sets the ListPolicyAttachments field's value.
+func (s *BatchReadOperation) SetListPolicyAttachments(v *BatchListPolicyAttachments) *BatchReadOperation {
+	s.ListPolicyAttachments = v
+	return s
+}
+
+// SetLookupPolicy sets the LookupPolicy field's value.
+func (s *BatchReadOperation) SetLookupPolicy(v *BatchLookupPolicy) *BatchReadOperation {
+	s.LookupPolicy = v
+	return s
+}
+
 // Represents the output of a BatchRead response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadOperationResponse
 type BatchReadOperationResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9563,7 +12400,6 @@ func (s *BatchReadOperationResponse) SetSuccessfulResponse(v *BatchReadSuccessfu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadResponse
 type BatchReadOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -9588,9 +12424,28 @@ func (s *BatchReadOutput) SetResponses(v []*BatchReadOperationResponse) *BatchRe
 }
 
 // Represents the output of a BatchRead success response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchReadSuccessfulResponse
 type BatchReadSuccessfulResponse struct {
 	_ struct{} `type:"structure"`
+
+	// The list of attributes to retrieve from the typed link.
+	GetLinkAttributes *BatchGetLinkAttributesResponse `type:"structure"`
+
+	// Retrieves attributes within a facet that are associated with an object.
+	GetObjectAttributes *BatchGetObjectAttributesResponse `type:"structure"`
+
+	// Retrieves metadata about an object.
+	GetObjectInformation *BatchGetObjectInformationResponse `type:"structure"`
+
+	// Lists indices attached to an object.
+	ListAttachedIndices *BatchListAttachedIndicesResponse `type:"structure"`
+
+	// Returns a paginated list of all the incoming TypedLinkSpecifier information
+	// for an object. It also supports filtering by typed link facet and identity
+	// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	ListIncomingTypedLinks *BatchListIncomingTypedLinksResponse `type:"structure"`
+
+	// Lists objects attached to the specified index.
+	ListIndex *BatchListIndexResponse `type:"structure"`
 
 	// Lists all attributes that are associated with an object.
 	ListObjectAttributes *BatchListObjectAttributesResponse `type:"structure"`
@@ -9598,6 +12453,33 @@ type BatchReadSuccessfulResponse struct {
 	// Returns a paginated list of child objects that are associated with a given
 	// object.
 	ListObjectChildren *BatchListObjectChildrenResponse `type:"structure"`
+
+	// Retrieves all available parent paths for any object type such as node, leaf
+	// node, policy node, and index node objects. For more information about objects,
+	// see Directory Structure (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directorystructure.html).
+	ListObjectParentPaths *BatchListObjectParentPathsResponse `type:"structure"`
+
+	ListObjectParents *BatchListObjectParentsResponse `type:"structure"`
+
+	// Returns policies attached to an object in pagination fashion.
+	ListObjectPolicies *BatchListObjectPoliciesResponse `type:"structure"`
+
+	// Returns a paginated list of all the outgoing TypedLinkSpecifier information
+	// for an object. It also supports filtering by typed link facet and identity
+	// attributes. For more information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	ListOutgoingTypedLinks *BatchListOutgoingTypedLinksResponse `type:"structure"`
+
+	// Returns all of the ObjectIdentifiers to which a given policy is attached.
+	ListPolicyAttachments *BatchListPolicyAttachmentsResponse `type:"structure"`
+
+	// Lists all policies from the root of the Directory to the object specified.
+	// If there are no policies present, an empty list is returned. If policies
+	// are present, and if some objects don't have the policies attached, it returns
+	// the ObjectIdentifier for such objects. If policies are present, it returns
+	// ObjectIdentifier, policyId, and policyType. Paths that don't lead to the
+	// root from the target object are ignored. For more information, see Policies
+	// (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
+	LookupPolicy *BatchLookupPolicyResponse `type:"structure"`
 }
 
 // String returns the string representation
@@ -9608,6 +12490,42 @@ func (s BatchReadSuccessfulResponse) String() string {
 // GoString returns the string representation
 func (s BatchReadSuccessfulResponse) GoString() string {
 	return s.String()
+}
+
+// SetGetLinkAttributes sets the GetLinkAttributes field's value.
+func (s *BatchReadSuccessfulResponse) SetGetLinkAttributes(v *BatchGetLinkAttributesResponse) *BatchReadSuccessfulResponse {
+	s.GetLinkAttributes = v
+	return s
+}
+
+// SetGetObjectAttributes sets the GetObjectAttributes field's value.
+func (s *BatchReadSuccessfulResponse) SetGetObjectAttributes(v *BatchGetObjectAttributesResponse) *BatchReadSuccessfulResponse {
+	s.GetObjectAttributes = v
+	return s
+}
+
+// SetGetObjectInformation sets the GetObjectInformation field's value.
+func (s *BatchReadSuccessfulResponse) SetGetObjectInformation(v *BatchGetObjectInformationResponse) *BatchReadSuccessfulResponse {
+	s.GetObjectInformation = v
+	return s
+}
+
+// SetListAttachedIndices sets the ListAttachedIndices field's value.
+func (s *BatchReadSuccessfulResponse) SetListAttachedIndices(v *BatchListAttachedIndicesResponse) *BatchReadSuccessfulResponse {
+	s.ListAttachedIndices = v
+	return s
+}
+
+// SetListIncomingTypedLinks sets the ListIncomingTypedLinks field's value.
+func (s *BatchReadSuccessfulResponse) SetListIncomingTypedLinks(v *BatchListIncomingTypedLinksResponse) *BatchReadSuccessfulResponse {
+	s.ListIncomingTypedLinks = v
+	return s
+}
+
+// SetListIndex sets the ListIndex field's value.
+func (s *BatchReadSuccessfulResponse) SetListIndex(v *BatchListIndexResponse) *BatchReadSuccessfulResponse {
+	s.ListIndex = v
+	return s
 }
 
 // SetListObjectAttributes sets the ListObjectAttributes field's value.
@@ -9622,8 +12540,43 @@ func (s *BatchReadSuccessfulResponse) SetListObjectChildren(v *BatchListObjectCh
 	return s
 }
 
+// SetListObjectParentPaths sets the ListObjectParentPaths field's value.
+func (s *BatchReadSuccessfulResponse) SetListObjectParentPaths(v *BatchListObjectParentPathsResponse) *BatchReadSuccessfulResponse {
+	s.ListObjectParentPaths = v
+	return s
+}
+
+// SetListObjectParents sets the ListObjectParents field's value.
+func (s *BatchReadSuccessfulResponse) SetListObjectParents(v *BatchListObjectParentsResponse) *BatchReadSuccessfulResponse {
+	s.ListObjectParents = v
+	return s
+}
+
+// SetListObjectPolicies sets the ListObjectPolicies field's value.
+func (s *BatchReadSuccessfulResponse) SetListObjectPolicies(v *BatchListObjectPoliciesResponse) *BatchReadSuccessfulResponse {
+	s.ListObjectPolicies = v
+	return s
+}
+
+// SetListOutgoingTypedLinks sets the ListOutgoingTypedLinks field's value.
+func (s *BatchReadSuccessfulResponse) SetListOutgoingTypedLinks(v *BatchListOutgoingTypedLinksResponse) *BatchReadSuccessfulResponse {
+	s.ListOutgoingTypedLinks = v
+	return s
+}
+
+// SetListPolicyAttachments sets the ListPolicyAttachments field's value.
+func (s *BatchReadSuccessfulResponse) SetListPolicyAttachments(v *BatchListPolicyAttachmentsResponse) *BatchReadSuccessfulResponse {
+	s.ListPolicyAttachments = v
+	return s
+}
+
+// SetLookupPolicy sets the LookupPolicy field's value.
+func (s *BatchReadSuccessfulResponse) SetLookupPolicy(v *BatchLookupPolicyResponse) *BatchReadSuccessfulResponse {
+	s.LookupPolicy = v
+	return s
+}
+
 // A batch operation to remove a facet from an object.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchRemoveFacetFromObject
 type BatchRemoveFacetFromObject struct {
 	_ struct{} `type:"structure"`
 
@@ -9682,7 +12635,6 @@ func (s *BatchRemoveFacetFromObject) SetSchemaFacet(v *SchemaFacet) *BatchRemove
 }
 
 // An empty result that represents success.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchRemoveFacetFromObjectResponse
 type BatchRemoveFacetFromObjectResponse struct {
 	_ struct{} `type:"structure"`
 }
@@ -9697,8 +12649,93 @@ func (s BatchRemoveFacetFromObjectResponse) GoString() string {
 	return s.String()
 }
 
+// Updates a given typed link’s attributes inside a BatchRead operation. Attributes
+// to be updated must not contribute to the typed link’s identity, as defined
+// by its IdentityAttributeOrder. For more information, see UpdateLinkAttributes
+// and BatchReadRequest$Operations.
+type BatchUpdateLinkAttributes struct {
+	_ struct{} `type:"structure"`
+
+	// The attributes update structure.
+	//
+	// AttributeUpdates is a required field
+	AttributeUpdates []*LinkAttributeUpdate `type:"list" required:"true"`
+
+	// Allows a typed link specifier to be accepted as input.
+	//
+	// TypedLinkSpecifier is a required field
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s BatchUpdateLinkAttributes) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchUpdateLinkAttributes) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *BatchUpdateLinkAttributes) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "BatchUpdateLinkAttributes"}
+	if s.AttributeUpdates == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeUpdates"))
+	}
+	if s.TypedLinkSpecifier == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkSpecifier"))
+	}
+	if s.AttributeUpdates != nil {
+		for i, v := range s.AttributeUpdates {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "AttributeUpdates", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.TypedLinkSpecifier != nil {
+		if err := s.TypedLinkSpecifier.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkSpecifier", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeUpdates sets the AttributeUpdates field's value.
+func (s *BatchUpdateLinkAttributes) SetAttributeUpdates(v []*LinkAttributeUpdate) *BatchUpdateLinkAttributes {
+	s.AttributeUpdates = v
+	return s
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *BatchUpdateLinkAttributes) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *BatchUpdateLinkAttributes {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+// Represents the output of a UpdateLinkAttributes response operation.
+type BatchUpdateLinkAttributesResponse struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s BatchUpdateLinkAttributesResponse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchUpdateLinkAttributesResponse) GoString() string {
+	return s.String()
+}
+
 // Represents the output of a BatchUpdate operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchUpdateObjectAttributes
 type BatchUpdateObjectAttributes struct {
 	_ struct{} `type:"structure"`
 
@@ -9762,7 +12799,6 @@ func (s *BatchUpdateObjectAttributes) SetObjectReference(v *ObjectReference) *Ba
 }
 
 // Represents the output of a BatchUpdate response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchUpdateObjectAttributesResponse
 type BatchUpdateObjectAttributesResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9786,7 +12822,66 @@ func (s *BatchUpdateObjectAttributesResponse) SetObjectIdentifier(v string) *Bat
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWriteRequest
+// A BatchWrite exception has occurred.
+type BatchWriteException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Index *int64 `type:"integer"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+
+	Type *string `type:"string" enum:"BatchWriteExceptionType"`
+}
+
+// String returns the string representation
+func (s BatchWriteException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s BatchWriteException) GoString() string {
+	return s.String()
+}
+
+func newErrorBatchWriteException(v protocol.ResponseMetadata) error {
+	return &BatchWriteException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *BatchWriteException) Code() string {
+	return "BatchWriteException"
+}
+
+// Message returns the exception's message.
+func (s *BatchWriteException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *BatchWriteException) OrigErr() error {
+	return nil
+}
+
+func (s *BatchWriteException) Error() string {
+	return fmt.Sprintf("%s: %s\n%s", s.Code(), s.Message(), s.String())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *BatchWriteException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *BatchWriteException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type BatchWriteInput struct {
 	_ struct{} `type:"structure"`
 
@@ -9851,7 +12946,6 @@ func (s *BatchWriteInput) SetOperations(v []*BatchWriteOperation) *BatchWriteInp
 }
 
 // Represents the output of a BatchWrite operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWriteOperation
 type BatchWriteOperation struct {
 	_ struct{} `type:"structure"`
 
@@ -9861,17 +12955,45 @@ type BatchWriteOperation struct {
 	// Attaches an object to a Directory.
 	AttachObject *BatchAttachObject `type:"structure"`
 
+	// Attaches a policy object to a regular object. An object can have a limited
+	// number of attached policies.
+	AttachPolicy *BatchAttachPolicy `type:"structure"`
+
+	// Attaches the specified object to the specified index.
+	AttachToIndex *BatchAttachToIndex `type:"structure"`
+
+	// Attaches a typed link to a specified source and target object. For more information,
+	// see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	AttachTypedLink *BatchAttachTypedLink `type:"structure"`
+
+	// Creates an index object. See Indexing and search (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/indexing_search.htm)
+	// for more information.
+	CreateIndex *BatchCreateIndex `type:"structure"`
+
 	// Creates an object.
 	CreateObject *BatchCreateObject `type:"structure"`
 
 	// Deletes an object in a Directory.
 	DeleteObject *BatchDeleteObject `type:"structure"`
 
+	// Detaches the specified object from the specified index.
+	DetachFromIndex *BatchDetachFromIndex `type:"structure"`
+
 	// Detaches an object from a Directory.
 	DetachObject *BatchDetachObject `type:"structure"`
 
+	// Detaches a policy from a Directory.
+	DetachPolicy *BatchDetachPolicy `type:"structure"`
+
+	// Detaches a typed link from a specified source and target object. For more
+	// information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	DetachTypedLink *BatchDetachTypedLink `type:"structure"`
+
 	// A batch operation that removes a facet from an object.
 	RemoveFacetFromObject *BatchRemoveFacetFromObject `type:"structure"`
+
+	// Updates a given object's attributes.
+	UpdateLinkAttributes *BatchUpdateLinkAttributes `type:"structure"`
 
 	// Updates a given object's attributes.
 	UpdateObjectAttributes *BatchUpdateObjectAttributes `type:"structure"`
@@ -9900,6 +13022,26 @@ func (s *BatchWriteOperation) Validate() error {
 			invalidParams.AddNested("AttachObject", err.(request.ErrInvalidParams))
 		}
 	}
+	if s.AttachPolicy != nil {
+		if err := s.AttachPolicy.Validate(); err != nil {
+			invalidParams.AddNested("AttachPolicy", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.AttachToIndex != nil {
+		if err := s.AttachToIndex.Validate(); err != nil {
+			invalidParams.AddNested("AttachToIndex", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.AttachTypedLink != nil {
+		if err := s.AttachTypedLink.Validate(); err != nil {
+			invalidParams.AddNested("AttachTypedLink", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.CreateIndex != nil {
+		if err := s.CreateIndex.Validate(); err != nil {
+			invalidParams.AddNested("CreateIndex", err.(request.ErrInvalidParams))
+		}
+	}
 	if s.CreateObject != nil {
 		if err := s.CreateObject.Validate(); err != nil {
 			invalidParams.AddNested("CreateObject", err.(request.ErrInvalidParams))
@@ -9910,14 +13052,34 @@ func (s *BatchWriteOperation) Validate() error {
 			invalidParams.AddNested("DeleteObject", err.(request.ErrInvalidParams))
 		}
 	}
+	if s.DetachFromIndex != nil {
+		if err := s.DetachFromIndex.Validate(); err != nil {
+			invalidParams.AddNested("DetachFromIndex", err.(request.ErrInvalidParams))
+		}
+	}
 	if s.DetachObject != nil {
 		if err := s.DetachObject.Validate(); err != nil {
 			invalidParams.AddNested("DetachObject", err.(request.ErrInvalidParams))
 		}
 	}
+	if s.DetachPolicy != nil {
+		if err := s.DetachPolicy.Validate(); err != nil {
+			invalidParams.AddNested("DetachPolicy", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.DetachTypedLink != nil {
+		if err := s.DetachTypedLink.Validate(); err != nil {
+			invalidParams.AddNested("DetachTypedLink", err.(request.ErrInvalidParams))
+		}
+	}
 	if s.RemoveFacetFromObject != nil {
 		if err := s.RemoveFacetFromObject.Validate(); err != nil {
 			invalidParams.AddNested("RemoveFacetFromObject", err.(request.ErrInvalidParams))
+		}
+	}
+	if s.UpdateLinkAttributes != nil {
+		if err := s.UpdateLinkAttributes.Validate(); err != nil {
+			invalidParams.AddNested("UpdateLinkAttributes", err.(request.ErrInvalidParams))
 		}
 	}
 	if s.UpdateObjectAttributes != nil {
@@ -9944,6 +13106,30 @@ func (s *BatchWriteOperation) SetAttachObject(v *BatchAttachObject) *BatchWriteO
 	return s
 }
 
+// SetAttachPolicy sets the AttachPolicy field's value.
+func (s *BatchWriteOperation) SetAttachPolicy(v *BatchAttachPolicy) *BatchWriteOperation {
+	s.AttachPolicy = v
+	return s
+}
+
+// SetAttachToIndex sets the AttachToIndex field's value.
+func (s *BatchWriteOperation) SetAttachToIndex(v *BatchAttachToIndex) *BatchWriteOperation {
+	s.AttachToIndex = v
+	return s
+}
+
+// SetAttachTypedLink sets the AttachTypedLink field's value.
+func (s *BatchWriteOperation) SetAttachTypedLink(v *BatchAttachTypedLink) *BatchWriteOperation {
+	s.AttachTypedLink = v
+	return s
+}
+
+// SetCreateIndex sets the CreateIndex field's value.
+func (s *BatchWriteOperation) SetCreateIndex(v *BatchCreateIndex) *BatchWriteOperation {
+	s.CreateIndex = v
+	return s
+}
+
 // SetCreateObject sets the CreateObject field's value.
 func (s *BatchWriteOperation) SetCreateObject(v *BatchCreateObject) *BatchWriteOperation {
 	s.CreateObject = v
@@ -9956,15 +13142,39 @@ func (s *BatchWriteOperation) SetDeleteObject(v *BatchDeleteObject) *BatchWriteO
 	return s
 }
 
+// SetDetachFromIndex sets the DetachFromIndex field's value.
+func (s *BatchWriteOperation) SetDetachFromIndex(v *BatchDetachFromIndex) *BatchWriteOperation {
+	s.DetachFromIndex = v
+	return s
+}
+
 // SetDetachObject sets the DetachObject field's value.
 func (s *BatchWriteOperation) SetDetachObject(v *BatchDetachObject) *BatchWriteOperation {
 	s.DetachObject = v
 	return s
 }
 
+// SetDetachPolicy sets the DetachPolicy field's value.
+func (s *BatchWriteOperation) SetDetachPolicy(v *BatchDetachPolicy) *BatchWriteOperation {
+	s.DetachPolicy = v
+	return s
+}
+
+// SetDetachTypedLink sets the DetachTypedLink field's value.
+func (s *BatchWriteOperation) SetDetachTypedLink(v *BatchDetachTypedLink) *BatchWriteOperation {
+	s.DetachTypedLink = v
+	return s
+}
+
 // SetRemoveFacetFromObject sets the RemoveFacetFromObject field's value.
 func (s *BatchWriteOperation) SetRemoveFacetFromObject(v *BatchRemoveFacetFromObject) *BatchWriteOperation {
 	s.RemoveFacetFromObject = v
+	return s
+}
+
+// SetUpdateLinkAttributes sets the UpdateLinkAttributes field's value.
+func (s *BatchWriteOperation) SetUpdateLinkAttributes(v *BatchUpdateLinkAttributes) *BatchWriteOperation {
+	s.UpdateLinkAttributes = v
 	return s
 }
 
@@ -9975,7 +13185,6 @@ func (s *BatchWriteOperation) SetUpdateObjectAttributes(v *BatchUpdateObjectAttr
 }
 
 // Represents the output of a BatchWrite response operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWriteOperationResponse
 type BatchWriteOperationResponse struct {
 	_ struct{} `type:"structure"`
 
@@ -9985,17 +13194,45 @@ type BatchWriteOperationResponse struct {
 	// Attaches an object to a Directory.
 	AttachObject *BatchAttachObjectResponse `type:"structure"`
 
+	// Attaches a policy object to a regular object. An object can have a limited
+	// number of attached policies.
+	AttachPolicy *BatchAttachPolicyResponse `type:"structure"`
+
+	// Attaches the specified object to the specified index.
+	AttachToIndex *BatchAttachToIndexResponse `type:"structure"`
+
+	// Attaches a typed link to a specified source and target object. For more information,
+	// see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	AttachTypedLink *BatchAttachTypedLinkResponse `type:"structure"`
+
+	// Creates an index object. See Indexing and search (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/indexing_search.htm)
+	// for more information.
+	CreateIndex *BatchCreateIndexResponse `type:"structure"`
+
 	// Creates an object in a Directory.
 	CreateObject *BatchCreateObjectResponse `type:"structure"`
 
 	// Deletes an object in a Directory.
 	DeleteObject *BatchDeleteObjectResponse `type:"structure"`
 
+	// Detaches the specified object from the specified index.
+	DetachFromIndex *BatchDetachFromIndexResponse `type:"structure"`
+
 	// Detaches an object from a Directory.
 	DetachObject *BatchDetachObjectResponse `type:"structure"`
 
+	// Detaches a policy from a Directory.
+	DetachPolicy *BatchDetachPolicyResponse `type:"structure"`
+
+	// Detaches a typed link from a specified source and target object. For more
+	// information, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	DetachTypedLink *BatchDetachTypedLinkResponse `type:"structure"`
+
 	// The result of a batch remove facet from object operation.
 	RemoveFacetFromObject *BatchRemoveFacetFromObjectResponse `type:"structure"`
+
+	// Represents the output of a BatchWrite response operation.
+	UpdateLinkAttributes *BatchUpdateLinkAttributesResponse `type:"structure"`
 
 	// Updates a given object’s attributes.
 	UpdateObjectAttributes *BatchUpdateObjectAttributesResponse `type:"structure"`
@@ -10023,6 +13260,30 @@ func (s *BatchWriteOperationResponse) SetAttachObject(v *BatchAttachObjectRespon
 	return s
 }
 
+// SetAttachPolicy sets the AttachPolicy field's value.
+func (s *BatchWriteOperationResponse) SetAttachPolicy(v *BatchAttachPolicyResponse) *BatchWriteOperationResponse {
+	s.AttachPolicy = v
+	return s
+}
+
+// SetAttachToIndex sets the AttachToIndex field's value.
+func (s *BatchWriteOperationResponse) SetAttachToIndex(v *BatchAttachToIndexResponse) *BatchWriteOperationResponse {
+	s.AttachToIndex = v
+	return s
+}
+
+// SetAttachTypedLink sets the AttachTypedLink field's value.
+func (s *BatchWriteOperationResponse) SetAttachTypedLink(v *BatchAttachTypedLinkResponse) *BatchWriteOperationResponse {
+	s.AttachTypedLink = v
+	return s
+}
+
+// SetCreateIndex sets the CreateIndex field's value.
+func (s *BatchWriteOperationResponse) SetCreateIndex(v *BatchCreateIndexResponse) *BatchWriteOperationResponse {
+	s.CreateIndex = v
+	return s
+}
+
 // SetCreateObject sets the CreateObject field's value.
 func (s *BatchWriteOperationResponse) SetCreateObject(v *BatchCreateObjectResponse) *BatchWriteOperationResponse {
 	s.CreateObject = v
@@ -10035,9 +13296,27 @@ func (s *BatchWriteOperationResponse) SetDeleteObject(v *BatchDeleteObjectRespon
 	return s
 }
 
+// SetDetachFromIndex sets the DetachFromIndex field's value.
+func (s *BatchWriteOperationResponse) SetDetachFromIndex(v *BatchDetachFromIndexResponse) *BatchWriteOperationResponse {
+	s.DetachFromIndex = v
+	return s
+}
+
 // SetDetachObject sets the DetachObject field's value.
 func (s *BatchWriteOperationResponse) SetDetachObject(v *BatchDetachObjectResponse) *BatchWriteOperationResponse {
 	s.DetachObject = v
+	return s
+}
+
+// SetDetachPolicy sets the DetachPolicy field's value.
+func (s *BatchWriteOperationResponse) SetDetachPolicy(v *BatchDetachPolicyResponse) *BatchWriteOperationResponse {
+	s.DetachPolicy = v
+	return s
+}
+
+// SetDetachTypedLink sets the DetachTypedLink field's value.
+func (s *BatchWriteOperationResponse) SetDetachTypedLink(v *BatchDetachTypedLinkResponse) *BatchWriteOperationResponse {
+	s.DetachTypedLink = v
 	return s
 }
 
@@ -10047,13 +13326,18 @@ func (s *BatchWriteOperationResponse) SetRemoveFacetFromObject(v *BatchRemoveFac
 	return s
 }
 
+// SetUpdateLinkAttributes sets the UpdateLinkAttributes field's value.
+func (s *BatchWriteOperationResponse) SetUpdateLinkAttributes(v *BatchUpdateLinkAttributesResponse) *BatchWriteOperationResponse {
+	s.UpdateLinkAttributes = v
+	return s
+}
+
 // SetUpdateObjectAttributes sets the UpdateObjectAttributes field's value.
 func (s *BatchWriteOperationResponse) SetUpdateObjectAttributes(v *BatchUpdateObjectAttributesResponse) *BatchWriteOperationResponse {
 	s.UpdateObjectAttributes = v
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/BatchWriteResponse
 type BatchWriteOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10077,7 +13361,62 @@ func (s *BatchWriteOutput) SetResponses(v []*BatchWriteOperationResponse) *Batch
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateDirectoryRequest
+// Cannot list the parents of a Directory root.
+type CannotListParentOfRootException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s CannotListParentOfRootException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CannotListParentOfRootException) GoString() string {
+	return s.String()
+}
+
+func newErrorCannotListParentOfRootException(v protocol.ResponseMetadata) error {
+	return &CannotListParentOfRootException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *CannotListParentOfRootException) Code() string {
+	return "CannotListParentOfRootException"
+}
+
+// Message returns the exception's message.
+func (s *CannotListParentOfRootException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *CannotListParentOfRootException) OrigErr() error {
+	return nil
+}
+
+func (s *CannotListParentOfRootException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *CannotListParentOfRootException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *CannotListParentOfRootException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type CreateDirectoryInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10134,7 +13473,6 @@ func (s *CreateDirectoryInput) SetSchemaArn(v string) *CreateDirectoryInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateDirectoryResponse
 type CreateDirectoryOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10196,12 +13534,16 @@ func (s *CreateDirectoryOutput) SetObjectIdentifier(v string) *CreateDirectoryOu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateFacetRequest
 type CreateFacetInput struct {
 	_ struct{} `type:"structure"`
 
 	// The attributes that are associated with the Facet.
 	Attributes []*FacetAttribute `type:"list"`
+
+	// There are two different styles that you can define on any given facet, Static
+	// and Dynamic. For static facets, all attributes must be defined in the schema.
+	// For dynamic facets, attributes can be defined during data plane operations.
+	FacetStyle *string `type:"string" enum:"FacetStyle"`
 
 	// The name of the Facet, which is unique for a given schema.
 	//
@@ -10216,12 +13558,10 @@ type CreateFacetInput struct {
 	//    * Leaf node: Cannot have children but can have multiple parents.
 	//
 	//    * Policy: Allows you to store a policy document and policy type. For more
-	//    information, see Policies (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_key_concepts.html#policies).
+	//    information, see Policies (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
 	//
 	//    * Index: Can be created with the Index API.
-	//
-	// ObjectType is a required field
-	ObjectType *string `type:"string" required:"true" enum:"ObjectType"`
+	ObjectType *string `type:"string" enum:"ObjectType"`
 
 	// The schema ARN in which the new Facet will be created. For more information,
 	// see arns.
@@ -10249,9 +13589,6 @@ func (s *CreateFacetInput) Validate() error {
 	if s.Name != nil && len(*s.Name) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("Name", 1))
 	}
-	if s.ObjectType == nil {
-		invalidParams.Add(request.NewErrParamRequired("ObjectType"))
-	}
 	if s.SchemaArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SchemaArn"))
 	}
@@ -10278,6 +13615,12 @@ func (s *CreateFacetInput) SetAttributes(v []*FacetAttribute) *CreateFacetInput 
 	return s
 }
 
+// SetFacetStyle sets the FacetStyle field's value.
+func (s *CreateFacetInput) SetFacetStyle(v string) *CreateFacetInput {
+	s.FacetStyle = &v
+	return s
+}
+
 // SetName sets the Name field's value.
 func (s *CreateFacetInput) SetName(v string) *CreateFacetInput {
 	s.Name = &v
@@ -10296,7 +13639,6 @@ func (s *CreateFacetInput) SetSchemaArn(v string) *CreateFacetInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateFacetResponse
 type CreateFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -10311,7 +13653,6 @@ func (s CreateFacetOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateIndexRequest
 type CreateIndexInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10411,7 +13752,6 @@ func (s *CreateIndexInput) SetParentReference(v *ObjectReference) *CreateIndexIn
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateIndexResponse
 type CreateIndexOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10435,7 +13775,6 @@ func (s *CreateIndexOutput) SetObjectIdentifier(v string) *CreateIndexOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateObjectRequest
 type CreateObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10455,8 +13794,8 @@ type CreateObjectInput struct {
 	// If specified, the parent reference to which this object will be attached.
 	ParentReference *ObjectReference `type:"structure"`
 
-	// A list of schema facets to be associated with the object that contains SchemaArn
-	// and facet name. For more information, see arns.
+	// A list of schema facets to be associated with the object. Do not provide
+	// minor version components. See SchemaFacet for details.
 	//
 	// SchemaFacets is a required field
 	SchemaFacets []*SchemaFacet `type:"list" required:"true"`
@@ -10541,7 +13880,6 @@ func (s *CreateObjectInput) SetSchemaFacets(v []*SchemaFacet) *CreateObjectInput
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateObjectResponse
 type CreateObjectOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10565,7 +13903,6 @@ func (s *CreateObjectOutput) SetObjectIdentifier(v string) *CreateObjectOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateSchemaRequest
 type CreateSchemaInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10608,7 +13945,6 @@ func (s *CreateSchemaInput) SetName(v string) *CreateSchemaInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateSchemaResponse
 type CreateSchemaOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10633,7 +13969,6 @@ func (s *CreateSchemaOutput) SetSchemaArn(v string) *CreateSchemaOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateTypedLinkFacetRequest
 type CreateTypedLinkFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10692,7 +14027,6 @@ func (s *CreateTypedLinkFacetInput) SetSchemaArn(v string) *CreateTypedLinkFacet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/CreateTypedLinkFacetResponse
 type CreateTypedLinkFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -10707,7 +14041,6 @@ func (s CreateTypedLinkFacetOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteDirectoryRequest
 type DeleteDirectoryInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10746,7 +14079,6 @@ func (s *DeleteDirectoryInput) SetDirectoryArn(v string) *DeleteDirectoryInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteDirectoryResponse
 type DeleteDirectoryOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10772,7 +14104,6 @@ func (s *DeleteDirectoryOutput) SetDirectoryArn(v string) *DeleteDirectoryOutput
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteFacetRequest
 type DeleteFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10829,7 +14160,6 @@ func (s *DeleteFacetInput) SetSchemaArn(v string) *DeleteFacetInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteFacetResponse
 type DeleteFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -10844,7 +14174,6 @@ func (s DeleteFacetOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteObjectRequest
 type DeleteObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10898,7 +14227,6 @@ func (s *DeleteObjectInput) SetObjectReference(v *ObjectReference) *DeleteObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteObjectResponse
 type DeleteObjectOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -10913,7 +14241,6 @@ func (s DeleteObjectOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteSchemaRequest
 type DeleteSchemaInput struct {
 	_ struct{} `type:"structure"`
 
@@ -10953,7 +14280,6 @@ func (s *DeleteSchemaInput) SetSchemaArn(v string) *DeleteSchemaInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteSchemaResponse
 type DeleteSchemaOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -10978,7 +14304,6 @@ func (s *DeleteSchemaOutput) SetSchemaArn(v string) *DeleteSchemaOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteTypedLinkFacetRequest
 type DeleteTypedLinkFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11032,7 +14357,6 @@ func (s *DeleteTypedLinkFacetInput) SetSchemaArn(v string) *DeleteTypedLinkFacet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DeleteTypedLinkFacetResponse
 type DeleteTypedLinkFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -11047,7 +14371,6 @@ func (s DeleteTypedLinkFacetOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachFromIndexRequest
 type DetachFromIndexInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11115,7 +14438,6 @@ func (s *DetachFromIndexInput) SetTargetReference(v *ObjectReference) *DetachFro
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachFromIndexResponse
 type DetachFromIndexOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -11139,7 +14461,6 @@ func (s *DetachFromIndexOutput) SetDetachedObjectIdentifier(v string) *DetachFro
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachObjectRequest
 type DetachObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11211,7 +14532,6 @@ func (s *DetachObjectInput) SetParentReference(v *ObjectReference) *DetachObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachObjectResponse
 type DetachObjectOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -11235,7 +14555,6 @@ func (s *DetachObjectOutput) SetDetachedObjectIdentifier(v string) *DetachObject
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachPolicyRequest
 type DetachPolicyInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11303,7 +14622,6 @@ func (s *DetachPolicyInput) SetPolicyReference(v *ObjectReference) *DetachPolicy
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachPolicyResponse
 type DetachPolicyOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -11318,7 +14636,6 @@ func (s DetachPolicyOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachTypedLinkRequest
 type DetachTypedLinkInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11377,7 +14694,6 @@ func (s *DetachTypedLinkInput) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *Det
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DetachTypedLinkOutput
 type DetachTypedLinkOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -11393,12 +14709,11 @@ func (s DetachTypedLinkOutput) GoString() string {
 }
 
 // Directory structure that includes the directory name and directory ARN.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/Directory
 type Directory struct {
 	_ struct{} `type:"structure"`
 
 	// The date and time when the directory was created.
-	CreationDateTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreationDateTime *time.Time `type:"timestamp"`
 
 	// The Amazon Resource Name (ARN) that is associated with the directory. For
 	// more information, see arns.
@@ -11445,7 +14760,232 @@ func (s *Directory) SetState(v string) *Directory {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DisableDirectoryRequest
+// Indicates that a Directory could not be created due to a naming conflict.
+// Choose a different name and try again.
+type DirectoryAlreadyExistsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DirectoryAlreadyExistsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DirectoryAlreadyExistsException) GoString() string {
+	return s.String()
+}
+
+func newErrorDirectoryAlreadyExistsException(v protocol.ResponseMetadata) error {
+	return &DirectoryAlreadyExistsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DirectoryAlreadyExistsException) Code() string {
+	return "DirectoryAlreadyExistsException"
+}
+
+// Message returns the exception's message.
+func (s *DirectoryAlreadyExistsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DirectoryAlreadyExistsException) OrigErr() error {
+	return nil
+}
+
+func (s *DirectoryAlreadyExistsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DirectoryAlreadyExistsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DirectoryAlreadyExistsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// A directory that has been deleted and to which access has been attempted.
+// Note: The requested resource will eventually cease to exist.
+type DirectoryDeletedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DirectoryDeletedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DirectoryDeletedException) GoString() string {
+	return s.String()
+}
+
+func newErrorDirectoryDeletedException(v protocol.ResponseMetadata) error {
+	return &DirectoryDeletedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DirectoryDeletedException) Code() string {
+	return "DirectoryDeletedException"
+}
+
+// Message returns the exception's message.
+func (s *DirectoryDeletedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DirectoryDeletedException) OrigErr() error {
+	return nil
+}
+
+func (s *DirectoryDeletedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DirectoryDeletedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DirectoryDeletedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// An operation can only operate on a disabled directory.
+type DirectoryNotDisabledException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DirectoryNotDisabledException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DirectoryNotDisabledException) GoString() string {
+	return s.String()
+}
+
+func newErrorDirectoryNotDisabledException(v protocol.ResponseMetadata) error {
+	return &DirectoryNotDisabledException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DirectoryNotDisabledException) Code() string {
+	return "DirectoryNotDisabledException"
+}
+
+// Message returns the exception's message.
+func (s *DirectoryNotDisabledException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DirectoryNotDisabledException) OrigErr() error {
+	return nil
+}
+
+func (s *DirectoryNotDisabledException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DirectoryNotDisabledException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DirectoryNotDisabledException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Operations are only permitted on enabled directories.
+type DirectoryNotEnabledException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DirectoryNotEnabledException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DirectoryNotEnabledException) GoString() string {
+	return s.String()
+}
+
+func newErrorDirectoryNotEnabledException(v protocol.ResponseMetadata) error {
+	return &DirectoryNotEnabledException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DirectoryNotEnabledException) Code() string {
+	return "DirectoryNotEnabledException"
+}
+
+// Message returns the exception's message.
+func (s *DirectoryNotEnabledException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DirectoryNotEnabledException) OrigErr() error {
+	return nil
+}
+
+func (s *DirectoryNotEnabledException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DirectoryNotEnabledException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DirectoryNotEnabledException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type DisableDirectoryInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11484,7 +15024,6 @@ func (s *DisableDirectoryInput) SetDirectoryArn(v string) *DisableDirectoryInput
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/DisableDirectoryResponse
 type DisableDirectoryOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -11510,7 +15049,6 @@ func (s *DisableDirectoryOutput) SetDirectoryArn(v string) *DisableDirectoryOutp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/EnableDirectoryRequest
 type EnableDirectoryInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11549,7 +15087,6 @@ func (s *EnableDirectoryInput) SetDirectoryArn(v string) *EnableDirectoryInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/EnableDirectoryResponse
 type EnableDirectoryOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -11576,9 +15113,15 @@ func (s *EnableDirectoryOutput) SetDirectoryArn(v string) *EnableDirectoryOutput
 }
 
 // A structure that contains Name, ARN, Attributes, Rules, and ObjectTypes.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/Facet
+// See Facets (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_whatarefacets.html)
+// for more information.
 type Facet struct {
 	_ struct{} `type:"structure"`
+
+	// There are two different styles that you can define on any given facet, Static
+	// and Dynamic. For static facets, all attributes must be defined in the schema.
+	// For dynamic facets, attributes can be defined during data plane operations.
+	FacetStyle *string `type:"string" enum:"FacetStyle"`
 
 	// The name of the Facet.
 	Name *string `min:"1" type:"string"`
@@ -11598,6 +15141,12 @@ func (s Facet) GoString() string {
 	return s.String()
 }
 
+// SetFacetStyle sets the FacetStyle field's value.
+func (s *Facet) SetFacetStyle(v string) *Facet {
+	s.FacetStyle = &v
+	return s
+}
+
 // SetName sets the Name field's value.
 func (s *Facet) SetName(v string) *Facet {
 	s.Name = &v
@@ -11610,18 +15159,73 @@ func (s *Facet) SetObjectType(v string) *Facet {
 	return s
 }
 
+// A facet with the same name already exists.
+type FacetAlreadyExistsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s FacetAlreadyExistsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s FacetAlreadyExistsException) GoString() string {
+	return s.String()
+}
+
+func newErrorFacetAlreadyExistsException(v protocol.ResponseMetadata) error {
+	return &FacetAlreadyExistsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *FacetAlreadyExistsException) Code() string {
+	return "FacetAlreadyExistsException"
+}
+
+// Message returns the exception's message.
+func (s *FacetAlreadyExistsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *FacetAlreadyExistsException) OrigErr() error {
+	return nil
+}
+
+func (s *FacetAlreadyExistsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *FacetAlreadyExistsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *FacetAlreadyExistsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // An attribute that is associated with the Facet.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/FacetAttribute
 type FacetAttribute struct {
 	_ struct{} `type:"structure"`
 
 	// A facet attribute consists of either a definition or a reference. This structure
-	// contains the attribute definition. See Attribute References (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#attributereferences)
+	// contains the attribute definition. See Attribute References (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_attributereferences.html)
 	// for more information.
 	AttributeDefinition *FacetAttributeDefinition `type:"structure"`
 
 	// An attribute reference that is associated with the attribute. See Attribute
-	// References (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#attributereferences)
+	// References (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_attributereferences.html)
 	// for more information.
 	AttributeReference *FacetAttributeReference `type:"structure"`
 
@@ -11694,9 +15298,8 @@ func (s *FacetAttribute) SetRequiredBehavior(v string) *FacetAttribute {
 	return s
 }
 
-// A facet attribute definition. See Attribute References (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#attributereferences)
+// A facet attribute definition. See Attribute References (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_attributereferences.html)
 // for more information.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/FacetAttributeDefinition
 type FacetAttributeDefinition struct {
 	_ struct{} `type:"structure"`
 
@@ -11764,19 +15367,18 @@ func (s *FacetAttributeDefinition) SetType(v string) *FacetAttributeDefinition {
 
 // The facet attribute reference that specifies the attribute definition that
 // contains the attribute facet name and attribute name.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/FacetAttributeReference
 type FacetAttributeReference struct {
 	_ struct{} `type:"structure"`
 
 	// The target attribute name that is associated with the facet reference. See
-	// Attribute References (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#attributereferences)
+	// Attribute References (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_attributereferences.html)
 	// for more information.
 	//
 	// TargetAttributeName is a required field
 	TargetAttributeName *string `min:"1" type:"string" required:"true"`
 
 	// The target facet name that is associated with the facet reference. See Attribute
-	// References (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_advanced.html#attributereferences)
+	// References (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_attributereferences.html)
 	// for more information.
 	//
 	// TargetFacetName is a required field
@@ -11828,7 +15430,6 @@ func (s *FacetAttributeReference) SetTargetFacetName(v string) *FacetAttributeRe
 }
 
 // A structure that contains information used to update an attribute.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/FacetAttributeUpdate
 type FacetAttributeUpdate struct {
 	_ struct{} `type:"structure"`
 
@@ -11876,7 +15477,238 @@ func (s *FacetAttributeUpdate) SetAttribute(v *FacetAttribute) *FacetAttributeUp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetDirectoryRequest
+// Occurs when deleting a facet that contains an attribute that is a target
+// to an attribute reference in a different facet.
+type FacetInUseException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s FacetInUseException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s FacetInUseException) GoString() string {
+	return s.String()
+}
+
+func newErrorFacetInUseException(v protocol.ResponseMetadata) error {
+	return &FacetInUseException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *FacetInUseException) Code() string {
+	return "FacetInUseException"
+}
+
+// Message returns the exception's message.
+func (s *FacetInUseException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *FacetInUseException) OrigErr() error {
+	return nil
+}
+
+func (s *FacetInUseException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *FacetInUseException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *FacetInUseException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The specified Facet could not be found.
+type FacetNotFoundException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s FacetNotFoundException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s FacetNotFoundException) GoString() string {
+	return s.String()
+}
+
+func newErrorFacetNotFoundException(v protocol.ResponseMetadata) error {
+	return &FacetNotFoundException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *FacetNotFoundException) Code() string {
+	return "FacetNotFoundException"
+}
+
+// Message returns the exception's message.
+func (s *FacetNotFoundException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *FacetNotFoundException) OrigErr() error {
+	return nil
+}
+
+func (s *FacetNotFoundException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *FacetNotFoundException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *FacetNotFoundException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The Facet that you provided was not well formed or could not be validated
+// with the schema.
+type FacetValidationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s FacetValidationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s FacetValidationException) GoString() string {
+	return s.String()
+}
+
+func newErrorFacetValidationException(v protocol.ResponseMetadata) error {
+	return &FacetValidationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *FacetValidationException) Code() string {
+	return "FacetValidationException"
+}
+
+// Message returns the exception's message.
+func (s *FacetValidationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *FacetValidationException) OrigErr() error {
+	return nil
+}
+
+func (s *FacetValidationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *FacetValidationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *FacetValidationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+type GetAppliedSchemaVersionInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN of the applied schema.
+	//
+	// SchemaArn is a required field
+	SchemaArn *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s GetAppliedSchemaVersionInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetAppliedSchemaVersionInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetAppliedSchemaVersionInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetAppliedSchemaVersionInput"}
+	if s.SchemaArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("SchemaArn"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetSchemaArn sets the SchemaArn field's value.
+func (s *GetAppliedSchemaVersionInput) SetSchemaArn(v string) *GetAppliedSchemaVersionInput {
+	s.SchemaArn = &v
+	return s
+}
+
+type GetAppliedSchemaVersionOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Current applied schema ARN, including the minor version in use if one was
+	// provided.
+	AppliedSchemaArn *string `type:"string"`
+}
+
+// String returns the string representation
+func (s GetAppliedSchemaVersionOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetAppliedSchemaVersionOutput) GoString() string {
+	return s.String()
+}
+
+// SetAppliedSchemaArn sets the AppliedSchemaArn field's value.
+func (s *GetAppliedSchemaVersionOutput) SetAppliedSchemaArn(v string) *GetAppliedSchemaVersionOutput {
+	s.AppliedSchemaArn = &v
+	return s
+}
+
 type GetDirectoryInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11915,7 +15747,6 @@ func (s *GetDirectoryInput) SetDirectoryArn(v string) *GetDirectoryInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetDirectoryResponse
 type GetDirectoryOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -11941,7 +15772,6 @@ func (s *GetDirectoryOutput) SetDirectory(v *Directory) *GetDirectoryOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetFacetRequest
 type GetFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -11998,7 +15828,6 @@ func (s *GetFacetInput) SetSchemaArn(v string) *GetFacetInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetFacetResponse
 type GetFacetOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12022,7 +15851,229 @@ func (s *GetFacetOutput) SetFacet(v *Facet) *GetFacetOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetObjectInformationRequest
+type GetLinkAttributesInput struct {
+	_ struct{} `type:"structure"`
+
+	// A list of attribute names whose values will be retrieved.
+	//
+	// AttributeNames is a required field
+	AttributeNames []*string `type:"list" required:"true"`
+
+	// The consistency level at which to retrieve the attributes on a typed link.
+	ConsistencyLevel *string `type:"string" enum:"ConsistencyLevel"`
+
+	// The Amazon Resource Name (ARN) that is associated with the Directory where
+	// the typed link resides. For more information, see arns or Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	//
+	// DirectoryArn is a required field
+	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
+
+	// Allows a typed link specifier to be accepted as input.
+	//
+	// TypedLinkSpecifier is a required field
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s GetLinkAttributesInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetLinkAttributesInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetLinkAttributesInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetLinkAttributesInput"}
+	if s.AttributeNames == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeNames"))
+	}
+	if s.DirectoryArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DirectoryArn"))
+	}
+	if s.TypedLinkSpecifier == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkSpecifier"))
+	}
+	if s.TypedLinkSpecifier != nil {
+		if err := s.TypedLinkSpecifier.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkSpecifier", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeNames sets the AttributeNames field's value.
+func (s *GetLinkAttributesInput) SetAttributeNames(v []*string) *GetLinkAttributesInput {
+	s.AttributeNames = v
+	return s
+}
+
+// SetConsistencyLevel sets the ConsistencyLevel field's value.
+func (s *GetLinkAttributesInput) SetConsistencyLevel(v string) *GetLinkAttributesInput {
+	s.ConsistencyLevel = &v
+	return s
+}
+
+// SetDirectoryArn sets the DirectoryArn field's value.
+func (s *GetLinkAttributesInput) SetDirectoryArn(v string) *GetLinkAttributesInput {
+	s.DirectoryArn = &v
+	return s
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *GetLinkAttributesInput) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *GetLinkAttributesInput {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+type GetLinkAttributesOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The attributes that are associated with the typed link.
+	Attributes []*AttributeKeyAndValue `type:"list"`
+}
+
+// String returns the string representation
+func (s GetLinkAttributesOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetLinkAttributesOutput) GoString() string {
+	return s.String()
+}
+
+// SetAttributes sets the Attributes field's value.
+func (s *GetLinkAttributesOutput) SetAttributes(v []*AttributeKeyAndValue) *GetLinkAttributesOutput {
+	s.Attributes = v
+	return s
+}
+
+type GetObjectAttributesInput struct {
+	_ struct{} `type:"structure"`
+
+	// List of attribute names whose values will be retrieved.
+	//
+	// AttributeNames is a required field
+	AttributeNames []*string `type:"list" required:"true"`
+
+	// The consistency level at which to retrieve the attributes on an object.
+	ConsistencyLevel *string `location:"header" locationName:"x-amz-consistency-level" type:"string" enum:"ConsistencyLevel"`
+
+	// The Amazon Resource Name (ARN) that is associated with the Directory where
+	// the object resides.
+	//
+	// DirectoryArn is a required field
+	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
+
+	// Reference that identifies the object whose attributes will be retrieved.
+	//
+	// ObjectReference is a required field
+	ObjectReference *ObjectReference `type:"structure" required:"true"`
+
+	// Identifier for the facet whose attributes will be retrieved. See SchemaFacet
+	// for details.
+	//
+	// SchemaFacet is a required field
+	SchemaFacet *SchemaFacet `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s GetObjectAttributesInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetObjectAttributesInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetObjectAttributesInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetObjectAttributesInput"}
+	if s.AttributeNames == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeNames"))
+	}
+	if s.DirectoryArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DirectoryArn"))
+	}
+	if s.ObjectReference == nil {
+		invalidParams.Add(request.NewErrParamRequired("ObjectReference"))
+	}
+	if s.SchemaFacet == nil {
+		invalidParams.Add(request.NewErrParamRequired("SchemaFacet"))
+	}
+	if s.SchemaFacet != nil {
+		if err := s.SchemaFacet.Validate(); err != nil {
+			invalidParams.AddNested("SchemaFacet", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeNames sets the AttributeNames field's value.
+func (s *GetObjectAttributesInput) SetAttributeNames(v []*string) *GetObjectAttributesInput {
+	s.AttributeNames = v
+	return s
+}
+
+// SetConsistencyLevel sets the ConsistencyLevel field's value.
+func (s *GetObjectAttributesInput) SetConsistencyLevel(v string) *GetObjectAttributesInput {
+	s.ConsistencyLevel = &v
+	return s
+}
+
+// SetDirectoryArn sets the DirectoryArn field's value.
+func (s *GetObjectAttributesInput) SetDirectoryArn(v string) *GetObjectAttributesInput {
+	s.DirectoryArn = &v
+	return s
+}
+
+// SetObjectReference sets the ObjectReference field's value.
+func (s *GetObjectAttributesInput) SetObjectReference(v *ObjectReference) *GetObjectAttributesInput {
+	s.ObjectReference = v
+	return s
+}
+
+// SetSchemaFacet sets the SchemaFacet field's value.
+func (s *GetObjectAttributesInput) SetSchemaFacet(v *SchemaFacet) *GetObjectAttributesInput {
+	s.SchemaFacet = v
+	return s
+}
+
+type GetObjectAttributesOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The attributes that are associated with the object.
+	Attributes []*AttributeKeyAndValue `type:"list"`
+}
+
+// String returns the string representation
+func (s GetObjectAttributesOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetObjectAttributesOutput) GoString() string {
+	return s.String()
+}
+
+// SetAttributes sets the Attributes field's value.
+func (s *GetObjectAttributesOutput) SetAttributes(v []*AttributeKeyAndValue) *GetObjectAttributesOutput {
+	s.Attributes = v
+	return s
+}
+
 type GetObjectInformationInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12084,14 +16135,15 @@ func (s *GetObjectInformationInput) SetObjectReference(v *ObjectReference) *GetO
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetObjectInformationResponse
 type GetObjectInformationOutput struct {
 	_ struct{} `type:"structure"`
 
 	// The ObjectIdentifier of the specified object.
 	ObjectIdentifier *string `type:"string"`
 
-	// The facets attached to the specified object.
+	// The facets attached to the specified object. Although the response does not
+	// include minor version information, the most recently applied minor version
+	// of each Facet is in effect. See GetAppliedSchemaVersion for details.
 	SchemaFacets []*SchemaFacet `type:"list"`
 }
 
@@ -12117,7 +16169,6 @@ func (s *GetObjectInformationOutput) SetSchemaFacets(v []*SchemaFacet) *GetObjec
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetSchemaAsJsonRequest
 type GetSchemaAsJsonInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12156,7 +16207,6 @@ func (s *GetSchemaAsJsonInput) SetSchemaArn(v string) *GetSchemaAsJsonInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetSchemaAsJsonResponse
 type GetSchemaAsJsonOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12189,7 +16239,6 @@ func (s *GetSchemaAsJsonOutput) SetName(v string) *GetSchemaAsJsonOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetTypedLinkFacetInformationRequest
 type GetTypedLinkFacetInformationInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12243,7 +16292,6 @@ func (s *GetTypedLinkFacetInformationInput) SetSchemaArn(v string) *GetTypedLink
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/GetTypedLinkFacetInformationResponse
 type GetTypedLinkFacetInformationOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12254,7 +16302,7 @@ type GetTypedLinkFacetInformationOutput struct {
 	// Any attributes that do not have a range specified are presumed to match the
 	// entire range. Filters are interpreted in the order of the attributes on the
 	// typed link facet, not the order in which they are supplied to any API calls.
-	// For more information about identity attributes, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+	// For more information about identity attributes, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 	IdentityAttributeOrder []*string `type:"list"`
 }
 
@@ -12274,15 +16322,75 @@ func (s *GetTypedLinkFacetInformationOutput) SetIdentityAttributeOrder(v []*stri
 	return s
 }
 
+// Indicates a failure occurred while performing a check for backward compatibility
+// between the specified schema and the schema that is currently applied to
+// the directory.
+type IncompatibleSchemaException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s IncompatibleSchemaException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s IncompatibleSchemaException) GoString() string {
+	return s.String()
+}
+
+func newErrorIncompatibleSchemaException(v protocol.ResponseMetadata) error {
+	return &IncompatibleSchemaException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *IncompatibleSchemaException) Code() string {
+	return "IncompatibleSchemaException"
+}
+
+// Message returns the exception's message.
+func (s *IncompatibleSchemaException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *IncompatibleSchemaException) OrigErr() error {
+	return nil
+}
+
+func (s *IncompatibleSchemaException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *IncompatibleSchemaException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *IncompatibleSchemaException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Represents an index and an attached object.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/IndexAttachment
 type IndexAttachment struct {
 	_ struct{} `type:"structure"`
 
 	// The indexed attribute values.
 	IndexedAttributes []*AttributeKeyAndValue `type:"list"`
 
-	// The ObjectIdentifier of the object attached to the index.
+	// In response to ListIndex, the ObjectIdentifier of the object attached to
+	// the index. In response to ListAttachedIndices, the ObjectIdentifier of the
+	// index attached to the object. This field will always contain the ObjectIdentifier
+	// of the object on the opposite side of the attachment specified in the query.
 	ObjectIdentifier *string `type:"string"`
 }
 
@@ -12308,7 +16416,714 @@ func (s *IndexAttachment) SetObjectIdentifier(v string) *IndexAttachment {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAppliedSchemaArnsRequest
+// An object has been attempted to be attached to an object that does not have
+// the appropriate attribute value.
+type IndexedAttributeMissingException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s IndexedAttributeMissingException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s IndexedAttributeMissingException) GoString() string {
+	return s.String()
+}
+
+func newErrorIndexedAttributeMissingException(v protocol.ResponseMetadata) error {
+	return &IndexedAttributeMissingException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *IndexedAttributeMissingException) Code() string {
+	return "IndexedAttributeMissingException"
+}
+
+// Message returns the exception's message.
+func (s *IndexedAttributeMissingException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *IndexedAttributeMissingException) OrigErr() error {
+	return nil
+}
+
+func (s *IndexedAttributeMissingException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *IndexedAttributeMissingException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *IndexedAttributeMissingException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates a problem that must be resolved by Amazon Web Services. This might
+// be a transient error in which case you can retry your request until it succeeds.
+// Otherwise, go to the AWS Service Health Dashboard (http://status.aws.amazon.com/)
+// site to see if there are any operational issues with the service.
+type InternalServiceException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InternalServiceException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InternalServiceException) GoString() string {
+	return s.String()
+}
+
+func newErrorInternalServiceException(v protocol.ResponseMetadata) error {
+	return &InternalServiceException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InternalServiceException) Code() string {
+	return "InternalServiceException"
+}
+
+// Message returns the exception's message.
+func (s *InternalServiceException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InternalServiceException) OrigErr() error {
+	return nil
+}
+
+func (s *InternalServiceException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InternalServiceException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InternalServiceException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that the provided ARN value is not valid.
+type InvalidArnException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidArnException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidArnException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidArnException(v protocol.ResponseMetadata) error {
+	return &InvalidArnException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidArnException) Code() string {
+	return "InvalidArnException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidArnException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidArnException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidArnException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidArnException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidArnException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that an attempt to make an attachment was invalid. For example,
+// attaching two nodes with a link type that is not applicable to the nodes
+// or attempting to apply a schema to a directory a second time.
+type InvalidAttachmentException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidAttachmentException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidAttachmentException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidAttachmentException(v protocol.ResponseMetadata) error {
+	return &InvalidAttachmentException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidAttachmentException) Code() string {
+	return "InvalidAttachmentException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidAttachmentException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidAttachmentException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidAttachmentException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidAttachmentException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidAttachmentException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// An attempt to modify a Facet resulted in an invalid schema exception.
+type InvalidFacetUpdateException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidFacetUpdateException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidFacetUpdateException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidFacetUpdateException(v protocol.ResponseMetadata) error {
+	return &InvalidFacetUpdateException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidFacetUpdateException) Code() string {
+	return "InvalidFacetUpdateException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidFacetUpdateException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidFacetUpdateException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidFacetUpdateException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidFacetUpdateException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidFacetUpdateException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that the NextToken value is not valid.
+type InvalidNextTokenException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidNextTokenException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidNextTokenException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidNextTokenException(v protocol.ResponseMetadata) error {
+	return &InvalidNextTokenException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidNextTokenException) Code() string {
+	return "InvalidNextTokenException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidNextTokenException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidNextTokenException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidNextTokenException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidNextTokenException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidNextTokenException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Occurs when any of the rule parameter keys or values are invalid.
+type InvalidRuleException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidRuleException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidRuleException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidRuleException(v protocol.ResponseMetadata) error {
+	return &InvalidRuleException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidRuleException) Code() string {
+	return "InvalidRuleException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidRuleException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidRuleException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidRuleException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidRuleException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidRuleException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that the provided SchemaDoc value is not valid.
+type InvalidSchemaDocException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidSchemaDocException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidSchemaDocException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidSchemaDocException(v protocol.ResponseMetadata) error {
+	return &InvalidSchemaDocException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidSchemaDocException) Code() string {
+	return "InvalidSchemaDocException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidSchemaDocException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidSchemaDocException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidSchemaDocException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidSchemaDocException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidSchemaDocException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Can occur for multiple reasons such as when you tag a resource that doesn’t
+// exist or if you specify a higher number of tags for a resource than the allowed
+// limit. Allowed limit is 50 tags per resource.
+type InvalidTaggingRequestException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidTaggingRequestException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidTaggingRequestException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidTaggingRequestException(v protocol.ResponseMetadata) error {
+	return &InvalidTaggingRequestException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidTaggingRequestException) Code() string {
+	return "InvalidTaggingRequestException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidTaggingRequestException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidTaggingRequestException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidTaggingRequestException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidTaggingRequestException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidTaggingRequestException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that limits are exceeded. See Limits (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html)
+// for more information.
+type LimitExceededException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s LimitExceededException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LimitExceededException) GoString() string {
+	return s.String()
+}
+
+func newErrorLimitExceededException(v protocol.ResponseMetadata) error {
+	return &LimitExceededException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *LimitExceededException) Code() string {
+	return "LimitExceededException"
+}
+
+// Message returns the exception's message.
+func (s *LimitExceededException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *LimitExceededException) OrigErr() error {
+	return nil
+}
+
+func (s *LimitExceededException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *LimitExceededException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *LimitExceededException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The action to take on a typed link attribute value. Updates are only supported
+// for attributes which don’t contribute to link identity.
+type LinkAttributeAction struct {
+	_ struct{} `type:"structure"`
+
+	// A type that can be either UPDATE_OR_CREATE or DELETE.
+	AttributeActionType *string `type:"string" enum:"UpdateActionType"`
+
+	// The value that you want to update to.
+	AttributeUpdateValue *TypedAttributeValue `type:"structure"`
+}
+
+// String returns the string representation
+func (s LinkAttributeAction) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LinkAttributeAction) GoString() string {
+	return s.String()
+}
+
+// SetAttributeActionType sets the AttributeActionType field's value.
+func (s *LinkAttributeAction) SetAttributeActionType(v string) *LinkAttributeAction {
+	s.AttributeActionType = &v
+	return s
+}
+
+// SetAttributeUpdateValue sets the AttributeUpdateValue field's value.
+func (s *LinkAttributeAction) SetAttributeUpdateValue(v *TypedAttributeValue) *LinkAttributeAction {
+	s.AttributeUpdateValue = v
+	return s
+}
+
+// Structure that contains attribute update information.
+type LinkAttributeUpdate struct {
+	_ struct{} `type:"structure"`
+
+	// The action to perform as part of the attribute update.
+	AttributeAction *LinkAttributeAction `type:"structure"`
+
+	// The key of the attribute being updated.
+	AttributeKey *AttributeKey `type:"structure"`
+}
+
+// String returns the string representation
+func (s LinkAttributeUpdate) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LinkAttributeUpdate) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *LinkAttributeUpdate) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "LinkAttributeUpdate"}
+	if s.AttributeKey != nil {
+		if err := s.AttributeKey.Validate(); err != nil {
+			invalidParams.AddNested("AttributeKey", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeAction sets the AttributeAction field's value.
+func (s *LinkAttributeUpdate) SetAttributeAction(v *LinkAttributeAction) *LinkAttributeUpdate {
+	s.AttributeAction = v
+	return s
+}
+
+// SetAttributeKey sets the AttributeKey field's value.
+func (s *LinkAttributeUpdate) SetAttributeKey(v *AttributeKey) *LinkAttributeUpdate {
+	s.AttributeKey = v
+	return s
+}
+
+// Indicates that a link could not be created due to a naming conflict. Choose
+// a different name and then try again.
+type LinkNameAlreadyInUseException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s LinkNameAlreadyInUseException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LinkNameAlreadyInUseException) GoString() string {
+	return s.String()
+}
+
+func newErrorLinkNameAlreadyInUseException(v protocol.ResponseMetadata) error {
+	return &LinkNameAlreadyInUseException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *LinkNameAlreadyInUseException) Code() string {
+	return "LinkNameAlreadyInUseException"
+}
+
+// Message returns the exception's message.
+func (s *LinkNameAlreadyInUseException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *LinkNameAlreadyInUseException) OrigErr() error {
+	return nil
+}
+
+func (s *LinkNameAlreadyInUseException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *LinkNameAlreadyInUseException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *LinkNameAlreadyInUseException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type ListAppliedSchemaArnsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12322,6 +17137,10 @@ type ListAppliedSchemaArnsInput struct {
 
 	// The pagination token.
 	NextToken *string `type:"string"`
+
+	// The response for ListAppliedSchemaArns when this parameter is used will list
+	// all minor version ARNs for a major version.
+	SchemaArn *string `type:"string"`
 }
 
 // String returns the string representation
@@ -12368,7 +17187,12 @@ func (s *ListAppliedSchemaArnsInput) SetNextToken(v string) *ListAppliedSchemaAr
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAppliedSchemaArnsResponse
+// SetSchemaArn sets the SchemaArn field's value.
+func (s *ListAppliedSchemaArnsInput) SetSchemaArn(v string) *ListAppliedSchemaArnsInput {
+	s.SchemaArn = &v
+	return s
+}
+
 type ListAppliedSchemaArnsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12401,7 +17225,6 @@ func (s *ListAppliedSchemaArnsOutput) SetSchemaArns(v []*string) *ListAppliedSch
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAttachedIndicesRequest
 type ListAttachedIndicesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12419,7 +17242,7 @@ type ListAttachedIndicesInput struct {
 	// The pagination token.
 	NextToken *string `type:"string"`
 
-	// A reference to the object to that has indices attached.
+	// A reference to the object that has indices attached.
 	//
 	// TargetReference is a required field
 	TargetReference *ObjectReference `type:"structure" required:"true"`
@@ -12484,7 +17307,6 @@ func (s *ListAttachedIndicesInput) SetTargetReference(v *ObjectReference) *ListA
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListAttachedIndicesResponse
 type ListAttachedIndicesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12517,7 +17339,6 @@ func (s *ListAttachedIndicesOutput) SetNextToken(v string) *ListAttachedIndicesO
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDevelopmentSchemaArnsRequest
 type ListDevelopmentSchemaArnsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12563,7 +17384,6 @@ func (s *ListDevelopmentSchemaArnsInput) SetNextToken(v string) *ListDevelopment
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDevelopmentSchemaArnsResponse
 type ListDevelopmentSchemaArnsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12596,7 +17416,6 @@ func (s *ListDevelopmentSchemaArnsOutput) SetSchemaArns(v []*string) *ListDevelo
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDirectoriesRequest
 type ListDirectoriesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12652,7 +17471,6 @@ func (s *ListDirectoriesInput) SetState(v string) *ListDirectoriesInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListDirectoriesResponse
 type ListDirectoriesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12688,7 +17506,6 @@ func (s *ListDirectoriesOutput) SetNextToken(v string) *ListDirectoriesOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetAttributesRequest
 type ListFacetAttributesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12765,7 +17582,6 @@ func (s *ListFacetAttributesInput) SetSchemaArn(v string) *ListFacetAttributesIn
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetAttributesResponse
 type ListFacetAttributesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12798,7 +17614,6 @@ func (s *ListFacetAttributesOutput) SetNextToken(v string) *ListFacetAttributesO
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetNamesRequest
 type ListFacetNamesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -12858,7 +17673,6 @@ func (s *ListFacetNamesInput) SetSchemaArn(v string) *ListFacetNamesInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListFacetNamesResponse
 type ListFacetNamesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -12891,7 +17705,6 @@ func (s *ListFacetNamesOutput) SetNextToken(v string) *ListFacetNamesOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIncomingTypedLinksRequest
 type ListIncomingTypedLinksInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13012,7 +17825,6 @@ func (s *ListIncomingTypedLinksInput) SetObjectReference(v *ObjectReference) *Li
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIncomingTypedLinksResponse
 type ListIncomingTypedLinksOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13045,7 +17857,6 @@ func (s *ListIncomingTypedLinksOutput) SetNextToken(v string) *ListIncomingTyped
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIndexRequest
 type ListIndexInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13062,7 +17873,9 @@ type ListIndexInput struct {
 	// IndexReference is a required field
 	IndexReference *ObjectReference `type:"structure" required:"true"`
 
-	// The maximum number of results to retrieve from the index.
+	// The maximum number of objects in a single page to retrieve from the index
+	// during a request. For more information, see Amazon Cloud Directory Limits
+	// (http://docs.aws.amazon.com/clouddirectory/latest/developerguide/limits.html).
 	MaxResults *int64 `min:"1" type:"integer"`
 
 	// The pagination token.
@@ -13147,7 +17960,6 @@ func (s *ListIndexInput) SetRangesOnIndexedValues(v []*ObjectAttributeRange) *Li
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListIndexResponse
 type ListIndexOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13180,7 +17992,93 @@ func (s *ListIndexOutput) SetNextToken(v string) *ListIndexOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectAttributesRequest
+type ListManagedSchemaArnsInput struct {
+	_ struct{} `type:"structure"`
+
+	// The maximum number of results to retrieve.
+	MaxResults *int64 `min:"1" type:"integer"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The response for ListManagedSchemaArns. When this parameter is used, all
+	// minor version ARNs for a major version are listed.
+	SchemaArn *string `type:"string"`
+}
+
+// String returns the string representation
+func (s ListManagedSchemaArnsInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListManagedSchemaArnsInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ListManagedSchemaArnsInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ListManagedSchemaArnsInput"}
+	if s.MaxResults != nil && *s.MaxResults < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *ListManagedSchemaArnsInput) SetMaxResults(v int64) *ListManagedSchemaArnsInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *ListManagedSchemaArnsInput) SetNextToken(v string) *ListManagedSchemaArnsInput {
+	s.NextToken = &v
+	return s
+}
+
+// SetSchemaArn sets the SchemaArn field's value.
+func (s *ListManagedSchemaArnsInput) SetSchemaArn(v string) *ListManagedSchemaArnsInput {
+	s.SchemaArn = &v
+	return s
+}
+
+type ListManagedSchemaArnsOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The pagination token.
+	NextToken *string `type:"string"`
+
+	// The ARNs for all AWS managed schemas.
+	SchemaArns []*string `type:"list"`
+}
+
+// String returns the string representation
+func (s ListManagedSchemaArnsOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListManagedSchemaArnsOutput) GoString() string {
+	return s.String()
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *ListManagedSchemaArnsOutput) SetNextToken(v string) *ListManagedSchemaArnsOutput {
+	s.NextToken = &v
+	return s
+}
+
+// SetSchemaArns sets the SchemaArns field's value.
+func (s *ListManagedSchemaArnsOutput) SetSchemaArns(v []*string) *ListManagedSchemaArnsOutput {
+	s.SchemaArns = v
+	return s
+}
+
 type ListObjectAttributesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13281,7 +18179,6 @@ func (s *ListObjectAttributesInput) SetObjectReference(v *ObjectReference) *List
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectAttributesResponse
 type ListObjectAttributesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13315,7 +18212,6 @@ func (s *ListObjectAttributesOutput) SetNextToken(v string) *ListObjectAttribute
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectChildrenRequest
 type ListObjectChildrenInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13402,7 +18298,6 @@ func (s *ListObjectChildrenInput) SetObjectReference(v *ObjectReference) *ListOb
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectChildrenResponse
 type ListObjectChildrenOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13436,7 +18331,6 @@ func (s *ListObjectChildrenOutput) SetNextToken(v string) *ListObjectChildrenOut
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentPathsRequest
 type ListObjectParentPathsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13511,7 +18405,6 @@ func (s *ListObjectParentPathsInput) SetObjectReference(v *ObjectReference) *Lis
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentPathsResponse
 type ListObjectParentPathsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13544,7 +18437,6 @@ func (s *ListObjectParentPathsOutput) SetPathToObjectIdentifiersList(v []*PathTo
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentsRequest
 type ListObjectParentsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13557,6 +18449,10 @@ type ListObjectParentsInput struct {
 	//
 	// DirectoryArn is a required field
 	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
+
+	// When set to True, returns all ListObjectParentsResponse$ParentLinks. There
+	// could be multiple links between a parent-child pair.
+	IncludeAllLinksToEachParent *bool `type:"boolean"`
 
 	// The maximum number of items to be retrieved in a single call. This is an
 	// approximate number.
@@ -13613,6 +18509,12 @@ func (s *ListObjectParentsInput) SetDirectoryArn(v string) *ListObjectParentsInp
 	return s
 }
 
+// SetIncludeAllLinksToEachParent sets the IncludeAllLinksToEachParent field's value.
+func (s *ListObjectParentsInput) SetIncludeAllLinksToEachParent(v bool) *ListObjectParentsInput {
+	s.IncludeAllLinksToEachParent = &v
+	return s
+}
+
 // SetMaxResults sets the MaxResults field's value.
 func (s *ListObjectParentsInput) SetMaxResults(v int64) *ListObjectParentsInput {
 	s.MaxResults = &v
@@ -13631,12 +18533,14 @@ func (s *ListObjectParentsInput) SetObjectReference(v *ObjectReference) *ListObj
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectParentsResponse
 type ListObjectParentsOutput struct {
 	_ struct{} `type:"structure"`
 
 	// The pagination token.
 	NextToken *string `type:"string"`
+
+	// Returns a list of parent reference and LinkName Tuples.
+	ParentLinks []*ObjectIdentifierAndLinkNameTuple `type:"list"`
 
 	// The parent structure, which is a map with key as the ObjectIdentifier and
 	// LinkName as the value.
@@ -13659,13 +18563,18 @@ func (s *ListObjectParentsOutput) SetNextToken(v string) *ListObjectParentsOutpu
 	return s
 }
 
+// SetParentLinks sets the ParentLinks field's value.
+func (s *ListObjectParentsOutput) SetParentLinks(v []*ObjectIdentifierAndLinkNameTuple) *ListObjectParentsOutput {
+	s.ParentLinks = v
+	return s
+}
+
 // SetParents sets the Parents field's value.
 func (s *ListObjectParentsOutput) SetParents(v map[string]*string) *ListObjectParentsOutput {
 	s.Parents = v
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectPoliciesRequest
 type ListObjectPoliciesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13751,7 +18660,6 @@ func (s *ListObjectPoliciesInput) SetObjectReference(v *ObjectReference) *ListOb
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListObjectPoliciesResponse
 type ListObjectPoliciesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13784,7 +18692,6 @@ func (s *ListObjectPoliciesOutput) SetNextToken(v string) *ListObjectPoliciesOut
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListOutgoingTypedLinksRequest
 type ListOutgoingTypedLinksInput struct {
 	_ struct{} `type:"structure"`
 
@@ -13905,7 +18812,6 @@ func (s *ListOutgoingTypedLinksInput) SetObjectReference(v *ObjectReference) *Li
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListOutgoingTypedLinksResponse
 type ListOutgoingTypedLinksOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -13938,7 +18844,6 @@ func (s *ListOutgoingTypedLinksOutput) SetTypedLinkSpecifiers(v []*TypedLinkSpec
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPolicyAttachmentsRequest
 type ListPolicyAttachmentsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14024,7 +18929,6 @@ func (s *ListPolicyAttachmentsInput) SetPolicyReference(v *ObjectReference) *Lis
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPolicyAttachmentsResponse
 type ListPolicyAttachmentsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14057,7 +18961,6 @@ func (s *ListPolicyAttachmentsOutput) SetObjectIdentifiers(v []*string) *ListPol
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPublishedSchemaArnsRequest
 type ListPublishedSchemaArnsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14066,6 +18969,10 @@ type ListPublishedSchemaArnsInput struct {
 
 	// The pagination token.
 	NextToken *string `type:"string"`
+
+	// The response for ListPublishedSchemaArns when this parameter is used will
+	// list all minor version ARNs for a major version.
+	SchemaArn *string `type:"string"`
 }
 
 // String returns the string representation
@@ -14103,7 +19010,12 @@ func (s *ListPublishedSchemaArnsInput) SetNextToken(v string) *ListPublishedSche
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListPublishedSchemaArnsResponse
+// SetSchemaArn sets the SchemaArn field's value.
+func (s *ListPublishedSchemaArnsInput) SetSchemaArn(v string) *ListPublishedSchemaArnsInput {
+	s.SchemaArn = &v
+	return s
+}
+
 type ListPublishedSchemaArnsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14136,7 +19048,6 @@ func (s *ListPublishedSchemaArnsOutput) SetSchemaArns(v []*string) *ListPublishe
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTagsForResourceRequest
 type ListTagsForResourceInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14199,7 +19110,6 @@ func (s *ListTagsForResourceInput) SetResourceArn(v string) *ListTagsForResource
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTagsForResourceResponse
 type ListTagsForResourceOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14233,7 +19143,6 @@ func (s *ListTagsForResourceOutput) SetTags(v []*Tag) *ListTagsForResourceOutput
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetAttributesRequest
 type ListTypedLinkFacetAttributesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14308,7 +19217,6 @@ func (s *ListTypedLinkFacetAttributesInput) SetSchemaArn(v string) *ListTypedLin
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetAttributesResponse
 type ListTypedLinkFacetAttributesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14341,7 +19249,6 @@ func (s *ListTypedLinkFacetAttributesOutput) SetNextToken(v string) *ListTypedLi
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetNamesRequest
 type ListTypedLinkFacetNamesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14402,7 +19309,6 @@ func (s *ListTypedLinkFacetNamesInput) SetSchemaArn(v string) *ListTypedLinkFace
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ListTypedLinkFacetNamesResponse
 type ListTypedLinkFacetNamesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14435,7 +19341,6 @@ func (s *ListTypedLinkFacetNamesOutput) SetNextToken(v string) *ListTypedLinkFac
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/LookupPolicyRequest
 type LookupPolicyInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14511,7 +19416,6 @@ func (s *LookupPolicyInput) SetObjectReference(v *ObjectReference) *LookupPolicy
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/LookupPolicyResponse
 type LookupPolicyOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14519,7 +19423,7 @@ type LookupPolicyOutput struct {
 	NextToken *string `type:"string"`
 
 	// Provides list of path to policies. Policies contain PolicyId, ObjectIdentifier,
-	// and PolicyType. For more information, see Policies (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_key_concepts.html#policies).
+	// and PolicyType. For more information, see Policies (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
 	PolicyToPathList []*PolicyToPath `type:"list"`
 }
 
@@ -14545,8 +19449,232 @@ func (s *LookupPolicyOutput) SetPolicyToPathList(v []*PolicyToPath) *LookupPolic
 	return s
 }
 
+// Indicates that the requested operation can only operate on index objects.
+type NotIndexException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s NotIndexException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NotIndexException) GoString() string {
+	return s.String()
+}
+
+func newErrorNotIndexException(v protocol.ResponseMetadata) error {
+	return &NotIndexException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NotIndexException) Code() string {
+	return "NotIndexException"
+}
+
+// Message returns the exception's message.
+func (s *NotIndexException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NotIndexException) OrigErr() error {
+	return nil
+}
+
+func (s *NotIndexException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NotIndexException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NotIndexException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Occurs when any invalid operations are performed on an object that is not
+// a node, such as calling ListObjectChildren for a leaf node object.
+type NotNodeException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s NotNodeException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NotNodeException) GoString() string {
+	return s.String()
+}
+
+func newErrorNotNodeException(v protocol.ResponseMetadata) error {
+	return &NotNodeException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NotNodeException) Code() string {
+	return "NotNodeException"
+}
+
+// Message returns the exception's message.
+func (s *NotNodeException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NotNodeException) OrigErr() error {
+	return nil
+}
+
+func (s *NotNodeException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NotNodeException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NotNodeException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that the requested operation can only operate on policy objects.
+type NotPolicyException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s NotPolicyException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NotPolicyException) GoString() string {
+	return s.String()
+}
+
+func newErrorNotPolicyException(v protocol.ResponseMetadata) error {
+	return &NotPolicyException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NotPolicyException) Code() string {
+	return "NotPolicyException"
+}
+
+// Message returns the exception's message.
+func (s *NotPolicyException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NotPolicyException) OrigErr() error {
+	return nil
+}
+
+func (s *NotPolicyException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NotPolicyException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NotPolicyException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that the object is not attached to the index.
+type ObjectAlreadyDetachedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ObjectAlreadyDetachedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ObjectAlreadyDetachedException) GoString() string {
+	return s.String()
+}
+
+func newErrorObjectAlreadyDetachedException(v protocol.ResponseMetadata) error {
+	return &ObjectAlreadyDetachedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ObjectAlreadyDetachedException) Code() string {
+	return "ObjectAlreadyDetachedException"
+}
+
+// Message returns the exception's message.
+func (s *ObjectAlreadyDetachedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ObjectAlreadyDetachedException) OrigErr() error {
+	return nil
+}
+
+func (s *ObjectAlreadyDetachedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ObjectAlreadyDetachedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ObjectAlreadyDetachedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // The action to take on the object attribute.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ObjectAttributeAction
 type ObjectAttributeAction struct {
 	_ struct{} `type:"structure"`
 
@@ -14580,7 +19708,6 @@ func (s *ObjectAttributeAction) SetObjectAttributeUpdateValue(v *TypedAttributeV
 }
 
 // A range of attributes.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ObjectAttributeRange
 type ObjectAttributeRange struct {
 	_ struct{} `type:"structure"`
 
@@ -14634,7 +19761,6 @@ func (s *ObjectAttributeRange) SetRange(v *TypedAttributeValueRange) *ObjectAttr
 }
 
 // Structure that contains attribute update information.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ObjectAttributeUpdate
 type ObjectAttributeUpdate struct {
 	_ struct{} `type:"structure"`
 
@@ -14682,8 +19808,97 @@ func (s *ObjectAttributeUpdate) SetObjectAttributeKey(v *AttributeKey) *ObjectAt
 	return s
 }
 
+// A pair of ObjectIdentifier and LinkName.
+type ObjectIdentifierAndLinkNameTuple struct {
+	_ struct{} `type:"structure"`
+
+	// The name of the link between the parent and the child object.
+	LinkName *string `min:"1" type:"string"`
+
+	// The ID that is associated with the object.
+	ObjectIdentifier *string `type:"string"`
+}
+
+// String returns the string representation
+func (s ObjectIdentifierAndLinkNameTuple) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ObjectIdentifierAndLinkNameTuple) GoString() string {
+	return s.String()
+}
+
+// SetLinkName sets the LinkName field's value.
+func (s *ObjectIdentifierAndLinkNameTuple) SetLinkName(v string) *ObjectIdentifierAndLinkNameTuple {
+	s.LinkName = &v
+	return s
+}
+
+// SetObjectIdentifier sets the ObjectIdentifier field's value.
+func (s *ObjectIdentifierAndLinkNameTuple) SetObjectIdentifier(v string) *ObjectIdentifierAndLinkNameTuple {
+	s.ObjectIdentifier = &v
+	return s
+}
+
+// Indicates that the requested operation cannot be completed because the object
+// has not been detached from the tree.
+type ObjectNotDetachedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ObjectNotDetachedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ObjectNotDetachedException) GoString() string {
+	return s.String()
+}
+
+func newErrorObjectNotDetachedException(v protocol.ResponseMetadata) error {
+	return &ObjectNotDetachedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ObjectNotDetachedException) Code() string {
+	return "ObjectNotDetachedException"
+}
+
+// Message returns the exception's message.
+func (s *ObjectNotDetachedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ObjectNotDetachedException) OrigErr() error {
+	return nil
+}
+
+func (s *ObjectNotDetachedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ObjectNotDetachedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ObjectNotDetachedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // The reference that identifies an object.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/ObjectReference
 type ObjectReference struct {
 	_ struct{} `type:"structure"`
 
@@ -14691,7 +19906,7 @@ type ObjectReference struct {
 	// links leading to it from the directory root. Use the link names from each
 	// parent/child link to construct the path. Path selectors start with a slash
 	// (/) and link names are separated by slashes. For more information about paths,
-	// see Accessing Objects (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#accessingobjects).
+	// see Access Objects (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_access_objects.html).
 	// You can identify an object in one of the following ways:
 	//
 	//    * $ObjectIdentifier - An object identifier is an opaque string provided
@@ -14722,7 +19937,6 @@ func (s *ObjectReference) SetSelector(v string) *ObjectReference {
 }
 
 // Returns the path to the ObjectIdentifiers that is associated with the directory.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PathToObjectIdentifiers
 type PathToObjectIdentifiers struct {
 	_ struct{} `type:"structure"`
 
@@ -14757,8 +19971,7 @@ func (s *PathToObjectIdentifiers) SetPath(v string) *PathToObjectIdentifiers {
 }
 
 // Contains the PolicyType, PolicyId, and the ObjectIdentifier to which it is
-// attached. For more information, see Policies (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/cd_key_concepts.html#policies).
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PolicyAttachment
+// attached. For more information, see Policies (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/key_concepts_directory.html#key_concepts_policies).
 type PolicyAttachment struct {
 	_ struct{} `type:"structure"`
 
@@ -14803,7 +20016,6 @@ func (s *PolicyAttachment) SetPolicyType(v string) *PolicyAttachment {
 // Used when a regular object exists in a Directory and you want to find all
 // of the policies that are associated with that object and the parent to that
 // object.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PolicyToPath
 type PolicyToPath struct {
 	_ struct{} `type:"structure"`
 
@@ -14836,7 +20048,6 @@ func (s *PolicyToPath) SetPolicies(v []*PolicyAttachment) *PolicyToPath {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PublishSchemaRequest
 type PublishSchemaInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14846,11 +20057,17 @@ type PublishSchemaInput struct {
 	// DevelopmentSchemaArn is a required field
 	DevelopmentSchemaArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
 
+	// The minor version under which the schema will be published. This parameter
+	// is recommended. Schemas have both a major and minor version associated with
+	// them.
+	MinorVersion *string `min:"1" type:"string"`
+
 	// The new name under which the schema will be published. If this is not provided,
 	// the development schema is considered.
 	Name *string `min:"1" type:"string"`
 
-	// The version under which the schema will be published.
+	// The major version under which the schema will be published. Schemas have
+	// both a major and minor version associated with them.
 	//
 	// Version is a required field
 	Version *string `min:"1" type:"string" required:"true"`
@@ -14871,6 +20088,9 @@ func (s *PublishSchemaInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "PublishSchemaInput"}
 	if s.DevelopmentSchemaArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("DevelopmentSchemaArn"))
+	}
+	if s.MinorVersion != nil && len(*s.MinorVersion) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("MinorVersion", 1))
 	}
 	if s.Name != nil && len(*s.Name) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("Name", 1))
@@ -14894,6 +20114,12 @@ func (s *PublishSchemaInput) SetDevelopmentSchemaArn(v string) *PublishSchemaInp
 	return s
 }
 
+// SetMinorVersion sets the MinorVersion field's value.
+func (s *PublishSchemaInput) SetMinorVersion(v string) *PublishSchemaInput {
+	s.MinorVersion = &v
+	return s
+}
+
 // SetName sets the Name field's value.
 func (s *PublishSchemaInput) SetName(v string) *PublishSchemaInput {
 	s.Name = &v
@@ -14906,7 +20132,6 @@ func (s *PublishSchemaInput) SetVersion(v string) *PublishSchemaInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PublishSchemaResponse
 type PublishSchemaOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -14931,7 +20156,6 @@ func (s *PublishSchemaOutput) SetPublishedSchemaArn(v string) *PublishSchemaOutp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PutSchemaFromJsonRequest
 type PutSchemaFromJsonInput struct {
 	_ struct{} `type:"structure"`
 
@@ -14984,7 +20208,6 @@ func (s *PutSchemaFromJsonInput) SetSchemaArn(v string) *PutSchemaFromJsonInput 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/PutSchemaFromJsonResponse
 type PutSchemaFromJsonOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -15008,7 +20231,6 @@ func (s *PutSchemaFromJsonOutput) SetArn(v string) *PutSchemaFromJsonOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/RemoveFacetFromObjectRequest
 type RemoveFacetFromObjectInput struct {
 	_ struct{} `type:"structure"`
 
@@ -15022,7 +20244,7 @@ type RemoveFacetFromObjectInput struct {
 	// ObjectReference is a required field
 	ObjectReference *ObjectReference `type:"structure" required:"true"`
 
-	// The facet to remove.
+	// The facet to remove. See SchemaFacet for details.
 	//
 	// SchemaFacet is a required field
 	SchemaFacet *SchemaFacet `type:"structure" required:"true"`
@@ -15080,7 +20302,6 @@ func (s *RemoveFacetFromObjectInput) SetSchemaFacet(v *SchemaFacet) *RemoveFacet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/RemoveFacetFromObjectResponse
 type RemoveFacetFromObjectOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -15095,9 +20316,125 @@ func (s RemoveFacetFromObjectOutput) GoString() string {
 	return s.String()
 }
 
+// The specified resource could not be found.
+type ResourceNotFoundException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ResourceNotFoundException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ResourceNotFoundException) GoString() string {
+	return s.String()
+}
+
+func newErrorResourceNotFoundException(v protocol.ResponseMetadata) error {
+	return &ResourceNotFoundException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ResourceNotFoundException) Code() string {
+	return "ResourceNotFoundException"
+}
+
+// Message returns the exception's message.
+func (s *ResourceNotFoundException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ResourceNotFoundException) OrigErr() error {
+	return nil
+}
+
+func (s *ResourceNotFoundException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ResourceNotFoundException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ResourceNotFoundException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Occurs when a conflict with a previous successful write is detected. For
+// example, if a write operation occurs on an object and then an attempt is
+// made to read the object using “SERIALIZABLE” consistency, this exception
+// may result. This generally occurs when the previous write did not have time
+// to propagate to the host serving the current request. A retry (with appropriate
+// backoff logic) is the recommended response to this exception.
+type RetryableConflictException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s RetryableConflictException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s RetryableConflictException) GoString() string {
+	return s.String()
+}
+
+func newErrorRetryableConflictException(v protocol.ResponseMetadata) error {
+	return &RetryableConflictException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *RetryableConflictException) Code() string {
+	return "RetryableConflictException"
+}
+
+// Message returns the exception's message.
+func (s *RetryableConflictException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *RetryableConflictException) OrigErr() error {
+	return nil
+}
+
+func (s *RetryableConflictException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *RetryableConflictException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *RetryableConflictException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Contains an Amazon Resource Name (ARN) and parameters that are associated
 // with the rule.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/Rule
 type Rule struct {
 	_ struct{} `type:"structure"`
 
@@ -15130,15 +20467,129 @@ func (s *Rule) SetType(v string) *Rule {
 	return s
 }
 
+// Indicates that a schema could not be created due to a naming conflict. Please
+// select a different name and then try again.
+type SchemaAlreadyExistsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s SchemaAlreadyExistsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SchemaAlreadyExistsException) GoString() string {
+	return s.String()
+}
+
+func newErrorSchemaAlreadyExistsException(v protocol.ResponseMetadata) error {
+	return &SchemaAlreadyExistsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SchemaAlreadyExistsException) Code() string {
+	return "SchemaAlreadyExistsException"
+}
+
+// Message returns the exception's message.
+func (s *SchemaAlreadyExistsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SchemaAlreadyExistsException) OrigErr() error {
+	return nil
+}
+
+func (s *SchemaAlreadyExistsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SchemaAlreadyExistsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SchemaAlreadyExistsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Indicates that a schema is already published.
+type SchemaAlreadyPublishedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s SchemaAlreadyPublishedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SchemaAlreadyPublishedException) GoString() string {
+	return s.String()
+}
+
+func newErrorSchemaAlreadyPublishedException(v protocol.ResponseMetadata) error {
+	return &SchemaAlreadyPublishedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SchemaAlreadyPublishedException) Code() string {
+	return "SchemaAlreadyPublishedException"
+}
+
+// Message returns the exception's message.
+func (s *SchemaAlreadyPublishedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SchemaAlreadyPublishedException) OrigErr() error {
+	return nil
+}
+
+func (s *SchemaAlreadyPublishedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SchemaAlreadyPublishedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SchemaAlreadyPublishedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // A facet.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/SchemaFacet
 type SchemaFacet struct {
 	_ struct{} `type:"structure"`
 
 	// The name of the facet.
 	FacetName *string `min:"1" type:"string"`
 
-	// The ARN of the schema that contains the facet.
+	// The ARN of the schema that contains the facet with no minor component. See
+	// arns and In-Place Schema Upgrade (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/schemas_inplaceschemaupgrade.html)
+	// for a description of when to provide minor versions.
 	SchemaArn *string `type:"string"`
 }
 
@@ -15177,8 +20628,64 @@ func (s *SchemaFacet) SetSchemaArn(v string) *SchemaFacet {
 	return s
 }
 
+// The object could not be deleted because links still exist. Remove the links
+// and then try the operation again.
+type StillContainsLinksException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s StillContainsLinksException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s StillContainsLinksException) GoString() string {
+	return s.String()
+}
+
+func newErrorStillContainsLinksException(v protocol.ResponseMetadata) error {
+	return &StillContainsLinksException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *StillContainsLinksException) Code() string {
+	return "StillContainsLinksException"
+}
+
+// Message returns the exception's message.
+func (s *StillContainsLinksException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *StillContainsLinksException) OrigErr() error {
+	return nil
+}
+
+func (s *StillContainsLinksException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *StillContainsLinksException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *StillContainsLinksException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // The tag structure that contains a tag key and value.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/Tag
 type Tag struct {
 	_ struct{} `type:"structure"`
 
@@ -15211,7 +20718,6 @@ func (s *Tag) SetValue(v string) *Tag {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TagResourceRequest
 type TagResourceInput struct {
 	_ struct{} `type:"structure"`
 
@@ -15265,7 +20771,6 @@ func (s *TagResourceInput) SetTags(v []*Tag) *TagResourceInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TagResourceResponse
 type TagResourceOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -15283,7 +20788,6 @@ func (s TagResourceOutput) GoString() string {
 // Represents the data for a typed attribute. You can set one, and only one,
 // of the elements. Each attribute in an item is a name-value pair. Attributes
 // have a single value.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedAttributeValue
 type TypedAttributeValue struct {
 	_ struct{} `type:"structure"`
 
@@ -15296,7 +20800,7 @@ type TypedAttributeValue struct {
 	BooleanValue *bool `type:"boolean"`
 
 	// A date and time value.
-	DatetimeValue *time.Time `type:"timestamp" timestampFormat:"unix"`
+	DatetimeValue *time.Time `type:"timestamp"`
 
 	// A number data value.
 	NumberValue *string `type:"string"`
@@ -15345,8 +20849,7 @@ func (s *TypedAttributeValue) SetStringValue(v string) *TypedAttributeValue {
 	return s
 }
 
-// A range of attribute values.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedAttributeValueRange
+// A range of attribute values. For more information, see Range Filters (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_range_filters.html).
 type TypedAttributeValueRange struct {
 	_ struct{} `type:"structure"`
 
@@ -15418,7 +20921,6 @@ func (s *TypedAttributeValueRange) SetStartValue(v *TypedAttributeValue) *TypedA
 }
 
 // A typed link attribute definition.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkAttributeDefinition
 type TypedLinkAttributeDefinition struct {
 	_ struct{} `type:"structure"`
 
@@ -15516,7 +21018,6 @@ func (s *TypedLinkAttributeDefinition) SetType(v string) *TypedLinkAttributeDefi
 }
 
 // Identifies the range of attributes that are used by a specified filter.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkAttributeRange
 type TypedLinkAttributeRange struct {
 	_ struct{} `type:"structure"`
 
@@ -15574,7 +21075,6 @@ func (s *TypedLinkAttributeRange) SetRange(v *TypedAttributeValueRange) *TypedLi
 
 // Defines the typed links structure and its attributes. To create a typed link
 // facet, use the CreateTypedLinkFacet API.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkFacet
 type TypedLinkFacet struct {
 	_ struct{} `type:"structure"`
 
@@ -15588,7 +21088,7 @@ type TypedLinkFacet struct {
 
 	// The set of attributes that distinguish links made from this facet from each
 	// other, in the order of significance. Listing typed links can filter on the
-	// values of these attributes. See ListOutgoingTypedLinks and ListIncomingTypeLinks
+	// values of these attributes. See ListOutgoingTypedLinks and ListIncomingTypedLinks
 	// for details.
 	//
 	// IdentityAttributeOrder is a required field
@@ -15658,7 +21158,6 @@ func (s *TypedLinkFacet) SetName(v string) *TypedLinkFacet {
 }
 
 // A typed link facet attribute update.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkFacetAttributeUpdate
 type TypedLinkFacetAttributeUpdate struct {
 	_ struct{} `type:"structure"`
 
@@ -15718,7 +21217,6 @@ func (s *TypedLinkFacetAttributeUpdate) SetAttribute(v *TypedLinkAttributeDefini
 
 // Identifies the schema Amazon Resource Name (ARN) and facet name for the typed
 // link.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkSchemaAndFacetName
 type TypedLinkSchemaAndFacetName struct {
 	_ struct{} `type:"structure"`
 
@@ -15778,7 +21276,6 @@ func (s *TypedLinkSchemaAndFacetName) SetTypedLinkName(v string) *TypedLinkSchem
 // while the DetachTypedLink API accepts one as input. Similarly, the ListIncomingTypedLinks
 // and ListOutgoingTypedLinks API operations provide typed link specifiers as
 // output. You can also construct a typed link specifier from scratch.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/TypedLinkSpecifier
 type TypedLinkSpecifier struct {
 	_ struct{} `type:"structure"`
 
@@ -15874,7 +21371,62 @@ func (s *TypedLinkSpecifier) SetTypedLinkFacet(v *TypedLinkSchemaAndFacetName) *
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UntagResourceRequest
+// Indicates that the requested index type is not supported.
+type UnsupportedIndexTypeException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s UnsupportedIndexTypeException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UnsupportedIndexTypeException) GoString() string {
+	return s.String()
+}
+
+func newErrorUnsupportedIndexTypeException(v protocol.ResponseMetadata) error {
+	return &UnsupportedIndexTypeException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *UnsupportedIndexTypeException) Code() string {
+	return "UnsupportedIndexTypeException"
+}
+
+// Message returns the exception's message.
+func (s *UnsupportedIndexTypeException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *UnsupportedIndexTypeException) OrigErr() error {
+	return nil
+}
+
+func (s *UnsupportedIndexTypeException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *UnsupportedIndexTypeException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *UnsupportedIndexTypeException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type UntagResourceInput struct {
 	_ struct{} `type:"structure"`
 
@@ -15928,7 +21480,6 @@ func (s *UntagResourceInput) SetTagKeys(v []*string) *UntagResourceInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UntagResourceResponse
 type UntagResourceOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -15943,7 +21494,6 @@ func (s UntagResourceOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateFacetRequest
 type UpdateFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -16031,7 +21581,6 @@ func (s *UpdateFacetInput) SetSchemaArn(v string) *UpdateFacetInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateFacetResponse
 type UpdateFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -16046,7 +21595,103 @@ func (s UpdateFacetOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateObjectAttributesRequest
+type UpdateLinkAttributesInput struct {
+	_ struct{} `type:"structure"`
+
+	// The attributes update structure.
+	//
+	// AttributeUpdates is a required field
+	AttributeUpdates []*LinkAttributeUpdate `type:"list" required:"true"`
+
+	// The Amazon Resource Name (ARN) that is associated with the Directory where
+	// the updated typed link resides. For more information, see arns or Typed Links
+	// (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
+	//
+	// DirectoryArn is a required field
+	DirectoryArn *string `location:"header" locationName:"x-amz-data-partition" type:"string" required:"true"`
+
+	// Allows a typed link specifier to be accepted as input.
+	//
+	// TypedLinkSpecifier is a required field
+	TypedLinkSpecifier *TypedLinkSpecifier `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s UpdateLinkAttributesInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpdateLinkAttributesInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *UpdateLinkAttributesInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "UpdateLinkAttributesInput"}
+	if s.AttributeUpdates == nil {
+		invalidParams.Add(request.NewErrParamRequired("AttributeUpdates"))
+	}
+	if s.DirectoryArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DirectoryArn"))
+	}
+	if s.TypedLinkSpecifier == nil {
+		invalidParams.Add(request.NewErrParamRequired("TypedLinkSpecifier"))
+	}
+	if s.AttributeUpdates != nil {
+		for i, v := range s.AttributeUpdates {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "AttributeUpdates", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.TypedLinkSpecifier != nil {
+		if err := s.TypedLinkSpecifier.Validate(); err != nil {
+			invalidParams.AddNested("TypedLinkSpecifier", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAttributeUpdates sets the AttributeUpdates field's value.
+func (s *UpdateLinkAttributesInput) SetAttributeUpdates(v []*LinkAttributeUpdate) *UpdateLinkAttributesInput {
+	s.AttributeUpdates = v
+	return s
+}
+
+// SetDirectoryArn sets the DirectoryArn field's value.
+func (s *UpdateLinkAttributesInput) SetDirectoryArn(v string) *UpdateLinkAttributesInput {
+	s.DirectoryArn = &v
+	return s
+}
+
+// SetTypedLinkSpecifier sets the TypedLinkSpecifier field's value.
+func (s *UpdateLinkAttributesInput) SetTypedLinkSpecifier(v *TypedLinkSpecifier) *UpdateLinkAttributesInput {
+	s.TypedLinkSpecifier = v
+	return s
+}
+
+type UpdateLinkAttributesOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s UpdateLinkAttributesOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpdateLinkAttributesOutput) GoString() string {
+	return s.String()
+}
+
 type UpdateObjectAttributesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -16124,7 +21769,6 @@ func (s *UpdateObjectAttributesInput) SetObjectReference(v *ObjectReference) *Up
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateObjectAttributesResponse
 type UpdateObjectAttributesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -16148,7 +21792,6 @@ func (s *UpdateObjectAttributesOutput) SetObjectIdentifier(v string) *UpdateObje
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateSchemaRequest
 type UpdateSchemaInput struct {
 	_ struct{} `type:"structure"`
 
@@ -16205,7 +21848,6 @@ func (s *UpdateSchemaInput) SetSchemaArn(v string) *UpdateSchemaInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateSchemaResponse
 type UpdateSchemaOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -16230,7 +21872,6 @@ func (s *UpdateSchemaOutput) SetSchemaArn(v string) *UpdateSchemaOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateTypedLinkFacetRequest
 type UpdateTypedLinkFacetInput struct {
 	_ struct{} `type:"structure"`
 
@@ -16246,7 +21887,7 @@ type UpdateTypedLinkFacetInput struct {
 	// Any attributes that do not have a range specified are presumed to match the
 	// entire range. Filters are interpreted in the order of the attributes on the
 	// typed link facet, not the order in which they are supplied to any API calls.
-	// For more information about identity attributes, see Typed link (http://docs.aws.amazon.com/directoryservice/latest/admin-guide/objectsandlinks.html#typedlink).
+	// For more information about identity attributes, see Typed Links (https://docs.aws.amazon.com/clouddirectory/latest/developerguide/directory_objects_links.html#directory_objects_links_typedlink).
 	//
 	// IdentityAttributeOrder is a required field
 	IdentityAttributeOrder []*string `type:"list" required:"true"`
@@ -16329,7 +21970,6 @@ func (s *UpdateTypedLinkFacetInput) SetSchemaArn(v string) *UpdateTypedLinkFacet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/clouddirectory-2016-05-10/UpdateTypedLinkFacetResponse
 type UpdateTypedLinkFacetOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -16342,6 +21982,263 @@ func (s UpdateTypedLinkFacetOutput) String() string {
 // GoString returns the string representation
 func (s UpdateTypedLinkFacetOutput) GoString() string {
 	return s.String()
+}
+
+type UpgradeAppliedSchemaInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN for the directory to which the upgraded schema will be applied.
+	//
+	// DirectoryArn is a required field
+	DirectoryArn *string `type:"string" required:"true"`
+
+	// Used for testing whether the major version schemas are backward compatible
+	// or not. If schema compatibility fails, an exception would be thrown else
+	// the call would succeed but no changes will be saved. This parameter is optional.
+	DryRun *bool `type:"boolean"`
+
+	// The revision of the published schema to upgrade the directory to.
+	//
+	// PublishedSchemaArn is a required field
+	PublishedSchemaArn *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s UpgradeAppliedSchemaInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpgradeAppliedSchemaInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *UpgradeAppliedSchemaInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "UpgradeAppliedSchemaInput"}
+	if s.DirectoryArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DirectoryArn"))
+	}
+	if s.PublishedSchemaArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("PublishedSchemaArn"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDirectoryArn sets the DirectoryArn field's value.
+func (s *UpgradeAppliedSchemaInput) SetDirectoryArn(v string) *UpgradeAppliedSchemaInput {
+	s.DirectoryArn = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *UpgradeAppliedSchemaInput) SetDryRun(v bool) *UpgradeAppliedSchemaInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetPublishedSchemaArn sets the PublishedSchemaArn field's value.
+func (s *UpgradeAppliedSchemaInput) SetPublishedSchemaArn(v string) *UpgradeAppliedSchemaInput {
+	s.PublishedSchemaArn = &v
+	return s
+}
+
+type UpgradeAppliedSchemaOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN of the directory that is returned as part of the response.
+	DirectoryArn *string `type:"string"`
+
+	// The ARN of the upgraded schema that is returned as part of the response.
+	UpgradedSchemaArn *string `type:"string"`
+}
+
+// String returns the string representation
+func (s UpgradeAppliedSchemaOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpgradeAppliedSchemaOutput) GoString() string {
+	return s.String()
+}
+
+// SetDirectoryArn sets the DirectoryArn field's value.
+func (s *UpgradeAppliedSchemaOutput) SetDirectoryArn(v string) *UpgradeAppliedSchemaOutput {
+	s.DirectoryArn = &v
+	return s
+}
+
+// SetUpgradedSchemaArn sets the UpgradedSchemaArn field's value.
+func (s *UpgradeAppliedSchemaOutput) SetUpgradedSchemaArn(v string) *UpgradeAppliedSchemaOutput {
+	s.UpgradedSchemaArn = &v
+	return s
+}
+
+type UpgradePublishedSchemaInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN of the development schema with the changes used for the upgrade.
+	//
+	// DevelopmentSchemaArn is a required field
+	DevelopmentSchemaArn *string `type:"string" required:"true"`
+
+	// Used for testing whether the Development schema provided is backwards compatible,
+	// or not, with the publish schema provided by the user to be upgraded. If schema
+	// compatibility fails, an exception would be thrown else the call would succeed.
+	// This parameter is optional and defaults to false.
+	DryRun *bool `type:"boolean"`
+
+	// Identifies the minor version of the published schema that will be created.
+	// This parameter is NOT optional.
+	//
+	// MinorVersion is a required field
+	MinorVersion *string `min:"1" type:"string" required:"true"`
+
+	// The ARN of the published schema to be upgraded.
+	//
+	// PublishedSchemaArn is a required field
+	PublishedSchemaArn *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s UpgradePublishedSchemaInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpgradePublishedSchemaInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *UpgradePublishedSchemaInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "UpgradePublishedSchemaInput"}
+	if s.DevelopmentSchemaArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("DevelopmentSchemaArn"))
+	}
+	if s.MinorVersion == nil {
+		invalidParams.Add(request.NewErrParamRequired("MinorVersion"))
+	}
+	if s.MinorVersion != nil && len(*s.MinorVersion) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("MinorVersion", 1))
+	}
+	if s.PublishedSchemaArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("PublishedSchemaArn"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetDevelopmentSchemaArn sets the DevelopmentSchemaArn field's value.
+func (s *UpgradePublishedSchemaInput) SetDevelopmentSchemaArn(v string) *UpgradePublishedSchemaInput {
+	s.DevelopmentSchemaArn = &v
+	return s
+}
+
+// SetDryRun sets the DryRun field's value.
+func (s *UpgradePublishedSchemaInput) SetDryRun(v bool) *UpgradePublishedSchemaInput {
+	s.DryRun = &v
+	return s
+}
+
+// SetMinorVersion sets the MinorVersion field's value.
+func (s *UpgradePublishedSchemaInput) SetMinorVersion(v string) *UpgradePublishedSchemaInput {
+	s.MinorVersion = &v
+	return s
+}
+
+// SetPublishedSchemaArn sets the PublishedSchemaArn field's value.
+func (s *UpgradePublishedSchemaInput) SetPublishedSchemaArn(v string) *UpgradePublishedSchemaInput {
+	s.PublishedSchemaArn = &v
+	return s
+}
+
+type UpgradePublishedSchemaOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The ARN of the upgraded schema that is returned as part of the response.
+	UpgradedSchemaArn *string `type:"string"`
+}
+
+// String returns the string representation
+func (s UpgradePublishedSchemaOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UpgradePublishedSchemaOutput) GoString() string {
+	return s.String()
+}
+
+// SetUpgradedSchemaArn sets the UpgradedSchemaArn field's value.
+func (s *UpgradePublishedSchemaOutput) SetUpgradedSchemaArn(v string) *UpgradePublishedSchemaOutput {
+	s.UpgradedSchemaArn = &v
+	return s
+}
+
+// Indicates that your request is malformed in some manner. See the exception
+// message.
+type ValidationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ValidationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ValidationException) GoString() string {
+	return s.String()
+}
+
+func newErrorValidationException(v protocol.ResponseMetadata) error {
+	return &ValidationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ValidationException) Code() string {
+	return "ValidationException"
+}
+
+// Message returns the exception's message.
+func (s *ValidationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ValidationException) OrigErr() error {
+	return nil
+}
+
+func (s *ValidationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ValidationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ValidationException) RequestID() string {
+	return s.RespMetadata.RequestID
 }
 
 const (
@@ -16362,6 +22259,27 @@ const (
 
 	// BatchReadExceptionTypeNotNodeException is a BatchReadExceptionType enum value
 	BatchReadExceptionTypeNotNodeException = "NotNodeException"
+
+	// BatchReadExceptionTypeFacetValidationException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeFacetValidationException = "FacetValidationException"
+
+	// BatchReadExceptionTypeCannotListParentOfRootException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeCannotListParentOfRootException = "CannotListParentOfRootException"
+
+	// BatchReadExceptionTypeNotIndexException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeNotIndexException = "NotIndexException"
+
+	// BatchReadExceptionTypeNotPolicyException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeNotPolicyException = "NotPolicyException"
+
+	// BatchReadExceptionTypeDirectoryNotEnabledException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeDirectoryNotEnabledException = "DirectoryNotEnabledException"
+
+	// BatchReadExceptionTypeLimitExceededException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeLimitExceededException = "LimitExceededException"
+
+	// BatchReadExceptionTypeInternalServiceException is a BatchReadExceptionType enum value
+	BatchReadExceptionTypeInternalServiceException = "InternalServiceException"
 )
 
 const (
@@ -16391,6 +22309,33 @@ const (
 
 	// BatchWriteExceptionTypeAccessDeniedException is a BatchWriteExceptionType enum value
 	BatchWriteExceptionTypeAccessDeniedException = "AccessDeniedException"
+
+	// BatchWriteExceptionTypeInvalidAttachmentException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeInvalidAttachmentException = "InvalidAttachmentException"
+
+	// BatchWriteExceptionTypeNotIndexException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeNotIndexException = "NotIndexException"
+
+	// BatchWriteExceptionTypeNotNodeException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeNotNodeException = "NotNodeException"
+
+	// BatchWriteExceptionTypeIndexedAttributeMissingException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeIndexedAttributeMissingException = "IndexedAttributeMissingException"
+
+	// BatchWriteExceptionTypeObjectAlreadyDetachedException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeObjectAlreadyDetachedException = "ObjectAlreadyDetachedException"
+
+	// BatchWriteExceptionTypeNotPolicyException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeNotPolicyException = "NotPolicyException"
+
+	// BatchWriteExceptionTypeDirectoryNotEnabledException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeDirectoryNotEnabledException = "DirectoryNotEnabledException"
+
+	// BatchWriteExceptionTypeLimitExceededException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeLimitExceededException = "LimitExceededException"
+
+	// BatchWriteExceptionTypeUnsupportedIndexTypeException is a BatchWriteExceptionType enum value
+	BatchWriteExceptionTypeUnsupportedIndexTypeException = "UnsupportedIndexTypeException"
 )
 
 const (
@@ -16427,6 +22372,17 @@ const (
 
 	// FacetAttributeTypeDatetime is a FacetAttributeType enum value
 	FacetAttributeTypeDatetime = "DATETIME"
+
+	// FacetAttributeTypeVariant is a FacetAttributeType enum value
+	FacetAttributeTypeVariant = "VARIANT"
+)
+
+const (
+	// FacetStyleStatic is a FacetStyle enum value
+	FacetStyleStatic = "STATIC"
+
+	// FacetStyleDynamic is a FacetStyle enum value
+	FacetStyleDynamic = "DYNAMIC"
 )
 
 const (

@@ -21,7 +21,7 @@ import (
 //
 // The best way to use this interface is so the SDK's service client's calls
 // can be stubbed out for unit testing your code with the SDK without needing
-// to inject custom request handlers into the the SDK's request pipeline.
+// to inject custom request handlers into the SDK's request pipeline.
 //
 //    // myFunc uses an SDK service client to make a request to
 //    // Amazon CloudSearch.
@@ -112,6 +112,10 @@ type CloudSearchAPI interface {
 	DescribeAvailabilityOptionsWithContext(aws.Context, *cloudsearch.DescribeAvailabilityOptionsInput, ...request.Option) (*cloudsearch.DescribeAvailabilityOptionsOutput, error)
 	DescribeAvailabilityOptionsRequest(*cloudsearch.DescribeAvailabilityOptionsInput) (*request.Request, *cloudsearch.DescribeAvailabilityOptionsOutput)
 
+	DescribeDomainEndpointOptions(*cloudsearch.DescribeDomainEndpointOptionsInput) (*cloudsearch.DescribeDomainEndpointOptionsOutput, error)
+	DescribeDomainEndpointOptionsWithContext(aws.Context, *cloudsearch.DescribeDomainEndpointOptionsInput, ...request.Option) (*cloudsearch.DescribeDomainEndpointOptionsOutput, error)
+	DescribeDomainEndpointOptionsRequest(*cloudsearch.DescribeDomainEndpointOptionsInput) (*request.Request, *cloudsearch.DescribeDomainEndpointOptionsOutput)
+
 	DescribeDomains(*cloudsearch.DescribeDomainsInput) (*cloudsearch.DescribeDomainsOutput, error)
 	DescribeDomainsWithContext(aws.Context, *cloudsearch.DescribeDomainsInput, ...request.Option) (*cloudsearch.DescribeDomainsOutput, error)
 	DescribeDomainsRequest(*cloudsearch.DescribeDomainsInput) (*request.Request, *cloudsearch.DescribeDomainsOutput)
@@ -147,6 +151,10 @@ type CloudSearchAPI interface {
 	UpdateAvailabilityOptions(*cloudsearch.UpdateAvailabilityOptionsInput) (*cloudsearch.UpdateAvailabilityOptionsOutput, error)
 	UpdateAvailabilityOptionsWithContext(aws.Context, *cloudsearch.UpdateAvailabilityOptionsInput, ...request.Option) (*cloudsearch.UpdateAvailabilityOptionsOutput, error)
 	UpdateAvailabilityOptionsRequest(*cloudsearch.UpdateAvailabilityOptionsInput) (*request.Request, *cloudsearch.UpdateAvailabilityOptionsOutput)
+
+	UpdateDomainEndpointOptions(*cloudsearch.UpdateDomainEndpointOptionsInput) (*cloudsearch.UpdateDomainEndpointOptionsOutput, error)
+	UpdateDomainEndpointOptionsWithContext(aws.Context, *cloudsearch.UpdateDomainEndpointOptionsInput, ...request.Option) (*cloudsearch.UpdateDomainEndpointOptionsOutput, error)
+	UpdateDomainEndpointOptionsRequest(*cloudsearch.UpdateDomainEndpointOptionsInput) (*request.Request, *cloudsearch.UpdateDomainEndpointOptionsOutput)
 
 	UpdateScalingParameters(*cloudsearch.UpdateScalingParametersInput) (*cloudsearch.UpdateScalingParametersOutput, error)
 	UpdateScalingParametersWithContext(aws.Context, *cloudsearch.UpdateScalingParametersInput, ...request.Option) (*cloudsearch.UpdateScalingParametersOutput, error)

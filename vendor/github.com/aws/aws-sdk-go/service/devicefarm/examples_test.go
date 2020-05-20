@@ -3,8 +3,8 @@
 package devicefarm_test
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,7 +14,7 @@ import (
 )
 
 var _ time.Duration
-var _ bytes.Buffer
+var _ strings.Reader
 var _ aws.Config
 
 func parseTime(layout, value string) *time.Time {
@@ -84,6 +84,8 @@ func ExampleDeviceFarm_CreateProject_shared00() {
 				fmt.Println(devicefarm.ErrCodeLimitExceededException, aerr.Error())
 			case devicefarm.ErrCodeServiceAccountException:
 				fmt.Println(devicefarm.ErrCodeServiceAccountException, aerr.Error())
+			case devicefarm.ErrCodeTagOperationException:
+				fmt.Println(devicefarm.ErrCodeTagOperationException, aerr.Error())
 			default:
 				fmt.Println(aerr.Error())
 			}
@@ -1180,11 +1182,11 @@ func ExampleDeviceFarm_ListSamples_shared00() {
 // To get information about suites
 //
 // The following example returns information about suites, given a specific Device Farm
-// project.
+// job.
 func ExampleDeviceFarm_ListSuites_shared00() {
 	svc := devicefarm.New(session.New())
 	input := &devicefarm.ListSuitesInput{
-		Arn:       aws.String("arn:aws:devicefarm:us-west-2:123456789101:project:EXAMPLE-GUID-123-456"),
+		Arn:       aws.String("arn:aws:devicefarm:us-west-2:123456789101:job:EXAMPLE-GUID-123-456"),
 		NextToken: aws.String("RW5DdDJkMWYwZjM2MzM2VHVpOHJIUXlDUXlhc2QzRGViYnc9SEXAMPLE"),
 	}
 

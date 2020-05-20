@@ -3,30 +3,31 @@
 package dax
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
 )
 
 const opCreateCluster = "CreateCluster"
 
 // CreateClusterRequest generates a "aws/request.Request" representing the
 // client's request for the CreateCluster operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateCluster for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateCluster method directly
-// instead.
+// See CreateCluster for more information on using the CreateCluster
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateClusterRequest method.
 //    req, resp := client.CreateClusterRequest(params)
@@ -36,7 +37,7 @@ const opCreateCluster = "CreateCluster"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateCluster
 func (c *DAX) CreateClusterRequest(input *CreateClusterInput) (req *request.Request, output *CreateClusterOutput) {
 	op := &request.Operation{
 		Name:       opCreateCluster,
@@ -65,49 +66,52 @@ func (c *DAX) CreateClusterRequest(input *CreateClusterInput) (req *request.Requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation CreateCluster for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterAlreadyExistsFault "ClusterAlreadyExistsFault"
+// Returned Error Types:
+//   * ClusterAlreadyExistsFault
 //   You already have a DAX cluster with the given identifier.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInsufficientClusterCapacityFault "InsufficientClusterCapacityFault"
+//   * InsufficientClusterCapacityFault
 //   There are not enough system resources to create the cluster you requested
 //   (or to resize an already-existing cluster).
 //
-//   * ErrCodeSubnetGroupNotFoundFault "SubnetGroupNotFoundFault"
+//   * SubnetGroupNotFoundFault
 //   The requested subnet group name does not refer to an existing subnet group.
 //
-//   * ErrCodeInvalidParameterGroupStateFault "InvalidParameterGroupStateFault"
+//   * InvalidParameterGroupStateFault
 //   One or more parameters in a parameter group are in an invalid state.
 //
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeClusterQuotaForCustomerExceededFault "ClusterQuotaForCustomerExceededFault"
+//   * ClusterQuotaForCustomerExceededFault
 //   You have attempted to exceed the maximum number of DAX clusters for your
 //   AWS account.
 //
-//   * ErrCodeNodeQuotaForClusterExceededFault "NodeQuotaForClusterExceededFault"
+//   * NodeQuotaForClusterExceededFault
 //   You have attempted to exceed the maximum number of nodes for a DAX cluster.
 //
-//   * ErrCodeNodeQuotaForCustomerExceededFault "NodeQuotaForCustomerExceededFault"
+//   * NodeQuotaForCustomerExceededFault
 //   You have attempted to exceed the maximum number of nodes for your AWS account.
 //
-//   * ErrCodeInvalidVPCNetworkStateFault "InvalidVPCNetworkStateFault"
+//   * InvalidVPCNetworkStateFault
 //   The VPC network is in an invalid state.
 //
-//   * ErrCodeTagQuotaPerResourceExceeded "TagQuotaPerResourceExceeded"
+//   * TagQuotaPerResourceExceeded
 //   You have exceeded the maximum number of tags for this DAX cluster.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateCluster
 func (c *DAX) CreateCluster(input *CreateClusterInput) (*CreateClusterOutput, error) {
 	req, out := c.CreateClusterRequest(input)
 	return out, req.Send()
@@ -133,19 +137,18 @@ const opCreateParameterGroup = "CreateParameterGroup"
 
 // CreateParameterGroupRequest generates a "aws/request.Request" representing the
 // client's request for the CreateParameterGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateParameterGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateParameterGroup method directly
-// instead.
+// See CreateParameterGroup for more information on using the CreateParameterGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateParameterGroupRequest method.
 //    req, resp := client.CreateParameterGroupRequest(params)
@@ -155,7 +158,7 @@ const opCreateParameterGroup = "CreateParameterGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroup
 func (c *DAX) CreateParameterGroupRequest(input *CreateParameterGroupInput) (req *request.Request, output *CreateParameterGroupOutput) {
 	op := &request.Operation{
 		Name:       opCreateParameterGroup,
@@ -184,23 +187,26 @@ func (c *DAX) CreateParameterGroupRequest(input *CreateParameterGroupInput) (req
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation CreateParameterGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeParameterGroupQuotaExceededFault "ParameterGroupQuotaExceededFault"
+// Returned Error Types:
+//   * ParameterGroupQuotaExceededFault
 //   You have attempted to exceed the maximum number of parameter groups.
 //
-//   * ErrCodeParameterGroupAlreadyExistsFault "ParameterGroupAlreadyExistsFault"
+//   * ParameterGroupAlreadyExistsFault
 //   The specified parameter group already exists.
 //
-//   * ErrCodeInvalidParameterGroupStateFault "InvalidParameterGroupStateFault"
+//   * InvalidParameterGroupStateFault
 //   One or more parameters in a parameter group are in an invalid state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroup
 func (c *DAX) CreateParameterGroup(input *CreateParameterGroupInput) (*CreateParameterGroupOutput, error) {
 	req, out := c.CreateParameterGroupRequest(input)
 	return out, req.Send()
@@ -226,19 +232,18 @@ const opCreateSubnetGroup = "CreateSubnetGroup"
 
 // CreateSubnetGroupRequest generates a "aws/request.Request" representing the
 // client's request for the CreateSubnetGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateSubnetGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateSubnetGroup method directly
-// instead.
+// See CreateSubnetGroup for more information on using the CreateSubnetGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateSubnetGroupRequest method.
 //    req, resp := client.CreateSubnetGroupRequest(params)
@@ -248,7 +253,7 @@ const opCreateSubnetGroup = "CreateSubnetGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroup
 func (c *DAX) CreateSubnetGroupRequest(input *CreateSubnetGroupInput) (req *request.Request, output *CreateSubnetGroupOutput) {
 	op := &request.Operation{
 		Name:       opCreateSubnetGroup,
@@ -276,22 +281,25 @@ func (c *DAX) CreateSubnetGroupRequest(input *CreateSubnetGroupInput) (req *requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation CreateSubnetGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSubnetGroupAlreadyExistsFault "SubnetGroupAlreadyExistsFault"
+// Returned Error Types:
+//   * SubnetGroupAlreadyExistsFault
 //   The specified subnet group already exists.
 //
-//   * ErrCodeSubnetGroupQuotaExceededFault "SubnetGroupQuotaExceededFault"
+//   * SubnetGroupQuotaExceededFault
 //   The request cannot be processed because it would exceed the allowed number
 //   of subnets in a subnet group.
 //
-//   * ErrCodeSubnetQuotaExceededFault "SubnetQuotaExceededFault"
+//   * SubnetQuotaExceededFault
 //   The request cannot be processed because it would exceed the allowed number
 //   of subnets in a subnet group.
 //
-//   * ErrCodeInvalidSubnet "InvalidSubnet"
+//   * InvalidSubnet
 //   An invalid subnet identifier was specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroup
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroup
 func (c *DAX) CreateSubnetGroup(input *CreateSubnetGroupInput) (*CreateSubnetGroupOutput, error) {
 	req, out := c.CreateSubnetGroupRequest(input)
 	return out, req.Send()
@@ -317,19 +325,18 @@ const opDecreaseReplicationFactor = "DecreaseReplicationFactor"
 
 // DecreaseReplicationFactorRequest generates a "aws/request.Request" representing the
 // client's request for the DecreaseReplicationFactor operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DecreaseReplicationFactor for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DecreaseReplicationFactor method directly
-// instead.
+// See DecreaseReplicationFactor for more information on using the DecreaseReplicationFactor
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DecreaseReplicationFactorRequest method.
 //    req, resp := client.DecreaseReplicationFactorRequest(params)
@@ -339,7 +346,7 @@ const opDecreaseReplicationFactor = "DecreaseReplicationFactor"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactor
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactor
 func (c *DAX) DecreaseReplicationFactorRequest(input *DecreaseReplicationFactorInput) (req *request.Request, output *DecreaseReplicationFactorOutput) {
 	op := &request.Operation{
 		Name:       opDecreaseReplicationFactor,
@@ -370,23 +377,26 @@ func (c *DAX) DecreaseReplicationFactorRequest(input *DecreaseReplicationFactorI
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DecreaseReplicationFactor for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeNodeNotFoundFault "NodeNotFoundFault"
+//   * NodeNotFoundFault
 //   None of the nodes in the cluster have the given node ID.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactor
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactor
 func (c *DAX) DecreaseReplicationFactor(input *DecreaseReplicationFactorInput) (*DecreaseReplicationFactorOutput, error) {
 	req, out := c.DecreaseReplicationFactorRequest(input)
 	return out, req.Send()
@@ -412,19 +422,18 @@ const opDeleteCluster = "DeleteCluster"
 
 // DeleteClusterRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteCluster operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteCluster for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteCluster method directly
-// instead.
+// See DeleteCluster for more information on using the DeleteCluster
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteClusterRequest method.
 //    req, resp := client.DeleteClusterRequest(params)
@@ -434,7 +443,7 @@ const opDeleteCluster = "DeleteCluster"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteCluster
 func (c *DAX) DeleteClusterRequest(input *DeleteClusterInput) (req *request.Request, output *DeleteClusterOutput) {
 	op := &request.Operation{
 		Name:       opDeleteCluster,
@@ -465,20 +474,23 @@ func (c *DAX) DeleteClusterRequest(input *DeleteClusterInput) (req *request.Requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DeleteCluster for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteCluster
 func (c *DAX) DeleteCluster(input *DeleteClusterInput) (*DeleteClusterOutput, error) {
 	req, out := c.DeleteClusterRequest(input)
 	return out, req.Send()
@@ -504,19 +516,18 @@ const opDeleteParameterGroup = "DeleteParameterGroup"
 
 // DeleteParameterGroupRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteParameterGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteParameterGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteParameterGroup method directly
-// instead.
+// See DeleteParameterGroup for more information on using the DeleteParameterGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteParameterGroupRequest method.
 //    req, resp := client.DeleteParameterGroupRequest(params)
@@ -526,7 +537,7 @@ const opDeleteParameterGroup = "DeleteParameterGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroup
 func (c *DAX) DeleteParameterGroupRequest(input *DeleteParameterGroupInput) (req *request.Request, output *DeleteParameterGroupOutput) {
 	op := &request.Operation{
 		Name:       opDeleteParameterGroup,
@@ -555,20 +566,23 @@ func (c *DAX) DeleteParameterGroupRequest(input *DeleteParameterGroupInput) (req
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DeleteParameterGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidParameterGroupStateFault "InvalidParameterGroupStateFault"
+// Returned Error Types:
+//   * InvalidParameterGroupStateFault
 //   One or more parameters in a parameter group are in an invalid state.
 //
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroup
 func (c *DAX) DeleteParameterGroup(input *DeleteParameterGroupInput) (*DeleteParameterGroupOutput, error) {
 	req, out := c.DeleteParameterGroupRequest(input)
 	return out, req.Send()
@@ -594,19 +608,18 @@ const opDeleteSubnetGroup = "DeleteSubnetGroup"
 
 // DeleteSubnetGroupRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteSubnetGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteSubnetGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteSubnetGroup method directly
-// instead.
+// See DeleteSubnetGroup for more information on using the DeleteSubnetGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteSubnetGroupRequest method.
 //    req, resp := client.DeleteSubnetGroupRequest(params)
@@ -616,7 +629,7 @@ const opDeleteSubnetGroup = "DeleteSubnetGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroup
 func (c *DAX) DeleteSubnetGroupRequest(input *DeleteSubnetGroupInput) (req *request.Request, output *DeleteSubnetGroupOutput) {
 	op := &request.Operation{
 		Name:       opDeleteSubnetGroup,
@@ -646,14 +659,17 @@ func (c *DAX) DeleteSubnetGroupRequest(input *DeleteSubnetGroupInput) (req *requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DeleteSubnetGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSubnetGroupInUseFault "SubnetGroupInUseFault"
+// Returned Error Types:
+//   * SubnetGroupInUseFault
 //   The specified subnet group is currently in use.
 //
-//   * ErrCodeSubnetGroupNotFoundFault "SubnetGroupNotFoundFault"
+//   * SubnetGroupNotFoundFault
 //   The requested subnet group name does not refer to an existing subnet group.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroup
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroup
 func (c *DAX) DeleteSubnetGroup(input *DeleteSubnetGroupInput) (*DeleteSubnetGroupOutput, error) {
 	req, out := c.DeleteSubnetGroupRequest(input)
 	return out, req.Send()
@@ -679,19 +695,18 @@ const opDescribeClusters = "DescribeClusters"
 
 // DescribeClustersRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeClusters operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeClusters for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeClusters method directly
-// instead.
+// See DescribeClusters for more information on using the DescribeClusters
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeClustersRequest method.
 //    req, resp := client.DescribeClustersRequest(params)
@@ -701,7 +716,7 @@ const opDescribeClusters = "DescribeClusters"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClusters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClusters
 func (c *DAX) DescribeClustersRequest(input *DescribeClustersInput) (req *request.Request, output *DescribeClustersOutput) {
 	op := &request.Operation{
 		Name:       opDescribeClusters,
@@ -745,17 +760,20 @@ func (c *DAX) DescribeClustersRequest(input *DescribeClustersInput) (req *reques
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeClusters for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClusters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClusters
 func (c *DAX) DescribeClusters(input *DescribeClustersInput) (*DescribeClustersOutput, error) {
 	req, out := c.DescribeClustersRequest(input)
 	return out, req.Send()
@@ -781,19 +799,18 @@ const opDescribeDefaultParameters = "DescribeDefaultParameters"
 
 // DescribeDefaultParametersRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeDefaultParameters operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeDefaultParameters for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeDefaultParameters method directly
-// instead.
+// See DescribeDefaultParameters for more information on using the DescribeDefaultParameters
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeDefaultParametersRequest method.
 //    req, resp := client.DescribeDefaultParametersRequest(params)
@@ -803,7 +820,7 @@ const opDescribeDefaultParameters = "DescribeDefaultParameters"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParameters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParameters
 func (c *DAX) DescribeDefaultParametersRequest(input *DescribeDefaultParametersInput) (req *request.Request, output *DescribeDefaultParametersOutput) {
 	op := &request.Operation{
 		Name:       opDescribeDefaultParameters,
@@ -831,14 +848,17 @@ func (c *DAX) DescribeDefaultParametersRequest(input *DescribeDefaultParametersI
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeDefaultParameters for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+// Returned Error Types:
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParameters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParameters
 func (c *DAX) DescribeDefaultParameters(input *DescribeDefaultParametersInput) (*DescribeDefaultParametersOutput, error) {
 	req, out := c.DescribeDefaultParametersRequest(input)
 	return out, req.Send()
@@ -864,19 +884,18 @@ const opDescribeEvents = "DescribeEvents"
 
 // DescribeEventsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEvents operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEvents for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEvents method directly
-// instead.
+// See DescribeEvents for more information on using the DescribeEvents
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEventsRequest method.
 //    req, resp := client.DescribeEventsRequest(params)
@@ -886,7 +905,7 @@ const opDescribeEvents = "DescribeEvents"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEvents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEvents
 func (c *DAX) DescribeEventsRequest(input *DescribeEventsInput) (req *request.Request, output *DescribeEventsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEvents,
@@ -909,7 +928,7 @@ func (c *DAX) DescribeEventsRequest(input *DescribeEventsInput) (req *request.Re
 // events specific to a particular DAX cluster or parameter group by providing
 // the name as a parameter.
 //
-// By default, only the events occurring within the last hour are returned;
+// By default, only the events occurring within the last 24 hours are returned;
 // however, you can retrieve up to 14 days' worth of events if necessary.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -919,14 +938,17 @@ func (c *DAX) DescribeEventsRequest(input *DescribeEventsInput) (req *request.Re
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeEvents for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+// Returned Error Types:
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEvents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEvents
 func (c *DAX) DescribeEvents(input *DescribeEventsInput) (*DescribeEventsOutput, error) {
 	req, out := c.DescribeEventsRequest(input)
 	return out, req.Send()
@@ -952,19 +974,18 @@ const opDescribeParameterGroups = "DescribeParameterGroups"
 
 // DescribeParameterGroupsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeParameterGroups operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeParameterGroups for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeParameterGroups method directly
-// instead.
+// See DescribeParameterGroups for more information on using the DescribeParameterGroups
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeParameterGroupsRequest method.
 //    req, resp := client.DescribeParameterGroupsRequest(params)
@@ -974,7 +995,7 @@ const opDescribeParameterGroups = "DescribeParameterGroups"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroups
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroups
 func (c *DAX) DescribeParameterGroupsRequest(input *DescribeParameterGroupsInput) (req *request.Request, output *DescribeParameterGroupsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeParameterGroups,
@@ -1003,17 +1024,20 @@ func (c *DAX) DescribeParameterGroupsRequest(input *DescribeParameterGroupsInput
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeParameterGroups for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+// Returned Error Types:
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroups
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroups
 func (c *DAX) DescribeParameterGroups(input *DescribeParameterGroupsInput) (*DescribeParameterGroupsOutput, error) {
 	req, out := c.DescribeParameterGroupsRequest(input)
 	return out, req.Send()
@@ -1039,19 +1063,18 @@ const opDescribeParameters = "DescribeParameters"
 
 // DescribeParametersRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeParameters operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeParameters for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeParameters method directly
-// instead.
+// See DescribeParameters for more information on using the DescribeParameters
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeParametersRequest method.
 //    req, resp := client.DescribeParametersRequest(params)
@@ -1061,7 +1084,7 @@ const opDescribeParameters = "DescribeParameters"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameters
 func (c *DAX) DescribeParametersRequest(input *DescribeParametersInput) (req *request.Request, output *DescribeParametersOutput) {
 	op := &request.Operation{
 		Name:       opDescribeParameters,
@@ -1089,17 +1112,20 @@ func (c *DAX) DescribeParametersRequest(input *DescribeParametersInput) (req *re
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeParameters for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+// Returned Error Types:
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameters
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameters
 func (c *DAX) DescribeParameters(input *DescribeParametersInput) (*DescribeParametersOutput, error) {
 	req, out := c.DescribeParametersRequest(input)
 	return out, req.Send()
@@ -1125,19 +1151,18 @@ const opDescribeSubnetGroups = "DescribeSubnetGroups"
 
 // DescribeSubnetGroupsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeSubnetGroups operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeSubnetGroups for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeSubnetGroups method directly
-// instead.
+// See DescribeSubnetGroups for more information on using the DescribeSubnetGroups
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeSubnetGroupsRequest method.
 //    req, resp := client.DescribeSubnetGroupsRequest(params)
@@ -1147,7 +1172,7 @@ const opDescribeSubnetGroups = "DescribeSubnetGroups"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroups
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroups
 func (c *DAX) DescribeSubnetGroupsRequest(input *DescribeSubnetGroupsInput) (req *request.Request, output *DescribeSubnetGroupsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeSubnetGroups,
@@ -1176,11 +1201,14 @@ func (c *DAX) DescribeSubnetGroupsRequest(input *DescribeSubnetGroupsInput) (req
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation DescribeSubnetGroups for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSubnetGroupNotFoundFault "SubnetGroupNotFoundFault"
+// Returned Error Types:
+//   * SubnetGroupNotFoundFault
 //   The requested subnet group name does not refer to an existing subnet group.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroups
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroups
 func (c *DAX) DescribeSubnetGroups(input *DescribeSubnetGroupsInput) (*DescribeSubnetGroupsOutput, error) {
 	req, out := c.DescribeSubnetGroupsRequest(input)
 	return out, req.Send()
@@ -1206,19 +1234,18 @@ const opIncreaseReplicationFactor = "IncreaseReplicationFactor"
 
 // IncreaseReplicationFactorRequest generates a "aws/request.Request" representing the
 // client's request for the IncreaseReplicationFactor operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See IncreaseReplicationFactor for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the IncreaseReplicationFactor method directly
-// instead.
+// See IncreaseReplicationFactor for more information on using the IncreaseReplicationFactor
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the IncreaseReplicationFactorRequest method.
 //    req, resp := client.IncreaseReplicationFactorRequest(params)
@@ -1228,7 +1255,7 @@ const opIncreaseReplicationFactor = "IncreaseReplicationFactor"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactor
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactor
 func (c *DAX) IncreaseReplicationFactorRequest(input *IncreaseReplicationFactorInput) (req *request.Request, output *IncreaseReplicationFactorOutput) {
 	op := &request.Operation{
 		Name:       opIncreaseReplicationFactor,
@@ -1256,33 +1283,36 @@ func (c *DAX) IncreaseReplicationFactorRequest(input *IncreaseReplicationFactorI
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation IncreaseReplicationFactor for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInsufficientClusterCapacityFault "InsufficientClusterCapacityFault"
+//   * InsufficientClusterCapacityFault
 //   There are not enough system resources to create the cluster you requested
 //   (or to resize an already-existing cluster).
 //
-//   * ErrCodeInvalidVPCNetworkStateFault "InvalidVPCNetworkStateFault"
+//   * InvalidVPCNetworkStateFault
 //   The VPC network is in an invalid state.
 //
-//   * ErrCodeNodeQuotaForClusterExceededFault "NodeQuotaForClusterExceededFault"
+//   * NodeQuotaForClusterExceededFault
 //   You have attempted to exceed the maximum number of nodes for a DAX cluster.
 //
-//   * ErrCodeNodeQuotaForCustomerExceededFault "NodeQuotaForCustomerExceededFault"
+//   * NodeQuotaForCustomerExceededFault
 //   You have attempted to exceed the maximum number of nodes for your AWS account.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactor
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactor
 func (c *DAX) IncreaseReplicationFactor(input *IncreaseReplicationFactorInput) (*IncreaseReplicationFactorOutput, error) {
 	req, out := c.IncreaseReplicationFactorRequest(input)
 	return out, req.Send()
@@ -1308,19 +1338,18 @@ const opListTags = "ListTags"
 
 // ListTagsRequest generates a "aws/request.Request" representing the
 // client's request for the ListTags operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListTags for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListTags method directly
-// instead.
+// See ListTags for more information on using the ListTags
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListTagsRequest method.
 //    req, resp := client.ListTagsRequest(params)
@@ -1330,7 +1359,7 @@ const opListTags = "ListTags"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTags
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTags
 func (c *DAX) ListTagsRequest(input *ListTagsInput) (req *request.Request, output *ListTagsOutput) {
 	op := &request.Operation{
 		Name:       opListTags,
@@ -1359,23 +1388,26 @@ func (c *DAX) ListTagsRequest(input *ListTagsInput) (req *request.Request, outpu
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation ListTags for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidARNFault "InvalidARNFault"
+//   * InvalidARNFault
 //   The Amazon Resource Name (ARN) supplied in the request is not valid.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTags
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTags
 func (c *DAX) ListTags(input *ListTagsInput) (*ListTagsOutput, error) {
 	req, out := c.ListTagsRequest(input)
 	return out, req.Send()
@@ -1401,19 +1433,18 @@ const opRebootNode = "RebootNode"
 
 // RebootNodeRequest generates a "aws/request.Request" representing the
 // client's request for the RebootNode operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See RebootNode for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the RebootNode method directly
-// instead.
+// See RebootNode for more information on using the RebootNode
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the RebootNodeRequest method.
 //    req, resp := client.RebootNodeRequest(params)
@@ -1423,7 +1454,7 @@ const opRebootNode = "RebootNode"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNode
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNode
 func (c *DAX) RebootNodeRequest(input *RebootNodeInput) (req *request.Request, output *RebootNodeOutput) {
 	op := &request.Operation{
 		Name:       opRebootNode,
@@ -1445,6 +1476,9 @@ func (c *DAX) RebootNodeRequest(input *RebootNodeInput) (req *request.Request, o
 // Reboots a single node of a DAX cluster. The reboot action takes place as
 // soon as possible. During the reboot, the node status is set to REBOOTING.
 //
+// RebootNode restarts the DAX engine process and does not remove the contents
+// of the cache.
+//
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
 // the error.
@@ -1452,23 +1486,26 @@ func (c *DAX) RebootNodeRequest(input *RebootNodeInput) (req *request.Request, o
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation RebootNode for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeNodeNotFoundFault "NodeNotFoundFault"
+//   * NodeNotFoundFault
 //   None of the nodes in the cluster have the given node ID.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNode
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNode
 func (c *DAX) RebootNode(input *RebootNodeInput) (*RebootNodeOutput, error) {
 	req, out := c.RebootNodeRequest(input)
 	return out, req.Send()
@@ -1494,19 +1531,18 @@ const opTagResource = "TagResource"
 
 // TagResourceRequest generates a "aws/request.Request" representing the
 // client's request for the TagResource operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See TagResource for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the TagResource method directly
-// instead.
+// See TagResource for more information on using the TagResource
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the TagResourceRequest method.
 //    req, resp := client.TagResourceRequest(params)
@@ -1516,7 +1552,7 @@ const opTagResource = "TagResource"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResource
 func (c *DAX) TagResourceRequest(input *TagResourceInput) (req *request.Request, output *TagResourceOutput) {
 	op := &request.Operation{
 		Name:       opTagResource,
@@ -1545,26 +1581,29 @@ func (c *DAX) TagResourceRequest(input *TagResourceInput) (req *request.Request,
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation TagResource for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeTagQuotaPerResourceExceeded "TagQuotaPerResourceExceeded"
+//   * TagQuotaPerResourceExceeded
 //   You have exceeded the maximum number of tags for this DAX cluster.
 //
-//   * ErrCodeInvalidARNFault "InvalidARNFault"
+//   * InvalidARNFault
 //   The Amazon Resource Name (ARN) supplied in the request is not valid.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResource
 func (c *DAX) TagResource(input *TagResourceInput) (*TagResourceOutput, error) {
 	req, out := c.TagResourceRequest(input)
 	return out, req.Send()
@@ -1590,19 +1629,18 @@ const opUntagResource = "UntagResource"
 
 // UntagResourceRequest generates a "aws/request.Request" representing the
 // client's request for the UntagResource operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UntagResource for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UntagResource method directly
-// instead.
+// See UntagResource for more information on using the UntagResource
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UntagResourceRequest method.
 //    req, resp := client.UntagResourceRequest(params)
@@ -1612,7 +1650,7 @@ const opUntagResource = "UntagResource"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResource
 func (c *DAX) UntagResourceRequest(input *UntagResourceInput) (req *request.Request, output *UntagResourceOutput) {
 	op := &request.Operation{
 		Name:       opUntagResource,
@@ -1641,26 +1679,29 @@ func (c *DAX) UntagResourceRequest(input *UntagResourceInput) (req *request.Requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation UntagResource for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+// Returned Error Types:
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidARNFault "InvalidARNFault"
+//   * InvalidARNFault
 //   The Amazon Resource Name (ARN) supplied in the request is not valid.
 //
-//   * ErrCodeTagNotFoundFault "TagNotFoundFault"
+//   * TagNotFoundFault
 //   The tag does not exist.
 //
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResource
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResource
 func (c *DAX) UntagResource(input *UntagResourceInput) (*UntagResourceOutput, error) {
 	req, out := c.UntagResourceRequest(input)
 	return out, req.Send()
@@ -1686,19 +1727,18 @@ const opUpdateCluster = "UpdateCluster"
 
 // UpdateClusterRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateCluster operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateCluster for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateCluster method directly
-// instead.
+// See UpdateCluster for more information on using the UpdateCluster
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateClusterRequest method.
 //    req, resp := client.UpdateClusterRequest(params)
@@ -1708,7 +1748,7 @@ const opUpdateCluster = "UpdateCluster"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateCluster
 func (c *DAX) UpdateClusterRequest(input *UpdateClusterInput) (req *request.Request, output *UpdateClusterOutput) {
 	op := &request.Operation{
 		Name:       opUpdateCluster,
@@ -1738,26 +1778,29 @@ func (c *DAX) UpdateClusterRequest(input *UpdateClusterInput) (req *request.Requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation UpdateCluster for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidClusterStateFault "InvalidClusterStateFault"
+// Returned Error Types:
+//   * InvalidClusterStateFault
 //   The requested DAX cluster is not in the available state.
 //
-//   * ErrCodeClusterNotFoundFault "ClusterNotFoundFault"
+//   * ClusterNotFoundFault
 //   The requested cluster ID does not refer to an existing DAX cluster.
 //
-//   * ErrCodeInvalidParameterGroupStateFault "InvalidParameterGroupStateFault"
+//   * InvalidParameterGroupStateFault
 //   One or more parameters in a parameter group are in an invalid state.
 //
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateCluster
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateCluster
 func (c *DAX) UpdateCluster(input *UpdateClusterInput) (*UpdateClusterOutput, error) {
 	req, out := c.UpdateClusterRequest(input)
 	return out, req.Send()
@@ -1783,19 +1826,18 @@ const opUpdateParameterGroup = "UpdateParameterGroup"
 
 // UpdateParameterGroupRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateParameterGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateParameterGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateParameterGroup method directly
-// instead.
+// See UpdateParameterGroup for more information on using the UpdateParameterGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateParameterGroupRequest method.
 //    req, resp := client.UpdateParameterGroupRequest(params)
@@ -1805,7 +1847,7 @@ const opUpdateParameterGroup = "UpdateParameterGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroup
 func (c *DAX) UpdateParameterGroupRequest(input *UpdateParameterGroupInput) (req *request.Request, output *UpdateParameterGroupOutput) {
 	op := &request.Operation{
 		Name:       opUpdateParameterGroup,
@@ -1834,20 +1876,23 @@ func (c *DAX) UpdateParameterGroupRequest(input *UpdateParameterGroupInput) (req
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation UpdateParameterGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidParameterGroupStateFault "InvalidParameterGroupStateFault"
+// Returned Error Types:
+//   * InvalidParameterGroupStateFault
 //   One or more parameters in a parameter group are in an invalid state.
 //
-//   * ErrCodeParameterGroupNotFoundFault "ParameterGroupNotFoundFault"
+//   * ParameterGroupNotFoundFault
 //   The specified parameter group does not exist.
 //
-//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+//   * InvalidParameterValueException
 //   The value for a parameter is invalid.
 //
-//   * ErrCodeInvalidParameterCombinationException "InvalidParameterCombinationException"
+//   * InvalidParameterCombinationException
 //   Two or more incompatible parameters were specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroup
 func (c *DAX) UpdateParameterGroup(input *UpdateParameterGroupInput) (*UpdateParameterGroupOutput, error) {
 	req, out := c.UpdateParameterGroupRequest(input)
 	return out, req.Send()
@@ -1873,19 +1918,18 @@ const opUpdateSubnetGroup = "UpdateSubnetGroup"
 
 // UpdateSubnetGroupRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateSubnetGroup operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateSubnetGroup for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateSubnetGroup method directly
-// instead.
+// See UpdateSubnetGroup for more information on using the UpdateSubnetGroup
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateSubnetGroupRequest method.
 //    req, resp := client.UpdateSubnetGroupRequest(params)
@@ -1895,7 +1939,7 @@ const opUpdateSubnetGroup = "UpdateSubnetGroup"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroup
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroup
 func (c *DAX) UpdateSubnetGroupRequest(input *UpdateSubnetGroupInput) (req *request.Request, output *UpdateSubnetGroupOutput) {
 	op := &request.Operation{
 		Name:       opUpdateSubnetGroup,
@@ -1923,21 +1967,24 @@ func (c *DAX) UpdateSubnetGroupRequest(input *UpdateSubnetGroupInput) (req *requ
 // See the AWS API reference guide for Amazon DynamoDB Accelerator (DAX)'s
 // API operation UpdateSubnetGroup for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSubnetGroupNotFoundFault "SubnetGroupNotFoundFault"
+// Returned Error Types:
+//   * SubnetGroupNotFoundFault
 //   The requested subnet group name does not refer to an existing subnet group.
 //
-//   * ErrCodeSubnetQuotaExceededFault "SubnetQuotaExceededFault"
+//   * SubnetQuotaExceededFault
 //   The request cannot be processed because it would exceed the allowed number
 //   of subnets in a subnet group.
 //
-//   * ErrCodeSubnetInUse "SubnetInUse"
+//   * SubnetInUse
 //   The requested subnet is being used by another subnet group.
 //
-//   * ErrCodeInvalidSubnet "InvalidSubnet"
+//   * InvalidSubnet
 //   An invalid subnet identifier was specified.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroup
+//   * ServiceLinkedRoleNotFoundFault
+//   The specified service linked role (SLR) was not found.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroup
 func (c *DAX) UpdateSubnetGroup(input *UpdateSubnetGroupInput) (*UpdateSubnetGroupOutput, error) {
 	req, out := c.UpdateSubnetGroupRequest(input)
 	return out, req.Send()
@@ -1960,7 +2007,6 @@ func (c *DAX) UpdateSubnetGroupWithContext(ctx aws.Context, input *UpdateSubnetG
 }
 
 // Contains all of the attributes of a specific DAX cluster.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Cluster
 type Cluster struct {
 	_ struct{} `type:"structure"`
 
@@ -2010,6 +2056,10 @@ type Cluster struct {
 	// For example: sun:01:00-sun:09:00. Cluster maintenance normally takes less
 	// than 30 minutes, and is performed automatically within the maintenance window.
 	PreferredMaintenanceWindow *string `type:"string"`
+
+	// The description of the server-side encryption status on the specified DAX
+	// cluster.
+	SSEDescription *SSEDescription `type:"structure"`
 
 	// A list of security groups, and the status of each, for the nodes in the cluster.
 	SecurityGroups []*SecurityGroupMembership `type:"list"`
@@ -2106,6 +2156,12 @@ func (s *Cluster) SetPreferredMaintenanceWindow(v string) *Cluster {
 	return s
 }
 
+// SetSSEDescription sets the SSEDescription field's value.
+func (s *Cluster) SetSSEDescription(v *SSEDescription) *Cluster {
+	s.SSEDescription = v
+	return s
+}
+
 // SetSecurityGroups sets the SecurityGroups field's value.
 func (s *Cluster) SetSecurityGroups(v []*SecurityGroupMembership) *Cluster {
 	s.SecurityGroups = v
@@ -2130,13 +2186,182 @@ func (s *Cluster) SetTotalNodes(v int64) *Cluster {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateClusterRequest
+// You already have a DAX cluster with the given identifier.
+type ClusterAlreadyExistsFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ClusterAlreadyExistsFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ClusterAlreadyExistsFault) GoString() string {
+	return s.String()
+}
+
+func newErrorClusterAlreadyExistsFault(v protocol.ResponseMetadata) error {
+	return &ClusterAlreadyExistsFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ClusterAlreadyExistsFault) Code() string {
+	return "ClusterAlreadyExistsFault"
+}
+
+// Message returns the exception's message.
+func (s *ClusterAlreadyExistsFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ClusterAlreadyExistsFault) OrigErr() error {
+	return nil
+}
+
+func (s *ClusterAlreadyExistsFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ClusterAlreadyExistsFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ClusterAlreadyExistsFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The requested cluster ID does not refer to an existing DAX cluster.
+type ClusterNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ClusterNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ClusterNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorClusterNotFoundFault(v protocol.ResponseMetadata) error {
+	return &ClusterNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ClusterNotFoundFault) Code() string {
+	return "ClusterNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *ClusterNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ClusterNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *ClusterNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ClusterNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ClusterNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You have attempted to exceed the maximum number of DAX clusters for your
+// AWS account.
+type ClusterQuotaForCustomerExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ClusterQuotaForCustomerExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ClusterQuotaForCustomerExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorClusterQuotaForCustomerExceededFault(v protocol.ResponseMetadata) error {
+	return &ClusterQuotaForCustomerExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ClusterQuotaForCustomerExceededFault) Code() string {
+	return "ClusterQuotaForCustomerExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *ClusterQuotaForCustomerExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ClusterQuotaForCustomerExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *ClusterQuotaForCustomerExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ClusterQuotaForCustomerExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ClusterQuotaForCustomerExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type CreateClusterInput struct {
 	_ struct{} `type:"structure"`
 
-	// The Availability Zones (AZs) in which the cluster nodes will be created.
-	// All nodes belonging to the cluster are placed in these Availability Zones.
-	// Use this parameter if you want to distribute the nodes across multiple AZs.
+	// The Availability Zones (AZs) in which the cluster nodes will reside after
+	// the cluster has been created or updated. If provided, the length of this
+	// list must equal the ReplicationFactor parameter. If you omit this parameter,
+	// DAX will spread the nodes across Availability Zones for the highest availability.
 	AvailabilityZones []*string `type:"list"`
 
 	// The cluster identifier. This parameter is stored as a lowercase string.
@@ -2205,12 +2430,17 @@ type CreateClusterInput struct {
 	// The number of nodes in the DAX cluster. A replication factor of 1 will create
 	// a single-node cluster, without any read replicas. For additional fault tolerance,
 	// you can create a multiple node cluster with one or more read replicas. To
-	// do this, set ReplicationFactor to 2 or more.
+	// do this, set ReplicationFactor to a number between 3 (one primary and two
+	// read replicas) and 10 (one primary and nine read replicas). If the AvailabilityZones
+	// parameter is provided, its length must equal the ReplicationFactor.
 	//
 	// AWS recommends that you have at least two read replicas per cluster.
 	//
 	// ReplicationFactor is a required field
 	ReplicationFactor *int64 `type:"integer" required:"true"`
+
+	// Represents the settings used to enable server-side encryption on the cluster.
+	SSESpecification *SSESpecification `type:"structure"`
 
 	// A list of security group IDs to be assigned to each node in the DAX cluster.
 	// (Each of the security group ID is system-generated.)
@@ -2253,6 +2483,11 @@ func (s *CreateClusterInput) Validate() error {
 	}
 	if s.ReplicationFactor == nil {
 		invalidParams.Add(request.NewErrParamRequired("ReplicationFactor"))
+	}
+	if s.SSESpecification != nil {
+		if err := s.SSESpecification.Validate(); err != nil {
+			invalidParams.AddNested("SSESpecification", err.(request.ErrInvalidParams))
+		}
 	}
 
 	if invalidParams.Len() > 0 {
@@ -2315,6 +2550,12 @@ func (s *CreateClusterInput) SetReplicationFactor(v int64) *CreateClusterInput {
 	return s
 }
 
+// SetSSESpecification sets the SSESpecification field's value.
+func (s *CreateClusterInput) SetSSESpecification(v *SSESpecification) *CreateClusterInput {
+	s.SSESpecification = v
+	return s
+}
+
 // SetSecurityGroupIds sets the SecurityGroupIds field's value.
 func (s *CreateClusterInput) SetSecurityGroupIds(v []*string) *CreateClusterInput {
 	s.SecurityGroupIds = v
@@ -2333,7 +2574,6 @@ func (s *CreateClusterInput) SetTags(v []*Tag) *CreateClusterInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateClusterResponse
 type CreateClusterOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2357,7 +2597,6 @@ func (s *CreateClusterOutput) SetCluster(v *Cluster) *CreateClusterOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroupRequest
 type CreateParameterGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2406,7 +2645,6 @@ func (s *CreateParameterGroupInput) SetParameterGroupName(v string) *CreateParam
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateParameterGroupResponse
 type CreateParameterGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2430,7 +2668,6 @@ func (s *CreateParameterGroupOutput) SetParameterGroup(v *ParameterGroup) *Creat
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroupRequest
 type CreateSubnetGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2492,7 +2729,6 @@ func (s *CreateSubnetGroupInput) SetSubnetIds(v []*string) *CreateSubnetGroupInp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/CreateSubnetGroupResponse
 type CreateSubnetGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2516,7 +2752,6 @@ func (s *CreateSubnetGroupOutput) SetSubnetGroup(v *SubnetGroup) *CreateSubnetGr
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactorRequest
 type DecreaseReplicationFactorInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2587,7 +2822,6 @@ func (s *DecreaseReplicationFactorInput) SetNodeIdsToRemove(v []*string) *Decrea
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DecreaseReplicationFactorResponse
 type DecreaseReplicationFactorOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2612,7 +2846,6 @@ func (s *DecreaseReplicationFactorOutput) SetCluster(v *Cluster) *DecreaseReplic
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteClusterRequest
 type DeleteClusterInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2651,7 +2884,6 @@ func (s *DeleteClusterInput) SetClusterName(v string) *DeleteClusterInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteClusterResponse
 type DeleteClusterOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2675,7 +2907,6 @@ func (s *DeleteClusterOutput) SetCluster(v *Cluster) *DeleteClusterOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroupRequest
 type DeleteParameterGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2714,7 +2945,6 @@ func (s *DeleteParameterGroupInput) SetParameterGroupName(v string) *DeleteParam
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteParameterGroupResponse
 type DeleteParameterGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2739,7 +2969,6 @@ func (s *DeleteParameterGroupOutput) SetDeletionMessage(v string) *DeleteParamet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroupRequest
 type DeleteSubnetGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2778,7 +3007,6 @@ func (s *DeleteSubnetGroupInput) SetSubnetGroupName(v string) *DeleteSubnetGroup
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DeleteSubnetGroupResponse
 type DeleteSubnetGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2803,7 +3031,6 @@ func (s *DeleteSubnetGroupOutput) SetDeletionMessage(v string) *DeleteSubnetGrou
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClustersRequest
 type DescribeClustersInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2851,7 +3078,6 @@ func (s *DescribeClustersInput) SetNextToken(v string) *DescribeClustersInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeClustersResponse
 type DescribeClustersOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2885,7 +3111,6 @@ func (s *DescribeClustersOutput) SetNextToken(v string) *DescribeClustersOutput 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParametersRequest
 type DescribeDefaultParametersInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2924,7 +3149,6 @@ func (s *DescribeDefaultParametersInput) SetNextToken(v string) *DescribeDefault
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeDefaultParametersResponse
 type DescribeDefaultParametersOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -2957,7 +3181,6 @@ func (s *DescribeDefaultParametersOutput) SetParameters(v []*Parameter) *Describ
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEventsRequest
 type DescribeEventsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2966,7 +3189,7 @@ type DescribeEventsInput struct {
 
 	// The end of the time interval for which to retrieve events, specified in ISO
 	// 8601 format.
-	EndTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	EndTime *time.Time `type:"timestamp"`
 
 	// The maximum number of results to include in the response. If more results
 	// exist than the specified MaxResults value, a token is included in the response
@@ -2990,7 +3213,7 @@ type DescribeEventsInput struct {
 
 	// The beginning of the time interval to retrieve events for, specified in ISO
 	// 8601 format.
-	StartTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	StartTime *time.Time `type:"timestamp"`
 }
 
 // String returns the string representation
@@ -3045,7 +3268,6 @@ func (s *DescribeEventsInput) SetStartTime(v time.Time) *DescribeEventsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeEventsResponse
 type DescribeEventsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3078,7 +3300,6 @@ func (s *DescribeEventsOutput) SetNextToken(v string) *DescribeEventsOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroupsRequest
 type DescribeParameterGroupsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -3126,7 +3347,6 @@ func (s *DescribeParameterGroupsInput) SetParameterGroupNames(v []*string) *Desc
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParameterGroupsResponse
 type DescribeParameterGroupsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3160,7 +3380,6 @@ func (s *DescribeParameterGroupsOutput) SetParameterGroups(v []*ParameterGroup) 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParametersRequest
 type DescribeParametersInput struct {
 	_ struct{} `type:"structure"`
 
@@ -3233,7 +3452,6 @@ func (s *DescribeParametersInput) SetSource(v string) *DescribeParametersInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeParametersResponse
 type DescribeParametersOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3267,7 +3485,6 @@ func (s *DescribeParametersOutput) SetParameters(v []*Parameter) *DescribeParame
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroupsRequest
 type DescribeSubnetGroupsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -3315,7 +3532,6 @@ func (s *DescribeSubnetGroupsInput) SetSubnetGroupNames(v []*string) *DescribeSu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/DescribeSubnetGroupsResponse
 type DescribeSubnetGroupsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3352,7 +3568,6 @@ func (s *DescribeSubnetGroupsOutput) SetSubnetGroups(v []*SubnetGroup) *Describe
 // Represents the information required for client programs to connect to the
 // configuration endpoint for a DAX cluster, or to an individual node within
 // the cluster.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Endpoint
 type Endpoint struct {
 	_ struct{} `type:"structure"`
 
@@ -3388,12 +3603,11 @@ func (s *Endpoint) SetPort(v int64) *Endpoint {
 // Represents a single occurrence of something interesting within the system.
 // Some examples of events are creating a DAX cluster, adding or removing a
 // node, or rebooting a node.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Event
 type Event struct {
 	_ struct{} `type:"structure"`
 
 	// The date and time when the event occurred.
-	Date *time.Time `type:"timestamp" timestampFormat:"unix"`
+	Date *time.Time `type:"timestamp"`
 
 	// A user-defined message associated with the event.
 	Message *string `type:"string"`
@@ -3441,7 +3655,6 @@ func (s *Event) SetSourceType(v string) *Event {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactorRequest
 type IncreaseReplicationFactorInput struct {
 	_ struct{} `type:"structure"`
 
@@ -3505,7 +3718,6 @@ func (s *IncreaseReplicationFactorInput) SetNewReplicationFactor(v int64) *Incre
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/IncreaseReplicationFactorResponse
 type IncreaseReplicationFactorOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3529,7 +3741,455 @@ func (s *IncreaseReplicationFactorOutput) SetCluster(v *Cluster) *IncreaseReplic
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTagsRequest
+// There are not enough system resources to create the cluster you requested
+// (or to resize an already-existing cluster).
+type InsufficientClusterCapacityFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InsufficientClusterCapacityFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InsufficientClusterCapacityFault) GoString() string {
+	return s.String()
+}
+
+func newErrorInsufficientClusterCapacityFault(v protocol.ResponseMetadata) error {
+	return &InsufficientClusterCapacityFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InsufficientClusterCapacityFault) Code() string {
+	return "InsufficientClusterCapacityFault"
+}
+
+// Message returns the exception's message.
+func (s *InsufficientClusterCapacityFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InsufficientClusterCapacityFault) OrigErr() error {
+	return nil
+}
+
+func (s *InsufficientClusterCapacityFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InsufficientClusterCapacityFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InsufficientClusterCapacityFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The Amazon Resource Name (ARN) supplied in the request is not valid.
+type InvalidARNFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidARNFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidARNFault) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidARNFault(v protocol.ResponseMetadata) error {
+	return &InvalidARNFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidARNFault) Code() string {
+	return "InvalidARNFault"
+}
+
+// Message returns the exception's message.
+func (s *InvalidARNFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidARNFault) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidARNFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidARNFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidARNFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The requested DAX cluster is not in the available state.
+type InvalidClusterStateFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidClusterStateFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidClusterStateFault) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidClusterStateFault(v protocol.ResponseMetadata) error {
+	return &InvalidClusterStateFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidClusterStateFault) Code() string {
+	return "InvalidClusterStateFault"
+}
+
+// Message returns the exception's message.
+func (s *InvalidClusterStateFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidClusterStateFault) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidClusterStateFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidClusterStateFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidClusterStateFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Two or more incompatible parameters were specified.
+type InvalidParameterCombinationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidParameterCombinationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidParameterCombinationException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidParameterCombinationException(v protocol.ResponseMetadata) error {
+	return &InvalidParameterCombinationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidParameterCombinationException) Code() string {
+	return "InvalidParameterCombinationException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidParameterCombinationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidParameterCombinationException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidParameterCombinationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidParameterCombinationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidParameterCombinationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// One or more parameters in a parameter group are in an invalid state.
+type InvalidParameterGroupStateFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidParameterGroupStateFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidParameterGroupStateFault) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidParameterGroupStateFault(v protocol.ResponseMetadata) error {
+	return &InvalidParameterGroupStateFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidParameterGroupStateFault) Code() string {
+	return "InvalidParameterGroupStateFault"
+}
+
+// Message returns the exception's message.
+func (s *InvalidParameterGroupStateFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidParameterGroupStateFault) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidParameterGroupStateFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidParameterGroupStateFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidParameterGroupStateFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The value for a parameter is invalid.
+type InvalidParameterValueException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidParameterValueException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidParameterValueException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidParameterValueException(v protocol.ResponseMetadata) error {
+	return &InvalidParameterValueException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidParameterValueException) Code() string {
+	return "InvalidParameterValueException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidParameterValueException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidParameterValueException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidParameterValueException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidParameterValueException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidParameterValueException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// An invalid subnet identifier was specified.
+type InvalidSubnet struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidSubnet) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidSubnet) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidSubnet(v protocol.ResponseMetadata) error {
+	return &InvalidSubnet{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidSubnet) Code() string {
+	return "InvalidSubnet"
+}
+
+// Message returns the exception's message.
+func (s *InvalidSubnet) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidSubnet) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidSubnet) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidSubnet) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidSubnet) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The VPC network is in an invalid state.
+type InvalidVPCNetworkStateFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidVPCNetworkStateFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidVPCNetworkStateFault) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidVPCNetworkStateFault(v protocol.ResponseMetadata) error {
+	return &InvalidVPCNetworkStateFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidVPCNetworkStateFault) Code() string {
+	return "InvalidVPCNetworkStateFault"
+}
+
+// Message returns the exception's message.
+func (s *InvalidVPCNetworkStateFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidVPCNetworkStateFault) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidVPCNetworkStateFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidVPCNetworkStateFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidVPCNetworkStateFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type ListTagsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -3579,7 +4239,6 @@ func (s *ListTagsInput) SetResourceName(v string) *ListTagsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ListTagsResponse
 type ListTagsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -3614,7 +4273,6 @@ func (s *ListTagsOutput) SetTags(v []*Tag) *ListTagsOutput {
 }
 
 // Represents an individual node within a DAX cluster.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Node
 type Node struct {
 	_ struct{} `type:"structure"`
 
@@ -3628,7 +4286,7 @@ type Node struct {
 	Endpoint *Endpoint `type:"structure"`
 
 	// The date and time (in UNIX epoch format) when the node was launched.
-	NodeCreateTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	NodeCreateTime *time.Time `type:"timestamp"`
 
 	// A system-generated identifier for the node.
 	NodeId *string `type:"string"`
@@ -3687,8 +4345,175 @@ func (s *Node) SetParameterGroupStatus(v string) *Node {
 	return s
 }
 
+// None of the nodes in the cluster have the given node ID.
+type NodeNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s NodeNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NodeNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorNodeNotFoundFault(v protocol.ResponseMetadata) error {
+	return &NodeNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NodeNotFoundFault) Code() string {
+	return "NodeNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *NodeNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NodeNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *NodeNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NodeNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NodeNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You have attempted to exceed the maximum number of nodes for a DAX cluster.
+type NodeQuotaForClusterExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s NodeQuotaForClusterExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NodeQuotaForClusterExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorNodeQuotaForClusterExceededFault(v protocol.ResponseMetadata) error {
+	return &NodeQuotaForClusterExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NodeQuotaForClusterExceededFault) Code() string {
+	return "NodeQuotaForClusterExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *NodeQuotaForClusterExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NodeQuotaForClusterExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *NodeQuotaForClusterExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NodeQuotaForClusterExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NodeQuotaForClusterExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You have attempted to exceed the maximum number of nodes for your AWS account.
+type NodeQuotaForCustomerExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s NodeQuotaForCustomerExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NodeQuotaForCustomerExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorNodeQuotaForCustomerExceededFault(v protocol.ResponseMetadata) error {
+	return &NodeQuotaForCustomerExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *NodeQuotaForCustomerExceededFault) Code() string {
+	return "NodeQuotaForCustomerExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *NodeQuotaForCustomerExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *NodeQuotaForCustomerExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *NodeQuotaForCustomerExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *NodeQuotaForCustomerExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *NodeQuotaForCustomerExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Represents a parameter value that is applicable to a particular node type.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/NodeTypeSpecificValue
 type NodeTypeSpecificValue struct {
 	_ struct{} `type:"structure"`
 
@@ -3724,7 +4549,6 @@ func (s *NodeTypeSpecificValue) SetValue(v string) *NodeTypeSpecificValue {
 // Describes a notification topic and its status. Notification topics are used
 // for publishing DAX events to subscribers using Amazon Simple Notification
 // Service (SNS).
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/NotificationConfiguration
 type NotificationConfiguration struct {
 	_ struct{} `type:"structure"`
 
@@ -3758,7 +4582,6 @@ func (s *NotificationConfiguration) SetTopicStatus(v string) *NotificationConfig
 }
 
 // Describes an individual setting that controls some aspect of DAX behavior.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Parameter
 type Parameter struct {
 	_ struct{} `type:"structure"`
 
@@ -3868,7 +4691,6 @@ func (s *Parameter) SetSource(v string) *Parameter {
 }
 
 // A named set of parameters that are applied to all of the nodes in a DAX cluster.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ParameterGroup
 type ParameterGroup struct {
 	_ struct{} `type:"structure"`
 
@@ -3901,8 +4723,175 @@ func (s *ParameterGroup) SetParameterGroupName(v string) *ParameterGroup {
 	return s
 }
 
+// The specified parameter group already exists.
+type ParameterGroupAlreadyExistsFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ParameterGroupAlreadyExistsFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ParameterGroupAlreadyExistsFault) GoString() string {
+	return s.String()
+}
+
+func newErrorParameterGroupAlreadyExistsFault(v protocol.ResponseMetadata) error {
+	return &ParameterGroupAlreadyExistsFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ParameterGroupAlreadyExistsFault) Code() string {
+	return "ParameterGroupAlreadyExistsFault"
+}
+
+// Message returns the exception's message.
+func (s *ParameterGroupAlreadyExistsFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ParameterGroupAlreadyExistsFault) OrigErr() error {
+	return nil
+}
+
+func (s *ParameterGroupAlreadyExistsFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ParameterGroupAlreadyExistsFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ParameterGroupAlreadyExistsFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The specified parameter group does not exist.
+type ParameterGroupNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ParameterGroupNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ParameterGroupNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorParameterGroupNotFoundFault(v protocol.ResponseMetadata) error {
+	return &ParameterGroupNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ParameterGroupNotFoundFault) Code() string {
+	return "ParameterGroupNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *ParameterGroupNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ParameterGroupNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *ParameterGroupNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ParameterGroupNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ParameterGroupNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You have attempted to exceed the maximum number of parameter groups.
+type ParameterGroupQuotaExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ParameterGroupQuotaExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ParameterGroupQuotaExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorParameterGroupQuotaExceededFault(v protocol.ResponseMetadata) error {
+	return &ParameterGroupQuotaExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ParameterGroupQuotaExceededFault) Code() string {
+	return "ParameterGroupQuotaExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *ParameterGroupQuotaExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ParameterGroupQuotaExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *ParameterGroupQuotaExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ParameterGroupQuotaExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ParameterGroupQuotaExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // The status of a parameter group.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ParameterGroupStatus
 type ParameterGroupStatus struct {
 	_ struct{} `type:"structure"`
 
@@ -3945,7 +4934,6 @@ func (s *ParameterGroupStatus) SetParameterGroupName(v string) *ParameterGroupSt
 }
 
 // An individual DAX parameter.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/ParameterNameValue
 type ParameterNameValue struct {
 	_ struct{} `type:"structure"`
 
@@ -3978,7 +4966,6 @@ func (s *ParameterNameValue) SetParameterValue(v string) *ParameterNameValue {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNodeRequest
 type RebootNodeInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4031,7 +5018,6 @@ func (s *RebootNodeInput) SetNodeId(v string) *RebootNodeInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/RebootNodeResponse
 type RebootNodeOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4055,8 +5041,80 @@ func (s *RebootNodeOutput) SetCluster(v *Cluster) *RebootNodeOutput {
 	return s
 }
 
+// The description of the server-side encryption status on the specified DAX
+// cluster.
+type SSEDescription struct {
+	_ struct{} `type:"structure"`
+
+	// The current state of server-side encryption:
+	//
+	//    * ENABLING - Server-side encryption is being enabled.
+	//
+	//    * ENABLED - Server-side encryption is enabled.
+	//
+	//    * DISABLING - Server-side encryption is being disabled.
+	//
+	//    * DISABLED - Server-side encryption is disabled.
+	Status *string `type:"string" enum:"SSEStatus"`
+}
+
+// String returns the string representation
+func (s SSEDescription) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SSEDescription) GoString() string {
+	return s.String()
+}
+
+// SetStatus sets the Status field's value.
+func (s *SSEDescription) SetStatus(v string) *SSEDescription {
+	s.Status = &v
+	return s
+}
+
+// Represents the settings used to enable server-side encryption.
+type SSESpecification struct {
+	_ struct{} `type:"structure"`
+
+	// Indicates whether server-side encryption is enabled (true) or disabled (false)
+	// on the cluster.
+	//
+	// Enabled is a required field
+	Enabled *bool `type:"boolean" required:"true"`
+}
+
+// String returns the string representation
+func (s SSESpecification) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SSESpecification) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *SSESpecification) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "SSESpecification"}
+	if s.Enabled == nil {
+		invalidParams.Add(request.NewErrParamRequired("Enabled"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetEnabled sets the Enabled field's value.
+func (s *SSESpecification) SetEnabled(v bool) *SSESpecification {
+	s.Enabled = &v
+	return s
+}
+
 // An individual VPC security group and its status.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/SecurityGroupMembership
 type SecurityGroupMembership struct {
 	_ struct{} `type:"structure"`
 
@@ -4089,14 +5147,69 @@ func (s *SecurityGroupMembership) SetStatus(v string) *SecurityGroupMembership {
 	return s
 }
 
+// The specified service linked role (SLR) was not found.
+type ServiceLinkedRoleNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ServiceLinkedRoleNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ServiceLinkedRoleNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorServiceLinkedRoleNotFoundFault(v protocol.ResponseMetadata) error {
+	return &ServiceLinkedRoleNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ServiceLinkedRoleNotFoundFault) Code() string {
+	return "ServiceLinkedRoleNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *ServiceLinkedRoleNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ServiceLinkedRoleNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *ServiceLinkedRoleNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ServiceLinkedRoleNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ServiceLinkedRoleNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Represents the subnet associated with a DAX cluster. This parameter refers
 // to subnets defined in Amazon Virtual Private Cloud (Amazon VPC) and used
 // with DAX.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Subnet
 type Subnet struct {
 	_ struct{} `type:"structure"`
 
-	// The Availability Zone (AZ) for subnet subnet.
+	// The Availability Zone (AZ) for the subnet.
 	SubnetAvailabilityZone *string `type:"string"`
 
 	// The system-assigned identifier for the subnet.
@@ -4130,7 +5243,6 @@ func (s *Subnet) SetSubnetIdentifier(v string) *Subnet {
 //    * CreateSubnetGroup
 //
 //    * ModifySubnetGroup
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/SubnetGroup
 type SubnetGroup struct {
 	_ struct{} `type:"structure"`
 
@@ -4181,6 +5293,344 @@ func (s *SubnetGroup) SetVpcId(v string) *SubnetGroup {
 	return s
 }
 
+// The specified subnet group already exists.
+type SubnetGroupAlreadyExistsFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetGroupAlreadyExistsFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetGroupAlreadyExistsFault) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetGroupAlreadyExistsFault(v protocol.ResponseMetadata) error {
+	return &SubnetGroupAlreadyExistsFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetGroupAlreadyExistsFault) Code() string {
+	return "SubnetGroupAlreadyExistsFault"
+}
+
+// Message returns the exception's message.
+func (s *SubnetGroupAlreadyExistsFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetGroupAlreadyExistsFault) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetGroupAlreadyExistsFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetGroupAlreadyExistsFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetGroupAlreadyExistsFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The specified subnet group is currently in use.
+type SubnetGroupInUseFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetGroupInUseFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetGroupInUseFault) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetGroupInUseFault(v protocol.ResponseMetadata) error {
+	return &SubnetGroupInUseFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetGroupInUseFault) Code() string {
+	return "SubnetGroupInUseFault"
+}
+
+// Message returns the exception's message.
+func (s *SubnetGroupInUseFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetGroupInUseFault) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetGroupInUseFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetGroupInUseFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetGroupInUseFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The requested subnet group name does not refer to an existing subnet group.
+type SubnetGroupNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetGroupNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetGroupNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetGroupNotFoundFault(v protocol.ResponseMetadata) error {
+	return &SubnetGroupNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetGroupNotFoundFault) Code() string {
+	return "SubnetGroupNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *SubnetGroupNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetGroupNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetGroupNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetGroupNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetGroupNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The request cannot be processed because it would exceed the allowed number
+// of subnets in a subnet group.
+type SubnetGroupQuotaExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetGroupQuotaExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetGroupQuotaExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetGroupQuotaExceededFault(v protocol.ResponseMetadata) error {
+	return &SubnetGroupQuotaExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetGroupQuotaExceededFault) Code() string {
+	return "SubnetGroupQuotaExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *SubnetGroupQuotaExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetGroupQuotaExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetGroupQuotaExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetGroupQuotaExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetGroupQuotaExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The requested subnet is being used by another subnet group.
+type SubnetInUse struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetInUse) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetInUse) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetInUse(v protocol.ResponseMetadata) error {
+	return &SubnetInUse{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetInUse) Code() string {
+	return "SubnetInUse"
+}
+
+// Message returns the exception's message.
+func (s *SubnetInUse) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetInUse) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetInUse) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetInUse) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetInUse) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The request cannot be processed because it would exceed the allowed number
+// of subnets in a subnet group.
+type SubnetQuotaExceededFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SubnetQuotaExceededFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SubnetQuotaExceededFault) GoString() string {
+	return s.String()
+}
+
+func newErrorSubnetQuotaExceededFault(v protocol.ResponseMetadata) error {
+	return &SubnetQuotaExceededFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SubnetQuotaExceededFault) Code() string {
+	return "SubnetQuotaExceededFault"
+}
+
+// Message returns the exception's message.
+func (s *SubnetQuotaExceededFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SubnetQuotaExceededFault) OrigErr() error {
+	return nil
+}
+
+func (s *SubnetQuotaExceededFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SubnetQuotaExceededFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SubnetQuotaExceededFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // A description of a tag. Every tag is a key-value pair. You can add up to
 // 50 tags to a single DAX cluster.
 //
@@ -4189,7 +5639,6 @@ func (s *SubnetGroup) SetVpcId(v string) *SubnetGroup {
 // the tag limit of 50. User-assigned tag names have the prefix user:.
 //
 // You cannot backdate the application of a tag.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/Tag
 type Tag struct {
 	_ struct{} `type:"structure"`
 
@@ -4224,7 +5673,118 @@ func (s *Tag) SetValue(v string) *Tag {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResourceRequest
+// The tag does not exist.
+type TagNotFoundFault struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s TagNotFoundFault) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TagNotFoundFault) GoString() string {
+	return s.String()
+}
+
+func newErrorTagNotFoundFault(v protocol.ResponseMetadata) error {
+	return &TagNotFoundFault{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *TagNotFoundFault) Code() string {
+	return "TagNotFoundFault"
+}
+
+// Message returns the exception's message.
+func (s *TagNotFoundFault) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *TagNotFoundFault) OrigErr() error {
+	return nil
+}
+
+func (s *TagNotFoundFault) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *TagNotFoundFault) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *TagNotFoundFault) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You have exceeded the maximum number of tags for this DAX cluster.
+type TagQuotaPerResourceExceeded struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s TagQuotaPerResourceExceeded) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TagQuotaPerResourceExceeded) GoString() string {
+	return s.String()
+}
+
+func newErrorTagQuotaPerResourceExceeded(v protocol.ResponseMetadata) error {
+	return &TagQuotaPerResourceExceeded{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *TagQuotaPerResourceExceeded) Code() string {
+	return "TagQuotaPerResourceExceeded"
+}
+
+// Message returns the exception's message.
+func (s *TagQuotaPerResourceExceeded) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *TagQuotaPerResourceExceeded) OrigErr() error {
+	return nil
+}
+
+func (s *TagQuotaPerResourceExceeded) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *TagQuotaPerResourceExceeded) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *TagQuotaPerResourceExceeded) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type TagResourceInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4277,7 +5837,6 @@ func (s *TagResourceInput) SetTags(v []*Tag) *TagResourceInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/TagResourceResponse
 type TagResourceOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4301,7 +5860,6 @@ func (s *TagResourceOutput) SetTags(v []*Tag) *TagResourceOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResourceRequest
 type UntagResourceInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4355,7 +5913,6 @@ func (s *UntagResourceInput) SetTagKeys(v []*string) *UntagResourceInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UntagResourceResponse
 type UntagResourceOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4379,7 +5936,6 @@ func (s *UntagResourceOutput) SetTags(v []*Tag) *UntagResourceOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateClusterRequest
 type UpdateClusterInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4476,7 +6032,6 @@ func (s *UpdateClusterInput) SetSecurityGroupIds(v []*string) *UpdateClusterInpu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateClusterResponse
 type UpdateClusterOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4500,7 +6055,6 @@ func (s *UpdateClusterOutput) SetCluster(v *Cluster) *UpdateClusterOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroupRequest
 type UpdateParameterGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4554,7 +6108,6 @@ func (s *UpdateParameterGroupInput) SetParameterNameValues(v []*ParameterNameVal
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateParameterGroupResponse
 type UpdateParameterGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4578,7 +6131,6 @@ func (s *UpdateParameterGroupOutput) SetParameterGroup(v *ParameterGroup) *Updat
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroupRequest
 type UpdateSubnetGroupInput struct {
 	_ struct{} `type:"structure"`
 
@@ -4635,7 +6187,6 @@ func (s *UpdateSubnetGroupInput) SetSubnetIds(v []*string) *UpdateSubnetGroupInp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/dax-2017-04-19/UpdateSubnetGroupResponse
 type UpdateSubnetGroupOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4684,6 +6235,20 @@ const (
 
 	// ParameterTypeNodeTypeSpecific is a ParameterType enum value
 	ParameterTypeNodeTypeSpecific = "NODE_TYPE_SPECIFIC"
+)
+
+const (
+	// SSEStatusEnabling is a SSEStatus enum value
+	SSEStatusEnabling = "ENABLING"
+
+	// SSEStatusEnabled is a SSEStatus enum value
+	SSEStatusEnabled = "ENABLED"
+
+	// SSEStatusDisabling is a SSEStatus enum value
+	SSEStatusDisabling = "DISABLING"
+
+	// SSEStatusDisabled is a SSEStatus enum value
+	SSEStatusDisabled = "DISABLED"
 )
 
 const (

@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/internal/sdkio"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
@@ -42,8 +43,14 @@ type EncryptionClient struct {
 //	handler := s3crypto.NewKMSKeyGenerator(kms.New(sess), cmkID)
 //	svc := s3crypto.New(sess, s3crypto.AESGCMContentCipherBuilder(handler))
 func NewEncryptionClient(prov client.ConfigProvider, builder ContentCipherBuilder, options ...func(*EncryptionClient)) *EncryptionClient {
+	s3client := s3.New(prov)
+
+	s3client.Handlers.Build.PushBack(func(r *request.Request) {
+		request.AddToUserAgent(r, "S3Crypto")
+	})
+
 	client := &EncryptionClient{
-		S3Client:             s3.New(prov),
+		S3Client:             s3client,
 		ContentCipherBuilder: builder,
 		SaveStrategy:         HeaderV2SaveStrategy{},
 		MinFileSize:          DefaultMinFileSize,
@@ -64,19 +71,18 @@ func NewEncryptionClient(prov client.ConfigProvider, builder ContentCipherBuilde
 //	req, out := svc.PutObjectRequest(&s3.PutObjectInput {
 //	  Key: aws.String("testKey"),
 //	  Bucket: aws.String("testBucket"),
-//	  Body: bytes.NewBuffer("test data"),
+//	  Body: strings.NewReader("test data"),
 //	})
 //	err := req.Send()
 func (c *EncryptionClient) PutObjectRequest(input *s3.PutObjectInput) (*request.Request, *s3.PutObjectOutput) {
 	req, out := c.S3Client.PutObjectRequest(input)
 
 	// Get Size of file
-	n, err := input.Body.Seek(0, 2)
+	n, err := aws.SeekerLen(input.Body)
 	if err != nil {
 		req.Error = err
 		return req, out
 	}
-	input.Body.Seek(0, 0)
 
 	dst, err := getWriterStore(req, c.TempFolderPath, n >= c.MinFileSize)
 	if err != nil {
@@ -84,11 +90,19 @@ func (c *EncryptionClient) PutObjectRequest(input *s3.PutObjectInput) (*request.
 		return req, out
 	}
 
-	encryptor, err := c.ContentCipherBuilder.ContentCipher()
 	req.Handlers.Build.PushFront(func(r *request.Request) {
 		if err != nil {
 			r.Error = err
 			return
+		}
+		var encryptor ContentCipher
+		if v, ok := c.ContentCipherBuilder.(ContentCipherBuilderWithContext); ok {
+			encryptor, err = v.ContentCipherWithContext(r.Context())
+		} else {
+			encryptor, err = c.ContentCipherBuilder.ContentCipher()
+		}
+		if err != nil {
+			r.Error = err
 		}
 
 		md5 := newMD5Reader(input.Body)
@@ -115,7 +129,7 @@ func (c *EncryptionClient) PutObjectRequest(input *s3.PutObjectInput) (*request.
 		shaHex := hex.EncodeToString(sha.GetValue())
 		req.HTTPRequest.Header.Set("X-Amz-Content-Sha256", shaHex)
 
-		dst.Seek(0, 0)
+		dst.Seek(0, sdkio.SeekStart)
 		input.Body = dst
 
 		err = c.SaveStrategy.Save(env, r)
@@ -136,7 +150,7 @@ func (c *EncryptionClient) PutObject(input *s3.PutObjectInput) (*s3.PutObjectOut
 //
 // PutObjectWithContext is the same as PutObject with the additional support for
 // Context input parameters. The Context must not be nil. A nil Context will
-// cause a panic. Use the Context to add deadlining, timeouts, ect. In the future
+// cause a panic. Use the Context to add deadlining, timeouts, etc. In the future
 // this may create sub-contexts for individual underlying requests.
 func (c *EncryptionClient) PutObjectWithContext(ctx aws.Context, input *s3.PutObjectInput, opts ...request.Option) (*s3.PutObjectOutput, error) {
 	req, out := c.PutObjectRequest(input)
