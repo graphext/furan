@@ -6,7 +6,7 @@ jobs:
         environment:
           SCYLLA_TEST_NODE: localhost:9042
       - image: scylladb/scylla:1.6.6
-        command: --mem 512M
+        command: --memory 512M
 
     working_directory: /go/src/github.com/dollarshaveclub/furan
     steps:
