@@ -2,25 +2,33 @@ package builder
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
 	"testing"
 
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	//"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	awsecr "github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
+	ecrapi "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/api"
 	dtypes "github.com/docker/engine-api/types"
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
+	"github.com/dollarshaveclub/furan/lib/ecr"
 	"github.com/dollarshaveclub/furan/lib/mocks"
 	"github.com/gocql/gocql"
 	"github.com/golang/mock/gomock"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var testLogger = log.New(ioutil.Discard, "", log.LstdFlags)
 var testDockerCfg = map[string]dtypes.AuthConfig{}
 var testS3ErrorLogcfg = S3ErrorLogConfig{}
-testSpan, _ := tracer.SpanFromContext(context.Background())
+var testSpan tracer.Span
 
 type imageBuildPusherDeps struct {
 	ctrl *gomock.Controller
@@ -46,10 +54,43 @@ func getTestImageBuildPusher(t *testing.T) (ImageBuildPusher, *imageBuildPusherD
 		mitc: mocks.NewMockImageTagChecker(ctrl),
 		mosm: mocks.NewMockObjectStorageManager(ctrl),
 	}
-	ibp, err := NewImageBuilder(deps.mebp, deps.mdl, deps.mcf, deps.mibc, deps.mmc, deps.mosm, deps.mis, deps.mitc, testDockerCfg, testS3ErrorLogcfg, testLogger)
+	rm := &ecr.RegistryManager{
+		ECRAuthClientFactoryFunc: func(s *session.Session, cfg *aws.Config) ecrapi.Client {
+			return &ecr.FakeECRAuthClient{
+				GetCredsFunc: func(serverURL string) (*ecrapi.Auth, error) {
+					return &ecrapi.Auth{
+						Username: "foo",
+						Password: "bar",
+					}, nil
+				},
+			}
+		},
+		ECRClientFactoryFunc: func(s *session.Session) ecriface.ECRAPI {
+			return &ecr.FakeECRClient{
+				DescribeImagesPagesFunc: func(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error {
+					if len(input.ImageIds) != 1 {
+						return fmt.Errorf("expected 1 image id: %v", len(input.ImageIds))
+					}
+					fn(&awsecr.DescribeImagesOutput{
+						ImageDetails: []*awsecr.ImageDetail{
+							&awsecr.ImageDetail{
+								RepositoryName: input.RepositoryName,
+								ImageTags: []*string{
+									input.ImageIds[0].ImageTag,
+								},
+							},
+						},
+					}, true)
+					return nil
+				},
+			}
+		},
+	}
+	ibp, err := NewImageBuilder(deps.mebp, deps.mdl, deps.mcf, deps.mibc, deps.mmc, deps.mosm, deps.mis, deps.mitc, rm, testDockerCfg, testS3ErrorLogcfg, testLogger)
 	if err != nil {
 		t.Fatalf("error getting ImageBuilder: %v", err)
 	}
+	testSpan, _ = tracer.SpanFromContext(context.Background())
 	return ibp, &deps, ctrl
 }
 
@@ -58,7 +99,7 @@ func TestImageBuildTagCheckRegistrySkip(t *testing.T) {
 	defer ctrl.Finish()
 
 	id, _ := gocql.RandomUUID()
-	ctx := buildcontext.NewBuildIDContext(context.Background(), id, testSpan))
+	ctx := buildcontext.NewBuildIDContext(context.Background(), id, testSpan)
 
 	deps.mdl.EXPECT().SetBuildTimeMetric(gomock.Any(), id, gomock.Any()).Times(1)
 	deps.mcf.EXPECT().GetCommitSHA(gomock.Any(), "dollarshaveclub", "furan", "master").Return("asdf1234", nil).Times(1)
@@ -98,6 +139,7 @@ func TestImageBuildTagCheckS3Skip(t *testing.T) {
 	deps.mdl.EXPECT().SetBuildTimeMetric(gomock.Any(), id, gomock.Any()).Times(1)
 	deps.mcf.EXPECT().GetCommitSHA(gomock.Any(), "dollarshaveclub", "furan", "master").Return("asdf1234", nil).Times(1)
 	deps.mosm.EXPECT().Exists(gomock.Any(), gomock.Any()).Times(1).Return(true, nil)
+	deps.mebp.EXPECT().PublishEvent(gomock.Any()).AnyTimes()
 
 	req := &lib.BuildRequest{
 		SkipIfExists: true,

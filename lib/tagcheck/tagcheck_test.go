@@ -132,7 +132,8 @@ func TestTagCheckerQuayMissingTag(t *testing.T) {
 func TestTagCheckerQuayPrivateRepoAllExist(t *testing.T) {
 	dcfg, err := testReadDockercfg()
 	if err != nil {
-		t.Fatalf("error getting dockercfg: %v", err)
+		t.SkipNow()
+		return
 	}
 	tc := NewRegistryTagChecker(dcfg, testLoggerFunc)
 	ok, missing, err := tc.AllTagsExist(testPrivateRepoTags, testPrivateRepo)
@@ -150,7 +151,8 @@ func TestTagCheckerQuayPrivateRepoAllExist(t *testing.T) {
 func TestTagCheckerQuayPrivateRepoMissingTag(t *testing.T) {
 	dcfg, err := testReadDockercfg()
 	if err != nil {
-		t.Fatalf("error getting dockercfg: %v", err)
+		t.SkipNow()
+		return
 	}
 	tc := NewRegistryTagChecker(dcfg, testLoggerFunc)
 	ok, missing, err := tc.AllTagsExist(append(testPrivateRepoTags, "missingtag123456790"), testPrivateRepo)

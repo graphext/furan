@@ -40,7 +40,7 @@ func TestGitHubFetchTarPrefixStripper(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader := newTarPrefixStripper(ioutil.NopCloser(tarballBuf))
+	reader := newTarPrefixStripper(ioutil.NopCloser(tarballBuf), []string{})
 	tarReader := tar.NewReader(reader)
 
 	header1, err := tarReader.Next()
