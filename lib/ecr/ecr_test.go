@@ -12,6 +12,22 @@ import (
 	ecrapi "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/api"
 )
 
+func TestRegistryManagerZeroValue(t *testing.T) {
+	// verify that the zero value is functional without panics
+	rm := RegistryManager{}
+	if !rm.IsECR("123456789.dkr.ecr.us-west-2.amazonaws.com/widgets") {
+		t.Fatalf("IsECR: expected true")
+	}
+	_, _, err := rm.GetDockerAuthConfig("123456789.dkr.ecr.us-west-2.amazonaws.com/widgets")
+	if err == nil {
+		t.Fatalf("GetDockerAuthConfig: expected error")
+	}
+	_, _, err = rm.AllTagsExist([]string{"foo", "bar"}, "123456789.dkr.ecr.us-west-2.amazonaws.com/widgets")
+	if err == nil {
+		t.Fatalf("AllTagsExist: expected error")
+	}
+}
+
 func TestRegistryManager_GetDockerAuthConfig(t *testing.T) {
 	type fields struct {
 		ECRAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client

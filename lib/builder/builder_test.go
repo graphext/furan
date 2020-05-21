@@ -54,7 +54,7 @@ func getTestImageBuildPusher(t *testing.T) (ImageBuildPusher, *imageBuildPusherD
 		mitc: mocks.NewMockImageTagChecker(ctrl),
 		mosm: mocks.NewMockObjectStorageManager(ctrl),
 	}
-	rm := &ecr.RegistryManager{
+	rm := ecr.RegistryManager{
 		ECRAuthClientFactoryFunc: func(s *session.Session, cfg *aws.Config) ecrapi.Client {
 			return &ecr.FakeECRAuthClient{
 				GetCredsFunc: func(serverURL string) (*ecrapi.Auth, error) {
@@ -86,10 +86,11 @@ func getTestImageBuildPusher(t *testing.T) (ImageBuildPusher, *imageBuildPusherD
 			}
 		},
 	}
-	ibp, err := NewImageBuilder(deps.mebp, deps.mdl, deps.mcf, deps.mibc, deps.mmc, deps.mosm, deps.mis, deps.mitc, rm, testDockerCfg, testS3ErrorLogcfg, testLogger)
+	ibp, err := NewImageBuilder(deps.mebp, deps.mdl, deps.mcf, deps.mibc, deps.mmc, deps.mosm, deps.mis, deps.mitc, testDockerCfg, testS3ErrorLogcfg, testLogger)
 	if err != nil {
 		t.Fatalf("error getting ImageBuilder: %v", err)
 	}
+	ibp.rm = rm
 	testSpan, _ = tracer.SpanFromContext(context.Background())
 	return ibp, &deps, ctrl
 }

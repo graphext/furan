@@ -5,9 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/dollarshaveclub/furan/lib/config"
 	"github.com/dollarshaveclub/pvc"
 	"github.com/pkg/errors"
+
+	"github.com/dollarshaveclub/furan/lib/config"
 )
 
 func getVaultClient(vaultConfig *config.Vaultconfig) (*pvc.SecretsClient, error) {
