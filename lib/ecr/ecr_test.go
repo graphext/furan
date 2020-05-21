@@ -12,28 +12,16 @@ import (
 	ecrapi "github.com/awslabs/amazon-ecr-credential-helper/ecr-login/api"
 )
 
-type fakeECRAuthClient struct {
-	ecrapi.Client
-	getCredsFunc func(serverURL string) (*ecrapi.Auth, error)
-}
-
-func (eac fakeECRAuthClient)  GetCredentials(serverURL string) (*ecrapi.Auth, error) {
-	if eac.getCredsFunc != nil {
-		return eac.getCredsFunc(serverURL)
-	}
-	return &ecrapi.Auth{}, nil
-}
-
 func TestRegistryManager_GetDockerAuthConfig(t *testing.T) {
 	type fields struct {
-		ecrAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
+		ECRAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
 	}
 	type args struct {
 		serverURL string
 	}
 	authfunc := func(s *session.Session, cfg *aws.Config) ecrapi.Client {
-		return &fakeECRAuthClient{
-			getCredsFunc: func(serverURL string) (*ecrapi.Auth, error) {
+		return &FakeECRAuthClient{
+			GetCredsFunc: func(serverURL string) (*ecrapi.Auth, error) {
 				return &ecrapi.Auth{
 					Username: "foo",
 					Password: "bar",
@@ -52,7 +40,7 @@ func TestRegistryManager_GetDockerAuthConfig(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				ecrAuthClientFactoryFunc: authfunc,
+				ECRAuthClientFactoryFunc: authfunc,
 			},
 			args: args{
 				serverURL: "123456789.dkr.ecr.us-west-2.amazonaws.com",
@@ -63,7 +51,7 @@ func TestRegistryManager_GetDockerAuthConfig(t *testing.T) {
 		{
 			name: "bad ecr url",
 			fields: fields{
-				ecrAuthClientFactoryFunc: authfunc,
+				ECRAuthClientFactoryFunc: authfunc,
 			},
 			args: args{
 				serverURL: "quay.io/acme/foobar",
@@ -74,7 +62,7 @@ func TestRegistryManager_GetDockerAuthConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := RegistryManager{
-				ecrAuthClientFactoryFunc: tt.fields.ecrAuthClientFactoryFunc,
+				ECRAuthClientFactoryFunc: tt.fields.ECRAuthClientFactoryFunc,
 			}
 			got, got1, err := r.GetDockerAuthConfig(tt.args.serverURL)
 			if (err != nil) != tt.wantErr {
@@ -95,7 +83,7 @@ func TestRegistryManager_IsECR(t *testing.T) {
 	type fields struct {
 		AccessKeyID              string
 		SecretAccessKey          string
-		ecrAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
+		ECRAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
 		ecrClientFactoryFunc     func(s *session.Session) ecriface.ECRAPI
 	}
 	type args struct {
@@ -138,26 +126,14 @@ func TestRegistryManager_IsECR(t *testing.T) {
 			r := RegistryManager{
 				AccessKeyID:              tt.fields.AccessKeyID,
 				SecretAccessKey:          tt.fields.SecretAccessKey,
-				ecrAuthClientFactoryFunc: tt.fields.ecrAuthClientFactoryFunc,
-				ecrClientFactoryFunc:     tt.fields.ecrClientFactoryFunc,
+				ECRAuthClientFactoryFunc: tt.fields.ECRAuthClientFactoryFunc,
+				ECRClientFactoryFunc:     tt.fields.ecrClientFactoryFunc,
 			}
 			if got := r.IsECR(tt.args.repo); got != tt.want {
 				t.Errorf("IsECR() = %v, want %v", got, tt.want)
 			}
 		})
 	}
-}
-
-type fakeECRClient struct {
-	ecriface.ECRAPI
-	DescribeImagesPagesFunc func(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error
-}
-
-func (fec fakeECRClient) DescribeImagesPages(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error {
-	if fec.DescribeImagesPagesFunc != nil {
-		return fec.DescribeImagesPagesFunc(input, fn)
-	}
-	return nil
 }
 
 func sliceContentsEqual(s1, s2 []string) bool {
@@ -196,7 +172,7 @@ func TestRegistryManager_AllTagsExist(t *testing.T) {
 			name: "all exist",
 			fields: fields{
 				ecrClientFactoryFunc: func(_ *session.Session) ecriface.ECRAPI {
-					return &fakeECRClient{
+					return &FakeECRClient{
 						DescribeImagesPagesFunc: func(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error {
 							if len(input.ImageIds) != 1 {
 								return fmt.Errorf("expected 1 image id: %v", len(input.ImageIds))
@@ -228,7 +204,7 @@ func TestRegistryManager_AllTagsExist(t *testing.T) {
 			name: "missing tag",
 			fields: fields{
 				ecrClientFactoryFunc: func(_ *session.Session) ecriface.ECRAPI {
-					return &fakeECRClient{
+					return &FakeECRClient{
 						DescribeImagesPagesFunc: func(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error {
 							if len(input.ImageIds) != 1 {
 								return fmt.Errorf("expected 1 image id: %v", len(input.ImageIds))
@@ -293,7 +269,7 @@ func TestRegistryManager_AllTagsExist(t *testing.T) {
 			name: "aws error",
 			fields: fields{
 				ecrClientFactoryFunc: func(_ *session.Session) ecriface.ECRAPI {
-					return &fakeECRClient{
+					return &FakeECRClient{
 						DescribeImagesPagesFunc: func(input *awsecr.DescribeImagesInput, fn func(*awsecr.DescribeImagesOutput, bool) bool) error {
 							if len(input.ImageIds) != 1 {
 								return fmt.Errorf("expected 1 image id: %v", len(input.ImageIds))
@@ -328,7 +304,7 @@ func TestRegistryManager_AllTagsExist(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := RegistryManager{
-				ecrClientFactoryFunc:     tt.fields.ecrClientFactoryFunc,
+				ECRClientFactoryFunc:     tt.fields.ecrClientFactoryFunc,
 			}
 			got, got1, err := r.AllTagsExist(tt.args.tags, tt.args.repo)
 			if (err != nil) != tt.wantErr {

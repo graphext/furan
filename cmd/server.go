@@ -21,6 +21,7 @@ import (
 	"github.com/dollarshaveclub/furan/lib/builder"
 	"github.com/dollarshaveclub/furan/lib/config"
 	"github.com/dollarshaveclub/furan/lib/consul"
+	"github.com/dollarshaveclub/furan/lib/ecr"
 	"github.com/dollarshaveclub/furan/lib/gc"
 	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/grpc"
@@ -167,7 +168,11 @@ func server(cmd *cobra.Command, args []string) {
 		Bucket:            serverConfig.S3ErrorLogBucket,
 		PresignTTLMinutes: serverConfig.S3PresignTTL,
 	}
-	imageBuilder, err := builder.NewImageBuilder(kafkaConfig.Manager, dbConfig.Datalayer, gf, dc, mc, osm, is, itc, dockerConfig.DockercfgContents, s3errcfg, logger)
+	rm := &ecr.RegistryManager{
+		AccessKeyID: awsConfig.AccessKeyID,
+		SecretAccessKey: awsConfig.SecretAccessKey,
+	}
+	imageBuilder, err := builder.NewImageBuilder(kafkaConfig.Manager, dbConfig.Datalayer, gf, dc, mc, osm, is, itc, rm, dockerConfig.DockercfgContents, s3errcfg, logger)
 	if err != nil {
 		log.Fatalf("error creating image builder: %v", err)
 	}

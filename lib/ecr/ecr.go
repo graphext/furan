@@ -16,8 +16,8 @@ import (
 // RegistryManager manages interaction with ECR-backed image repositories
 type RegistryManager struct {
 	AccessKeyID, SecretAccessKey string // AWS credentials scoped to ECR only
-	ecrAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
-	ecrClientFactoryFunc func(s *session.Session) ecriface.ECRAPI
+	ECRAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
+	ECRClientFactoryFunc func(s *session.Session) ecriface.ECRAPI
 }
 
 // GetDockerAuthConfig gets docker engine auth for a repository server URL ([ecr server url]/[repo]:[tag]) and returns the username and password, or error
@@ -35,12 +35,12 @@ func (r RegistryManager) GetDockerAuthConfig(serverURL string) (string, string, 
 	if err != nil {
 		return "", "", fmt.Errorf("error getting aws session: %w", err)
 	}
-	if r.ecrAuthClientFactoryFunc == nil {
-		r.ecrAuthClientFactoryFunc = func(s *session.Session, cfg *aws.Config) ecrapi.Client {
+	if r.ECRAuthClientFactoryFunc == nil {
+		r.ECRAuthClientFactoryFunc = func(s *session.Session, cfg *aws.Config) ecrapi.Client {
 			return ecrapi.DefaultClientFactory{}.NewClient(sess, cfg)
 		}
 	}
-	client := r.ecrAuthClientFactoryFunc(sess, cfg)
+	client := r.ECRAuthClientFactoryFunc(sess, cfg)
 
 	auth, err := client.GetCredentials(serverURL)
 	if err != nil {
@@ -90,12 +90,12 @@ func (r RegistryManager) AllTagsExist(tags []string, repo string) (bool, []strin
 		}
 		ins[i] = in
 	}
-	if r.ecrClientFactoryFunc == nil {
-		r.ecrClientFactoryFunc = func(sess *session.Session) ecriface.ECRAPI {
+	if r.ECRClientFactoryFunc == nil {
+		r.ECRClientFactoryFunc = func(sess *session.Session) ecriface.ECRAPI {
 			return awsecr.New(sess)
 		}
 	}
-	ecrsvc := r.ecrClientFactoryFunc(sess)
+	ecrsvc := r.ECRClientFactoryFunc(sess)
 	// iterate through tags, each one that's found is removed from missing
 	for _, in := range ins {
 		err = ecrsvc.DescribeImagesPages(in, func(out *awsecr.DescribeImagesOutput, b bool) bool {

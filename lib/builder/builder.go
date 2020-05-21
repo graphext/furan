@@ -20,6 +20,7 @@ import (
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/buildcontext"
 	"github.com/dollarshaveclub/furan/lib/datalayer"
+	"github.com/dollarshaveclub/furan/lib/ecr"
 	"github.com/dollarshaveclub/furan/lib/errors"
 	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
 	"github.com/dollarshaveclub/furan/lib/kafka"
@@ -99,26 +100,47 @@ type ImageBuilder struct {
 	is         squasher.ImageSquasher
 	osm        s3.ObjectStorageManager
 	itc        tagcheck.ImageTagChecker
+	rm         *ecr.RegistryManager
 	dockercfg  map[string]dtypes.AuthConfig
 	s3errorcfg S3ErrorLogConfig
 	logger     *log.Logger
 }
 
 // NewImageBuilder returns a new ImageBuilder
-func NewImageBuilder(eventbus kafka.EventBusProducer, datalayer datalayer.DataLayer, gf githubfetch.CodeFetcher, dc ImageBuildClient, mc metrics.MetricsCollector, osm s3.ObjectStorageManager, is squasher.ImageSquasher, itc tagcheck.ImageTagChecker, dcfg map[string]dtypes.AuthConfig, s3errorcfg S3ErrorLogConfig, logger *log.Logger) (*ImageBuilder, error) {
-	ib := &ImageBuilder{}
-	ib.gf = gf
-	ib.c = dc
-	ib.ep = eventbus
-	ib.dl = datalayer
-	ib.mc = mc
-	ib.osm = osm
-	ib.itc = itc
-	ib.is = is
-	ib.dockercfg = dcfg
-	ib.s3errorcfg = s3errorcfg
-	ib.logger = logger
-	return ib, nil
+func NewImageBuilder(eventbus kafka.EventBusProducer, datalayer datalayer.DataLayer, gf githubfetch.CodeFetcher, dc ImageBuildClient, mc metrics.MetricsCollector, osm s3.ObjectStorageManager, is squasher.ImageSquasher, itc tagcheck.ImageTagChecker, rm *ecr.RegistryManager, dcfg map[string]dtypes.AuthConfig, s3errorcfg S3ErrorLogConfig, logger *log.Logger) (*ImageBuilder, error) {
+	if rm == nil {
+		return nil, fmt.Errorf("RegistryManager is required")
+	}
+	return &ImageBuilder{
+		gf:         gf,
+		c:          dc,
+		ep:         eventbus,
+		dl:         datalayer,
+		mc:         mc,
+		osm:        osm,
+		itc:        itc,
+		is:         is,
+		rm:         rm,
+		dockercfg:  dcfg,
+		s3errorcfg: s3errorcfg,
+		logger:     logger,
+	}, nil
+}
+
+func (ib *ImageBuilder) addECRtoAuth(repo string) map[string]dtypes.AuthConfig {
+	if ib.rm.IsECR(repo) {
+		dcfg := ib.dockercfg
+		surl := strings.Split(repo, "/")[0]
+		username, pwd, err := ib.rm.GetDockerAuthConfig(surl)
+		if err != nil {
+			// if we can't get the auth just return the existing docker auths and let it fail later
+			ib.logger.Printf("addECRtoAuth: error getting docker auth for %v: %v", repo, err)
+			return dcfg
+		}
+		dcfg[surl] = dtypes.AuthConfig{Username: username, Password: pwd}
+		return dcfg
+	}
+	return ib.dockercfg
 }
 
 func (ib *ImageBuilder) logf(ctx context.Context, msg string, params ...interface{}) {
@@ -264,7 +286,12 @@ func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bo
 	if req.Build.TagWithCommitSha {
 		tags = append(tags, csha)
 	}
-	ok, _, err := ib.itc.AllTagsExist(tags, req.Push.Registry.Repo)
+	var ok bool
+	if ib.rm.IsECR(req.Push.Registry.Repo) {
+		ok, _, err = ib.rm.AllTagsExist(tags, req.Push.Registry.Repo)
+	} else {
+		ok, _, err = ib.itc.AllTagsExist(tags, req.Push.Registry.Repo)
+	}
 	if err != nil {
 		return false, fmt.Errorf("error checking if tags exist: %v", err)
 	}
@@ -386,7 +413,10 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		ForceRemove: true,
 		PullParent:  true,
 		Dockerfile:  rbi.DockerfilePath,
-		AuthConfigs: ib.dockercfg,
+		// Add ECR to auth configs if the push target is an ECR repo
+		// this means that we only support base images on private ECR repos if we are pushing
+		// the current image to ECR as well
+		AuthConfigs: ib.addECRtoAuth(req.GetPush().GetRegistry().GetRepo()),
 		NoCache:     true,
 		BuildArgs:   req.Build.Args,
 	}
@@ -589,6 +619,11 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	}
 	rsl := strings.Split(repo, "/")
 	var registry string
+	dcfg := ib.dockercfg
+	if ib.rm.IsECR(repo) {
+		registry = strings.Split(repo, "/")[0]
+		dcfg = ib.addECRtoAuth(repo)
+	}
 	switch len(rsl) {
 	case 2: // Docker Hub
 		registry = "https://index.docker.io/v2/"
@@ -598,7 +633,7 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 		return fmt.Errorf("cannot determine base registry URL from %v", repo)
 	}
 	var auth string
-	if val, ok := ib.dockercfg[registry]; ok {
+	if val, ok := dcfg[registry]; ok {
 		j, err := json.Marshal(&val)
 		if err != nil {
 			return fmt.Errorf("error marshaling auth: %v", err)
