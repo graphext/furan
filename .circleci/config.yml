@@ -5,8 +5,9 @@ jobs:
     docker:
       - image: circleci/golang:1.9
         environment:
-          SCYLLA_TEST_NODE: localhost:9042
+          SCYLLA_TEST_NODE: scylla:9042
       - image: scylladb/scylla:1.6.6
+        name: scylla
         command: --memory 512M --smp 2
 
     working_directory: /go/src/github.com/dollarshaveclub/furan
@@ -21,7 +22,7 @@ jobs:
 
       - run:
           name: Wait for db
-          command: dockerize -wait tcp://localhost:9042 -timeout 1m
+          command: dockerize -wait tcp://scylla:9042 -timeout 1m
 
       - run: go get -v -t -d ./...
       - run: go test -v ./...
