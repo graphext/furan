@@ -1,12 +1,13 @@
 version: 2
 jobs:
   build:
+    resource_class: large
     docker:
       - image: circleci/golang:1.9
         environment:
           SCYLLA_TEST_NODE: localhost:9042
       - image: scylladb/scylla:1.6.6
-        command: --memory 512M
+        command: --memory 512M --smp 2
 
     working_directory: /go/src/github.com/dollarshaveclub/furan
     steps:
