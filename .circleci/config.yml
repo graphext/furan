@@ -1,7 +1,6 @@
 version: 2
 jobs:
   build:
-    resource_class: large
     docker:
       - image: circleci/golang:1.9
         environment:
