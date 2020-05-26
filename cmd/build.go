@@ -163,7 +163,7 @@ func build(cmd *cobra.Command, args []string) {
 	}
 
 	if awsConfig.EnableECR {
-		ib.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryURLs)
+		ib.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryHosts)
 	}
 
 	kvo, err := consul.NewConsulKVOrchestrator(&consulConfig)
