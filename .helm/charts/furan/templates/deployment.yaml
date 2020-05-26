@@ -110,6 +110,13 @@ spec:
           - --datadog-service-name={{ .Values.datadog.serviceName }}
         {{ end }}
           - --consul-addr={{ .Values.consulAddr }}
+        {{ if .Values.ecr.enabled }}
+          - "--ecr"
+          {{ if .Values.ecr.hosts }}
+          - "--ecr-registry-hosts"
+          - "{{ .Values.ecr.hosts }}"
+          {{ end }}
+        {{ end }}
         env:
         - name: DOCKER_HOST
           value: unix:///var/run/docker.sock

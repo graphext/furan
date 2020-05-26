@@ -80,7 +80,7 @@ func init() {
 	serverCmd.PersistentFlags().StringVar(&consulConfig.KVPrefix, "consul-kv-prefix", "furan", "Consul KV prefix")
 	serverCmd.PersistentFlags().BoolVar(&serverConfig.DisableMetrics, "disable-metrics", false, "Disable Datadog metrics collection")
 	serverCmd.PersistentFlags().BoolVar(&awsConfig.EnableECR, "ecr", false, "Enable AWS ECR support")
-	serverCmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryURLs, "ecr-registry-urls", []string{}, "ECR registry urls (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
+	serverCmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryHosts, "ecr-registry-hosts", []string{}, "ECR registry hosts (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
 	RootCmd.AddCommand(serverCmd)
 }
 
@@ -177,7 +177,7 @@ func server(cmd *cobra.Command, args []string) {
 	}
 
 	if awsConfig.EnableECR {
-		imageBuilder.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryURLs)
+		imageBuilder.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryHosts)
 	}
 
 	kvo, err := consul.NewConsulKVOrchestrator(&consulConfig)

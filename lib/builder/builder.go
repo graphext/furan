@@ -125,12 +125,12 @@ func NewImageBuilder(eventbus kafka.EventBusProducer, datalayer datalayer.DataLa
 	}, nil
 }
 
-// SetECRConfig sets the AWS credentials for optional ECR support and the list of ECR server URLs to authorize for base images
-func (ib *ImageBuilder) SetECRConfig(accessKeyID, secretAccessKeyID string, ecrServerURLs []string) {
+// SetECRConfig sets the AWS credentials for optional ECR support and the list of ECR server hosts to authorize for base images
+func (ib *ImageBuilder) SetECRConfig(accessKeyID, secretAccessKeyID string, ecrServerHosts []string) {
 	ib.useECR = true
 	ib.ecrServerURLs = []string{}
-	if len(ecrServerURLs) > 0 {
-		ib.ecrServerURLs = ecrServerURLs
+	if len(ecrServerHosts) > 0 {
+		ib.ecrServerURLs = ecrServerHosts
 	}
 	ib.rm.AccessKeyID = accessKeyID
 	ib.rm.SecretAccessKey = secretAccessKeyID

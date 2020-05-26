@@ -46,11 +46,11 @@ type Kafkaconfig struct {
 
 // AWSConfig contains all information needed to access AWS services
 type AWSConfig struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	EnableECR       bool
-	ECRRegistryURLs []string
-	Concurrency     uint
+	AccessKeyID      string
+	SecretAccessKey  string
+	EnableECR        bool
+	ECRRegistryHosts []string
+	Concurrency      uint
 }
 
 type DBconfig struct {
