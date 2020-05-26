@@ -638,18 +638,19 @@ func (ib *ImageBuilder) PushBuildToRegistry(ctx context.Context, req *lib.BuildR
 	rsl := strings.Split(repo, "/")
 	var registry string
 	dcfg := ib.dockercfg
-	if ib.useECR && ib.rm.IsECR(repo) {
-		registry = strings.Split(repo, "/")[0]
+	switch {
+	case ib.useECR && ib.rm.IsECR(repo):
+		// ECR repo format: "123456789.dkr.ecr.us-west-2.amazonaws.com/widgets" (one slash, ECR hostname)
+		registry = rsl[0]
 		dcfg = ib.addECRtoAuth(repo)
-	} else {
-		switch len(rsl) {
-		case 2: // Docker Hub
-			registry = "https://index.docker.io/v2/"
-		case 3: // private registry
-			registry = rsl[0]
-		default:
-			return fmt.Errorf("cannot determine base registry URL from %v", repo)
-		}
+	case len(rsl) == 2:
+		// Docker Hub repo format: "acme/widgets" (one slash, org name [no host])
+		registry = "https://index.docker.io/v2/"
+	case len(rsl) == 3:
+		// Private registry (quay) format: "quay.io/acme/widgets" (two slashes, hostname and org)
+		registry = rsl[0]
+	default:
+		return fmt.Errorf("cannot determine base registry URL from %v", repo)
 	}
 	var auth string
 	if val, ok := dcfg[registry]; ok {
