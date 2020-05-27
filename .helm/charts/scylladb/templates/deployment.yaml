@@ -28,19 +28,15 @@ spec:
           ports:
           - containerPort: {{ .Values.service.cqlInternalPort }}
           command:
-            - /bin/bash
+            - /docker-entrypoint.py
           args:
-            - '-c'
-            - '/start-scylla; tail -f /dev/null'
+            - "--memory"
+            - "512M"
+            - "--smp"
+            - "2"
           volumeMounts:
             - name: scylla-scripts
               mountPath: /k8s
-          livenessProbe:
-            exec:
-              command: ["/bin/sh", "-c", ". /k8s/liveness-probe.sh"]
-            initialDelaySeconds: 60
-            failureThreshold: 2
-            successThreshold: 1
           readinessProbe:
             exec:
               command: ["/bin/sh", "-c", ". /k8s/liveness-probe.sh"]
