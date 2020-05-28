@@ -746,6 +746,7 @@
     "gopkg.in/DataDog/dd-trace-go.v1/contrib/gocql/gocql",
     "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc",
     "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc.v12",
+    "gopkg.in/DataDog/dd-trace-go.v1/ddtrace",
     "gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer",
   ]
   solver-name = "gps-cdcl"
