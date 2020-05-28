@@ -577,7 +577,7 @@ func (ib *ImageBuilder) monitorDockerAction(ctx context.Context, rc io.ReadClose
 		output = append(output, *bevent)
 		if errtype == lib.BuildEventError_FATAL {
 			// do not push final event (leave to upstream error handler)
-			return output, fmt.Errorf("fatal error performing %v action", atype.String())
+			return output, fmt.Errorf("fatal error performing %v action: %v", atype.String(), string(line))
 		}
 		ib.event(bevent)
 	}
