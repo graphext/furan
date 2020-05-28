@@ -1,5 +1,8 @@
 .PHONY: furan release
 
+check:
+	./check.sh
+
 furan:
 	go install github.com/dollarshaveclub/furan
 
