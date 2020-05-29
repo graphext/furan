@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -42,10 +43,11 @@ Pass a JSON file containing options for the integration test (see testdata/integ
 var integrationOptionsFile string
 
 type IntegrationOptions struct {
-	GitHubRepo   string `json:"github_repo"`
-	Ref          string `json:"ref"`
-	ImageRepo    string `json:"image_repo"`
-	SkipIfExists bool   `json:"skip"`
+	GitHubRepo       string   `json:"github_repo"`
+	Ref              string   `json:"ref"`
+	ImageRepo        string   `json:"image_repo"`
+	SkipIfExists     bool     `json:"skip"`
+	ECRRegistryHosts []string `json:"ecr_registry_hosts"`
 }
 
 func (iops IntegrationOptions) BuildRequest() *lib.BuildRequest {
@@ -91,6 +93,7 @@ func integration(cmd *cobra.Command, args []string) {
 	}
 
 	logger = log.New(os.Stderr, "", log.LstdFlags)
+	nlogger := log.New(ioutil.Discard, "", log.LstdFlags)
 
 	mc, err := newDatadogCollector()
 	if err != nil {
@@ -129,12 +132,10 @@ func integration(cmd *cobra.Command, args []string) {
 		itc,
 		dockerConfig.DockercfgContents,
 		s3errcfg,
-		logger)
+		nlogger)
 	if err != nil {
 		clierr("error creating image builder: %v", err)
 	}
-
-	ib.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryHosts)
 
 	tester := integrationTester{
 		DL:  dl,
@@ -144,8 +145,10 @@ func integration(cmd *cobra.Command, args []string) {
 
 	for name, ops := range intops {
 		log.Printf("running test: %v\n", name)
-		tester.RunTest(ops.BuildRequest())
+		tester.RunTest(ops)
 	}
+
+	log.Println("all tests successful")
 }
 
 type integrationTester struct {
@@ -164,18 +167,27 @@ func streamMessage(rawmsg string) string {
 	return stream.Stream
 }
 
-func (it *integrationTester) RunTest(req *lib.BuildRequest) {
+func (it *integrationTester) RunTest(opts IntegrationOptions) {
+
+	req := opts.BuildRequest()
+
 	c := make(chan *lib.BuildEvent, chanCapacity)
 	s := make(chan struct{})
 	defer close(s)
 
 	go func() {
 		for e := range c {
-			log.Println(streamMessage(e.Message))
+			if e != nil && e.Message != "" {
+				if msg := streamMessage(e.Message); msg != "" {
+					log.Println(msg)
+				}
+			}
 		}
 	}()
 
 	ctx := context.Background()
+
+	it.IB.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, opts.ECRRegistryHosts)
 
 	id, err := it.DL.CreateBuild(ctx, req)
 	if err != nil {
