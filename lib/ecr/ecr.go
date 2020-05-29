@@ -16,8 +16,8 @@ import (
 // RegistryManager manages interaction with ECR-backed image repositories
 type RegistryManager struct {
 	AccessKeyID, SecretAccessKey string // AWS credentials scoped to ECR only
-	ECRAuthClientFactoryFunc func(s *session.Session, cfg *aws.Config) ecrapi.Client
-	ECRClientFactoryFunc func(s *session.Session) ecriface.ECRAPI
+	ECRAuthClientFactoryFunc     func(s *session.Session, cfg *aws.Config) ecrapi.Client
+	ECRClientFactoryFunc         func(s *session.Session) ecriface.ECRAPI
 }
 
 // GetDockerAuthConfig gets docker engine auth for a repository server URL ([ecr server url]/[repo]:[tag]) and returns the username and password, or error
@@ -25,15 +25,15 @@ func (r RegistryManager) GetDockerAuthConfig(serverURL string) (string, string, 
 	// modified copypasta from https://github.com/awslabs/amazon-ecr-credential-helper/blob/master/ecr-login/ecr.go
 	registry, err := ecrapi.ExtractRegistry(serverURL)
 	if err != nil {
-		return "", "", fmt.Errorf("error parsing server URL: %w", err)
+		return "", "", fmt.Errorf("error parsing server URL: %v", err)
 	}
 	cfg := &aws.Config{
-		Region: &registry.Region,
+		Region:      &registry.Region,
 		Credentials: credentials.NewStaticCredentials(r.AccessKeyID, r.SecretAccessKey, ""),
 	}
 	sess, err := session.NewSession(cfg)
 	if err != nil {
-		return "", "", fmt.Errorf("error getting aws session: %w", err)
+		return "", "", fmt.Errorf("error getting aws session: %v", err)
 	}
 	if r.ECRAuthClientFactoryFunc == nil {
 		r.ECRAuthClientFactoryFunc = func(s *session.Session, cfg *aws.Config) ecrapi.Client {
@@ -44,7 +44,7 @@ func (r RegistryManager) GetDockerAuthConfig(serverURL string) (string, string, 
 
 	auth, err := client.GetCredentials(serverURL)
 	if err != nil {
-		return "", "", fmt.Errorf("error getting ECR credentials for repo: %v: %w", serverURL, err)
+		return "", "", fmt.Errorf("error getting ECR credentials for repo: %v: %v", serverURL, err)
 	}
 	return auth.Username, auth.Password, nil
 }
@@ -69,14 +69,14 @@ func (r RegistryManager) AllTagsExist(tags []string, repo string) (bool, []strin
 	reponame := rs[1]
 	registry, err := ecrapi.ExtractRegistry(serverURL)
 	if err != nil {
-		return false, nil, fmt.Errorf("error parsing server URL: %w", err)
+		return false, nil, fmt.Errorf("error parsing server URL: %v", err)
 	}
 	sess, err := session.NewSession(&aws.Config{
-		Region: &registry.Region,
+		Region:      &registry.Region,
 		Credentials: credentials.NewStaticCredentials(r.AccessKeyID, r.SecretAccessKey, ""),
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("error getting aws session: %w", err)
+		return false, nil, fmt.Errorf("error getting aws session: %v", err)
 	}
 	ins := make([]*awsecr.DescribeImagesInput, len(tags))
 	missing := make(map[string]struct{}, len(tags))
@@ -113,7 +113,7 @@ func (r RegistryManager) AllTagsExist(tags []string, repo string) (bool, []strin
 			if ok && awsErr.Code() == awsecr.ErrCodeImageNotFoundException {
 				continue
 			}
-			return false, nil, fmt.Errorf("error describing image: %w", err)
+			return false, nil, fmt.Errorf("error describing image: %v", err)
 		}
 	}
 	mt := make([]string, len(missing))
