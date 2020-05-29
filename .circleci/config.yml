@@ -24,4 +24,5 @@ jobs:
           command: dockerize -wait tcp://scylla:9042 -timeout 1m
 
       - run: go get -v -t -d ./...
+      - run: go vet $(go list ./... |grep lib/)
       - run: go test -v $(go list ./... |grep /lib/)
