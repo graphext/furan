@@ -16,21 +16,24 @@ func getVaultClient(vaultConfig *config.Vaultconfig) (*pvc.SecretsClient, error)
 	if vaultConfig.Addr == "" {
 		return nil, errors.New("vault addr missing")
 	}
-	useVault := !vaultConfig.EnvVars && vaultConfig.JSONFile == ""
+	var useVault bool
 	switch {
 	case vaultConfig.TokenAuth:
 		if vaultConfig.Token == "" {
 			return nil, errors.New("token auth specified but token is empty")
 		}
 		opts = []pvc.SecretsClientOption{pvc.WithVaultBackend(), pvc.WithVaultAuthentication(pvc.Token), pvc.WithVaultToken(vaultConfig.Token)}
+		useVault = true
 	case vaultConfig.AppID != "" && vaultConfig.UserIDPath != "":
 		opts = []pvc.SecretsClientOption{pvc.WithVaultBackend(), pvc.WithVaultAuthentication(pvc.AppID), pvc.WithVaultAppID(vaultConfig.AppID), pvc.WithVaultUserIDPath(vaultConfig.UserIDPath)}
+		useVault = true
 	case vaultConfig.K8sJWTPath != "" && vaultConfig.K8sRole != "":
 		jwt, err := ioutil.ReadFile(vaultConfig.K8sJWTPath)
 		if err != nil {
 			return nil, errors.Wrap(err, "error reading JWT file")
 		}
 		opts = []pvc.SecretsClientOption{pvc.WithVaultBackend(), pvc.WithVaultAuthentication(pvc.K8s), pvc.WithVaultK8sAuth(string(jwt), vaultConfig.K8sRole), pvc.WithVaultK8sAuthPath(vaultConfig.K8sAuthPath)}
+		useVault = true
 	case vaultConfig.EnvVars:
 		opts = []pvc.SecretsClientOption{pvc.WithEnvVarBackend()}
 	case vaultConfig.JSONFile != "":

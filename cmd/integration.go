@@ -66,7 +66,7 @@ func (iops IntegrationOptions) BuildRequest() *lib.BuildRequest {
 
 func init() {
 	integrationCmd.Flags().BoolVar(&vaultConfig.EnvVars, "env-var-secrets", false, "use environment variable secrets (uses vault-path-prefix for naming scheme)")
-	integrationCmd.Flags().StringVar(&vaultConfig.JSONFile, "json-secrets-file", "testdata/secrets.json", "JSON secrets file")
+	integrationCmd.Flags().StringVar(&vaultConfig.JSONFile, "json-secrets-file", "", "JSON secrets file")
 	integrationCmd.Flags().StringVar(&integrationOptionsFile, "integration-options-file", "testdata/integration.json", "JSON integration options file")
 	RootCmd.AddCommand(integrationCmd)
 }
