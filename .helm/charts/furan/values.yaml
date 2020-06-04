@@ -26,6 +26,12 @@ service:
 
 metrics_disabled: true
 
+# If enabled, ECR will use the same AWS credentials (from Vault) as configured for S3
+ecr:
+  enabled: false
+  # comma-delimited list of ECR hosts
+  hosts: "123456789.dkr.ecr.us-west-2.amazonaws.com,123456789.dkr.ecr.us-east-1.amazonaws.com"
+
 datadog:
   overrideDefaultTags: 'env:dev'
   statsdAddr: datadog.tools.svc.cluster.local:8125

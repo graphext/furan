@@ -39,7 +39,7 @@ func NewKMSKeyGenerator(kmsClient kmsiface.KMSAPI, cmkID string) CipherDataGener
 //	sess := session.New(&aws.Config{})
 //	cmkID := "arn to key"
 //	matdesc := s3crypto.MaterialDescription{}
-//	handler, err := s3crypto.NewKMSKeyGeneratorWithMatDesc(kms.New(sess), cmkID, matdesc)
+//	handler := s3crypto.NewKMSKeyGeneratorWithMatDesc(kms.New(sess), cmkID, matdesc)
 func NewKMSKeyGeneratorWithMatDesc(kmsClient kmsiface.KMSAPI, cmkID string, matdesc MaterialDescription) CipherDataGenerator {
 	if matdesc == nil {
 		matdesc = MaterialDescription{}
@@ -55,6 +55,25 @@ func NewKMSKeyGeneratorWithMatDesc(kmsClient kmsiface.KMSAPI, cmkID string, matd
 	kp.CipherData.WrapAlgorithm = KMSWrap
 	kp.CipherData.MaterialDescription = matdesc
 	return kp
+}
+
+// NewKMSWrapEntry builds returns a new KMS key provider and its decrypt handler.
+//
+// Example:
+//	sess := session.New(&aws.Config{})
+//	customKMSClient := kms.New(sess)
+//	decryptHandler := s3crypto.NewKMSWrapEntry(customKMSClient)
+//
+//	svc := s3crypto.NewDecryptionClient(sess, func(svc *s3crypto.DecryptionClient) {
+//		svc.WrapRegistry[s3crypto.KMSWrap] = decryptHandler
+//	}))
+func NewKMSWrapEntry(kmsClient kmsiface.KMSAPI) WrapEntry {
+	// These values are read only making them thread safe
+	kp := &kmsKeyHandler{
+		kms: kmsClient,
+	}
+
+	return kp.decryptHandler
 }
 
 // decryptHandler initializes a KMS keyprovider with a material description. This
@@ -79,11 +98,17 @@ func (kp kmsKeyHandler) decryptHandler(env Envelope) (CipherDataDecrypter, error
 
 // DecryptKey makes a call to KMS to decrypt the key.
 func (kp *kmsKeyHandler) DecryptKey(key []byte) ([]byte, error) {
-	out, err := kp.kms.Decrypt(&kms.DecryptInput{
-		EncryptionContext: map[string]*string(kp.CipherData.MaterialDescription),
-		CiphertextBlob:    key,
-		GrantTokens:       []*string{},
-	})
+	return kp.DecryptKeyWithContext(aws.BackgroundContext(), key)
+}
+
+// DecryptKeyWithContext makes a call to KMS to decrypt the key with request context.
+func (kp *kmsKeyHandler) DecryptKeyWithContext(ctx aws.Context, key []byte) ([]byte, error) {
+	out, err := kp.kms.DecryptWithContext(ctx,
+		&kms.DecryptInput{
+			EncryptionContext: kp.CipherData.MaterialDescription,
+			CiphertextBlob:    key,
+			GrantTokens:       []*string{},
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -93,11 +118,18 @@ func (kp *kmsKeyHandler) DecryptKey(key []byte) ([]byte, error) {
 // GenerateCipherData makes a call to KMS to generate a data key, Upon making
 // the call, it also sets the encrypted key.
 func (kp *kmsKeyHandler) GenerateCipherData(keySize, ivSize int) (CipherData, error) {
-	out, err := kp.kms.GenerateDataKey(&kms.GenerateDataKeyInput{
-		EncryptionContext: kp.CipherData.MaterialDescription,
-		KeyId:             kp.cmkID,
-		KeySpec:           aws.String("AES_256"),
-	})
+	return kp.GenerateCipherDataWithContext(aws.BackgroundContext(), keySize, ivSize)
+}
+
+// GenerateCipherDataWithContext makes a call to KMS to generate a data key,
+// Upon making the call, it also sets the encrypted key.
+func (kp *kmsKeyHandler) GenerateCipherDataWithContext(ctx aws.Context, keySize, ivSize int) (CipherData, error) {
+	out, err := kp.kms.GenerateDataKeyWithContext(ctx,
+		&kms.GenerateDataKeyInput{
+			EncryptionContext: kp.CipherData.MaterialDescription,
+			KeyId:             kp.cmkID,
+			KeySpec:           aws.String("AES_256"),
+		})
 	if err != nil {
 		return CipherData{}, err
 	}

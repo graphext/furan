@@ -5,10 +5,10 @@
 package mocks
 
 import (
+	context "context"
 	lib "github.com/dollarshaveclub/furan/generated/lib"
 	gocql "github.com/gocql/gocql"
 	gomock "github.com/golang/mock/gomock"
-	ddtrace "gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	reflect "reflect"
 )
 
@@ -36,7 +36,7 @@ func (m *MockDataLayer) EXPECT() *MockDataLayerMockRecorder {
 }
 
 // CreateBuild mocks base method
-func (m *MockDataLayer) CreateBuild(arg0 ddtrace.Span, arg1 *lib.BuildRequest) (gocql.UUID, error) {
+func (m *MockDataLayer) CreateBuild(arg0 context.Context, arg1 *lib.BuildRequest) (gocql.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateBuild", arg0, arg1)
 	ret0, _ := ret[0].(gocql.UUID)
@@ -51,7 +51,7 @@ func (mr *MockDataLayerMockRecorder) CreateBuild(arg0, arg1 interface{}) *gomock
 }
 
 // DeleteBuild mocks base method
-func (m *MockDataLayer) DeleteBuild(arg0 ddtrace.Span, arg1 gocql.UUID) error {
+func (m *MockDataLayer) DeleteBuild(arg0 context.Context, arg1 gocql.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteBuild", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -65,7 +65,7 @@ func (mr *MockDataLayerMockRecorder) DeleteBuild(arg0, arg1 interface{}) *gomock
 }
 
 // GetBuildByID mocks base method
-func (m *MockDataLayer) GetBuildByID(arg0 ddtrace.Span, arg1 gocql.UUID) (*lib.BuildStatusResponse, error) {
+func (m *MockDataLayer) GetBuildByID(arg0 context.Context, arg1 gocql.UUID) (*lib.BuildStatusResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBuildByID", arg0, arg1)
 	ret0, _ := ret[0].(*lib.BuildStatusResponse)
@@ -80,7 +80,7 @@ func (mr *MockDataLayerMockRecorder) GetBuildByID(arg0, arg1 interface{}) *gomoc
 }
 
 // GetBuildOutput mocks base method
-func (m *MockDataLayer) GetBuildOutput(arg0 ddtrace.Span, arg1 gocql.UUID, arg2 string) ([]lib.BuildEvent, error) {
+func (m *MockDataLayer) GetBuildOutput(arg0 context.Context, arg1 gocql.UUID, arg2 string) ([]lib.BuildEvent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBuildOutput", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]lib.BuildEvent)
@@ -95,7 +95,7 @@ func (mr *MockDataLayerMockRecorder) GetBuildOutput(arg0, arg1, arg2 interface{}
 }
 
 // SaveBuildOutput mocks base method
-func (m *MockDataLayer) SaveBuildOutput(arg0 ddtrace.Span, arg1 gocql.UUID, arg2 []lib.BuildEvent, arg3 string) error {
+func (m *MockDataLayer) SaveBuildOutput(arg0 context.Context, arg1 gocql.UUID, arg2 []lib.BuildEvent, arg3 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveBuildOutput", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(error)
@@ -109,7 +109,7 @@ func (mr *MockDataLayerMockRecorder) SaveBuildOutput(arg0, arg1, arg2, arg3 inte
 }
 
 // SetBuildCompletedTimestamp mocks base method
-func (m *MockDataLayer) SetBuildCompletedTimestamp(arg0 ddtrace.Span, arg1 gocql.UUID) error {
+func (m *MockDataLayer) SetBuildCompletedTimestamp(arg0 context.Context, arg1 gocql.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetBuildCompletedTimestamp", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -123,7 +123,7 @@ func (mr *MockDataLayerMockRecorder) SetBuildCompletedTimestamp(arg0, arg1 inter
 }
 
 // SetBuildFlags mocks base method
-func (m *MockDataLayer) SetBuildFlags(arg0 ddtrace.Span, arg1 gocql.UUID, arg2 map[string]bool) error {
+func (m *MockDataLayer) SetBuildFlags(arg0 context.Context, arg1 gocql.UUID, arg2 map[string]bool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetBuildFlags", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -137,7 +137,7 @@ func (mr *MockDataLayerMockRecorder) SetBuildFlags(arg0, arg1, arg2 interface{})
 }
 
 // SetBuildState mocks base method
-func (m *MockDataLayer) SetBuildState(arg0 ddtrace.Span, arg1 gocql.UUID, arg2 lib.BuildStatusResponse_BuildState) error {
+func (m *MockDataLayer) SetBuildState(arg0 context.Context, arg1 gocql.UUID, arg2 lib.BuildStatusResponse_BuildState) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetBuildState", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -151,7 +151,7 @@ func (mr *MockDataLayerMockRecorder) SetBuildState(arg0, arg1, arg2 interface{})
 }
 
 // SetBuildTimeMetric mocks base method
-func (m *MockDataLayer) SetBuildTimeMetric(arg0 ddtrace.Span, arg1 gocql.UUID, arg2 string) error {
+func (m *MockDataLayer) SetBuildTimeMetric(arg0 context.Context, arg1 gocql.UUID, arg2 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetBuildTimeMetric", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -165,7 +165,7 @@ func (mr *MockDataLayerMockRecorder) SetBuildTimeMetric(arg0, arg1, arg2 interfa
 }
 
 // SetDockerImageSizesMetric mocks base method
-func (m *MockDataLayer) SetDockerImageSizesMetric(arg0 ddtrace.Span, arg1 gocql.UUID, arg2, arg3 int64) error {
+func (m *MockDataLayer) SetDockerImageSizesMetric(arg0 context.Context, arg1 gocql.UUID, arg2, arg3 int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetDockerImageSizesMetric", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(error)

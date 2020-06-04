@@ -3,11 +3,13 @@
 package dynamodbstreams
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
@@ -15,19 +17,18 @@ const opDescribeStream = "DescribeStream"
 
 // DescribeStreamRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeStream operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeStream for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeStream method directly
-// instead.
+// See DescribeStream for more information on using the DescribeStream
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeStreamRequest method.
 //    req, resp := client.DescribeStreamRequest(params)
@@ -37,7 +38,7 @@ const opDescribeStream = "DescribeStream"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStream
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStream
 func (c *DynamoDBStreams) DescribeStreamRequest(input *DescribeStreamInput) (req *request.Request, output *DescribeStreamOutput) {
 	op := &request.Operation{
 		Name:       opDescribeStream,
@@ -75,14 +76,14 @@ func (c *DynamoDBStreams) DescribeStreamRequest(input *DescribeStreamInput) (req
 // See the AWS API reference guide for Amazon DynamoDB Streams's
 // API operation DescribeStream for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The operation tried to access a nonexistent stream.
 //
-//   * ErrCodeInternalServerError "InternalServerError"
+//   * InternalServerError
 //   An error occurred on the server side.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStream
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStream
 func (c *DynamoDBStreams) DescribeStream(input *DescribeStreamInput) (*DescribeStreamOutput, error) {
 	req, out := c.DescribeStreamRequest(input)
 	return out, req.Send()
@@ -108,19 +109,18 @@ const opGetRecords = "GetRecords"
 
 // GetRecordsRequest generates a "aws/request.Request" representing the
 // client's request for the GetRecords operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetRecords for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetRecords method directly
-// instead.
+// See GetRecords for more information on using the GetRecords
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetRecordsRequest method.
 //    req, resp := client.GetRecordsRequest(params)
@@ -130,7 +130,7 @@ const opGetRecords = "GetRecords"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecords
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecords
 func (c *DynamoDBStreams) GetRecordsRequest(input *GetRecordsInput) (req *request.Request, output *GetRecordsOutput) {
 	op := &request.Operation{
 		Name:       opGetRecords,
@@ -168,11 +168,11 @@ func (c *DynamoDBStreams) GetRecordsRequest(input *GetRecordsInput) (req *reques
 // See the AWS API reference guide for Amazon DynamoDB Streams's
 // API operation GetRecords for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The operation tried to access a nonexistent stream.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
+//   * LimitExceededException
 //   Your request rate is too high. The AWS SDKs for DynamoDB automatically retry
 //   requests that receive this exception. Your request is eventually successful,
 //   unless your retry queue is too large to finish. Reduce the frequency of requests
@@ -180,15 +180,15 @@ func (c *DynamoDBStreams) GetRecordsRequest(input *GetRecordsInput) (req *reques
 //   Exponential Backoff (http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ErrorHandling.html#APIRetries)
 //   in the Amazon DynamoDB Developer Guide.
 //
-//   * ErrCodeInternalServerError "InternalServerError"
+//   * InternalServerError
 //   An error occurred on the server side.
 //
-//   * ErrCodeExpiredIteratorException "ExpiredIteratorException"
+//   * ExpiredIteratorException
 //   The shard iterator has expired and can no longer be used to retrieve stream
 //   records. A shard iterator expires 15 minutes after it is retrieved using
 //   the GetShardIterator action.
 //
-//   * ErrCodeTrimmedDataAccessException "TrimmedDataAccessException"
+//   * TrimmedDataAccessException
 //   The operation attempted to read past the oldest stream record in a shard.
 //
 //   In DynamoDB Streams, there is a 24 hour limit on data retention. Stream records
@@ -202,7 +202,7 @@ func (c *DynamoDBStreams) GetRecordsRequest(input *GetRecordsInput) (req *reques
 //      request, a stream record in the shard exceeds the 24 hour period and is
 //      trimmed. This causes the iterator to access a record that no longer exists.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecords
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecords
 func (c *DynamoDBStreams) GetRecords(input *GetRecordsInput) (*GetRecordsOutput, error) {
 	req, out := c.GetRecordsRequest(input)
 	return out, req.Send()
@@ -228,19 +228,18 @@ const opGetShardIterator = "GetShardIterator"
 
 // GetShardIteratorRequest generates a "aws/request.Request" representing the
 // client's request for the GetShardIterator operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetShardIterator for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetShardIterator method directly
-// instead.
+// See GetShardIterator for more information on using the GetShardIterator
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetShardIteratorRequest method.
 //    req, resp := client.GetShardIteratorRequest(params)
@@ -250,7 +249,7 @@ const opGetShardIterator = "GetShardIterator"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIterator
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIterator
 func (c *DynamoDBStreams) GetShardIteratorRequest(input *GetShardIteratorInput) (req *request.Request, output *GetShardIteratorOutput) {
 	op := &request.Operation{
 		Name:       opGetShardIterator,
@@ -282,14 +281,14 @@ func (c *DynamoDBStreams) GetShardIteratorRequest(input *GetShardIteratorInput) 
 // See the AWS API reference guide for Amazon DynamoDB Streams's
 // API operation GetShardIterator for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The operation tried to access a nonexistent stream.
 //
-//   * ErrCodeInternalServerError "InternalServerError"
+//   * InternalServerError
 //   An error occurred on the server side.
 //
-//   * ErrCodeTrimmedDataAccessException "TrimmedDataAccessException"
+//   * TrimmedDataAccessException
 //   The operation attempted to read past the oldest stream record in a shard.
 //
 //   In DynamoDB Streams, there is a 24 hour limit on data retention. Stream records
@@ -303,7 +302,7 @@ func (c *DynamoDBStreams) GetShardIteratorRequest(input *GetShardIteratorInput) 
 //      request, a stream record in the shard exceeds the 24 hour period and is
 //      trimmed. This causes the iterator to access a record that no longer exists.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIterator
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIterator
 func (c *DynamoDBStreams) GetShardIterator(input *GetShardIteratorInput) (*GetShardIteratorOutput, error) {
 	req, out := c.GetShardIteratorRequest(input)
 	return out, req.Send()
@@ -329,19 +328,18 @@ const opListStreams = "ListStreams"
 
 // ListStreamsRequest generates a "aws/request.Request" representing the
 // client's request for the ListStreams operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ListStreams for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ListStreams method directly
-// instead.
+// See ListStreams for more information on using the ListStreams
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ListStreamsRequest method.
 //    req, resp := client.ListStreamsRequest(params)
@@ -351,7 +349,7 @@ const opListStreams = "ListStreams"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreams
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreams
 func (c *DynamoDBStreams) ListStreamsRequest(input *ListStreamsInput) (req *request.Request, output *ListStreamsOutput) {
 	op := &request.Operation{
 		Name:       opListStreams,
@@ -383,14 +381,14 @@ func (c *DynamoDBStreams) ListStreamsRequest(input *ListStreamsInput) (req *requ
 // See the AWS API reference guide for Amazon DynamoDB Streams's
 // API operation ListStreams for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+// Returned Error Types:
+//   * ResourceNotFoundException
 //   The operation tried to access a nonexistent stream.
 //
-//   * ErrCodeInternalServerError "InternalServerError"
+//   * InternalServerError
 //   An error occurred on the server side.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreams
+// See also, https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreams
 func (c *DynamoDBStreams) ListStreams(input *ListStreamsInput) (*ListStreamsOutput, error) {
 	req, out := c.ListStreamsRequest(input)
 	return out, req.Send()
@@ -413,7 +411,6 @@ func (c *DynamoDBStreams) ListStreamsWithContext(ctx aws.Context, input *ListStr
 }
 
 // Represents the input of a DescribeStream operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStreamInput
 type DescribeStreamInput struct {
 	_ struct{} `type:"structure"`
 
@@ -481,7 +478,6 @@ func (s *DescribeStreamInput) SetStreamArn(v string) *DescribeStreamInput {
 }
 
 // Represents the output of a DescribeStream operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/DescribeStreamOutput
 type DescribeStreamOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -508,8 +504,66 @@ func (s *DescribeStreamOutput) SetStreamDescription(v *StreamDescription) *Descr
 	return s
 }
 
+// The shard iterator has expired and can no longer be used to retrieve stream
+// records. A shard iterator expires 15 minutes after it is retrieved using
+// the GetShardIterator action.
+type ExpiredIteratorException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// The provided iterator exceeds the maximum age allowed.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ExpiredIteratorException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ExpiredIteratorException) GoString() string {
+	return s.String()
+}
+
+func newErrorExpiredIteratorException(v protocol.ResponseMetadata) error {
+	return &ExpiredIteratorException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ExpiredIteratorException) Code() string {
+	return "ExpiredIteratorException"
+}
+
+// Message returns the exception's message.
+func (s *ExpiredIteratorException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ExpiredIteratorException) OrigErr() error {
+	return nil
+}
+
+func (s *ExpiredIteratorException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ExpiredIteratorException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ExpiredIteratorException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Represents the input of a GetRecords operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecordsInput
 type GetRecordsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -566,7 +620,6 @@ func (s *GetRecordsInput) SetShardIterator(v string) *GetRecordsInput {
 }
 
 // Represents the output of a GetRecords operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetRecordsOutput
 type GetRecordsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -602,7 +655,6 @@ func (s *GetRecordsOutput) SetRecords(v []*Record) *GetRecordsOutput {
 }
 
 // Represents the input of a GetShardIterator operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIteratorInput
 type GetShardIteratorInput struct {
 	_ struct{} `type:"structure"`
 
@@ -704,7 +756,6 @@ func (s *GetShardIteratorInput) SetStreamArn(v string) *GetShardIteratorInput {
 }
 
 // Represents the output of a GetShardIterator operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/GetShardIteratorOutput
 type GetShardIteratorOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -731,7 +782,6 @@ func (s *GetShardIteratorOutput) SetShardIterator(v string) *GetShardIteratorOut
 }
 
 // Contains details about the type of identity that made the request.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/Identity
 type Identity struct {
 	_ struct{} `type:"structure"`
 
@@ -765,8 +815,126 @@ func (s *Identity) SetType(v string) *Identity {
 	return s
 }
 
+// An error occurred on the server side.
+type InternalServerError struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// The server encountered an internal error trying to fulfill the request.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InternalServerError) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InternalServerError) GoString() string {
+	return s.String()
+}
+
+func newErrorInternalServerError(v protocol.ResponseMetadata) error {
+	return &InternalServerError{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InternalServerError) Code() string {
+	return "InternalServerError"
+}
+
+// Message returns the exception's message.
+func (s *InternalServerError) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InternalServerError) OrigErr() error {
+	return nil
+}
+
+func (s *InternalServerError) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InternalServerError) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InternalServerError) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Your request rate is too high. The AWS SDKs for DynamoDB automatically retry
+// requests that receive this exception. Your request is eventually successful,
+// unless your retry queue is too large to finish. Reduce the frequency of requests
+// and use exponential backoff. For more information, go to Error Retries and
+// Exponential Backoff (http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ErrorHandling.html#APIRetries)
+// in the Amazon DynamoDB Developer Guide.
+type LimitExceededException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// Too many operations for a given subscriber.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s LimitExceededException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LimitExceededException) GoString() string {
+	return s.String()
+}
+
+func newErrorLimitExceededException(v protocol.ResponseMetadata) error {
+	return &LimitExceededException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *LimitExceededException) Code() string {
+	return "LimitExceededException"
+}
+
+// Message returns the exception's message.
+func (s *LimitExceededException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *LimitExceededException) OrigErr() error {
+	return nil
+}
+
+func (s *LimitExceededException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *LimitExceededException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *LimitExceededException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Represents the input of a ListStreams operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreamsInput
 type ListStreamsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -831,7 +999,6 @@ func (s *ListStreamsInput) SetTableName(v string) *ListStreamsInput {
 }
 
 // Represents the output of a ListStreams operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/ListStreamsOutput
 type ListStreamsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -874,7 +1041,6 @@ func (s *ListStreamsOutput) SetStreams(v []*Stream) *ListStreamsOutput {
 }
 
 // A description of a unique event within a stream.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/Record
 type Record struct {
 	_ struct{} `type:"structure"`
 
@@ -913,13 +1079,9 @@ type Record struct {
 	// Items that are deleted by the Time to Live process after expiration have
 	// the following fields:
 	//
-	//    * Records[].userIdentity.type
+	//    * Records[].userIdentity.type "Service"
 	//
-	// "Service"
-	//
-	//    * Records[].userIdentity.principalId
-	//
-	// "dynamodb.amazonaws.com"
+	//    * Records[].userIdentity.principalId "dynamodb.amazonaws.com"
 	UserIdentity *Identity `locationName:"userIdentity" type:"structure"`
 }
 
@@ -975,9 +1137,65 @@ func (s *Record) SetUserIdentity(v *Identity) *Record {
 	return s
 }
 
+// The operation tried to access a nonexistent stream.
+type ResourceNotFoundException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// The resource which is being requested does not exist.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ResourceNotFoundException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ResourceNotFoundException) GoString() string {
+	return s.String()
+}
+
+func newErrorResourceNotFoundException(v protocol.ResponseMetadata) error {
+	return &ResourceNotFoundException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ResourceNotFoundException) Code() string {
+	return "ResourceNotFoundException"
+}
+
+// Message returns the exception's message.
+func (s *ResourceNotFoundException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ResourceNotFoundException) OrigErr() error {
+	return nil
+}
+
+func (s *ResourceNotFoundException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ResourceNotFoundException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ResourceNotFoundException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // The beginning and ending sequence numbers for the stream records contained
 // within a shard.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/SequenceNumberRange
 type SequenceNumberRange struct {
 	_ struct{} `type:"structure"`
 
@@ -1011,7 +1229,6 @@ func (s *SequenceNumberRange) SetStartingSequenceNumber(v string) *SequenceNumbe
 }
 
 // A uniquely identified group of stream records within a stream.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/Shard
 type Shard struct {
 	_ struct{} `type:"structure"`
 
@@ -1054,7 +1271,6 @@ func (s *Shard) SetShardId(v string) *Shard {
 }
 
 // Represents all of the data describing a particular stream.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/Stream
 type Stream struct {
 	_ struct{} `type:"structure"`
 
@@ -1108,12 +1324,11 @@ func (s *Stream) SetTableName(v string) *Stream {
 }
 
 // Represents all of the data describing a particular stream.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/StreamDescription
 type StreamDescription struct {
 	_ struct{} `type:"structure"`
 
 	// The date and time when the request to create this stream was issued.
-	CreationRequestDateTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreationRequestDateTime *time.Time `type:"timestamp"`
 
 	// The key attribute(s) of the stream's DynamoDB table.
 	KeySchema []*dynamodb.KeySchemaElement `min:"1" type:"list"`
@@ -1246,13 +1461,12 @@ func (s *StreamDescription) SetTableName(v string) *StreamDescription {
 
 // A description of a single data modification that was performed on an item
 // in a DynamoDB table.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/streams-dynamodb-2012-08-10/StreamRecord
 type StreamRecord struct {
 	_ struct{} `type:"structure"`
 
 	// The approximate date and time when the stream record was created, in UNIX
 	// epoch time (http://www.epochconverter.com/) format.
-	ApproximateCreationDateTime *time.Time `type:"timestamp" timestampFormat:"unix"`
+	ApproximateCreationDateTime *time.Time `type:"timestamp"`
 
 	// The primary key attribute(s) for the DynamoDB item that was modified.
 	Keys map[string]*dynamodb.AttributeValue `type:"map"`
@@ -1332,6 +1546,74 @@ func (s *StreamRecord) SetSizeBytes(v int64) *StreamRecord {
 func (s *StreamRecord) SetStreamViewType(v string) *StreamRecord {
 	s.StreamViewType = &v
 	return s
+}
+
+// The operation attempted to read past the oldest stream record in a shard.
+//
+// In DynamoDB Streams, there is a 24 hour limit on data retention. Stream records
+// whose age exceeds this limit are subject to removal (trimming) from the stream.
+// You might receive a TrimmedDataAccessException if:
+//
+//    * You request a shard iterator with a sequence number older than the trim
+//    point (24 hours).
+//
+//    * You obtain a shard iterator, but before you use the iterator in a GetRecords
+//    request, a stream record in the shard exceeds the 24 hour period and is
+//    trimmed. This causes the iterator to access a record that no longer exists.
+type TrimmedDataAccessException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// "The data you are trying to access has been trimmed.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s TrimmedDataAccessException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TrimmedDataAccessException) GoString() string {
+	return s.String()
+}
+
+func newErrorTrimmedDataAccessException(v protocol.ResponseMetadata) error {
+	return &TrimmedDataAccessException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *TrimmedDataAccessException) Code() string {
+	return "TrimmedDataAccessException"
+}
+
+// Message returns the exception's message.
+func (s *TrimmedDataAccessException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *TrimmedDataAccessException) OrigErr() error {
+	return nil
+}
+
+func (s *TrimmedDataAccessException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *TrimmedDataAccessException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *TrimmedDataAccessException) RequestID() string {
+	return s.RespMetadata.RequestID
 }
 
 const (

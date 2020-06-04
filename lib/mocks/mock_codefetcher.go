@@ -6,6 +6,7 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	ddtrace "gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	io "io"
 	reflect "reflect"
 )
@@ -34,31 +35,31 @@ func (m *MockCodeFetcher) EXPECT() *MockCodeFetcherMockRecorder {
 }
 
 // Get mocks base method
-func (m *MockCodeFetcher) Get(arg0, arg1, arg2 string) (io.Reader, error) {
+func (m *MockCodeFetcher) Get(arg0 ddtrace.Span, arg1, arg2, arg3 string) (io.Reader, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "Get", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(io.Reader)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get
-func (mr *MockCodeFetcherMockRecorder) Get(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockCodeFetcherMockRecorder) Get(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCodeFetcher)(nil).Get), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCodeFetcher)(nil).Get), arg0, arg1, arg2, arg3)
 }
 
 // GetCommitSHA mocks base method
-func (m *MockCodeFetcher) GetCommitSHA(arg0, arg1, arg2 string) (string, error) {
+func (m *MockCodeFetcher) GetCommitSHA(arg0 ddtrace.Span, arg1, arg2, arg3 string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCommitSHA", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "GetCommitSHA", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCommitSHA indicates an expected call of GetCommitSHA
-func (mr *MockCodeFetcherMockRecorder) GetCommitSHA(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockCodeFetcherMockRecorder) GetCommitSHA(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCommitSHA", reflect.TypeOf((*MockCodeFetcher)(nil).GetCommitSHA), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCommitSHA", reflect.TypeOf((*MockCodeFetcher)(nil).GetCommitSHA), arg0, arg1, arg2, arg3)
 }

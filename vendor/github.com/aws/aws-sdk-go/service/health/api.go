@@ -3,30 +3,174 @@
 package health
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
+	"github.com/aws/aws-sdk-go/private/protocol/jsonrpc"
 )
+
+const opDescribeAffectedAccountsForOrganization = "DescribeAffectedAccountsForOrganization"
+
+// DescribeAffectedAccountsForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeAffectedAccountsForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeAffectedAccountsForOrganization for more information on using the DescribeAffectedAccountsForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeAffectedAccountsForOrganizationRequest method.
+//    req, resp := client.DescribeAffectedAccountsForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedAccountsForOrganization
+func (c *Health) DescribeAffectedAccountsForOrganizationRequest(input *DescribeAffectedAccountsForOrganizationInput) (req *request.Request, output *DescribeAffectedAccountsForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDescribeAffectedAccountsForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"nextToken"},
+			OutputTokens:    []string{"nextToken"},
+			LimitToken:      "maxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &DescribeAffectedAccountsForOrganizationInput{}
+	}
+
+	output = &DescribeAffectedAccountsForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeAffectedAccountsForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Returns a list of accounts in the organization from AWS Organizations that
+// are affected by the provided event.
+//
+// Before you can call this operation, you must first enable AWS Health to work
+// with AWS Organizations. To do this, call the EnableHealthServiceAccessForOrganization
+// operation from your organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DescribeAffectedAccountsForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * InvalidPaginationToken
+//   The specified pagination token (nextToken) is not valid.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedAccountsForOrganization
+func (c *Health) DescribeAffectedAccountsForOrganization(input *DescribeAffectedAccountsForOrganizationInput) (*DescribeAffectedAccountsForOrganizationOutput, error) {
+	req, out := c.DescribeAffectedAccountsForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DescribeAffectedAccountsForOrganizationWithContext is the same as DescribeAffectedAccountsForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeAffectedAccountsForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeAffectedAccountsForOrganizationWithContext(ctx aws.Context, input *DescribeAffectedAccountsForOrganizationInput, opts ...request.Option) (*DescribeAffectedAccountsForOrganizationOutput, error) {
+	req, out := c.DescribeAffectedAccountsForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// DescribeAffectedAccountsForOrganizationPages iterates over the pages of a DescribeAffectedAccountsForOrganization operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See DescribeAffectedAccountsForOrganization method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a DescribeAffectedAccountsForOrganization operation.
+//    pageNum := 0
+//    err := client.DescribeAffectedAccountsForOrganizationPages(params,
+//        func(page *health.DescribeAffectedAccountsForOrganizationOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *Health) DescribeAffectedAccountsForOrganizationPages(input *DescribeAffectedAccountsForOrganizationInput, fn func(*DescribeAffectedAccountsForOrganizationOutput, bool) bool) error {
+	return c.DescribeAffectedAccountsForOrganizationPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// DescribeAffectedAccountsForOrganizationPagesWithContext same as DescribeAffectedAccountsForOrganizationPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeAffectedAccountsForOrganizationPagesWithContext(ctx aws.Context, input *DescribeAffectedAccountsForOrganizationInput, fn func(*DescribeAffectedAccountsForOrganizationOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *DescribeAffectedAccountsForOrganizationInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.DescribeAffectedAccountsForOrganizationRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*DescribeAffectedAccountsForOrganizationOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
+}
 
 const opDescribeAffectedEntities = "DescribeAffectedEntities"
 
 // DescribeAffectedEntitiesRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeAffectedEntities operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeAffectedEntities for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeAffectedEntities method directly
-// instead.
+// See DescribeAffectedEntities for more information on using the DescribeAffectedEntities
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeAffectedEntitiesRequest method.
 //    req, resp := client.DescribeAffectedEntitiesRequest(params)
@@ -36,7 +180,7 @@ const opDescribeAffectedEntities = "DescribeAffectedEntities"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntities
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntities
 func (c *Health) DescribeAffectedEntitiesRequest(input *DescribeAffectedEntitiesInput) (req *request.Request, output *DescribeAffectedEntitiesOutput) {
 	op := &request.Operation{
 		Name:       opDescribeAffectedEntities,
@@ -78,14 +222,14 @@ func (c *Health) DescribeAffectedEntitiesRequest(input *DescribeAffectedEntities
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeAffectedEntities for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidPaginationToken "InvalidPaginationToken"
+// Returned Error Types:
+//   * InvalidPaginationToken
 //   The specified pagination token (nextToken) is not valid.
 //
-//   * ErrCodeUnsupportedLocale "UnsupportedLocale"
+//   * UnsupportedLocale
 //   The specified locale is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntities
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntities
 func (c *Health) DescribeAffectedEntities(input *DescribeAffectedEntitiesInput) (*DescribeAffectedEntitiesOutput, error) {
 	req, out := c.DescribeAffectedEntitiesRequest(input)
 	return out, req.Send()
@@ -118,7 +262,7 @@ func (c *Health) DescribeAffectedEntitiesWithContext(ctx aws.Context, input *Des
 //    // Example iterating over at most 3 pages of a DescribeAffectedEntities operation.
 //    pageNum := 0
 //    err := client.DescribeAffectedEntitiesPages(params,
-//        func(page *DescribeAffectedEntitiesOutput, lastPage bool) bool {
+//        func(page *health.DescribeAffectedEntitiesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -150,10 +294,163 @@ func (c *Health) DescribeAffectedEntitiesPagesWithContext(ctx aws.Context, input
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeAffectedEntitiesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeAffectedEntitiesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
+	return p.Err()
+}
+
+const opDescribeAffectedEntitiesForOrganization = "DescribeAffectedEntitiesForOrganization"
+
+// DescribeAffectedEntitiesForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeAffectedEntitiesForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeAffectedEntitiesForOrganization for more information on using the DescribeAffectedEntitiesForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeAffectedEntitiesForOrganizationRequest method.
+//    req, resp := client.DescribeAffectedEntitiesForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntitiesForOrganization
+func (c *Health) DescribeAffectedEntitiesForOrganizationRequest(input *DescribeAffectedEntitiesForOrganizationInput) (req *request.Request, output *DescribeAffectedEntitiesForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDescribeAffectedEntitiesForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"nextToken"},
+			OutputTokens:    []string{"nextToken"},
+			LimitToken:      "maxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &DescribeAffectedEntitiesForOrganizationInput{}
+	}
+
+	output = &DescribeAffectedEntitiesForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeAffectedEntitiesForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Returns a list of entities that have been affected by one or more events
+// for one or more accounts in your organization in AWS Organizations, based
+// on the filter criteria. Entities can refer to individual customer resources,
+// groups of customer resources, or any other construct, depending on the AWS
+// service.
+//
+// At least one event ARN and account ID are required. Results are sorted by
+// the lastUpdatedTime of the entity, starting with the most recent.
+//
+// Before you can call this operation, you must first enable AWS Health to work
+// with AWS Organizations. To do this, call the EnableHealthServiceAccessForOrganization
+// operation from your organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DescribeAffectedEntitiesForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * InvalidPaginationToken
+//   The specified pagination token (nextToken) is not valid.
+//
+//   * UnsupportedLocale
+//   The specified locale is not supported.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntitiesForOrganization
+func (c *Health) DescribeAffectedEntitiesForOrganization(input *DescribeAffectedEntitiesForOrganizationInput) (*DescribeAffectedEntitiesForOrganizationOutput, error) {
+	req, out := c.DescribeAffectedEntitiesForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DescribeAffectedEntitiesForOrganizationWithContext is the same as DescribeAffectedEntitiesForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeAffectedEntitiesForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeAffectedEntitiesForOrganizationWithContext(ctx aws.Context, input *DescribeAffectedEntitiesForOrganizationInput, opts ...request.Option) (*DescribeAffectedEntitiesForOrganizationOutput, error) {
+	req, out := c.DescribeAffectedEntitiesForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// DescribeAffectedEntitiesForOrganizationPages iterates over the pages of a DescribeAffectedEntitiesForOrganization operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See DescribeAffectedEntitiesForOrganization method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a DescribeAffectedEntitiesForOrganization operation.
+//    pageNum := 0
+//    err := client.DescribeAffectedEntitiesForOrganizationPages(params,
+//        func(page *health.DescribeAffectedEntitiesForOrganizationOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *Health) DescribeAffectedEntitiesForOrganizationPages(input *DescribeAffectedEntitiesForOrganizationInput, fn func(*DescribeAffectedEntitiesForOrganizationOutput, bool) bool) error {
+	return c.DescribeAffectedEntitiesForOrganizationPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// DescribeAffectedEntitiesForOrganizationPagesWithContext same as DescribeAffectedEntitiesForOrganizationPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeAffectedEntitiesForOrganizationPagesWithContext(ctx aws.Context, input *DescribeAffectedEntitiesForOrganizationInput, fn func(*DescribeAffectedEntitiesForOrganizationOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *DescribeAffectedEntitiesForOrganizationInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.DescribeAffectedEntitiesForOrganizationRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*DescribeAffectedEntitiesForOrganizationOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
 	return p.Err()
 }
 
@@ -161,19 +458,18 @@ const opDescribeEntityAggregates = "DescribeEntityAggregates"
 
 // DescribeEntityAggregatesRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEntityAggregates operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEntityAggregates for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEntityAggregates method directly
-// instead.
+// See DescribeEntityAggregates for more information on using the DescribeEntityAggregates
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEntityAggregatesRequest method.
 //    req, resp := client.DescribeEntityAggregatesRequest(params)
@@ -183,7 +479,7 @@ const opDescribeEntityAggregates = "DescribeEntityAggregates"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregates
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregates
 func (c *Health) DescribeEntityAggregatesRequest(input *DescribeEntityAggregatesInput) (req *request.Request, output *DescribeEntityAggregatesOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEntityAggregates,
@@ -212,7 +508,7 @@ func (c *Health) DescribeEntityAggregatesRequest(input *DescribeEntityAggregates
 //
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeEntityAggregates for usage and error information.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregates
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregates
 func (c *Health) DescribeEntityAggregates(input *DescribeEntityAggregatesInput) (*DescribeEntityAggregatesOutput, error) {
 	req, out := c.DescribeEntityAggregatesRequest(input)
 	return out, req.Send()
@@ -238,19 +534,18 @@ const opDescribeEventAggregates = "DescribeEventAggregates"
 
 // DescribeEventAggregatesRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEventAggregates operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEventAggregates for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEventAggregates method directly
-// instead.
+// See DescribeEventAggregates for more information on using the DescribeEventAggregates
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEventAggregatesRequest method.
 //    req, resp := client.DescribeEventAggregatesRequest(params)
@@ -260,7 +555,7 @@ const opDescribeEventAggregates = "DescribeEventAggregates"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregates
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregates
 func (c *Health) DescribeEventAggregatesRequest(input *DescribeEventAggregatesInput) (req *request.Request, output *DescribeEventAggregatesOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEventAggregates,
@@ -296,11 +591,11 @@ func (c *Health) DescribeEventAggregatesRequest(input *DescribeEventAggregatesIn
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeEventAggregates for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidPaginationToken "InvalidPaginationToken"
+// Returned Error Types:
+//   * InvalidPaginationToken
 //   The specified pagination token (nextToken) is not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregates
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregates
 func (c *Health) DescribeEventAggregates(input *DescribeEventAggregatesInput) (*DescribeEventAggregatesOutput, error) {
 	req, out := c.DescribeEventAggregatesRequest(input)
 	return out, req.Send()
@@ -333,7 +628,7 @@ func (c *Health) DescribeEventAggregatesWithContext(ctx aws.Context, input *Desc
 //    // Example iterating over at most 3 pages of a DescribeEventAggregates operation.
 //    pageNum := 0
 //    err := client.DescribeEventAggregatesPages(params,
-//        func(page *DescribeEventAggregatesOutput, lastPage bool) bool {
+//        func(page *health.DescribeEventAggregatesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -365,10 +660,12 @@ func (c *Health) DescribeEventAggregatesPagesWithContext(ctx aws.Context, input 
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeEventAggregatesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeEventAggregatesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -376,19 +673,18 @@ const opDescribeEventDetails = "DescribeEventDetails"
 
 // DescribeEventDetailsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEventDetails operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEventDetails for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEventDetails method directly
-// instead.
+// See DescribeEventDetails for more information on using the DescribeEventDetails
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEventDetailsRequest method.
 //    req, resp := client.DescribeEventDetailsRequest(params)
@@ -398,7 +694,7 @@ const opDescribeEventDetails = "DescribeEventDetails"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetails
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetails
 func (c *Health) DescribeEventDetailsRequest(input *DescribeEventDetailsInput) (req *request.Request, output *DescribeEventDetailsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEventDetails,
@@ -418,10 +714,10 @@ func (c *Health) DescribeEventDetailsRequest(input *DescribeEventDetailsInput) (
 // DescribeEventDetails API operation for AWS Health APIs and Notifications.
 //
 // Returns detailed information about one or more specified events. Information
-// includes standard event data (region, service, etc., as returned by DescribeEvents),
-// a detailed event description, and possible additional metadata that depends
-// upon the nature of the event. Affected entities are not included; to retrieve
-// those, use the DescribeAffectedEntities operation.
+// includes standard event data (region, service, and so on, as returned by
+// DescribeEvents), a detailed event description, and possible additional metadata
+// that depends upon the nature of the event. Affected entities are not included;
+// to retrieve those, use the DescribeAffectedEntities operation.
 //
 // If a specified event cannot be retrieved, an error message is returned for
 // that event.
@@ -433,11 +729,11 @@ func (c *Health) DescribeEventDetailsRequest(input *DescribeEventDetailsInput) (
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeEventDetails for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnsupportedLocale "UnsupportedLocale"
+// Returned Error Types:
+//   * UnsupportedLocale
 //   The specified locale is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetails
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetails
 func (c *Health) DescribeEventDetails(input *DescribeEventDetailsInput) (*DescribeEventDetailsOutput, error) {
 	req, out := c.DescribeEventDetailsRequest(input)
 	return out, req.Send()
@@ -459,23 +755,110 @@ func (c *Health) DescribeEventDetailsWithContext(ctx aws.Context, input *Describ
 	return out, req.Send()
 }
 
+const opDescribeEventDetailsForOrganization = "DescribeEventDetailsForOrganization"
+
+// DescribeEventDetailsForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeEventDetailsForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeEventDetailsForOrganization for more information on using the DescribeEventDetailsForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeEventDetailsForOrganizationRequest method.
+//    req, resp := client.DescribeEventDetailsForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetailsForOrganization
+func (c *Health) DescribeEventDetailsForOrganizationRequest(input *DescribeEventDetailsForOrganizationInput) (req *request.Request, output *DescribeEventDetailsForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDescribeEventDetailsForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &DescribeEventDetailsForOrganizationInput{}
+	}
+
+	output = &DescribeEventDetailsForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeEventDetailsForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Returns detailed information about one or more specified events for one or
+// more accounts in your organization. Information includes standard event data
+// (Region, service, and so on, as returned by DescribeEventsForOrganization,
+// a detailed event description, and possible additional metadata that depends
+// upon the nature of the event. Affected entities are not included; to retrieve
+// those, use the DescribeAffectedEntitiesForOrganization operation.
+//
+// Before you can call this operation, you must first enable AWS Health to work
+// with AWS Organizations. To do this, call the EnableHealthServiceAccessForOrganization
+// operation from your organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DescribeEventDetailsForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * UnsupportedLocale
+//   The specified locale is not supported.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetailsForOrganization
+func (c *Health) DescribeEventDetailsForOrganization(input *DescribeEventDetailsForOrganizationInput) (*DescribeEventDetailsForOrganizationOutput, error) {
+	req, out := c.DescribeEventDetailsForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DescribeEventDetailsForOrganizationWithContext is the same as DescribeEventDetailsForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeEventDetailsForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeEventDetailsForOrganizationWithContext(ctx aws.Context, input *DescribeEventDetailsForOrganizationInput, opts ...request.Option) (*DescribeEventDetailsForOrganizationOutput, error) {
+	req, out := c.DescribeEventDetailsForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opDescribeEventTypes = "DescribeEventTypes"
 
 // DescribeEventTypesRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEventTypes operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEventTypes for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEventTypes method directly
-// instead.
+// See DescribeEventTypes for more information on using the DescribeEventTypes
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEventTypesRequest method.
 //    req, resp := client.DescribeEventTypesRequest(params)
@@ -485,7 +868,7 @@ const opDescribeEventTypes = "DescribeEventTypes"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypes
 func (c *Health) DescribeEventTypesRequest(input *DescribeEventTypesInput) (req *request.Request, output *DescribeEventTypesOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEventTypes,
@@ -520,14 +903,14 @@ func (c *Health) DescribeEventTypesRequest(input *DescribeEventTypesInput) (req 
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeEventTypes for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidPaginationToken "InvalidPaginationToken"
+// Returned Error Types:
+//   * InvalidPaginationToken
 //   The specified pagination token (nextToken) is not valid.
 //
-//   * ErrCodeUnsupportedLocale "UnsupportedLocale"
+//   * UnsupportedLocale
 //   The specified locale is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypes
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypes
 func (c *Health) DescribeEventTypes(input *DescribeEventTypesInput) (*DescribeEventTypesOutput, error) {
 	req, out := c.DescribeEventTypesRequest(input)
 	return out, req.Send()
@@ -560,7 +943,7 @@ func (c *Health) DescribeEventTypesWithContext(ctx aws.Context, input *DescribeE
 //    // Example iterating over at most 3 pages of a DescribeEventTypes operation.
 //    pageNum := 0
 //    err := client.DescribeEventTypesPages(params,
-//        func(page *DescribeEventTypesOutput, lastPage bool) bool {
+//        func(page *health.DescribeEventTypesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -592,10 +975,12 @@ func (c *Health) DescribeEventTypesPagesWithContext(ctx aws.Context, input *Desc
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeEventTypesOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeEventTypesOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -603,19 +988,18 @@ const opDescribeEvents = "DescribeEvents"
 
 // DescribeEventsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeEvents operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeEvents for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeEvents method directly
-// instead.
+// See DescribeEvents for more information on using the DescribeEvents
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeEventsRequest method.
 //    req, resp := client.DescribeEventsRequest(params)
@@ -625,7 +1009,7 @@ const opDescribeEvents = "DescribeEvents"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEvents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEvents
 func (c *Health) DescribeEventsRequest(input *DescribeEventsInput) (req *request.Request, output *DescribeEventsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeEvents,
@@ -666,14 +1050,14 @@ func (c *Health) DescribeEventsRequest(input *DescribeEventsInput) (req *request
 // See the AWS API reference guide for AWS Health APIs and Notifications's
 // API operation DescribeEvents for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeInvalidPaginationToken "InvalidPaginationToken"
+// Returned Error Types:
+//   * InvalidPaginationToken
 //   The specified pagination token (nextToken) is not valid.
 //
-//   * ErrCodeUnsupportedLocale "UnsupportedLocale"
+//   * UnsupportedLocale
 //   The specified locale is not supported.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEvents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEvents
 func (c *Health) DescribeEvents(input *DescribeEventsInput) (*DescribeEventsOutput, error) {
 	req, out := c.DescribeEventsRequest(input)
 	return out, req.Send()
@@ -706,7 +1090,7 @@ func (c *Health) DescribeEventsWithContext(ctx aws.Context, input *DescribeEvent
 //    // Example iterating over at most 3 pages of a DescribeEvents operation.
 //    pageNum := 0
 //    err := client.DescribeEventsPages(params,
-//        func(page *DescribeEventsOutput, lastPage bool) bool {
+//        func(page *health.DescribeEventsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -738,38 +1122,446 @@ func (c *Health) DescribeEventsPagesWithContext(ctx aws.Context, input *Describe
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeEventsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeEventsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
+const opDescribeEventsForOrganization = "DescribeEventsForOrganization"
+
+// DescribeEventsForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeEventsForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeEventsForOrganization for more information on using the DescribeEventsForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeEventsForOrganizationRequest method.
+//    req, resp := client.DescribeEventsForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventsForOrganization
+func (c *Health) DescribeEventsForOrganizationRequest(input *DescribeEventsForOrganizationInput) (req *request.Request, output *DescribeEventsForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDescribeEventsForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"nextToken"},
+			OutputTokens:    []string{"nextToken"},
+			LimitToken:      "maxResults",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &DescribeEventsForOrganizationInput{}
+	}
+
+	output = &DescribeEventsForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeEventsForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Returns information about events across your organization in AWS Organizations,
+// meeting the specified filter criteria. Events are returned in a summary form
+// and do not include the accounts impacted, detailed description, any additional
+// metadata that depends on the event type, or any affected resources. To retrieve
+// that information, use the DescribeAffectedAccountsForOrganization, DescribeEventDetailsForOrganization,
+// and DescribeAffectedEntitiesForOrganization operations.
+//
+// If no filter criteria are specified, all events across your organization
+// are returned. Results are sorted by lastModifiedTime, starting with the most
+// recent.
+//
+// Before you can call this operation, you must first enable Health to work
+// with AWS Organizations. To do this, call the EnableHealthServiceAccessForOrganization
+// operation from your organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DescribeEventsForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * InvalidPaginationToken
+//   The specified pagination token (nextToken) is not valid.
+//
+//   * UnsupportedLocale
+//   The specified locale is not supported.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventsForOrganization
+func (c *Health) DescribeEventsForOrganization(input *DescribeEventsForOrganizationInput) (*DescribeEventsForOrganizationOutput, error) {
+	req, out := c.DescribeEventsForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DescribeEventsForOrganizationWithContext is the same as DescribeEventsForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeEventsForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeEventsForOrganizationWithContext(ctx aws.Context, input *DescribeEventsForOrganizationInput, opts ...request.Option) (*DescribeEventsForOrganizationOutput, error) {
+	req, out := c.DescribeEventsForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// DescribeEventsForOrganizationPages iterates over the pages of a DescribeEventsForOrganization operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See DescribeEventsForOrganization method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a DescribeEventsForOrganization operation.
+//    pageNum := 0
+//    err := client.DescribeEventsForOrganizationPages(params,
+//        func(page *health.DescribeEventsForOrganizationOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *Health) DescribeEventsForOrganizationPages(input *DescribeEventsForOrganizationInput, fn func(*DescribeEventsForOrganizationOutput, bool) bool) error {
+	return c.DescribeEventsForOrganizationPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// DescribeEventsForOrganizationPagesWithContext same as DescribeEventsForOrganizationPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeEventsForOrganizationPagesWithContext(ctx aws.Context, input *DescribeEventsForOrganizationInput, fn func(*DescribeEventsForOrganizationOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *DescribeEventsForOrganizationInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.DescribeEventsForOrganizationRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*DescribeEventsForOrganizationOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
+}
+
+const opDescribeHealthServiceStatusForOrganization = "DescribeHealthServiceStatusForOrganization"
+
+// DescribeHealthServiceStatusForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeHealthServiceStatusForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeHealthServiceStatusForOrganization for more information on using the DescribeHealthServiceStatusForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeHealthServiceStatusForOrganizationRequest method.
+//    req, resp := client.DescribeHealthServiceStatusForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeHealthServiceStatusForOrganization
+func (c *Health) DescribeHealthServiceStatusForOrganizationRequest(input *DescribeHealthServiceStatusForOrganizationInput) (req *request.Request, output *DescribeHealthServiceStatusForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDescribeHealthServiceStatusForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &DescribeHealthServiceStatusForOrganizationInput{}
+	}
+
+	output = &DescribeHealthServiceStatusForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeHealthServiceStatusForOrganization API operation for AWS Health APIs and Notifications.
+//
+// This operation provides status information on enabling or disabling AWS Health
+// to work with your organization. To call this operation, you must sign in
+// as an IAM user, assume an IAM role, or sign in as the root user (not recommended)
+// in the organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DescribeHealthServiceStatusForOrganization for usage and error information.
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeHealthServiceStatusForOrganization
+func (c *Health) DescribeHealthServiceStatusForOrganization(input *DescribeHealthServiceStatusForOrganizationInput) (*DescribeHealthServiceStatusForOrganizationOutput, error) {
+	req, out := c.DescribeHealthServiceStatusForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DescribeHealthServiceStatusForOrganizationWithContext is the same as DescribeHealthServiceStatusForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeHealthServiceStatusForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DescribeHealthServiceStatusForOrganizationWithContext(ctx aws.Context, input *DescribeHealthServiceStatusForOrganizationInput, opts ...request.Option) (*DescribeHealthServiceStatusForOrganizationOutput, error) {
+	req, out := c.DescribeHealthServiceStatusForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opDisableHealthServiceAccessForOrganization = "DisableHealthServiceAccessForOrganization"
+
+// DisableHealthServiceAccessForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the DisableHealthServiceAccessForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DisableHealthServiceAccessForOrganization for more information on using the DisableHealthServiceAccessForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DisableHealthServiceAccessForOrganizationRequest method.
+//    req, resp := client.DisableHealthServiceAccessForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DisableHealthServiceAccessForOrganization
+func (c *Health) DisableHealthServiceAccessForOrganizationRequest(input *DisableHealthServiceAccessForOrganizationInput) (req *request.Request, output *DisableHealthServiceAccessForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opDisableHealthServiceAccessForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &DisableHealthServiceAccessForOrganizationInput{}
+	}
+
+	output = &DisableHealthServiceAccessForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(jsonrpc.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// DisableHealthServiceAccessForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Calling this operation disables Health from working with AWS Organizations.
+// This does not remove the Service Linked Role (SLR) from the the master account
+// in your organization. Use the IAM console, API, or AWS CLI to remove the
+// SLR if desired. To call this operation, you must sign in as an IAM user,
+// assume an IAM role, or sign in as the root user (not recommended) in the
+// organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation DisableHealthServiceAccessForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * ConcurrentModificationException
+//   EnableHealthServiceAccessForOrganization is already in progress. Wait for
+//   the action to complete before trying again. To get the current status, use
+//   the DescribeHealthServiceStatusForOrganization operation.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DisableHealthServiceAccessForOrganization
+func (c *Health) DisableHealthServiceAccessForOrganization(input *DisableHealthServiceAccessForOrganizationInput) (*DisableHealthServiceAccessForOrganizationOutput, error) {
+	req, out := c.DisableHealthServiceAccessForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// DisableHealthServiceAccessForOrganizationWithContext is the same as DisableHealthServiceAccessForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DisableHealthServiceAccessForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) DisableHealthServiceAccessForOrganizationWithContext(ctx aws.Context, input *DisableHealthServiceAccessForOrganizationInput, opts ...request.Option) (*DisableHealthServiceAccessForOrganizationOutput, error) {
+	req, out := c.DisableHealthServiceAccessForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opEnableHealthServiceAccessForOrganization = "EnableHealthServiceAccessForOrganization"
+
+// EnableHealthServiceAccessForOrganizationRequest generates a "aws/request.Request" representing the
+// client's request for the EnableHealthServiceAccessForOrganization operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See EnableHealthServiceAccessForOrganization for more information on using the EnableHealthServiceAccessForOrganization
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the EnableHealthServiceAccessForOrganizationRequest method.
+//    req, resp := client.EnableHealthServiceAccessForOrganizationRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EnableHealthServiceAccessForOrganization
+func (c *Health) EnableHealthServiceAccessForOrganizationRequest(input *EnableHealthServiceAccessForOrganizationInput) (req *request.Request, output *EnableHealthServiceAccessForOrganizationOutput) {
+	op := &request.Operation{
+		Name:       opEnableHealthServiceAccessForOrganization,
+		HTTPMethod: "POST",
+		HTTPPath:   "/",
+	}
+
+	if input == nil {
+		input = &EnableHealthServiceAccessForOrganizationInput{}
+	}
+
+	output = &EnableHealthServiceAccessForOrganizationOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(jsonrpc.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// EnableHealthServiceAccessForOrganization API operation for AWS Health APIs and Notifications.
+//
+// Calling this operation enables AWS Health to work with AWS Organizations.
+// This applies a Service Linked Role (SLR) to the master account in the organization.
+// To learn more about the steps in this process, visit enabling service access
+// for AWS Health in AWS Organizations. To call this operation, you must sign
+// in as an IAM user, assume an IAM role, or sign in as the root user (not recommended)
+// in the organization's master account.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for AWS Health APIs and Notifications's
+// API operation EnableHealthServiceAccessForOrganization for usage and error information.
+//
+// Returned Error Types:
+//   * ConcurrentModificationException
+//   EnableHealthServiceAccessForOrganization is already in progress. Wait for
+//   the action to complete before trying again. To get the current status, use
+//   the DescribeHealthServiceStatusForOrganization operation.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EnableHealthServiceAccessForOrganization
+func (c *Health) EnableHealthServiceAccessForOrganization(input *EnableHealthServiceAccessForOrganizationInput) (*EnableHealthServiceAccessForOrganizationOutput, error) {
+	req, out := c.EnableHealthServiceAccessForOrganizationRequest(input)
+	return out, req.Send()
+}
+
+// EnableHealthServiceAccessForOrganizationWithContext is the same as EnableHealthServiceAccessForOrganization with the addition of
+// the ability to pass a context and additional request options.
+//
+// See EnableHealthServiceAccessForOrganization for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *Health) EnableHealthServiceAccessForOrganizationWithContext(ctx aws.Context, input *EnableHealthServiceAccessForOrganizationInput, opts ...request.Option) (*EnableHealthServiceAccessForOrganizationOutput, error) {
+	req, out := c.EnableHealthServiceAccessForOrganizationRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 // Information about an entity that is affected by a Health event.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/AffectedEntity
 type AffectedEntity struct {
 	_ struct{} `type:"structure"`
 
 	// The 12-digit AWS account number that contains the affected entity.
 	AwsAccountId *string `locationName:"awsAccountId" type:"string"`
 
-	// The unique identifier for the entity. Format: arn:aws:health:entity-region:aws-account:entity/entity-id.
-	// Example: arn:aws:health:us-east-1:111222333444:entity/AVh5GGT7ul1arKr1sE1K
+	// The unique identifier for the entity. Format: arn:aws:health:entity-region:aws-account:entity/entity-id
+	// . Example: arn:aws:health:us-east-1:111222333444:entity/AVh5GGT7ul1arKr1sE1K
 	EntityArn *string `locationName:"entityArn" type:"string"`
+
+	// The URL of the affected entity.
+	EntityUrl *string `locationName:"entityUrl" type:"string"`
 
 	// The ID of the affected entity.
 	EntityValue *string `locationName:"entityValue" type:"string"`
 
-	// The unique identifier for the event. Format: arn:aws:health:event-region::event/EVENT_TYPE_PLUS_ID.
-	// Example: arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
 	EventArn *string `locationName:"eventArn" type:"string"`
 
 	// The most recent time that the entity was updated.
-	LastUpdatedTime *time.Time `locationName:"lastUpdatedTime" type:"timestamp" timestampFormat:"unix"`
+	LastUpdatedTime *time.Time `locationName:"lastUpdatedTime" type:"timestamp"`
 
 	// The most recent status of the entity affected by the event. The possible
 	// values are IMPAIRED, UNIMPAIRED, and UNKNOWN.
-	StatusCode *string `locationName:"statusCode" type:"string" enum:"entityStatusCode"`
+	StatusCode *string `locationName:"statusCode" type:"string" enum:"EntityStatusCode"`
 
 	// A map of entity tags attached to the affected entity.
 	Tags map[string]*string `locationName:"tags" type:"map"`
@@ -794,6 +1586,12 @@ func (s *AffectedEntity) SetAwsAccountId(v string) *AffectedEntity {
 // SetEntityArn sets the EntityArn field's value.
 func (s *AffectedEntity) SetEntityArn(v string) *AffectedEntity {
 	s.EntityArn = &v
+	return s
+}
+
+// SetEntityUrl sets the EntityUrl field's value.
+func (s *AffectedEntity) SetEntityUrl(v string) *AffectedEntity {
+	s.EntityUrl = &v
 	return s
 }
 
@@ -827,21 +1625,78 @@ func (s *AffectedEntity) SetTags(v map[string]*string) *AffectedEntity {
 	return s
 }
 
+// EnableHealthServiceAccessForOrganization is already in progress. Wait for
+// the action to complete before trying again. To get the current status, use
+// the DescribeHealthServiceStatusForOrganization operation.
+type ConcurrentModificationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s ConcurrentModificationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ConcurrentModificationException) GoString() string {
+	return s.String()
+}
+
+func newErrorConcurrentModificationException(v protocol.ResponseMetadata) error {
+	return &ConcurrentModificationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ConcurrentModificationException) Code() string {
+	return "ConcurrentModificationException"
+}
+
+// Message returns the exception's message.
+func (s *ConcurrentModificationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ConcurrentModificationException) OrigErr() error {
+	return nil
+}
+
+func (s *ConcurrentModificationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ConcurrentModificationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ConcurrentModificationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // A range of dates and times that is used by the EventFilter and EntityFilter
 // objects. If from is set and to is set: match items where the timestamp (startTime,
 // endTime, or lastUpdatedTime) is between from and to inclusive. If from is
 // set and to is not set: match items where the timestamp value is equal to
 // or after from. If from is not set and to is set: match items where the timestamp
 // value is equal to or before to.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DateTimeRange
 type DateTimeRange struct {
 	_ struct{} `type:"structure"`
 
 	// The starting date and time of a time range.
-	From *time.Time `locationName:"from" type:"timestamp" timestampFormat:"unix"`
+	From *time.Time `locationName:"from" type:"timestamp"`
 
 	// The ending date and time of a time range.
-	To *time.Time `locationName:"to" type:"timestamp" timestampFormat:"unix"`
+	To *time.Time `locationName:"to" type:"timestamp"`
 }
 
 // String returns the string representation
@@ -866,7 +1721,256 @@ func (s *DateTimeRange) SetTo(v time.Time) *DateTimeRange {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntitiesRequest
+type DescribeAffectedAccountsForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
+	//
+	// EventArn is a required field
+	EventArn *string `locationName:"eventArn" type:"string" required:"true"`
+
+	// The maximum number of items to return in one batch, between 10 and 100, inclusive.
+	MaxResults *int64 `locationName:"maxResults" min:"10" type:"integer"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeAffectedAccountsForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeAffectedAccountsForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeAffectedAccountsForOrganizationInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeAffectedAccountsForOrganizationInput"}
+	if s.EventArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("EventArn"))
+	}
+	if s.MaxResults != nil && *s.MaxResults < 10 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetEventArn sets the EventArn field's value.
+func (s *DescribeAffectedAccountsForOrganizationInput) SetEventArn(v string) *DescribeAffectedAccountsForOrganizationInput {
+	s.EventArn = &v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *DescribeAffectedAccountsForOrganizationInput) SetMaxResults(v int64) *DescribeAffectedAccountsForOrganizationInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeAffectedAccountsForOrganizationInput) SetNextToken(v string) *DescribeAffectedAccountsForOrganizationInput {
+	s.NextToken = &v
+	return s
+}
+
+type DescribeAffectedAccountsForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// A JSON set of elements of the affected accounts.
+	AffectedAccounts []*string `locationName:"affectedAccounts" type:"list"`
+
+	EventScopeCode *string `locationName:"eventScopeCode" type:"string" enum:"EventScopeCode"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeAffectedAccountsForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeAffectedAccountsForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+// SetAffectedAccounts sets the AffectedAccounts field's value.
+func (s *DescribeAffectedAccountsForOrganizationOutput) SetAffectedAccounts(v []*string) *DescribeAffectedAccountsForOrganizationOutput {
+	s.AffectedAccounts = v
+	return s
+}
+
+// SetEventScopeCode sets the EventScopeCode field's value.
+func (s *DescribeAffectedAccountsForOrganizationOutput) SetEventScopeCode(v string) *DescribeAffectedAccountsForOrganizationOutput {
+	s.EventScopeCode = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeAffectedAccountsForOrganizationOutput) SetNextToken(v string) *DescribeAffectedAccountsForOrganizationOutput {
+	s.NextToken = &v
+	return s
+}
+
+type DescribeAffectedEntitiesForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+
+	// The locale (language) to return information in. English (en) is the default
+	// and the only supported value at this time.
+	Locale *string `locationName:"locale" min:"2" type:"string"`
+
+	// The maximum number of items to return in one batch, between 10 and 100, inclusive.
+	MaxResults *int64 `locationName:"maxResults" min:"10" type:"integer"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+
+	// A JSON set of elements including the awsAccountId and the eventArn.
+	//
+	// OrganizationEntityFilters is a required field
+	OrganizationEntityFilters []*EventAccountFilter `locationName:"organizationEntityFilters" min:"1" type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s DescribeAffectedEntitiesForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeAffectedEntitiesForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeAffectedEntitiesForOrganizationInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeAffectedEntitiesForOrganizationInput"}
+	if s.Locale != nil && len(*s.Locale) < 2 {
+		invalidParams.Add(request.NewErrParamMinLen("Locale", 2))
+	}
+	if s.MaxResults != nil && *s.MaxResults < 10 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
+	}
+	if s.OrganizationEntityFilters == nil {
+		invalidParams.Add(request.NewErrParamRequired("OrganizationEntityFilters"))
+	}
+	if s.OrganizationEntityFilters != nil && len(s.OrganizationEntityFilters) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("OrganizationEntityFilters", 1))
+	}
+	if s.OrganizationEntityFilters != nil {
+		for i, v := range s.OrganizationEntityFilters {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "OrganizationEntityFilters", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetLocale sets the Locale field's value.
+func (s *DescribeAffectedEntitiesForOrganizationInput) SetLocale(v string) *DescribeAffectedEntitiesForOrganizationInput {
+	s.Locale = &v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *DescribeAffectedEntitiesForOrganizationInput) SetMaxResults(v int64) *DescribeAffectedEntitiesForOrganizationInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeAffectedEntitiesForOrganizationInput) SetNextToken(v string) *DescribeAffectedEntitiesForOrganizationInput {
+	s.NextToken = &v
+	return s
+}
+
+// SetOrganizationEntityFilters sets the OrganizationEntityFilters field's value.
+func (s *DescribeAffectedEntitiesForOrganizationInput) SetOrganizationEntityFilters(v []*EventAccountFilter) *DescribeAffectedEntitiesForOrganizationInput {
+	s.OrganizationEntityFilters = v
+	return s
+}
+
+type DescribeAffectedEntitiesForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// A JSON set of elements including the awsAccountId and its entityArn, entityValue
+	// and its entityArn, lastUpdatedTime, statusCode, and tags.
+	Entities []*AffectedEntity `locationName:"entities" type:"list"`
+
+	// A JSON set of elements of the failed response, including the awsAccountId,
+	// errorMessage, errorName, and eventArn.
+	FailedSet []*OrganizationAffectedEntitiesErrorItem `locationName:"failedSet" type:"list"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeAffectedEntitiesForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeAffectedEntitiesForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+// SetEntities sets the Entities field's value.
+func (s *DescribeAffectedEntitiesForOrganizationOutput) SetEntities(v []*AffectedEntity) *DescribeAffectedEntitiesForOrganizationOutput {
+	s.Entities = v
+	return s
+}
+
+// SetFailedSet sets the FailedSet field's value.
+func (s *DescribeAffectedEntitiesForOrganizationOutput) SetFailedSet(v []*OrganizationAffectedEntitiesErrorItem) *DescribeAffectedEntitiesForOrganizationOutput {
+	s.FailedSet = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeAffectedEntitiesForOrganizationOutput) SetNextToken(v string) *DescribeAffectedEntitiesForOrganizationOutput {
+	s.NextToken = &v
+	return s
+}
+
 type DescribeAffectedEntitiesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -887,7 +1991,7 @@ type DescribeAffectedEntitiesInput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -911,6 +2015,9 @@ func (s *DescribeAffectedEntitiesInput) Validate() error {
 	}
 	if s.MaxResults != nil && *s.MaxResults < 10 {
 		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
 	}
 	if s.Filter != nil {
 		if err := s.Filter.Validate(); err != nil {
@@ -948,7 +2055,6 @@ func (s *DescribeAffectedEntitiesInput) SetNextToken(v string) *DescribeAffected
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeAffectedEntitiesResponse
 type DescribeAffectedEntitiesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -960,7 +2066,7 @@ type DescribeAffectedEntitiesOutput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -985,12 +2091,11 @@ func (s *DescribeAffectedEntitiesOutput) SetNextToken(v string) *DescribeAffecte
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregatesRequest
 type DescribeEntityAggregatesInput struct {
 	_ struct{} `type:"structure"`
 
-	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331",
-	// "arn:aws:health:us-west-1::event/AWS_EBS_LOST_VOLUME_xyz"
+	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-CDE456",
+	// "arn:aws:health:us-west-1::event/EBS/AWS_EBS_LOST_VOLUME/AWS_EBS_LOST_VOLUME_CHI789_JKL101"
 	EventArns []*string `locationName:"eventArns" min:"1" type:"list"`
 }
 
@@ -1023,7 +2128,6 @@ func (s *DescribeEntityAggregatesInput) SetEventArns(v []*string) *DescribeEntit
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEntityAggregatesResponse
 type DescribeEntityAggregatesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -1047,14 +2151,13 @@ func (s *DescribeEntityAggregatesOutput) SetEntityAggregates(v []*EntityAggregat
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregatesRequest
 type DescribeEventAggregatesInput struct {
 	_ struct{} `type:"structure"`
 
 	// The only currently supported value is eventTypeCategory.
 	//
 	// AggregateField is a required field
-	AggregateField *string `locationName:"aggregateField" type:"string" required:"true" enum:"eventAggregateField"`
+	AggregateField *string `locationName:"aggregateField" type:"string" required:"true" enum:"EventAggregateField"`
 
 	// Values to narrow the results returned.
 	Filter *EventFilter `locationName:"filter" type:"structure"`
@@ -1067,7 +2170,7 @@ type DescribeEventAggregatesInput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1088,6 +2191,9 @@ func (s *DescribeEventAggregatesInput) Validate() error {
 	}
 	if s.MaxResults != nil && *s.MaxResults < 10 {
 		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
 	}
 	if s.Filter != nil {
 		if err := s.Filter.Validate(); err != nil {
@@ -1125,7 +2231,6 @@ func (s *DescribeEventAggregatesInput) SetNextToken(v string) *DescribeEventAggr
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventAggregatesResponse
 type DescribeEventAggregatesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -1137,7 +2242,7 @@ type DescribeEventAggregatesOutput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1162,12 +2267,107 @@ func (s *DescribeEventAggregatesOutput) SetNextToken(v string) *DescribeEventAgg
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetailsRequest
+type DescribeEventDetailsForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+
+	// The locale (language) to return information in. English (en) is the default
+	// and the only supported value at this time.
+	Locale *string `locationName:"locale" min:"2" type:"string"`
+
+	// A set of JSON elements that includes the awsAccountId and the eventArn.
+	//
+	// OrganizationEventDetailFilters is a required field
+	OrganizationEventDetailFilters []*EventAccountFilter `locationName:"organizationEventDetailFilters" min:"1" type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s DescribeEventDetailsForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeEventDetailsForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeEventDetailsForOrganizationInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeEventDetailsForOrganizationInput"}
+	if s.Locale != nil && len(*s.Locale) < 2 {
+		invalidParams.Add(request.NewErrParamMinLen("Locale", 2))
+	}
+	if s.OrganizationEventDetailFilters == nil {
+		invalidParams.Add(request.NewErrParamRequired("OrganizationEventDetailFilters"))
+	}
+	if s.OrganizationEventDetailFilters != nil && len(s.OrganizationEventDetailFilters) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("OrganizationEventDetailFilters", 1))
+	}
+	if s.OrganizationEventDetailFilters != nil {
+		for i, v := range s.OrganizationEventDetailFilters {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "OrganizationEventDetailFilters", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetLocale sets the Locale field's value.
+func (s *DescribeEventDetailsForOrganizationInput) SetLocale(v string) *DescribeEventDetailsForOrganizationInput {
+	s.Locale = &v
+	return s
+}
+
+// SetOrganizationEventDetailFilters sets the OrganizationEventDetailFilters field's value.
+func (s *DescribeEventDetailsForOrganizationInput) SetOrganizationEventDetailFilters(v []*EventAccountFilter) *DescribeEventDetailsForOrganizationInput {
+	s.OrganizationEventDetailFilters = v
+	return s
+}
+
+type DescribeEventDetailsForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Error messages for any events that could not be retrieved.
+	FailedSet []*OrganizationEventDetailsErrorItem `locationName:"failedSet" type:"list"`
+
+	// Information about the events that could be retrieved.
+	SuccessfulSet []*OrganizationEventDetails `locationName:"successfulSet" type:"list"`
+}
+
+// String returns the string representation
+func (s DescribeEventDetailsForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeEventDetailsForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+// SetFailedSet sets the FailedSet field's value.
+func (s *DescribeEventDetailsForOrganizationOutput) SetFailedSet(v []*OrganizationEventDetailsErrorItem) *DescribeEventDetailsForOrganizationOutput {
+	s.FailedSet = v
+	return s
+}
+
+// SetSuccessfulSet sets the SuccessfulSet field's value.
+func (s *DescribeEventDetailsForOrganizationOutput) SetSuccessfulSet(v []*OrganizationEventDetails) *DescribeEventDetailsForOrganizationOutput {
+	s.SuccessfulSet = v
+	return s
+}
+
 type DescribeEventDetailsInput struct {
 	_ struct{} `type:"structure"`
 
-	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331",
-	// "arn:aws:health:us-west-1::event/AWS_EBS_LOST_VOLUME_xyz"
+	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-CDE456",
+	// "arn:aws:health:us-west-1::event/EBS/AWS_EBS_LOST_VOLUME/AWS_EBS_LOST_VOLUME_CHI789_JKL101"
 	//
 	// EventArns is a required field
 	EventArns []*string `locationName:"eventArns" min:"1" type:"list" required:"true"`
@@ -1218,7 +2418,6 @@ func (s *DescribeEventDetailsInput) SetLocale(v string) *DescribeEventDetailsInp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventDetailsResponse
 type DescribeEventDetailsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -1251,7 +2450,6 @@ func (s *DescribeEventDetailsOutput) SetSuccessfulSet(v []*EventDetails) *Descri
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypesRequest
 type DescribeEventTypesInput struct {
 	_ struct{} `type:"structure"`
 
@@ -1270,7 +2468,7 @@ type DescribeEventTypesInput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1291,6 +2489,9 @@ func (s *DescribeEventTypesInput) Validate() error {
 	}
 	if s.MaxResults != nil && *s.MaxResults < 10 {
 		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
 	}
 	if s.Filter != nil {
 		if err := s.Filter.Validate(); err != nil {
@@ -1328,14 +2529,13 @@ func (s *DescribeEventTypesInput) SetNextToken(v string) *DescribeEventTypesInpu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventTypesResponse
 type DescribeEventTypesOutput struct {
 	_ struct{} `type:"structure"`
 
 	// A list of event types that match the filter criteria. Event types have a
 	// category (issue, accountNotification, or scheduledChange), a service (for
-	// example, EC2, RDS, DATAPIPELINE, BILLING), and a code (in the format AWS_SERVICE_DESCRIPTION;
-	// for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT).
+	// example, EC2, RDS, DATAPIPELINE, BILLING), and a code (in the format AWS_SERVICE_DESCRIPTION
+	// ; for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT).
 	EventTypes []*EventType `locationName:"eventTypes" type:"list"`
 
 	// If the results of a search are large, only a portion of the results are returned,
@@ -1343,7 +2543,7 @@ type DescribeEventTypesOutput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1368,7 +2568,121 @@ func (s *DescribeEventTypesOutput) SetNextToken(v string) *DescribeEventTypesOut
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventsRequest
+type DescribeEventsForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+
+	// Values to narrow the results returned.
+	Filter *OrganizationEventFilter `locationName:"filter" type:"structure"`
+
+	// The locale (language) to return information in. English (en) is the default
+	// and the only supported value at this time.
+	Locale *string `locationName:"locale" min:"2" type:"string"`
+
+	// The maximum number of items to return in one batch, between 10 and 100, inclusive.
+	MaxResults *int64 `locationName:"maxResults" min:"10" type:"integer"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeEventsForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeEventsForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeEventsForOrganizationInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeEventsForOrganizationInput"}
+	if s.Locale != nil && len(*s.Locale) < 2 {
+		invalidParams.Add(request.NewErrParamMinLen("Locale", 2))
+	}
+	if s.MaxResults != nil && *s.MaxResults < 10 {
+		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
+	}
+	if s.Filter != nil {
+		if err := s.Filter.Validate(); err != nil {
+			invalidParams.AddNested("Filter", err.(request.ErrInvalidParams))
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetFilter sets the Filter field's value.
+func (s *DescribeEventsForOrganizationInput) SetFilter(v *OrganizationEventFilter) *DescribeEventsForOrganizationInput {
+	s.Filter = v
+	return s
+}
+
+// SetLocale sets the Locale field's value.
+func (s *DescribeEventsForOrganizationInput) SetLocale(v string) *DescribeEventsForOrganizationInput {
+	s.Locale = &v
+	return s
+}
+
+// SetMaxResults sets the MaxResults field's value.
+func (s *DescribeEventsForOrganizationInput) SetMaxResults(v int64) *DescribeEventsForOrganizationInput {
+	s.MaxResults = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeEventsForOrganizationInput) SetNextToken(v string) *DescribeEventsForOrganizationInput {
+	s.NextToken = &v
+	return s
+}
+
+type DescribeEventsForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The events that match the specified filter criteria.
+	Events []*OrganizationEvent `locationName:"events" type:"list"`
+
+	// If the results of a search are large, only a portion of the results are returned,
+	// and a nextToken pagination token is returned in the response. To retrieve
+	// the next batch of results, reissue the search request and include the returned
+	// token. When all results have been returned, the response does not contain
+	// a pagination token value.
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeEventsForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeEventsForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+// SetEvents sets the Events field's value.
+func (s *DescribeEventsForOrganizationOutput) SetEvents(v []*OrganizationEvent) *DescribeEventsForOrganizationOutput {
+	s.Events = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *DescribeEventsForOrganizationOutput) SetNextToken(v string) *DescribeEventsForOrganizationOutput {
+	s.NextToken = &v
+	return s
+}
+
 type DescribeEventsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -1387,7 +2701,7 @@ type DescribeEventsInput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1408,6 +2722,9 @@ func (s *DescribeEventsInput) Validate() error {
 	}
 	if s.MaxResults != nil && *s.MaxResults < 10 {
 		invalidParams.Add(request.NewErrParamMinValue("MaxResults", 10))
+	}
+	if s.NextToken != nil && len(*s.NextToken) < 4 {
+		invalidParams.Add(request.NewErrParamMinLen("NextToken", 4))
 	}
 	if s.Filter != nil {
 		if err := s.Filter.Validate(); err != nil {
@@ -1445,7 +2762,6 @@ func (s *DescribeEventsInput) SetNextToken(v string) *DescribeEventsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/DescribeEventsResponse
 type DescribeEventsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -1457,7 +2773,7 @@ type DescribeEventsOutput struct {
 	// the next batch of results, reissue the search request and include the returned
 	// token. When all results have been returned, the response does not contain
 	// a pagination token value.
-	NextToken *string `locationName:"nextToken" type:"string"`
+	NextToken *string `locationName:"nextToken" min:"4" type:"string"`
 }
 
 // String returns the string representation
@@ -1482,17 +2798,112 @@ func (s *DescribeEventsOutput) SetNextToken(v string) *DescribeEventsOutput {
 	return s
 }
 
+type DescribeHealthServiceStatusForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s DescribeHealthServiceStatusForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeHealthServiceStatusForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+type DescribeHealthServiceStatusForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+
+	// Information about the status of enabling or disabling AWS Health Organizational
+	// View in your organization.
+	//
+	// Valid values are ENABLED | DISABLED | PENDING.
+	HealthServiceAccessStatusForOrganization *string `locationName:"healthServiceAccessStatusForOrganization" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeHealthServiceStatusForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeHealthServiceStatusForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+// SetHealthServiceAccessStatusForOrganization sets the HealthServiceAccessStatusForOrganization field's value.
+func (s *DescribeHealthServiceStatusForOrganizationOutput) SetHealthServiceAccessStatusForOrganization(v string) *DescribeHealthServiceStatusForOrganizationOutput {
+	s.HealthServiceAccessStatusForOrganization = &v
+	return s
+}
+
+type DisableHealthServiceAccessForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s DisableHealthServiceAccessForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DisableHealthServiceAccessForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+type DisableHealthServiceAccessForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s DisableHealthServiceAccessForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DisableHealthServiceAccessForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
+type EnableHealthServiceAccessForOrganizationInput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s EnableHealthServiceAccessForOrganizationInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EnableHealthServiceAccessForOrganizationInput) GoString() string {
+	return s.String()
+}
+
+type EnableHealthServiceAccessForOrganizationOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s EnableHealthServiceAccessForOrganizationOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EnableHealthServiceAccessForOrganizationOutput) GoString() string {
+	return s.String()
+}
+
 // The number of entities that are affected by one or more events. Returned
 // by the DescribeEntityAggregates operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EntityAggregate
 type EntityAggregate struct {
 	_ struct{} `type:"structure"`
 
 	// The number entities that match the criteria for the specified events.
 	Count *int64 `locationName:"count" type:"integer"`
 
-	// The unique identifier for the event. Format: arn:aws:health:event-region::event/EVENT_TYPE_PLUS_ID.
-	// Example: arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
 	EventArn *string `locationName:"eventArn" type:"string"`
 }
 
@@ -1519,7 +2930,6 @@ func (s *EntityAggregate) SetEventArn(v string) *EntityAggregate {
 }
 
 // The values to use to filter results from the DescribeAffectedEntities operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EntityFilter
 type EntityFilter struct {
 	_ struct{} `type:"structure"`
 
@@ -1529,8 +2939,8 @@ type EntityFilter struct {
 	// A list of IDs for affected entities.
 	EntityValues []*string `locationName:"entityValues" min:"1" type:"list"`
 
-	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331",
-	// "arn:aws:health:us-west-1::event/AWS_EBS_LOST_VOLUME_xyz"
+	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-CDE456",
+	// "arn:aws:health:us-west-1::event/EBS/AWS_EBS_LOST_VOLUME/AWS_EBS_LOST_VOLUME_CHI789_JKL101"
 	//
 	// EventArns is a required field
 	EventArns []*string `locationName:"eventArns" min:"1" type:"list" required:"true"`
@@ -1619,45 +3029,45 @@ func (s *EntityFilter) SetTags(v []map[string]*string) *EntityFilter {
 	return s
 }
 
-// Summary information about an event, returned by the DescribeEvents operation.
-// The DescribeEventDetails operation also returns this information, as well
-// as the EventDescription and additional event metadata.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/Event
+// Summary information about an AWS Health event.
 type Event struct {
 	_ struct{} `type:"structure"`
 
-	// The unique identifier for the event. Format: arn:aws:health:event-region::event/EVENT_TYPE_PLUS_ID.
-	// Example: arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
 	Arn *string `locationName:"arn" type:"string"`
 
 	// The AWS Availability Zone of the event. For example, us-east-1a.
-	AvailabilityZone *string `locationName:"availabilityZone" type:"string"`
+	AvailabilityZone *string `locationName:"availabilityZone" min:"6" type:"string"`
 
 	// The date and time that the event ended.
-	EndTime *time.Time `locationName:"endTime" type:"timestamp" timestampFormat:"unix"`
+	EndTime *time.Time `locationName:"endTime" type:"timestamp"`
 
-	// The
-	EventTypeCategory *string `locationName:"eventTypeCategory" min:"3" type:"string" enum:"eventTypeCategory"`
+	EventScopeCode *string `locationName:"eventScopeCode" type:"string" enum:"EventScopeCode"`
 
-	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION;
-	// for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
+	// The category of the event. Possible values are issue, scheduledChange, and
+	// accountNotification.
+	EventTypeCategory *string `locationName:"eventTypeCategory" min:"3" type:"string" enum:"EventTypeCategory"`
+
+	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION
+	// ; for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
 	EventTypeCode *string `locationName:"eventTypeCode" min:"3" type:"string"`
 
 	// The most recent date and time that the event was updated.
-	LastUpdatedTime *time.Time `locationName:"lastUpdatedTime" type:"timestamp" timestampFormat:"unix"`
+	LastUpdatedTime *time.Time `locationName:"lastUpdatedTime" type:"timestamp"`
 
 	// The AWS region name of the event.
-	Region *string `locationName:"region" type:"string"`
+	Region *string `locationName:"region" min:"2" type:"string"`
 
 	// The AWS service that is affected by the event. For example, EC2, RDS.
 	Service *string `locationName:"service" min:"2" type:"string"`
 
 	// The date and time that the event began.
-	StartTime *time.Time `locationName:"startTime" type:"timestamp" timestampFormat:"unix"`
+	StartTime *time.Time `locationName:"startTime" type:"timestamp"`
 
 	// The most recent status of the event. Possible values are open, closed, and
 	// upcoming.
-	StatusCode *string `locationName:"statusCode" type:"string" enum:"eventStatusCode"`
+	StatusCode *string `locationName:"statusCode" type:"string" enum:"EventStatusCode"`
 }
 
 // String returns the string representation
@@ -1685,6 +3095,12 @@ func (s *Event) SetAvailabilityZone(v string) *Event {
 // SetEndTime sets the EndTime field's value.
 func (s *Event) SetEndTime(v time.Time) *Event {
 	s.EndTime = &v
+	return s
+}
+
+// SetEventScopeCode sets the EventScopeCode field's value.
+func (s *Event) SetEventScopeCode(v string) *Event {
+	s.EventScopeCode = &v
 	return s
 }
 
@@ -1730,9 +3146,58 @@ func (s *Event) SetStatusCode(v string) *Event {
 	return s
 }
 
+// The values used to filter results from the DescribeEventDetailsForOrganization
+// and DescribeAffectedEntitiesForOrganization operations.
+type EventAccountFilter struct {
+	_ struct{} `type:"structure"`
+
+	// The 12-digit AWS account numbers that contains the affected entities.
+	AwsAccountId *string `locationName:"awsAccountId" type:"string"`
+
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
+	//
+	// EventArn is a required field
+	EventArn *string `locationName:"eventArn" type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s EventAccountFilter) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EventAccountFilter) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *EventAccountFilter) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "EventAccountFilter"}
+	if s.EventArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("EventArn"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAwsAccountId sets the AwsAccountId field's value.
+func (s *EventAccountFilter) SetAwsAccountId(v string) *EventAccountFilter {
+	s.AwsAccountId = &v
+	return s
+}
+
+// SetEventArn sets the EventArn field's value.
+func (s *EventAccountFilter) SetEventArn(v string) *EventAccountFilter {
+	s.EventArn = &v
+	return s
+}
+
 // The number of events of each issue type. Returned by the DescribeEventAggregates
 // operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventAggregate
 type EventAggregate struct {
 	_ struct{} `type:"structure"`
 
@@ -1767,7 +3232,6 @@ func (s *EventAggregate) SetCount(v int64) *EventAggregate {
 
 // The detailed description of the event. Included in the information returned
 // by the DescribeEventDetails operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventDescription
 type EventDescription struct {
 	_ struct{} `type:"structure"`
 
@@ -1794,7 +3258,6 @@ func (s *EventDescription) SetLatestDescription(v string) *EventDescription {
 // Detailed information about an event. A combination of an Event object, an
 // EventDescription object, and additional metadata about the event. Returned
 // by the DescribeEventDetails operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventDetails
 type EventDetails struct {
 	_ struct{} `type:"structure"`
 
@@ -1838,7 +3301,6 @@ func (s *EventDetails) SetEventMetadata(v map[string]*string) *EventDetails {
 
 // Error information returned when a DescribeEventDetails operation cannot find
 // a specified event.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventDetailsErrorItem
 type EventDetailsErrorItem struct {
 	_ struct{} `type:"structure"`
 
@@ -1848,8 +3310,8 @@ type EventDetailsErrorItem struct {
 	// The name of the error.
 	ErrorName *string `locationName:"errorName" type:"string"`
 
-	// The unique identifier for the event. Format: arn:aws:health:event-region::event/EVENT_TYPE_PLUS_ID.
-	// Example: arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
 	EventArn *string `locationName:"eventArn" type:"string"`
 }
 
@@ -1883,7 +3345,6 @@ func (s *EventDetailsErrorItem) SetEventArn(v string) *EventDetailsErrorItem {
 
 // The values to use to filter results from the DescribeEvents and DescribeEventAggregates
 // operations.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventFilter
 type EventFilter struct {
 	_ struct{} `type:"structure"`
 
@@ -1900,8 +3361,8 @@ type EventFilter struct {
 	// volumes (vol-426ab23e).
 	EntityValues []*string `locationName:"entityValues" min:"1" type:"list"`
 
-	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/AWS_EC2_MAINTENANCE_5331",
-	// "arn:aws:health:us-west-1::event/AWS_EBS_LOST_VOLUME_xyz"
+	// A list of event ARNs (unique identifiers). For example: "arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-CDE456",
+	// "arn:aws:health:us-west-1::event/EBS/AWS_EBS_LOST_VOLUME/AWS_EBS_LOST_VOLUME_CHI789_JKL101"
 	EventArns []*string `locationName:"eventArns" min:"1" type:"list"`
 
 	// A list of event status codes.
@@ -1910,7 +3371,7 @@ type EventFilter struct {
 	// A list of event type category codes (issue, scheduledChange, or accountNotification).
 	EventTypeCategories []*string `locationName:"eventTypeCategories" min:"1" type:"list"`
 
-	// A list of unique identifiers for event types. For example, "AWS_EC2_SYSTEM_MAINTENANCE_EVENT","AWS_RDS_MAINTENANCE_SCHEDULED"
+	// A list of unique identifiers for event types. For example, "AWS_EC2_SYSTEM_MAINTENANCE_EVENT","AWS_RDS_MAINTENANCE_SCHEDULED".
 	EventTypeCodes []*string `locationName:"eventTypeCodes" min:"1" type:"list"`
 
 	// A list of dates and times that the event was last updated.
@@ -2063,15 +3524,14 @@ func (s *EventFilter) SetTags(v []map[string]*string) *EventFilter {
 // Metadata about a type of event that is reported by AWS Health. Data consists
 // of the category (for example, issue), the service (for example, EC2), and
 // the event type code (for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT).
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventType
 type EventType struct {
 	_ struct{} `type:"structure"`
 
 	// A list of event type category codes (issue, scheduledChange, or accountNotification).
-	Category *string `locationName:"category" min:"3" type:"string" enum:"eventTypeCategory"`
+	Category *string `locationName:"category" min:"3" type:"string" enum:"EventTypeCategory"`
 
-	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION;
-	// for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
+	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION
+	// ; for example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
 	Code *string `locationName:"code" min:"3" type:"string"`
 
 	// The AWS service that is affected by the event. For example, EC2, RDS.
@@ -2107,7 +3567,6 @@ func (s *EventType) SetService(v string) *EventType {
 }
 
 // The values to use to filter results from the DescribeEventTypes operation.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/health-2016-08-04/EventTypeFilter
 type EventTypeFilter struct {
 	_ struct{} `type:"structure"`
 
@@ -2168,40 +3627,600 @@ func (s *EventTypeFilter) SetServices(v []*string) *EventTypeFilter {
 	return s
 }
 
+// The specified pagination token (nextToken) is not valid.
+type InvalidPaginationToken struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidPaginationToken) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidPaginationToken) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidPaginationToken(v protocol.ResponseMetadata) error {
+	return &InvalidPaginationToken{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidPaginationToken) Code() string {
+	return "InvalidPaginationToken"
+}
+
+// Message returns the exception's message.
+func (s *InvalidPaginationToken) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidPaginationToken) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidPaginationToken) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidPaginationToken) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidPaginationToken) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Error information returned when a DescribeAffectedEntitiesForOrganization
+// operation cannot find or process a specific entity.
+type OrganizationAffectedEntitiesErrorItem struct {
+	_ struct{} `type:"structure"`
+
+	// The 12-digit AWS account numbers that contains the affected entities.
+	AwsAccountId *string `locationName:"awsAccountId" type:"string"`
+
+	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION.
+	// For example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
+	ErrorMessage *string `locationName:"errorMessage" type:"string"`
+
+	// The name of the error.
+	ErrorName *string `locationName:"errorName" type:"string"`
+
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
+	EventArn *string `locationName:"eventArn" type:"string"`
+}
+
+// String returns the string representation
+func (s OrganizationAffectedEntitiesErrorItem) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s OrganizationAffectedEntitiesErrorItem) GoString() string {
+	return s.String()
+}
+
+// SetAwsAccountId sets the AwsAccountId field's value.
+func (s *OrganizationAffectedEntitiesErrorItem) SetAwsAccountId(v string) *OrganizationAffectedEntitiesErrorItem {
+	s.AwsAccountId = &v
+	return s
+}
+
+// SetErrorMessage sets the ErrorMessage field's value.
+func (s *OrganizationAffectedEntitiesErrorItem) SetErrorMessage(v string) *OrganizationAffectedEntitiesErrorItem {
+	s.ErrorMessage = &v
+	return s
+}
+
+// SetErrorName sets the ErrorName field's value.
+func (s *OrganizationAffectedEntitiesErrorItem) SetErrorName(v string) *OrganizationAffectedEntitiesErrorItem {
+	s.ErrorName = &v
+	return s
+}
+
+// SetEventArn sets the EventArn field's value.
+func (s *OrganizationAffectedEntitiesErrorItem) SetEventArn(v string) *OrganizationAffectedEntitiesErrorItem {
+	s.EventArn = &v
+	return s
+}
+
+// Summary information about an event, returned by the DescribeEventsForOrganization
+// operation.
+type OrganizationEvent struct {
+	_ struct{} `type:"structure"`
+
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
+	Arn *string `locationName:"arn" type:"string"`
+
+	// The date and time that the event ended.
+	EndTime *time.Time `locationName:"endTime" type:"timestamp"`
+
+	EventScopeCode *string `locationName:"eventScopeCode" type:"string" enum:"EventScopeCode"`
+
+	// The category of the event type.
+	EventTypeCategory *string `locationName:"eventTypeCategory" min:"3" type:"string" enum:"EventTypeCategory"`
+
+	// The unique identifier for the event type. The format is AWS_SERVICE_DESCRIPTION.
+	// For example, AWS_EC2_SYSTEM_MAINTENANCE_EVENT.
+	EventTypeCode *string `locationName:"eventTypeCode" min:"3" type:"string"`
+
+	// The most recent date and time that the event was updated.
+	LastUpdatedTime *time.Time `locationName:"lastUpdatedTime" type:"timestamp"`
+
+	// The AWS Region name of the event.
+	Region *string `locationName:"region" min:"2" type:"string"`
+
+	// The AWS service that is affected by the event. For example, EC2, RDS.
+	Service *string `locationName:"service" min:"2" type:"string"`
+
+	// The date and time that the event began.
+	StartTime *time.Time `locationName:"startTime" type:"timestamp"`
+
+	// The most recent status of the event. Possible values are open, closed, and
+	// upcoming.
+	StatusCode *string `locationName:"statusCode" type:"string" enum:"EventStatusCode"`
+}
+
+// String returns the string representation
+func (s OrganizationEvent) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s OrganizationEvent) GoString() string {
+	return s.String()
+}
+
+// SetArn sets the Arn field's value.
+func (s *OrganizationEvent) SetArn(v string) *OrganizationEvent {
+	s.Arn = &v
+	return s
+}
+
+// SetEndTime sets the EndTime field's value.
+func (s *OrganizationEvent) SetEndTime(v time.Time) *OrganizationEvent {
+	s.EndTime = &v
+	return s
+}
+
+// SetEventScopeCode sets the EventScopeCode field's value.
+func (s *OrganizationEvent) SetEventScopeCode(v string) *OrganizationEvent {
+	s.EventScopeCode = &v
+	return s
+}
+
+// SetEventTypeCategory sets the EventTypeCategory field's value.
+func (s *OrganizationEvent) SetEventTypeCategory(v string) *OrganizationEvent {
+	s.EventTypeCategory = &v
+	return s
+}
+
+// SetEventTypeCode sets the EventTypeCode field's value.
+func (s *OrganizationEvent) SetEventTypeCode(v string) *OrganizationEvent {
+	s.EventTypeCode = &v
+	return s
+}
+
+// SetLastUpdatedTime sets the LastUpdatedTime field's value.
+func (s *OrganizationEvent) SetLastUpdatedTime(v time.Time) *OrganizationEvent {
+	s.LastUpdatedTime = &v
+	return s
+}
+
+// SetRegion sets the Region field's value.
+func (s *OrganizationEvent) SetRegion(v string) *OrganizationEvent {
+	s.Region = &v
+	return s
+}
+
+// SetService sets the Service field's value.
+func (s *OrganizationEvent) SetService(v string) *OrganizationEvent {
+	s.Service = &v
+	return s
+}
+
+// SetStartTime sets the StartTime field's value.
+func (s *OrganizationEvent) SetStartTime(v time.Time) *OrganizationEvent {
+	s.StartTime = &v
+	return s
+}
+
+// SetStatusCode sets the StatusCode field's value.
+func (s *OrganizationEvent) SetStatusCode(v string) *OrganizationEvent {
+	s.StatusCode = &v
+	return s
+}
+
+// Detailed information about an event. A combination of an Event object, an
+// EventDescription object, and additional metadata about the event. Returned
+// by the DescribeEventDetailsForOrganization operation.
+type OrganizationEventDetails struct {
+	_ struct{} `type:"structure"`
+
+	// The 12-digit AWS account numbers that contains the affected entities.
+	AwsAccountId *string `locationName:"awsAccountId" type:"string"`
+
+	// Summary information about an AWS Health event.
+	Event *Event `locationName:"event" type:"structure"`
+
+	// The detailed description of the event. Included in the information returned
+	// by the DescribeEventDetails operation.
+	EventDescription *EventDescription `locationName:"eventDescription" type:"structure"`
+
+	// Additional metadata about the event.
+	EventMetadata map[string]*string `locationName:"eventMetadata" type:"map"`
+}
+
+// String returns the string representation
+func (s OrganizationEventDetails) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s OrganizationEventDetails) GoString() string {
+	return s.String()
+}
+
+// SetAwsAccountId sets the AwsAccountId field's value.
+func (s *OrganizationEventDetails) SetAwsAccountId(v string) *OrganizationEventDetails {
+	s.AwsAccountId = &v
+	return s
+}
+
+// SetEvent sets the Event field's value.
+func (s *OrganizationEventDetails) SetEvent(v *Event) *OrganizationEventDetails {
+	s.Event = v
+	return s
+}
+
+// SetEventDescription sets the EventDescription field's value.
+func (s *OrganizationEventDetails) SetEventDescription(v *EventDescription) *OrganizationEventDetails {
+	s.EventDescription = v
+	return s
+}
+
+// SetEventMetadata sets the EventMetadata field's value.
+func (s *OrganizationEventDetails) SetEventMetadata(v map[string]*string) *OrganizationEventDetails {
+	s.EventMetadata = v
+	return s
+}
+
+// Error information returned when a DescribeEventDetailsForOrganization operation
+// cannot find a specified event.
+type OrganizationEventDetailsErrorItem struct {
+	_ struct{} `type:"structure"`
+
+	// Error information returned when a DescribeEventDetailsForOrganization operation
+	// cannot find a specified event.
+	AwsAccountId *string `locationName:"awsAccountId" type:"string"`
+
+	// A message that describes the error.
+	ErrorMessage *string `locationName:"errorMessage" type:"string"`
+
+	// The name of the error.
+	ErrorName *string `locationName:"errorName" type:"string"`
+
+	// The unique identifier for the event. Format: arn:aws:health:event-region::event/SERVICE/EVENT_TYPE_CODE/EVENT_TYPE_PLUS_ID
+	// . Example: Example: arn:aws:health:us-east-1::event/EC2/EC2_INSTANCE_RETIREMENT_SCHEDULED/EC2_INSTANCE_RETIREMENT_SCHEDULED_ABC123-DEF456
+	EventArn *string `locationName:"eventArn" type:"string"`
+}
+
+// String returns the string representation
+func (s OrganizationEventDetailsErrorItem) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s OrganizationEventDetailsErrorItem) GoString() string {
+	return s.String()
+}
+
+// SetAwsAccountId sets the AwsAccountId field's value.
+func (s *OrganizationEventDetailsErrorItem) SetAwsAccountId(v string) *OrganizationEventDetailsErrorItem {
+	s.AwsAccountId = &v
+	return s
+}
+
+// SetErrorMessage sets the ErrorMessage field's value.
+func (s *OrganizationEventDetailsErrorItem) SetErrorMessage(v string) *OrganizationEventDetailsErrorItem {
+	s.ErrorMessage = &v
+	return s
+}
+
+// SetErrorName sets the ErrorName field's value.
+func (s *OrganizationEventDetailsErrorItem) SetErrorName(v string) *OrganizationEventDetailsErrorItem {
+	s.ErrorName = &v
+	return s
+}
+
+// SetEventArn sets the EventArn field's value.
+func (s *OrganizationEventDetailsErrorItem) SetEventArn(v string) *OrganizationEventDetailsErrorItem {
+	s.EventArn = &v
+	return s
+}
+
+// The values to filter results from the DescribeEventsForOrganization operation.
+type OrganizationEventFilter struct {
+	_ struct{} `type:"structure"`
+
+	// A list of 12-digit AWS account numbers that contains the affected entities.
+	AwsAccountIds []*string `locationName:"awsAccountIds" min:"1" type:"list"`
+
+	// A range of dates and times that is used by the EventFilter and EntityFilter
+	// objects. If from is set and to is set: match items where the timestamp (startTime,
+	// endTime, or lastUpdatedTime) is between from and to inclusive. If from is
+	// set and to is not set: match items where the timestamp value is equal to
+	// or after from. If from is not set and to is set: match items where the timestamp
+	// value is equal to or before to.
+	EndTime *DateTimeRange `locationName:"endTime" type:"structure"`
+
+	// REPLACEME
+	EntityArns []*string `locationName:"entityArns" min:"1" type:"list"`
+
+	// A list of entity identifiers, such as EC2 instance IDs (i-34ab692e) or EBS
+	// volumes (vol-426ab23e).
+	EntityValues []*string `locationName:"entityValues" min:"1" type:"list"`
+
+	// A list of event status codes.
+	EventStatusCodes []*string `locationName:"eventStatusCodes" min:"1" type:"list"`
+
+	// REPLACEME
+	EventTypeCategories []*string `locationName:"eventTypeCategories" min:"1" type:"list"`
+
+	// A list of unique identifiers for event types. For example, "AWS_EC2_SYSTEM_MAINTENANCE_EVENT","AWS_RDS_MAINTENANCE_SCHEDULED".
+	EventTypeCodes []*string `locationName:"eventTypeCodes" min:"1" type:"list"`
+
+	// A range of dates and times that is used by the EventFilter and EntityFilter
+	// objects. If from is set and to is set: match items where the timestamp (startTime,
+	// endTime, or lastUpdatedTime) is between from and to inclusive. If from is
+	// set and to is not set: match items where the timestamp value is equal to
+	// or after from. If from is not set and to is set: match items where the timestamp
+	// value is equal to or before to.
+	LastUpdatedTime *DateTimeRange `locationName:"lastUpdatedTime" type:"structure"`
+
+	// A list of AWS Regions.
+	Regions []*string `locationName:"regions" min:"1" type:"list"`
+
+	// The AWS services associated with the event. For example, EC2, RDS.
+	Services []*string `locationName:"services" min:"1" type:"list"`
+
+	// A range of dates and times that is used by the EventFilter and EntityFilter
+	// objects. If from is set and to is set: match items where the timestamp (startTime,
+	// endTime, or lastUpdatedTime) is between from and to inclusive. If from is
+	// set and to is not set: match items where the timestamp value is equal to
+	// or after from. If from is not set and to is set: match items where the timestamp
+	// value is equal to or before to.
+	StartTime *DateTimeRange `locationName:"startTime" type:"structure"`
+}
+
+// String returns the string representation
+func (s OrganizationEventFilter) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s OrganizationEventFilter) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *OrganizationEventFilter) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "OrganizationEventFilter"}
+	if s.AwsAccountIds != nil && len(s.AwsAccountIds) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("AwsAccountIds", 1))
+	}
+	if s.EntityArns != nil && len(s.EntityArns) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("EntityArns", 1))
+	}
+	if s.EntityValues != nil && len(s.EntityValues) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("EntityValues", 1))
+	}
+	if s.EventStatusCodes != nil && len(s.EventStatusCodes) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("EventStatusCodes", 1))
+	}
+	if s.EventTypeCategories != nil && len(s.EventTypeCategories) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("EventTypeCategories", 1))
+	}
+	if s.EventTypeCodes != nil && len(s.EventTypeCodes) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("EventTypeCodes", 1))
+	}
+	if s.Regions != nil && len(s.Regions) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Regions", 1))
+	}
+	if s.Services != nil && len(s.Services) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Services", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAwsAccountIds sets the AwsAccountIds field's value.
+func (s *OrganizationEventFilter) SetAwsAccountIds(v []*string) *OrganizationEventFilter {
+	s.AwsAccountIds = v
+	return s
+}
+
+// SetEndTime sets the EndTime field's value.
+func (s *OrganizationEventFilter) SetEndTime(v *DateTimeRange) *OrganizationEventFilter {
+	s.EndTime = v
+	return s
+}
+
+// SetEntityArns sets the EntityArns field's value.
+func (s *OrganizationEventFilter) SetEntityArns(v []*string) *OrganizationEventFilter {
+	s.EntityArns = v
+	return s
+}
+
+// SetEntityValues sets the EntityValues field's value.
+func (s *OrganizationEventFilter) SetEntityValues(v []*string) *OrganizationEventFilter {
+	s.EntityValues = v
+	return s
+}
+
+// SetEventStatusCodes sets the EventStatusCodes field's value.
+func (s *OrganizationEventFilter) SetEventStatusCodes(v []*string) *OrganizationEventFilter {
+	s.EventStatusCodes = v
+	return s
+}
+
+// SetEventTypeCategories sets the EventTypeCategories field's value.
+func (s *OrganizationEventFilter) SetEventTypeCategories(v []*string) *OrganizationEventFilter {
+	s.EventTypeCategories = v
+	return s
+}
+
+// SetEventTypeCodes sets the EventTypeCodes field's value.
+func (s *OrganizationEventFilter) SetEventTypeCodes(v []*string) *OrganizationEventFilter {
+	s.EventTypeCodes = v
+	return s
+}
+
+// SetLastUpdatedTime sets the LastUpdatedTime field's value.
+func (s *OrganizationEventFilter) SetLastUpdatedTime(v *DateTimeRange) *OrganizationEventFilter {
+	s.LastUpdatedTime = v
+	return s
+}
+
+// SetRegions sets the Regions field's value.
+func (s *OrganizationEventFilter) SetRegions(v []*string) *OrganizationEventFilter {
+	s.Regions = v
+	return s
+}
+
+// SetServices sets the Services field's value.
+func (s *OrganizationEventFilter) SetServices(v []*string) *OrganizationEventFilter {
+	s.Services = v
+	return s
+}
+
+// SetStartTime sets the StartTime field's value.
+func (s *OrganizationEventFilter) SetStartTime(v *DateTimeRange) *OrganizationEventFilter {
+	s.StartTime = v
+	return s
+}
+
+// The specified locale is not supported.
+type UnsupportedLocale struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s UnsupportedLocale) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UnsupportedLocale) GoString() string {
+	return s.String()
+}
+
+func newErrorUnsupportedLocale(v protocol.ResponseMetadata) error {
+	return &UnsupportedLocale{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *UnsupportedLocale) Code() string {
+	return "UnsupportedLocale"
+}
+
+// Message returns the exception's message.
+func (s *UnsupportedLocale) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *UnsupportedLocale) OrigErr() error {
+	return nil
+}
+
+func (s *UnsupportedLocale) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *UnsupportedLocale) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *UnsupportedLocale) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 const (
-	// EntityStatusCodeImpaired is a entityStatusCode enum value
+	// EntityStatusCodeImpaired is a EntityStatusCode enum value
 	EntityStatusCodeImpaired = "IMPAIRED"
 
-	// EntityStatusCodeUnimpaired is a entityStatusCode enum value
+	// EntityStatusCodeUnimpaired is a EntityStatusCode enum value
 	EntityStatusCodeUnimpaired = "UNIMPAIRED"
 
-	// EntityStatusCodeUnknown is a entityStatusCode enum value
+	// EntityStatusCodeUnknown is a EntityStatusCode enum value
 	EntityStatusCodeUnknown = "UNKNOWN"
 )
 
 const (
-	// EventAggregateFieldEventTypeCategory is a eventAggregateField enum value
+	// EventAggregateFieldEventTypeCategory is a EventAggregateField enum value
 	EventAggregateFieldEventTypeCategory = "eventTypeCategory"
 )
 
 const (
-	// EventStatusCodeOpen is a eventStatusCode enum value
+	// EventScopeCodePublic is a EventScopeCode enum value
+	EventScopeCodePublic = "PUBLIC"
+
+	// EventScopeCodeAccountSpecific is a EventScopeCode enum value
+	EventScopeCodeAccountSpecific = "ACCOUNT_SPECIFIC"
+
+	// EventScopeCodeNone is a EventScopeCode enum value
+	EventScopeCodeNone = "NONE"
+)
+
+const (
+	// EventStatusCodeOpen is a EventStatusCode enum value
 	EventStatusCodeOpen = "open"
 
-	// EventStatusCodeClosed is a eventStatusCode enum value
+	// EventStatusCodeClosed is a EventStatusCode enum value
 	EventStatusCodeClosed = "closed"
 
-	// EventStatusCodeUpcoming is a eventStatusCode enum value
+	// EventStatusCodeUpcoming is a EventStatusCode enum value
 	EventStatusCodeUpcoming = "upcoming"
 )
 
 const (
-	// EventTypeCategoryIssue is a eventTypeCategory enum value
+	// EventTypeCategoryIssue is a EventTypeCategory enum value
 	EventTypeCategoryIssue = "issue"
 
-	// EventTypeCategoryAccountNotification is a eventTypeCategory enum value
+	// EventTypeCategoryAccountNotification is a EventTypeCategory enum value
 	EventTypeCategoryAccountNotification = "accountNotification"
 
-	// EventTypeCategoryScheduledChange is a eventTypeCategory enum value
+	// EventTypeCategoryScheduledChange is a EventTypeCategory enum value
 	EventTypeCategoryScheduledChange = "scheduledChange"
+
+	// EventTypeCategoryInvestigation is a EventTypeCategory enum value
+	EventTypeCategoryInvestigation = "investigation"
 )

@@ -21,7 +21,7 @@ import (
 //
 // The best way to use this interface is so the SDK's service client's calls
 // can be stubbed out for unit testing your code with the SDK without needing
-// to inject custom request handlers into the the SDK's request pipeline.
+// to inject custom request handlers into the SDK's request pipeline.
 //
 //    // myFunc uses an SDK service client to make a request to
 //    // AWS Elastic Beanstalk.
@@ -120,6 +120,10 @@ type ElasticBeanstalkAPI interface {
 	DeletePlatformVersionWithContext(aws.Context, *elasticbeanstalk.DeletePlatformVersionInput, ...request.Option) (*elasticbeanstalk.DeletePlatformVersionOutput, error)
 	DeletePlatformVersionRequest(*elasticbeanstalk.DeletePlatformVersionInput) (*request.Request, *elasticbeanstalk.DeletePlatformVersionOutput)
 
+	DescribeAccountAttributes(*elasticbeanstalk.DescribeAccountAttributesInput) (*elasticbeanstalk.DescribeAccountAttributesOutput, error)
+	DescribeAccountAttributesWithContext(aws.Context, *elasticbeanstalk.DescribeAccountAttributesInput, ...request.Option) (*elasticbeanstalk.DescribeAccountAttributesOutput, error)
+	DescribeAccountAttributesRequest(*elasticbeanstalk.DescribeAccountAttributesInput) (*request.Request, *elasticbeanstalk.DescribeAccountAttributesOutput)
+
 	DescribeApplicationVersions(*elasticbeanstalk.DescribeApplicationVersionsInput) (*elasticbeanstalk.DescribeApplicationVersionsOutput, error)
 	DescribeApplicationVersionsWithContext(aws.Context, *elasticbeanstalk.DescribeApplicationVersionsInput, ...request.Option) (*elasticbeanstalk.DescribeApplicationVersionsOutput, error)
 	DescribeApplicationVersionsRequest(*elasticbeanstalk.DescribeApplicationVersionsInput) (*request.Request, *elasticbeanstalk.DescribeApplicationVersionsOutput)
@@ -175,9 +179,20 @@ type ElasticBeanstalkAPI interface {
 	ListAvailableSolutionStacksWithContext(aws.Context, *elasticbeanstalk.ListAvailableSolutionStacksInput, ...request.Option) (*elasticbeanstalk.ListAvailableSolutionStacksOutput, error)
 	ListAvailableSolutionStacksRequest(*elasticbeanstalk.ListAvailableSolutionStacksInput) (*request.Request, *elasticbeanstalk.ListAvailableSolutionStacksOutput)
 
+	ListPlatformBranches(*elasticbeanstalk.ListPlatformBranchesInput) (*elasticbeanstalk.ListPlatformBranchesOutput, error)
+	ListPlatformBranchesWithContext(aws.Context, *elasticbeanstalk.ListPlatformBranchesInput, ...request.Option) (*elasticbeanstalk.ListPlatformBranchesOutput, error)
+	ListPlatformBranchesRequest(*elasticbeanstalk.ListPlatformBranchesInput) (*request.Request, *elasticbeanstalk.ListPlatformBranchesOutput)
+
+	ListPlatformBranchesPages(*elasticbeanstalk.ListPlatformBranchesInput, func(*elasticbeanstalk.ListPlatformBranchesOutput, bool) bool) error
+	ListPlatformBranchesPagesWithContext(aws.Context, *elasticbeanstalk.ListPlatformBranchesInput, func(*elasticbeanstalk.ListPlatformBranchesOutput, bool) bool, ...request.Option) error
+
 	ListPlatformVersions(*elasticbeanstalk.ListPlatformVersionsInput) (*elasticbeanstalk.ListPlatformVersionsOutput, error)
 	ListPlatformVersionsWithContext(aws.Context, *elasticbeanstalk.ListPlatformVersionsInput, ...request.Option) (*elasticbeanstalk.ListPlatformVersionsOutput, error)
 	ListPlatformVersionsRequest(*elasticbeanstalk.ListPlatformVersionsInput) (*request.Request, *elasticbeanstalk.ListPlatformVersionsOutput)
+
+	ListTagsForResource(*elasticbeanstalk.ListTagsForResourceInput) (*elasticbeanstalk.ListTagsForResourceOutput, error)
+	ListTagsForResourceWithContext(aws.Context, *elasticbeanstalk.ListTagsForResourceInput, ...request.Option) (*elasticbeanstalk.ListTagsForResourceOutput, error)
+	ListTagsForResourceRequest(*elasticbeanstalk.ListTagsForResourceInput) (*request.Request, *elasticbeanstalk.ListTagsForResourceOutput)
 
 	RebuildEnvironment(*elasticbeanstalk.RebuildEnvironmentInput) (*elasticbeanstalk.RebuildEnvironmentOutput, error)
 	RebuildEnvironmentWithContext(aws.Context, *elasticbeanstalk.RebuildEnvironmentInput, ...request.Option) (*elasticbeanstalk.RebuildEnvironmentOutput, error)
@@ -222,6 +237,10 @@ type ElasticBeanstalkAPI interface {
 	UpdateEnvironment(*elasticbeanstalk.UpdateEnvironmentInput) (*elasticbeanstalk.EnvironmentDescription, error)
 	UpdateEnvironmentWithContext(aws.Context, *elasticbeanstalk.UpdateEnvironmentInput, ...request.Option) (*elasticbeanstalk.EnvironmentDescription, error)
 	UpdateEnvironmentRequest(*elasticbeanstalk.UpdateEnvironmentInput) (*request.Request, *elasticbeanstalk.EnvironmentDescription)
+
+	UpdateTagsForResource(*elasticbeanstalk.UpdateTagsForResourceInput) (*elasticbeanstalk.UpdateTagsForResourceOutput, error)
+	UpdateTagsForResourceWithContext(aws.Context, *elasticbeanstalk.UpdateTagsForResourceInput, ...request.Option) (*elasticbeanstalk.UpdateTagsForResourceOutput, error)
+	UpdateTagsForResourceRequest(*elasticbeanstalk.UpdateTagsForResourceInput) (*request.Request, *elasticbeanstalk.UpdateTagsForResourceOutput)
 
 	ValidateConfigurationSettings(*elasticbeanstalk.ValidateConfigurationSettingsInput) (*elasticbeanstalk.ValidateConfigurationSettingsOutput, error)
 	ValidateConfigurationSettingsWithContext(aws.Context, *elasticbeanstalk.ValidateConfigurationSettingsInput, ...request.Option) (*elasticbeanstalk.ValidateConfigurationSettingsOutput, error)

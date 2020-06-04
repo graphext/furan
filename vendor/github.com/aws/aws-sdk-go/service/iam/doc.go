@@ -7,7 +7,7 @@
 // to manage users and user permissions under your AWS account. This guide provides
 // descriptions of IAM actions that you can call programmatically. For general
 // information about IAM, see AWS Identity and Access Management (IAM) (http://aws.amazon.com/iam/).
-// For the user guide for IAM, see Using IAM (http://docs.aws.amazon.com/IAM/latest/UserGuide/).
+// For the user guide for IAM, see Using IAM (https://docs.aws.amazon.com/IAM/latest/UserGuide/).
 //
 // AWS provides SDKs that consist of libraries and sample code for various programming
 // languages and platforms (Java, Ruby, .NET, iOS, Android, etc.). The SDKs
@@ -20,7 +20,7 @@
 // We recommend that you use the AWS SDKs to make programmatic API calls to
 // IAM. However, you can also use the IAM Query API to make direct calls to
 // the IAM web service. To learn more about the IAM Query API, see Making Query
-// Requests (http://docs.aws.amazon.com/IAM/latest/UserGuide/IAM_UsingQueryAPI.html)
+// Requests (https://docs.aws.amazon.com/IAM/latest/UserGuide/IAM_UsingQueryAPI.html)
 // in the Using IAM guide. IAM supports GET and POST requests for all actions.
 // That is, the API does not require you to use GET for some actions and POST
 // for others. However, GET requests are subject to the limitation size of a
@@ -35,7 +35,7 @@
 // Token Service to generate temporary security credentials and use those to
 // sign requests.
 //
-// To sign requests, we recommend that you use Signature Version 4 (http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
+// To sign requests, we recommend that you use Signature Version 4 (https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
 // If you have an existing application that uses Signature Version 2, you do
 // not have to update it to use Signature Version 4. However, some operations
 // now require Signature Version 4. The documentation for operations that require
@@ -45,15 +45,15 @@
 //
 // For more information, see the following:
 //
-//    * AWS Security Credentials (http://docs.aws.amazon.com/general/latest/gr/aws-security-credentials.html).
+//    * AWS Security Credentials (https://docs.aws.amazon.com/general/latest/gr/aws-security-credentials.html).
 //    This topic provides general information about the types of credentials
 //    used for accessing AWS.
 //
-//    * IAM Best Practices (http://docs.aws.amazon.com/IAM/latest/UserGuide/IAMBestPractices.html).
+//    * IAM Best Practices (https://docs.aws.amazon.com/IAM/latest/UserGuide/IAMBestPractices.html).
 //    This topic presents a list of suggestions for using the IAM service to
 //    help secure your AWS resources.
 //
-//    * Signing AWS API Requests (http://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html).
+//    * Signing AWS API Requests (https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html).
 //    This set of topics walk you through the process of signing a request using
 //    an access key ID and secret access key.
 //
@@ -64,69 +64,17 @@
 //
 // Using the Client
 //
-// To use the client for AWS Identity and Access Management you will first need
-// to create a new instance of it.
+// To contact AWS Identity and Access Management with the SDK use the New function to create
+// a new service client. With that client you can make API requests to the service.
+// These clients are safe to use concurrently.
 //
-// When creating a client for an AWS service you'll first need to have a Session
-// already created. The Session provides configuration that can be shared
-// between multiple service clients. Additional configuration can be applied to
-// the Session and service's client when they are constructed. The aws package's
-// Config type contains several fields such as Region for the AWS Region the
-// client should make API requests too. The optional Config value can be provided
-// as the variadic argument for Sessions and client creation.
-//
-// Once the service's client is created you can use it to make API requests the
-// AWS service. These clients are safe to use concurrently.
-//
-//   // Create a session to share configuration, and load external configuration.
-//   sess := session.Must(session.NewSession())
-//
-//   // Create the service's client with the session.
-//   svc := iam.New(sess)
-//
-// See the SDK's documentation for more information on how to use service clients.
+// See the SDK's documentation for more information on how to use the SDK.
 // https://docs.aws.amazon.com/sdk-for-go/api/
 //
-// See aws package's Config type for more information on configuration options.
+// See aws.Config documentation for more information on configuring SDK clients.
 // https://docs.aws.amazon.com/sdk-for-go/api/aws/#Config
 //
 // See the AWS Identity and Access Management client IAM for more
-// information on creating the service's client.
+// information on creating client for this service.
 // https://docs.aws.amazon.com/sdk-for-go/api/service/iam/#New
-//
-// Once the client is created you can make an API request to the service.
-// Each API method takes a input parameter, and returns the service response
-// and an error.
-//
-// The API method will document which error codes the service can be returned
-// by the operation if the service models the API operation's errors. These
-// errors will also be available as const strings prefixed with "ErrCode".
-//
-//   result, err := svc.AddClientIDToOpenIDConnectProvider(params)
-//   if err != nil {
-//       // Cast err to awserr.Error to handle specific error codes.
-//       aerr, ok := err.(awserr.Error)
-//       if ok && aerr.Code() == <error code to check for> {
-//           // Specific error code handling
-//       }
-//       return err
-//   }
-//
-//   fmt.Println("AddClientIDToOpenIDConnectProvider result:")
-//   fmt.Println(result)
-//
-// Using the Client with Context
-//
-// The service's client also provides methods to make API requests with a Context
-// value. This allows you to control the timeout, and cancellation of pending
-// requests. These methods also take request Option as variadic parameter to apply
-// additional configuration to the API request.
-//
-//   ctx := context.Background()
-//
-//   result, err := svc.AddClientIDToOpenIDConnectProviderWithContext(ctx, params)
-//
-// See the request package documentation for more information on using Context pattern
-// with the SDK.
-// https://docs.aws.amazon.com/sdk-for-go/api/aws/request/
 package iam

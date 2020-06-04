@@ -3,30 +3,31 @@
 package cloudsearchdomain
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/protocol"
 )
 
 const opSearch = "Search"
 
 // SearchRequest generates a "aws/request.Request" representing the
 // client's request for the Search operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See Search for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the Search method directly
-// instead.
+// See Search for more information on using the Search
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the SearchRequest method.
 //    req, resp := client.SearchRequest(params)
@@ -59,13 +60,17 @@ func (c *CloudSearchDomain) SearchRequest(input *SearchInput) (req *request.Requ
 //
 //    * simple: search all text and text-array fields for the specified string.
 //    Search for phrases, individual terms, and prefixes.
+//
 //    * structured: search specific fields, construct compound queries using
 //    Boolean operators, and use advanced features such as term boosting and
 //    proximity searching.
+//
 //    * lucene: specify search criteria using the Apache Lucene query parser
 //    syntax.
+//
 //    * dismax: specify search criteria using the simplified subset of the Apache
 //    Lucene query parser syntax defined by the DisMax query parser.
+//
 // For more information, see Searching Your Data (http://docs.aws.amazon.com/cloudsearch/latest/developerguide/searching.html)
 // in the Amazon CloudSearch Developer Guide.
 //
@@ -82,8 +87,8 @@ func (c *CloudSearchDomain) SearchRequest(input *SearchInput) (req *request.Requ
 // See the AWS API reference guide for Amazon CloudSearch Domain's
 // API operation Search for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSearchException "SearchException"
+// Returned Error Types:
+//   * SearchException
 //   Information about any problems encountered while processing a search request.
 //
 func (c *CloudSearchDomain) Search(input *SearchInput) (*SearchOutput, error) {
@@ -111,19 +116,18 @@ const opSuggest = "Suggest"
 
 // SuggestRequest generates a "aws/request.Request" representing the
 // client's request for the Suggest operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See Suggest for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the Suggest method directly
-// instead.
+// See Suggest for more information on using the Suggest
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the SuggestRequest method.
 //    req, resp := client.SuggestRequest(params)
@@ -175,8 +179,8 @@ func (c *CloudSearchDomain) SuggestRequest(input *SuggestInput) (req *request.Re
 // See the AWS API reference guide for Amazon CloudSearch Domain's
 // API operation Suggest for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeSearchException "SearchException"
+// Returned Error Types:
+//   * SearchException
 //   Information about any problems encountered while processing a search request.
 //
 func (c *CloudSearchDomain) Suggest(input *SuggestInput) (*SuggestOutput, error) {
@@ -204,19 +208,18 @@ const opUploadDocuments = "UploadDocuments"
 
 // UploadDocumentsRequest generates a "aws/request.Request" representing the
 // client's request for the UploadDocuments operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UploadDocuments for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UploadDocuments method directly
-// instead.
+// See UploadDocuments for more information on using the UploadDocuments
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UploadDocumentsRequest method.
 //    req, resp := client.UploadDocumentsRequest(params)
@@ -273,8 +276,8 @@ func (c *CloudSearchDomain) UploadDocumentsRequest(input *UploadDocumentsInput) 
 // See the AWS API reference guide for Amazon CloudSearch Domain's
 // API operation UploadDocuments for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeDocumentServiceException "DocumentServiceException"
+// Returned Error Types:
+//   * DocumentServiceException
 //   Information about any problems encountered while processing an upload request.
 //
 func (c *CloudSearchDomain) UploadDocuments(input *UploadDocumentsInput) (*UploadDocumentsOutput, error) {
@@ -353,6 +356,66 @@ func (s BucketInfo) GoString() string {
 func (s *BucketInfo) SetBuckets(v []*Bucket) *BucketInfo {
 	s.Buckets = v
 	return s
+}
+
+// Information about any problems encountered while processing an upload request.
+type DocumentServiceException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// The description of the errors returned by the document service.
+	Message_ *string `locationName:"message" type:"string"`
+
+	// The return status of a document upload request, error or success.
+	Status *string `locationName:"status" type:"string"`
+}
+
+// String returns the string representation
+func (s DocumentServiceException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DocumentServiceException) GoString() string {
+	return s.String()
+}
+
+func newErrorDocumentServiceException(v protocol.ResponseMetadata) error {
+	return &DocumentServiceException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DocumentServiceException) Code() string {
+	return "DocumentServiceException"
+}
+
+// Message returns the exception's message.
+func (s *DocumentServiceException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DocumentServiceException) OrigErr() error {
+	return nil
+}
+
+func (s *DocumentServiceException) Error() string {
+	return fmt.Sprintf("%s: %s\n%s", s.Code(), s.Message(), s.String())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DocumentServiceException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DocumentServiceException) RequestID() string {
+	return s.RespMetadata.RequestID
 }
 
 // A warning returned by the document service when an issue is discovered while
@@ -592,6 +655,63 @@ func (s *Hits) SetStart(v int64) *Hits {
 	return s
 }
 
+// Information about any problems encountered while processing a search request.
+type SearchException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	// A description of the error returned by the search service.
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s SearchException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s SearchException) GoString() string {
+	return s.String()
+}
+
+func newErrorSearchException(v protocol.ResponseMetadata) error {
+	return &SearchException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *SearchException) Code() string {
+	return "SearchException"
+}
+
+// Message returns the exception's message.
+func (s *SearchException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *SearchException) OrigErr() error {
+	return nil
+}
+
+func (s *SearchException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *SearchException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *SearchException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Container for the parameters to the Search request.
 type SearchInput struct {
 	_ struct{} `type:"structure"`
@@ -630,8 +750,7 @@ type SearchInput struct {
 	//
 	//    * buckets specifies an array of the facet values or ranges to count. Ranges
 	//    are specified using the same syntax that you use to search for a range
-	//    of values. For more information, see  Searching for a Range of Values
-	//    (http://docs.aws.amazon.com/cloudsearch/latest/developerguide/searching-ranges.html)
+	//    of values. For more information, see Searching for a Range of Values (http://docs.aws.amazon.com/cloudsearch/latest/developerguide/searching-ranges.html)
 	//    in the Amazon CloudSearch Developer Guide. Buckets are returned in the
 	//    order they are specified in the request. The sort and size options are
 	//    not valid if you specify buckets.
@@ -697,15 +816,18 @@ type SearchInput struct {
 	//    * format: specifies the format of the data in the text field: text or
 	//    html. When data is returned as HTML, all non-alphanumeric characters are
 	//    encoded. The default is html.
+	//
 	//    * max_phrases: specifies the maximum number of occurrences of the search
 	//    term(s) you want to highlight. By default, the first occurrence is highlighted.
 	//
 	//    * pre_tag: specifies the string to prepend to an occurrence of a search
 	//    term. The default for HTML highlights is <em>. The default for text
 	//    highlights is *.
+	//
 	//    * post_tag: specifies the string to append to an occurrence of a search
 	//    term. The default for HTML highlights is </em>. The default for
 	//    text highlights is *.
+	//
 	// If no highlight options are specified for a field, the returned field text
 	// is treated as HTML and the first match is highlighted with emphasis tags:
 	// <em>search-term</em>.
@@ -758,6 +880,7 @@ type SearchInput struct {
 	//    50%. Valid values: and, or, a percentage in the range 0%-100% (dismax).
 	//    Default: and (simple, structured, lucene) or 100 (dismax). Valid for:
 	//    simple, structured, lucene, and dismax.
+	//
 	//    * fields: An array of the fields to search when no fields are specified
 	//    in a search. If no fields are specified in a search and this option is
 	//    not specified, all text and text-array fields are searched. You can specify
@@ -769,6 +892,7 @@ type SearchInput struct {
 	//    The name of any configured field and an optional numeric value greater
 	//    than zero. Default: All text and text-array fields. Valid for: simple,
 	//    structured, lucene, and dismax.
+	//
 	//    * operators: An array of the operators or special characters you want
 	//    to disable for the simple query parser. If you disable the and, or, or
 	//    not operators, the corresponding operators (+, |, -) have no special meaning
@@ -788,6 +912,7 @@ type SearchInput struct {
 	//    Valid values: and, escape, fuzzy, near, not, or, phrase, precedence, prefix,
 	//    whitespace. Default: All operators and special characters are enabled.
 	//    Valid for: simple.
+	//
 	//    * phraseFields: An array of the text or text-array fields you want to
 	//    use for phrase searches. When the terms in the search string appear in
 	//    close proximity within a field, the field scores higher. You can specify
@@ -800,17 +925,20 @@ type SearchInput struct {
 	//    optional numeric value greater than zero. Default: No fields. If you don't
 	//    specify any fields with phraseFields, proximity scoring is disabled even
 	//    if phraseSlop is specified. Valid for: dismax.
+	//
 	//    * phraseSlop: An integer value that specifies how much matches can deviate
 	//    from the search phrase and still be boosted according to the weights specified
 	//    in the phraseFields option; for example, phraseSlop: 2. You must also
 	//    specify phraseFields to enable proximity scoring. Valid values: positive
 	//    integers. Default: 0. Valid for: dismax.
+	//
 	//    * explicitPhraseSlop: An integer value that specifies how much a match
 	//    can deviate from the search phrase when the phrase is enclosed in double
 	//    quotes in the search string. (Phrases that exceed this proximity distance
 	//    are not considered a match.) For example, to specify a slop of three for
 	//    dismax phrase queries, you would specify "explicitPhraseSlop":3. Valid
 	//    values: positive integers. Default: 0. Valid for: dismax.
+	//
 	//    * tieBreaker: When a term in the search string is found in a document's
 	//    field, a score is calculated for that field based on how common the word
 	//    is in that field compared to other documents. If the term occurs in multiple
@@ -841,20 +969,21 @@ type SearchInput struct {
 	//    - (NOT), | (OR), and * (wildcard) operators to exclude particular terms,
 	//    find results that match any of the specified terms, or search for a prefix.
 	//    To search for a phrase rather than individual terms, enclose the phrase
-	//    in double quotes. For more information, see Searching for Text (http://docs.aws.amazon.com/cloudsearch/latest/developerguide/searching-text.html)
-	//    in the Amazon CloudSearch Developer Guide.
+	//    in double quotes. For more information, see Searching for Text in the
+	//    Amazon CloudSearch Developer Guide.
+	//
 	//    * structured: perform advanced searches by combining multiple expressions
 	//    to define the search criteria. You can also search within particular fields,
 	//    search for values and ranges of values, and use advanced options such
 	//    as term boosting, matchall, and near. For more information, see Constructing
-	//    Compound Queries (http://docs.aws.amazon.com/cloudsearch/latest/developerguide/searching-compound-queries.html)
-	//    in the Amazon CloudSearch Developer Guide.
+	//    Compound Queries in the Amazon CloudSearch Developer Guide.
+	//
 	//    * lucene: search using the Apache Lucene query parser syntax. For more
-	//    information, see Apache Lucene Query Parser Syntax (http://lucene.apache.org/core/4_6_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package_description).
+	//    information, see Apache Lucene Query Parser Syntax.
 	//
 	//    * dismax: search using the simplified subset of the Apache Lucene query
 	//    parser syntax defined by the DisMax query parser. For more information,
-	//    see DisMax Query Parser Syntax (http://wiki.apache.org/solr/DisMaxQParserPlugin#Query_Syntax).
+	//    see DisMax Query Parser Syntax.
 	QueryParser *string `location:"querystring" locationName:"q.parser" type:"string" enum:"QueryParser"`
 
 	// Specifies the field and expression values to include in the response. Multiple
@@ -892,7 +1021,9 @@ type SearchInput struct {
 	// specified field must be facet-enabled in the domain configuration. The fields
 	// are specified in JSON using the form:
 	//
-	// {"FIELD-A":{},"FIELD-B":{}}There are currently no options supported for statistics.
+	//    {"FIELD-A":{},"FIELD-B":{}}
+	//
+	// There are currently no options supported for statistics.
 	Stats *string `location:"querystring" locationName:"stats" type:"string"`
 }
 
@@ -1311,6 +1442,7 @@ type UploadDocumentsInput struct {
 	// document batch formats:
 	//
 	//    * application/json
+	//
 	//    * application/xml
 	//
 	// ContentType is a required field

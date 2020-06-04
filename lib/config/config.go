@@ -17,6 +17,8 @@ type Vaultconfig struct {
 	K8sRole         string
 	K8sAuthPath     string
 	TokenAuth       bool
+	JSONFile        string
+	EnvVars         bool
 	AppID           string
 	UserIDPath      string
 	VaultPathPrefix string
@@ -46,9 +48,11 @@ type Kafkaconfig struct {
 
 // AWSConfig contains all information needed to access AWS services
 type AWSConfig struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	Concurrency     uint
+	AccessKeyID      string
+	SecretAccessKey  string
+	EnableECR        bool
+	ECRRegistryHosts []string
+	Concurrency      uint
 }
 
 type DBconfig struct {
@@ -84,7 +88,7 @@ type Serverconfig struct {
 	S3PresignTTL        uint
 	GCIntervalSecs      uint
 	DockerDiskPath      string
-	DisableMetrics 		bool
+	DisableMetrics      bool
 }
 
 type Consulconfig struct {

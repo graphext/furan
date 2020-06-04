@@ -9,15 +9,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	// Import pprof handlers into http.DefaultServeMux
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	// Import pprof handlers into http.DefaultServeMux
-	_ "net/http/pprof"
-
 	docker "github.com/docker/engine-api/client"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
 	"github.com/dollarshaveclub/furan/lib/builder"
 	"github.com/dollarshaveclub/furan/lib/config"
 	"github.com/dollarshaveclub/furan/lib/consul"
@@ -31,9 +35,6 @@ import (
 	"github.com/dollarshaveclub/furan/lib/squasher"
 	"github.com/dollarshaveclub/furan/lib/tagcheck"
 	"github.com/dollarshaveclub/furan/lib/vault"
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 var serverConfig config.Serverconfig
@@ -78,6 +79,8 @@ func init() {
 	serverCmd.PersistentFlags().StringVar(&consulConfig.Addr, "consul-addr", "127.0.0.1:8500", "Consul address (IP:port)")
 	serverCmd.PersistentFlags().StringVar(&consulConfig.KVPrefix, "consul-kv-prefix", "furan", "Consul KV prefix")
 	serverCmd.PersistentFlags().BoolVar(&serverConfig.DisableMetrics, "disable-metrics", false, "Disable Datadog metrics collection")
+	serverCmd.PersistentFlags().BoolVar(&awsConfig.EnableECR, "ecr", false, "Enable AWS ECR support")
+	serverCmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryHosts, "ecr-registry-hosts", []string{}, "ECR registry hosts (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
 	RootCmd.AddCommand(serverCmd)
 }
 
@@ -167,9 +170,14 @@ func server(cmd *cobra.Command, args []string) {
 		Bucket:            serverConfig.S3ErrorLogBucket,
 		PresignTTLMinutes: serverConfig.S3PresignTTL,
 	}
+
 	imageBuilder, err := builder.NewImageBuilder(kafkaConfig.Manager, dbConfig.Datalayer, gf, dc, mc, osm, is, itc, dockerConfig.DockercfgContents, s3errcfg, logger)
 	if err != nil {
 		log.Fatalf("error creating image builder: %v", err)
+	}
+
+	if awsConfig.EnableECR {
+		imageBuilder.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryHosts)
 	}
 
 	kvo, err := consul.NewConsulKVOrchestrator(&consulConfig)

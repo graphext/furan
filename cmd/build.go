@@ -8,6 +8,9 @@ import (
 	"strings"
 
 	docker "github.com/docker/engine-api/client"
+	"github.com/spf13/cobra"
+	"golang.org/x/net/context"
+
 	"github.com/dollarshaveclub/furan/generated/lib"
 	"github.com/dollarshaveclub/furan/lib/builder"
 	"github.com/dollarshaveclub/furan/lib/consul"
@@ -18,8 +21,6 @@ import (
 	streamadapter "github.com/dollarshaveclub/furan/lib/stream_adapter"
 	"github.com/dollarshaveclub/furan/lib/tagcheck"
 	"github.com/dollarshaveclub/furan/lib/vault"
-	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
 )
 
 var buildCmd = &cobra.Command{
@@ -69,6 +70,8 @@ func init() {
 	buildCmd.PersistentFlags().StringVar(&consulConfig.Addr, "consul-addr", "127.0.0.1:8500", "Consul address (IP:port)")
 	buildCmd.PersistentFlags().StringVar(&consulConfig.KVPrefix, "consul-kv-prefix", "furan", "Consul KV prefix")
 	buildCmd.PersistentFlags().StringSliceVar(&buildArgs, "build-arg", []string{}, "Build arg to use for build request")
+	buildCmd.PersistentFlags().BoolVar(&awsConfig.EnableECR, "ecr", false, "Enable AWS ECR support")
+	buildCmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryHosts, "ecr-registry-urls", []string{}, "ECR registry urls (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
 	RootCmd.AddCommand(buildCmd)
 }
 
@@ -153,9 +156,14 @@ func build(cmd *cobra.Command, args []string) {
 		Bucket:            buildS3ErrorLogBucket,
 		PresignTTLMinutes: buildS3ErrorLogsPresignTTL,
 	}
+
 	ib, err := builder.NewImageBuilder(kafkaConfig.Manager, dbConfig.Datalayer, gf, dc, mc, osm, is, itc, dockerConfig.DockercfgContents, s3errcfg, logger)
 	if err != nil {
 		clierr("error creating image builder: %v", err)
+	}
+
+	if awsConfig.EnableECR {
+		ib.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, awsConfig.ECRRegistryHosts)
 	}
 
 	kvo, err := consul.NewConsulKVOrchestrator(&consulConfig)

@@ -17,19 +17,18 @@ const opAbortDocumentVersionUpload = "AbortDocumentVersionUpload"
 
 // AbortDocumentVersionUploadRequest generates a "aws/request.Request" representing the
 // client's request for the AbortDocumentVersionUpload operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AbortDocumentVersionUpload for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AbortDocumentVersionUpload method directly
-// instead.
+// See AbortDocumentVersionUpload for more information on using the AbortDocumentVersionUpload
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AbortDocumentVersionUploadRequest method.
 //    req, resp := client.AbortDocumentVersionUploadRequest(params)
@@ -39,7 +38,7 @@ const opAbortDocumentVersionUpload = "AbortDocumentVersionUpload"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUpload
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUpload
 func (c *WorkDocs) AbortDocumentVersionUploadRequest(input *AbortDocumentVersionUploadInput) (req *request.Request, output *AbortDocumentVersionUploadOutput) {
 	op := &request.Operation{
 		Name:       opAbortDocumentVersionUpload,
@@ -53,8 +52,7 @@ func (c *WorkDocs) AbortDocumentVersionUploadRequest(input *AbortDocumentVersion
 
 	output = &AbortDocumentVersionUploadOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -71,28 +69,28 @@ func (c *WorkDocs) AbortDocumentVersionUploadRequest(input *AbortDocumentVersion
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation AbortDocumentVersionUpload for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUpload
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUpload
 func (c *WorkDocs) AbortDocumentVersionUpload(input *AbortDocumentVersionUploadInput) (*AbortDocumentVersionUploadOutput, error) {
 	req, out := c.AbortDocumentVersionUploadRequest(input)
 	return out, req.Send()
@@ -118,19 +116,18 @@ const opActivateUser = "ActivateUser"
 
 // ActivateUserRequest generates a "aws/request.Request" representing the
 // client's request for the ActivateUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See ActivateUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the ActivateUser method directly
-// instead.
+// See ActivateUser for more information on using the ActivateUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the ActivateUserRequest method.
 //    req, resp := client.ActivateUserRequest(params)
@@ -140,7 +137,7 @@ const opActivateUser = "ActivateUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUser
 func (c *WorkDocs) ActivateUserRequest(input *ActivateUserInput) (req *request.Request, output *ActivateUserOutput) {
 	op := &request.Operation{
 		Name:       opActivateUser,
@@ -168,25 +165,25 @@ func (c *WorkDocs) ActivateUserRequest(input *ActivateUserInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation ActivateUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUser
 func (c *WorkDocs) ActivateUser(input *ActivateUserInput) (*ActivateUserOutput, error) {
 	req, out := c.ActivateUserRequest(input)
 	return out, req.Send()
@@ -212,19 +209,18 @@ const opAddResourcePermissions = "AddResourcePermissions"
 
 // AddResourcePermissionsRequest generates a "aws/request.Request" representing the
 // client's request for the AddResourcePermissions operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See AddResourcePermissions for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the AddResourcePermissions method directly
-// instead.
+// See AddResourcePermissions for more information on using the AddResourcePermissions
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the AddResourcePermissionsRequest method.
 //    req, resp := client.AddResourcePermissionsRequest(params)
@@ -234,7 +230,7 @@ const opAddResourcePermissions = "AddResourcePermissions"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissions
 func (c *WorkDocs) AddResourcePermissionsRequest(input *AddResourcePermissionsInput) (req *request.Request, output *AddResourcePermissionsOutput) {
 	op := &request.Operation{
 		Name:       opAddResourcePermissions,
@@ -263,22 +259,22 @@ func (c *WorkDocs) AddResourcePermissionsRequest(input *AddResourcePermissionsIn
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation AddResourcePermissions for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissions
 func (c *WorkDocs) AddResourcePermissions(input *AddResourcePermissionsInput) (*AddResourcePermissionsOutput, error) {
 	req, out := c.AddResourcePermissionsRequest(input)
 	return out, req.Send()
@@ -304,19 +300,18 @@ const opCreateComment = "CreateComment"
 
 // CreateCommentRequest generates a "aws/request.Request" representing the
 // client's request for the CreateComment operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateComment for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateComment method directly
-// instead.
+// See CreateComment for more information on using the CreateComment
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateCommentRequest method.
 //    req, resp := client.CreateCommentRequest(params)
@@ -326,7 +321,7 @@ const opCreateComment = "CreateComment"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateComment
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateComment
 func (c *WorkDocs) CreateCommentRequest(input *CreateCommentInput) (req *request.Request, output *CreateCommentOutput) {
 	op := &request.Operation{
 		Name:       opCreateComment,
@@ -354,32 +349,35 @@ func (c *WorkDocs) CreateCommentRequest(input *CreateCommentInput) (req *request
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateComment for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeDocumentLockedForCommentsException "DocumentLockedForCommentsException"
+//   * DocumentLockedForCommentsException
 //   This exception is thrown when the document is locked for comments and user
 //   tries to create or delete a comment on that document.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateComment
+//   * InvalidCommentOperationException
+//   The requested operation is not allowed on the specified comment object.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateComment
 func (c *WorkDocs) CreateComment(input *CreateCommentInput) (*CreateCommentOutput, error) {
 	req, out := c.CreateCommentRequest(input)
 	return out, req.Send()
@@ -405,19 +403,18 @@ const opCreateCustomMetadata = "CreateCustomMetadata"
 
 // CreateCustomMetadataRequest generates a "aws/request.Request" representing the
 // client's request for the CreateCustomMetadata operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateCustomMetadata for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateCustomMetadata method directly
-// instead.
+// See CreateCustomMetadata for more information on using the CreateCustomMetadata
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateCustomMetadataRequest method.
 //    req, resp := client.CreateCustomMetadataRequest(params)
@@ -427,7 +424,7 @@ const opCreateCustomMetadata = "CreateCustomMetadata"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadata
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadata
 func (c *WorkDocs) CreateCustomMetadataRequest(input *CreateCustomMetadataInput) (req *request.Request, output *CreateCustomMetadataOutput) {
 	op := &request.Operation{
 		Name:       opCreateCustomMetadata,
@@ -441,6 +438,7 @@ func (c *WorkDocs) CreateCustomMetadataRequest(input *CreateCustomMetadataInput)
 
 	output = &CreateCustomMetadataOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -456,32 +454,32 @@ func (c *WorkDocs) CreateCustomMetadataRequest(input *CreateCustomMetadataInput)
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateCustomMetadata for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeCustomMetadataLimitExceededException "CustomMetadataLimitExceededException"
+//   * CustomMetadataLimitExceededException
 //   The limit has been reached on the number of custom properties for the specified
 //   resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadata
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadata
 func (c *WorkDocs) CreateCustomMetadata(input *CreateCustomMetadataInput) (*CreateCustomMetadataOutput, error) {
 	req, out := c.CreateCustomMetadataRequest(input)
 	return out, req.Send()
@@ -507,19 +505,18 @@ const opCreateFolder = "CreateFolder"
 
 // CreateFolderRequest generates a "aws/request.Request" representing the
 // client's request for the CreateFolder operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateFolder for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateFolder method directly
-// instead.
+// See CreateFolder for more information on using the CreateFolder
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateFolderRequest method.
 //    req, resp := client.CreateFolderRequest(params)
@@ -529,7 +526,7 @@ const opCreateFolder = "CreateFolder"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolder
 func (c *WorkDocs) CreateFolderRequest(input *CreateFolderInput) (req *request.Request, output *CreateFolderOutput) {
 	op := &request.Operation{
 		Name:       opCreateFolder,
@@ -557,34 +554,38 @@ func (c *WorkDocs) CreateFolderRequest(input *CreateFolderInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateFolder for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeEntityAlreadyExistsException "EntityAlreadyExistsException"
+//   * EntityAlreadyExistsException
 //   The resource already exists.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * LimitExceededException
 //   The maximum of 100,000 folders under the parent folder has been exceeded.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolder
 func (c *WorkDocs) CreateFolder(input *CreateFolderInput) (*CreateFolderOutput, error) {
 	req, out := c.CreateFolderRequest(input)
 	return out, req.Send()
@@ -610,19 +611,18 @@ const opCreateLabels = "CreateLabels"
 
 // CreateLabelsRequest generates a "aws/request.Request" representing the
 // client's request for the CreateLabels operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateLabels for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateLabels method directly
-// instead.
+// See CreateLabels for more information on using the CreateLabels
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateLabelsRequest method.
 //    req, resp := client.CreateLabelsRequest(params)
@@ -632,7 +632,7 @@ const opCreateLabels = "CreateLabels"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabels
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabels
 func (c *WorkDocs) CreateLabelsRequest(input *CreateLabelsInput) (req *request.Request, output *CreateLabelsOutput) {
 	op := &request.Operation{
 		Name:       opCreateLabels,
@@ -646,6 +646,7 @@ func (c *WorkDocs) CreateLabelsRequest(input *CreateLabelsInput) (req *request.R
 
 	output = &CreateLabelsOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -660,28 +661,28 @@ func (c *WorkDocs) CreateLabelsRequest(input *CreateLabelsInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateLabels for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeTooManyLabelsException "TooManyLabelsException"
+//   * TooManyLabelsException
 //   The limit has been reached on the number of labels for the specified resource.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabels
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabels
 func (c *WorkDocs) CreateLabels(input *CreateLabelsInput) (*CreateLabelsOutput, error) {
 	req, out := c.CreateLabelsRequest(input)
 	return out, req.Send()
@@ -707,19 +708,18 @@ const opCreateNotificationSubscription = "CreateNotificationSubscription"
 
 // CreateNotificationSubscriptionRequest generates a "aws/request.Request" representing the
 // client's request for the CreateNotificationSubscription operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateNotificationSubscription for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateNotificationSubscription method directly
-// instead.
+// See CreateNotificationSubscription for more information on using the CreateNotificationSubscription
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateNotificationSubscriptionRequest method.
 //    req, resp := client.CreateNotificationSubscriptionRequest(params)
@@ -729,7 +729,7 @@ const opCreateNotificationSubscription = "CreateNotificationSubscription"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscription
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscription
 func (c *WorkDocs) CreateNotificationSubscriptionRequest(input *CreateNotificationSubscriptionInput) (req *request.Request, output *CreateNotificationSubscriptionOutput) {
 	op := &request.Operation{
 		Name:       opCreateNotificationSubscription,
@@ -748,11 +748,11 @@ func (c *WorkDocs) CreateNotificationSubscriptionRequest(input *CreateNotificati
 
 // CreateNotificationSubscription API operation for Amazon WorkDocs.
 //
-// Configure WorkDocs to use Amazon SNS notifications.
+// Configure Amazon WorkDocs to use Amazon SNS notifications. The endpoint receives
+// a confirmation message, and must confirm the subscription.
 //
-// The endpoint receives a confirmation message, and must confirm the subscription.
-// For more information, see Confirm the Subscription (http://docs.aws.amazon.com/sns/latest/dg/SendMessageToHttp.html#SendMessageToHttp.confirm)
-// in the Amazon Simple Notification Service Developer Guide.
+// For more information, see Subscribe to Notifications (https://docs.aws.amazon.com/workdocs/latest/developerguide/subscribe-notifications.html)
+// in the Amazon WorkDocs Developer Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -761,18 +761,18 @@ func (c *WorkDocs) CreateNotificationSubscriptionRequest(input *CreateNotificati
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateNotificationSubscription for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+// Returned Error Types:
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeTooManySubscriptionsException "TooManySubscriptionsException"
+//   * TooManySubscriptionsException
 //   You've reached the limit on the number of subscriptions for the WorkDocs
 //   instance.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscription
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscription
 func (c *WorkDocs) CreateNotificationSubscription(input *CreateNotificationSubscriptionInput) (*CreateNotificationSubscriptionOutput, error) {
 	req, out := c.CreateNotificationSubscriptionRequest(input)
 	return out, req.Send()
@@ -798,19 +798,18 @@ const opCreateUser = "CreateUser"
 
 // CreateUserRequest generates a "aws/request.Request" representing the
 // client's request for the CreateUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See CreateUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the CreateUser method directly
-// instead.
+// See CreateUser for more information on using the CreateUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the CreateUserRequest method.
 //    req, resp := client.CreateUserRequest(params)
@@ -820,7 +819,7 @@ const opCreateUser = "CreateUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUser
 func (c *WorkDocs) CreateUserRequest(input *CreateUserInput) (req *request.Request, output *CreateUserOutput) {
 	op := &request.Operation{
 		Name:       opCreateUser,
@@ -849,25 +848,25 @@ func (c *WorkDocs) CreateUserRequest(input *CreateUserInput) (req *request.Reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation CreateUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityAlreadyExistsException "EntityAlreadyExistsException"
+// Returned Error Types:
+//   * EntityAlreadyExistsException
 //   The resource already exists.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUser
 func (c *WorkDocs) CreateUser(input *CreateUserInput) (*CreateUserOutput, error) {
 	req, out := c.CreateUserRequest(input)
 	return out, req.Send()
@@ -893,19 +892,18 @@ const opDeactivateUser = "DeactivateUser"
 
 // DeactivateUserRequest generates a "aws/request.Request" representing the
 // client's request for the DeactivateUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeactivateUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeactivateUser method directly
-// instead.
+// See DeactivateUser for more information on using the DeactivateUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeactivateUserRequest method.
 //    req, resp := client.DeactivateUserRequest(params)
@@ -915,7 +913,7 @@ const opDeactivateUser = "DeactivateUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUser
 func (c *WorkDocs) DeactivateUserRequest(input *DeactivateUserInput) (req *request.Request, output *DeactivateUserOutput) {
 	op := &request.Operation{
 		Name:       opDeactivateUser,
@@ -929,8 +927,7 @@ func (c *WorkDocs) DeactivateUserRequest(input *DeactivateUserInput) (req *reque
 
 	output = &DeactivateUserOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -946,25 +943,25 @@ func (c *WorkDocs) DeactivateUserRequest(input *DeactivateUserInput) (req *reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeactivateUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUser
 func (c *WorkDocs) DeactivateUser(input *DeactivateUserInput) (*DeactivateUserOutput, error) {
 	req, out := c.DeactivateUserRequest(input)
 	return out, req.Send()
@@ -990,19 +987,18 @@ const opDeleteComment = "DeleteComment"
 
 // DeleteCommentRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteComment operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteComment for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteComment method directly
-// instead.
+// See DeleteComment for more information on using the DeleteComment
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteCommentRequest method.
 //    req, resp := client.DeleteCommentRequest(params)
@@ -1012,7 +1008,7 @@ const opDeleteComment = "DeleteComment"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteComment
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteComment
 func (c *WorkDocs) DeleteCommentRequest(input *DeleteCommentInput) (req *request.Request, output *DeleteCommentOutput) {
 	op := &request.Operation{
 		Name:       opDeleteComment,
@@ -1026,8 +1022,7 @@ func (c *WorkDocs) DeleteCommentRequest(input *DeleteCommentInput) (req *request
 
 	output = &DeleteCommentOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1042,32 +1037,32 @@ func (c *WorkDocs) DeleteCommentRequest(input *DeleteCommentInput) (req *request
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteComment for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeDocumentLockedForCommentsException "DocumentLockedForCommentsException"
+//   * DocumentLockedForCommentsException
 //   This exception is thrown when the document is locked for comments and user
 //   tries to create or delete a comment on that document.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteComment
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteComment
 func (c *WorkDocs) DeleteComment(input *DeleteCommentInput) (*DeleteCommentOutput, error) {
 	req, out := c.DeleteCommentRequest(input)
 	return out, req.Send()
@@ -1093,19 +1088,18 @@ const opDeleteCustomMetadata = "DeleteCustomMetadata"
 
 // DeleteCustomMetadataRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteCustomMetadata operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteCustomMetadata for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteCustomMetadata method directly
-// instead.
+// See DeleteCustomMetadata for more information on using the DeleteCustomMetadata
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteCustomMetadataRequest method.
 //    req, resp := client.DeleteCustomMetadataRequest(params)
@@ -1115,7 +1109,7 @@ const opDeleteCustomMetadata = "DeleteCustomMetadata"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadata
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadata
 func (c *WorkDocs) DeleteCustomMetadataRequest(input *DeleteCustomMetadataInput) (req *request.Request, output *DeleteCustomMetadataOutput) {
 	op := &request.Operation{
 		Name:       opDeleteCustomMetadata,
@@ -1129,6 +1123,7 @@ func (c *WorkDocs) DeleteCustomMetadataRequest(input *DeleteCustomMetadataInput)
 
 	output = &DeleteCustomMetadataOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1143,28 +1138,28 @@ func (c *WorkDocs) DeleteCustomMetadataRequest(input *DeleteCustomMetadataInput)
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteCustomMetadata for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadata
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadata
 func (c *WorkDocs) DeleteCustomMetadata(input *DeleteCustomMetadataInput) (*DeleteCustomMetadataOutput, error) {
 	req, out := c.DeleteCustomMetadataRequest(input)
 	return out, req.Send()
@@ -1190,19 +1185,18 @@ const opDeleteDocument = "DeleteDocument"
 
 // DeleteDocumentRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteDocument operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteDocument for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteDocument method directly
-// instead.
+// See DeleteDocument for more information on using the DeleteDocument
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteDocumentRequest method.
 //    req, resp := client.DeleteDocumentRequest(params)
@@ -1212,7 +1206,7 @@ const opDeleteDocument = "DeleteDocument"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocument
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocument
 func (c *WorkDocs) DeleteDocumentRequest(input *DeleteDocumentInput) (req *request.Request, output *DeleteDocumentOutput) {
 	op := &request.Operation{
 		Name:       opDeleteDocument,
@@ -1226,8 +1220,7 @@ func (c *WorkDocs) DeleteDocumentRequest(input *DeleteDocumentInput) (req *reque
 
 	output = &DeleteDocumentOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1242,31 +1235,35 @@ func (c *WorkDocs) DeleteDocumentRequest(input *DeleteDocumentInput) (req *reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteDocument for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * ConcurrentModificationException
 //   The resource hierarchy is changing.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocument
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocument
 func (c *WorkDocs) DeleteDocument(input *DeleteDocumentInput) (*DeleteDocumentOutput, error) {
 	req, out := c.DeleteDocumentRequest(input)
 	return out, req.Send()
@@ -1292,19 +1289,18 @@ const opDeleteFolder = "DeleteFolder"
 
 // DeleteFolderRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteFolder operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteFolder for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteFolder method directly
-// instead.
+// See DeleteFolder for more information on using the DeleteFolder
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteFolderRequest method.
 //    req, resp := client.DeleteFolderRequest(params)
@@ -1314,7 +1310,7 @@ const opDeleteFolder = "DeleteFolder"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolder
 func (c *WorkDocs) DeleteFolderRequest(input *DeleteFolderInput) (req *request.Request, output *DeleteFolderOutput) {
 	op := &request.Operation{
 		Name:       opDeleteFolder,
@@ -1328,8 +1324,7 @@ func (c *WorkDocs) DeleteFolderRequest(input *DeleteFolderInput) (req *request.R
 
 	output = &DeleteFolderOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1344,31 +1339,35 @@ func (c *WorkDocs) DeleteFolderRequest(input *DeleteFolderInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteFolder for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * ConcurrentModificationException
 //   The resource hierarchy is changing.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolder
 func (c *WorkDocs) DeleteFolder(input *DeleteFolderInput) (*DeleteFolderOutput, error) {
 	req, out := c.DeleteFolderRequest(input)
 	return out, req.Send()
@@ -1394,19 +1393,18 @@ const opDeleteFolderContents = "DeleteFolderContents"
 
 // DeleteFolderContentsRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteFolderContents operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteFolderContents for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteFolderContents method directly
-// instead.
+// See DeleteFolderContents for more information on using the DeleteFolderContents
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteFolderContentsRequest method.
 //    req, resp := client.DeleteFolderContentsRequest(params)
@@ -1416,7 +1414,7 @@ const opDeleteFolderContents = "DeleteFolderContents"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContents
 func (c *WorkDocs) DeleteFolderContentsRequest(input *DeleteFolderContentsInput) (req *request.Request, output *DeleteFolderContentsOutput) {
 	op := &request.Operation{
 		Name:       opDeleteFolderContents,
@@ -1430,8 +1428,7 @@ func (c *WorkDocs) DeleteFolderContentsRequest(input *DeleteFolderContentsInput)
 
 	output = &DeleteFolderContentsOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1446,25 +1443,32 @@ func (c *WorkDocs) DeleteFolderContentsRequest(input *DeleteFolderContentsInput)
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteFolderContents for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * ProhibitedStateException
+//   The specified document version is not in the INITIALIZED state.
+//
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContents
 func (c *WorkDocs) DeleteFolderContents(input *DeleteFolderContentsInput) (*DeleteFolderContentsOutput, error) {
 	req, out := c.DeleteFolderContentsRequest(input)
 	return out, req.Send()
@@ -1490,19 +1494,18 @@ const opDeleteLabels = "DeleteLabels"
 
 // DeleteLabelsRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteLabels operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteLabels for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteLabels method directly
-// instead.
+// See DeleteLabels for more information on using the DeleteLabels
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteLabelsRequest method.
 //    req, resp := client.DeleteLabelsRequest(params)
@@ -1512,7 +1515,7 @@ const opDeleteLabels = "DeleteLabels"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabels
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabels
 func (c *WorkDocs) DeleteLabelsRequest(input *DeleteLabelsInput) (req *request.Request, output *DeleteLabelsOutput) {
 	op := &request.Operation{
 		Name:       opDeleteLabels,
@@ -1526,6 +1529,7 @@ func (c *WorkDocs) DeleteLabelsRequest(input *DeleteLabelsInput) (req *request.R
 
 	output = &DeleteLabelsOutput{}
 	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1540,25 +1544,25 @@ func (c *WorkDocs) DeleteLabelsRequest(input *DeleteLabelsInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteLabels for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabels
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabels
 func (c *WorkDocs) DeleteLabels(input *DeleteLabelsInput) (*DeleteLabelsOutput, error) {
 	req, out := c.DeleteLabelsRequest(input)
 	return out, req.Send()
@@ -1584,19 +1588,18 @@ const opDeleteNotificationSubscription = "DeleteNotificationSubscription"
 
 // DeleteNotificationSubscriptionRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteNotificationSubscription operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteNotificationSubscription for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteNotificationSubscription method directly
-// instead.
+// See DeleteNotificationSubscription for more information on using the DeleteNotificationSubscription
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteNotificationSubscriptionRequest method.
 //    req, resp := client.DeleteNotificationSubscriptionRequest(params)
@@ -1606,7 +1609,7 @@ const opDeleteNotificationSubscription = "DeleteNotificationSubscription"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscription
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscription
 func (c *WorkDocs) DeleteNotificationSubscriptionRequest(input *DeleteNotificationSubscriptionInput) (req *request.Request, output *DeleteNotificationSubscriptionOutput) {
 	op := &request.Operation{
 		Name:       opDeleteNotificationSubscription,
@@ -1620,8 +1623,7 @@ func (c *WorkDocs) DeleteNotificationSubscriptionRequest(input *DeleteNotificati
 
 	output = &DeleteNotificationSubscriptionOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1636,20 +1638,20 @@ func (c *WorkDocs) DeleteNotificationSubscriptionRequest(input *DeleteNotificati
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteNotificationSubscription for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+// Returned Error Types:
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscription
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscription
 func (c *WorkDocs) DeleteNotificationSubscription(input *DeleteNotificationSubscriptionInput) (*DeleteNotificationSubscriptionOutput, error) {
 	req, out := c.DeleteNotificationSubscriptionRequest(input)
 	return out, req.Send()
@@ -1675,19 +1677,18 @@ const opDeleteUser = "DeleteUser"
 
 // DeleteUserRequest generates a "aws/request.Request" representing the
 // client's request for the DeleteUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DeleteUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DeleteUser method directly
-// instead.
+// See DeleteUser for more information on using the DeleteUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DeleteUserRequest method.
 //    req, resp := client.DeleteUserRequest(params)
@@ -1697,7 +1698,7 @@ const opDeleteUser = "DeleteUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUser
 func (c *WorkDocs) DeleteUserRequest(input *DeleteUserInput) (req *request.Request, output *DeleteUserOutput) {
 	op := &request.Operation{
 		Name:       opDeleteUser,
@@ -1711,8 +1712,7 @@ func (c *WorkDocs) DeleteUserRequest(input *DeleteUserInput) (req *request.Reque
 
 	output = &DeleteUserOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -1727,25 +1727,25 @@ func (c *WorkDocs) DeleteUserRequest(input *DeleteUserInput) (req *request.Reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DeleteUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUser
 func (c *WorkDocs) DeleteUser(input *DeleteUserInput) (*DeleteUserOutput, error) {
 	req, out := c.DeleteUserRequest(input)
 	return out, req.Send()
@@ -1771,19 +1771,18 @@ const opDescribeActivities = "DescribeActivities"
 
 // DescribeActivitiesRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeActivities operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeActivities for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeActivities method directly
-// instead.
+// See DescribeActivities for more information on using the DescribeActivities
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeActivitiesRequest method.
 //    req, resp := client.DescribeActivitiesRequest(params)
@@ -1793,7 +1792,7 @@ const opDescribeActivities = "DescribeActivities"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivities
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivities
 func (c *WorkDocs) DescribeActivitiesRequest(input *DescribeActivitiesInput) (req *request.Request, output *DescribeActivitiesOutput) {
 	op := &request.Operation{
 		Name:       opDescribeActivities,
@@ -1821,25 +1820,25 @@ func (c *WorkDocs) DescribeActivitiesRequest(input *DescribeActivitiesInput) (re
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeActivities for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivities
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivities
 func (c *WorkDocs) DescribeActivities(input *DescribeActivitiesInput) (*DescribeActivitiesOutput, error) {
 	req, out := c.DescribeActivitiesRequest(input)
 	return out, req.Send()
@@ -1865,19 +1864,18 @@ const opDescribeComments = "DescribeComments"
 
 // DescribeCommentsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeComments operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeComments for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeComments method directly
-// instead.
+// See DescribeComments for more information on using the DescribeComments
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeCommentsRequest method.
 //    req, resp := client.DescribeCommentsRequest(params)
@@ -1887,7 +1885,7 @@ const opDescribeComments = "DescribeComments"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeComments
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeComments
 func (c *WorkDocs) DescribeCommentsRequest(input *DescribeCommentsInput) (req *request.Request, output *DescribeCommentsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeComments,
@@ -1915,28 +1913,28 @@ func (c *WorkDocs) DescribeCommentsRequest(input *DescribeCommentsInput) (req *r
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeComments for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeComments
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeComments
 func (c *WorkDocs) DescribeComments(input *DescribeCommentsInput) (*DescribeCommentsOutput, error) {
 	req, out := c.DescribeCommentsRequest(input)
 	return out, req.Send()
@@ -1962,19 +1960,18 @@ const opDescribeDocumentVersions = "DescribeDocumentVersions"
 
 // DescribeDocumentVersionsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeDocumentVersions operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeDocumentVersions for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeDocumentVersions method directly
-// instead.
+// See DescribeDocumentVersions for more information on using the DescribeDocumentVersions
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeDocumentVersionsRequest method.
 //    req, resp := client.DescribeDocumentVersionsRequest(params)
@@ -1984,7 +1981,7 @@ const opDescribeDocumentVersions = "DescribeDocumentVersions"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersions
 func (c *WorkDocs) DescribeDocumentVersionsRequest(input *DescribeDocumentVersionsInput) (req *request.Request, output *DescribeDocumentVersionsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeDocumentVersions,
@@ -2020,31 +2017,31 @@ func (c *WorkDocs) DescribeDocumentVersionsRequest(input *DescribeDocumentVersio
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeDocumentVersions for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersions
 func (c *WorkDocs) DescribeDocumentVersions(input *DescribeDocumentVersionsInput) (*DescribeDocumentVersionsOutput, error) {
 	req, out := c.DescribeDocumentVersionsRequest(input)
 	return out, req.Send()
@@ -2077,7 +2074,7 @@ func (c *WorkDocs) DescribeDocumentVersionsWithContext(ctx aws.Context, input *D
 //    // Example iterating over at most 3 pages of a DescribeDocumentVersions operation.
 //    pageNum := 0
 //    err := client.DescribeDocumentVersionsPages(params,
-//        func(page *DescribeDocumentVersionsOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeDocumentVersionsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2109,10 +2106,12 @@ func (c *WorkDocs) DescribeDocumentVersionsPagesWithContext(ctx aws.Context, inp
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeDocumentVersionsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeDocumentVersionsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -2120,19 +2119,18 @@ const opDescribeFolderContents = "DescribeFolderContents"
 
 // DescribeFolderContentsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeFolderContents operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeFolderContents for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeFolderContents method directly
-// instead.
+// See DescribeFolderContents for more information on using the DescribeFolderContents
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeFolderContentsRequest method.
 //    req, resp := client.DescribeFolderContentsRequest(params)
@@ -2142,7 +2140,7 @@ const opDescribeFolderContents = "DescribeFolderContents"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContents
 func (c *WorkDocs) DescribeFolderContentsRequest(input *DescribeFolderContentsInput) (req *request.Request, output *DescribeFolderContentsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeFolderContents,
@@ -2182,28 +2180,28 @@ func (c *WorkDocs) DescribeFolderContentsRequest(input *DescribeFolderContentsIn
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeFolderContents for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContents
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContents
 func (c *WorkDocs) DescribeFolderContents(input *DescribeFolderContentsInput) (*DescribeFolderContentsOutput, error) {
 	req, out := c.DescribeFolderContentsRequest(input)
 	return out, req.Send()
@@ -2236,7 +2234,7 @@ func (c *WorkDocs) DescribeFolderContentsWithContext(ctx aws.Context, input *Des
 //    // Example iterating over at most 3 pages of a DescribeFolderContents operation.
 //    pageNum := 0
 //    err := client.DescribeFolderContentsPages(params,
-//        func(page *DescribeFolderContentsOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeFolderContentsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2268,30 +2266,122 @@ func (c *WorkDocs) DescribeFolderContentsPagesWithContext(ctx aws.Context, input
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeFolderContentsOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeFolderContentsOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
+}
+
+const opDescribeGroups = "DescribeGroups"
+
+// DescribeGroupsRequest generates a "aws/request.Request" representing the
+// client's request for the DescribeGroups operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DescribeGroups for more information on using the DescribeGroups
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DescribeGroupsRequest method.
+//    req, resp := client.DescribeGroupsRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeGroups
+func (c *WorkDocs) DescribeGroupsRequest(input *DescribeGroupsInput) (req *request.Request, output *DescribeGroupsOutput) {
+	op := &request.Operation{
+		Name:       opDescribeGroups,
+		HTTPMethod: "GET",
+		HTTPPath:   "/api/v1/groups",
+	}
+
+	if input == nil {
+		input = &DescribeGroupsInput{}
+	}
+
+	output = &DescribeGroupsOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DescribeGroups API operation for Amazon WorkDocs.
+//
+// Describes the groups specified by the query. Groups are defined by the underlying
+// Active Directory.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon WorkDocs's
+// API operation DescribeGroups for usage and error information.
+//
+// Returned Error Types:
+//   * UnauthorizedOperationException
+//   The operation is not permitted.
+//
+//   * UnauthorizedResourceAccessException
+//   The caller does not have access to perform the action on the resource.
+//
+//   * FailedDependencyException
+//   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
+//
+//   * ServiceUnavailableException
+//   One or more of the dependencies is unavailable.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeGroups
+func (c *WorkDocs) DescribeGroups(input *DescribeGroupsInput) (*DescribeGroupsOutput, error) {
+	req, out := c.DescribeGroupsRequest(input)
+	return out, req.Send()
+}
+
+// DescribeGroupsWithContext is the same as DescribeGroups with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DescribeGroups for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *WorkDocs) DescribeGroupsWithContext(ctx aws.Context, input *DescribeGroupsInput, opts ...request.Option) (*DescribeGroupsOutput, error) {
+	req, out := c.DescribeGroupsRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
 }
 
 const opDescribeNotificationSubscriptions = "DescribeNotificationSubscriptions"
 
 // DescribeNotificationSubscriptionsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeNotificationSubscriptions operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeNotificationSubscriptions for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeNotificationSubscriptions method directly
-// instead.
+// See DescribeNotificationSubscriptions for more information on using the DescribeNotificationSubscriptions
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeNotificationSubscriptionsRequest method.
 //    req, resp := client.DescribeNotificationSubscriptionsRequest(params)
@@ -2301,7 +2391,7 @@ const opDescribeNotificationSubscriptions = "DescribeNotificationSubscriptions"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptions
 func (c *WorkDocs) DescribeNotificationSubscriptionsRequest(input *DescribeNotificationSubscriptionsInput) (req *request.Request, output *DescribeNotificationSubscriptionsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeNotificationSubscriptions,
@@ -2329,17 +2419,17 @@ func (c *WorkDocs) DescribeNotificationSubscriptionsRequest(input *DescribeNotif
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeNotificationSubscriptions for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+// Returned Error Types:
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptions
 func (c *WorkDocs) DescribeNotificationSubscriptions(input *DescribeNotificationSubscriptionsInput) (*DescribeNotificationSubscriptionsOutput, error) {
 	req, out := c.DescribeNotificationSubscriptionsRequest(input)
 	return out, req.Send()
@@ -2365,19 +2455,18 @@ const opDescribeResourcePermissions = "DescribeResourcePermissions"
 
 // DescribeResourcePermissionsRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeResourcePermissions operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeResourcePermissions for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeResourcePermissions method directly
-// instead.
+// See DescribeResourcePermissions for more information on using the DescribeResourcePermissions
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeResourcePermissionsRequest method.
 //    req, resp := client.DescribeResourcePermissionsRequest(params)
@@ -2387,7 +2476,7 @@ const opDescribeResourcePermissions = "DescribeResourcePermissions"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissions
 func (c *WorkDocs) DescribeResourcePermissionsRequest(input *DescribeResourcePermissionsInput) (req *request.Request, output *DescribeResourcePermissionsOutput) {
 	op := &request.Operation{
 		Name:       opDescribeResourcePermissions,
@@ -2415,22 +2504,22 @@ func (c *WorkDocs) DescribeResourcePermissionsRequest(input *DescribeResourcePer
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeResourcePermissions for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissions
 func (c *WorkDocs) DescribeResourcePermissions(input *DescribeResourcePermissionsInput) (*DescribeResourcePermissionsOutput, error) {
 	req, out := c.DescribeResourcePermissionsRequest(input)
 	return out, req.Send()
@@ -2456,19 +2545,18 @@ const opDescribeRootFolders = "DescribeRootFolders"
 
 // DescribeRootFoldersRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeRootFolders operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeRootFolders for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeRootFolders method directly
-// instead.
+// See DescribeRootFolders for more information on using the DescribeRootFolders
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeRootFoldersRequest method.
 //    req, resp := client.DescribeRootFoldersRequest(params)
@@ -2478,7 +2566,7 @@ const opDescribeRootFolders = "DescribeRootFolders"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFolders
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFolders
 func (c *WorkDocs) DescribeRootFoldersRequest(input *DescribeRootFoldersInput) (req *request.Request, output *DescribeRootFoldersOutput) {
 	op := &request.Operation{
 		Name:       opDescribeRootFolders,
@@ -2497,10 +2585,15 @@ func (c *WorkDocs) DescribeRootFoldersRequest(input *DescribeRootFoldersInput) (
 
 // DescribeRootFolders API operation for Amazon WorkDocs.
 //
-// Describes the current user's special folders; the RootFolder and the RecyleBin.
-// RootFolder is the root of user's files and folders and RecyleBin is the root
-// of recycled items. This is not a valid action for SigV4 (administrative API)
-// clients.
+// Describes the current user's special folders; the RootFolder and the RecycleBin.
+// RootFolder is the root of user's files and folders and RecycleBin is the
+// root of recycled items. This is not a valid action for SigV4 (administrative
+// API) clients.
+//
+// This action requires an authentication token. To get an authentication token,
+// register an application with Amazon WorkDocs. For more information, see Authentication
+// and Access Control for User Applications (https://docs.aws.amazon.com/workdocs/latest/developerguide/wd-auth-user.html)
+// in the Amazon WorkDocs Developer Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -2509,25 +2602,25 @@ func (c *WorkDocs) DescribeRootFoldersRequest(input *DescribeRootFoldersInput) (
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeRootFolders for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFolders
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFolders
 func (c *WorkDocs) DescribeRootFolders(input *DescribeRootFoldersInput) (*DescribeRootFoldersOutput, error) {
 	req, out := c.DescribeRootFoldersRequest(input)
 	return out, req.Send()
@@ -2553,19 +2646,18 @@ const opDescribeUsers = "DescribeUsers"
 
 // DescribeUsersRequest generates a "aws/request.Request" representing the
 // client's request for the DescribeUsers operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See DescribeUsers for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the DescribeUsers method directly
-// instead.
+// See DescribeUsers for more information on using the DescribeUsers
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the DescribeUsersRequest method.
 //    req, resp := client.DescribeUsersRequest(params)
@@ -2575,7 +2667,7 @@ const opDescribeUsers = "DescribeUsers"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsers
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsers
 func (c *WorkDocs) DescribeUsersRequest(input *DescribeUsersInput) (req *request.Request, output *DescribeUsersOutput) {
 	op := &request.Operation{
 		Name:       opDescribeUsers,
@@ -2614,25 +2706,32 @@ func (c *WorkDocs) DescribeUsersRequest(input *DescribeUsersInput) (req *request
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation DescribeUsers for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * EntityNotExistsException
+//   The resource does not exist.
+//
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsers
+//   * RequestedEntityTooLargeException
+//   The response is too large to return. The request must include a filter to
+//   reduce the size of the response.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsers
 func (c *WorkDocs) DescribeUsers(input *DescribeUsersInput) (*DescribeUsersOutput, error) {
 	req, out := c.DescribeUsersRequest(input)
 	return out, req.Send()
@@ -2665,7 +2764,7 @@ func (c *WorkDocs) DescribeUsersWithContext(ctx aws.Context, input *DescribeUser
 //    // Example iterating over at most 3 pages of a DescribeUsers operation.
 //    pageNum := 0
 //    err := client.DescribeUsersPages(params,
-//        func(page *DescribeUsersOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeUsersOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2697,10 +2796,12 @@ func (c *WorkDocs) DescribeUsersPagesWithContext(ctx aws.Context, input *Describ
 		},
 	}
 
-	cont := true
-	for p.Next() && cont {
-		cont = fn(p.Page().(*DescribeUsersOutput), !p.HasNextPage())
+	for p.Next() {
+		if !fn(p.Page().(*DescribeUsersOutput), !p.HasNextPage()) {
+			break
+		}
 	}
+
 	return p.Err()
 }
 
@@ -2708,19 +2809,18 @@ const opGetCurrentUser = "GetCurrentUser"
 
 // GetCurrentUserRequest generates a "aws/request.Request" representing the
 // client's request for the GetCurrentUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetCurrentUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetCurrentUser method directly
-// instead.
+// See GetCurrentUser for more information on using the GetCurrentUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetCurrentUserRequest method.
 //    req, resp := client.GetCurrentUserRequest(params)
@@ -2730,7 +2830,7 @@ const opGetCurrentUser = "GetCurrentUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUser
 func (c *WorkDocs) GetCurrentUserRequest(input *GetCurrentUserInput) (req *request.Request, output *GetCurrentUserOutput) {
 	op := &request.Operation{
 		Name:       opGetCurrentUser,
@@ -2752,6 +2852,11 @@ func (c *WorkDocs) GetCurrentUserRequest(input *GetCurrentUserInput) (req *reque
 // Retrieves details of the current user for whom the authentication token was
 // generated. This is not a valid action for SigV4 (administrative API) clients.
 //
+// This action requires an authentication token. To get an authentication token,
+// register an application with Amazon WorkDocs. For more information, see Authentication
+// and Access Control for User Applications (https://docs.aws.amazon.com/workdocs/latest/developerguide/wd-auth-user.html)
+// in the Amazon WorkDocs Developer Guide.
+//
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
 // the error.
@@ -2759,25 +2864,25 @@ func (c *WorkDocs) GetCurrentUserRequest(input *GetCurrentUserInput) (req *reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetCurrentUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUser
 func (c *WorkDocs) GetCurrentUser(input *GetCurrentUserInput) (*GetCurrentUserOutput, error) {
 	req, out := c.GetCurrentUserRequest(input)
 	return out, req.Send()
@@ -2803,19 +2908,18 @@ const opGetDocument = "GetDocument"
 
 // GetDocumentRequest generates a "aws/request.Request" representing the
 // client's request for the GetDocument operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetDocument for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetDocument method directly
-// instead.
+// See GetDocument for more information on using the GetDocument
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetDocumentRequest method.
 //    req, resp := client.GetDocumentRequest(params)
@@ -2825,7 +2929,7 @@ const opGetDocument = "GetDocument"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocument
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocument
 func (c *WorkDocs) GetDocumentRequest(input *GetDocumentInput) (req *request.Request, output *GetDocumentOutput) {
 	op := &request.Operation{
 		Name:       opGetDocument,
@@ -2853,28 +2957,31 @@ func (c *WorkDocs) GetDocumentRequest(input *GetDocumentInput) (req *request.Req
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetDocument for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocument
+//   * InvalidPasswordException
+//   The password is invalid.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocument
 func (c *WorkDocs) GetDocument(input *GetDocumentInput) (*GetDocumentOutput, error) {
 	req, out := c.GetDocumentRequest(input)
 	return out, req.Send()
@@ -2900,19 +3007,18 @@ const opGetDocumentPath = "GetDocumentPath"
 
 // GetDocumentPathRequest generates a "aws/request.Request" representing the
 // client's request for the GetDocumentPath operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetDocumentPath for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetDocumentPath method directly
-// instead.
+// See GetDocumentPath for more information on using the GetDocumentPath
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetDocumentPathRequest method.
 //    req, resp := client.GetDocumentPathRequest(params)
@@ -2922,7 +3028,7 @@ const opGetDocumentPath = "GetDocumentPath"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPath
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPath
 func (c *WorkDocs) GetDocumentPathRequest(input *GetDocumentPathInput) (req *request.Request, output *GetDocumentPathOutput) {
 	op := &request.Operation{
 		Name:       opGetDocumentPath,
@@ -2956,25 +3062,25 @@ func (c *WorkDocs) GetDocumentPathRequest(input *GetDocumentPathInput) (req *req
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetDocumentPath for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPath
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPath
 func (c *WorkDocs) GetDocumentPath(input *GetDocumentPathInput) (*GetDocumentPathOutput, error) {
 	req, out := c.GetDocumentPathRequest(input)
 	return out, req.Send()
@@ -3000,19 +3106,18 @@ const opGetDocumentVersion = "GetDocumentVersion"
 
 // GetDocumentVersionRequest generates a "aws/request.Request" representing the
 // client's request for the GetDocumentVersion operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetDocumentVersion for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetDocumentVersion method directly
-// instead.
+// See GetDocumentVersion for more information on using the GetDocumentVersion
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetDocumentVersionRequest method.
 //    req, resp := client.GetDocumentVersionRequest(params)
@@ -3022,7 +3127,7 @@ const opGetDocumentVersion = "GetDocumentVersion"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersion
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersion
 func (c *WorkDocs) GetDocumentVersionRequest(input *GetDocumentVersionInput) (req *request.Request, output *GetDocumentVersionOutput) {
 	op := &request.Operation{
 		Name:       opGetDocumentVersion,
@@ -3050,28 +3155,31 @@ func (c *WorkDocs) GetDocumentVersionRequest(input *GetDocumentVersionInput) (re
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetDocumentVersion for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersion
+//   * InvalidPasswordException
+//   The password is invalid.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersion
 func (c *WorkDocs) GetDocumentVersion(input *GetDocumentVersionInput) (*GetDocumentVersionOutput, error) {
 	req, out := c.GetDocumentVersionRequest(input)
 	return out, req.Send()
@@ -3097,19 +3205,18 @@ const opGetFolder = "GetFolder"
 
 // GetFolderRequest generates a "aws/request.Request" representing the
 // client's request for the GetFolder operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetFolder for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetFolder method directly
-// instead.
+// See GetFolder for more information on using the GetFolder
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetFolderRequest method.
 //    req, resp := client.GetFolderRequest(params)
@@ -3119,7 +3226,7 @@ const opGetFolder = "GetFolder"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolder
 func (c *WorkDocs) GetFolderRequest(input *GetFolderInput) (req *request.Request, output *GetFolderOutput) {
 	op := &request.Operation{
 		Name:       opGetFolder,
@@ -3147,31 +3254,31 @@ func (c *WorkDocs) GetFolderRequest(input *GetFolderInput) (req *request.Request
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetFolder for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeInvalidArgumentException "InvalidArgumentException"
-//   The pagination marker and/or limit fields are not valid.
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolder
 func (c *WorkDocs) GetFolder(input *GetFolderInput) (*GetFolderOutput, error) {
 	req, out := c.GetFolderRequest(input)
 	return out, req.Send()
@@ -3197,19 +3304,18 @@ const opGetFolderPath = "GetFolderPath"
 
 // GetFolderPathRequest generates a "aws/request.Request" representing the
 // client's request for the GetFolderPath operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See GetFolderPath for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the GetFolderPath method directly
-// instead.
+// See GetFolderPath for more information on using the GetFolderPath
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the GetFolderPathRequest method.
 //    req, resp := client.GetFolderPathRequest(params)
@@ -3219,7 +3325,7 @@ const opGetFolderPath = "GetFolderPath"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPath
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPath
 func (c *WorkDocs) GetFolderPathRequest(input *GetFolderPathInput) (req *request.Request, output *GetFolderPathOutput) {
 	op := &request.Operation{
 		Name:       opGetFolderPath,
@@ -3253,25 +3359,25 @@ func (c *WorkDocs) GetFolderPathRequest(input *GetFolderPathInput) (req *request
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation GetFolderPath for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPath
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPath
 func (c *WorkDocs) GetFolderPath(input *GetFolderPathInput) (*GetFolderPathOutput, error) {
 	req, out := c.GetFolderPathRequest(input)
 	return out, req.Send()
@@ -3293,23 +3399,116 @@ func (c *WorkDocs) GetFolderPathWithContext(ctx aws.Context, input *GetFolderPat
 	return out, req.Send()
 }
 
+const opGetResources = "GetResources"
+
+// GetResourcesRequest generates a "aws/request.Request" representing the
+// client's request for the GetResources operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetResources for more information on using the GetResources
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetResourcesRequest method.
+//    req, resp := client.GetResourcesRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetResources
+func (c *WorkDocs) GetResourcesRequest(input *GetResourcesInput) (req *request.Request, output *GetResourcesOutput) {
+	op := &request.Operation{
+		Name:       opGetResources,
+		HTTPMethod: "GET",
+		HTTPPath:   "/api/v1/resources",
+	}
+
+	if input == nil {
+		input = &GetResourcesInput{}
+	}
+
+	output = &GetResourcesOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetResources API operation for Amazon WorkDocs.
+//
+// Retrieves a collection of resources, including folders and documents. The
+// only CollectionType supported is SHARED_WITH_ME.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon WorkDocs's
+// API operation GetResources for usage and error information.
+//
+// Returned Error Types:
+//   * UnauthorizedResourceAccessException
+//   The caller does not have access to perform the action on the resource.
+//
+//   * UnauthorizedOperationException
+//   The operation is not permitted.
+//
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
+//
+//   * FailedDependencyException
+//   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
+//
+//   * ServiceUnavailableException
+//   One or more of the dependencies is unavailable.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetResources
+func (c *WorkDocs) GetResources(input *GetResourcesInput) (*GetResourcesOutput, error) {
+	req, out := c.GetResourcesRequest(input)
+	return out, req.Send()
+}
+
+// GetResourcesWithContext is the same as GetResources with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetResources for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *WorkDocs) GetResourcesWithContext(ctx aws.Context, input *GetResourcesInput, opts ...request.Option) (*GetResourcesOutput, error) {
+	req, out := c.GetResourcesRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opInitiateDocumentVersionUpload = "InitiateDocumentVersionUpload"
 
 // InitiateDocumentVersionUploadRequest generates a "aws/request.Request" representing the
 // client's request for the InitiateDocumentVersionUpload operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See InitiateDocumentVersionUpload for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the InitiateDocumentVersionUpload method directly
-// instead.
+// See InitiateDocumentVersionUpload for more information on using the InitiateDocumentVersionUpload
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the InitiateDocumentVersionUploadRequest method.
 //    req, resp := client.InitiateDocumentVersionUploadRequest(params)
@@ -3319,7 +3518,7 @@ const opInitiateDocumentVersionUpload = "InitiateDocumentVersionUpload"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUpload
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUpload
 func (c *WorkDocs) InitiateDocumentVersionUploadRequest(input *InitiateDocumentVersionUploadInput) (req *request.Request, output *InitiateDocumentVersionUploadOutput) {
 	op := &request.Operation{
 		Name:       opInitiateDocumentVersionUpload,
@@ -3354,44 +3553,44 @@ func (c *WorkDocs) InitiateDocumentVersionUploadRequest(input *InitiateDocumentV
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation InitiateDocumentVersionUpload for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeEntityAlreadyExistsException "EntityAlreadyExistsException"
+//   * EntityAlreadyExistsException
 //   The resource already exists.
 //
-//   * ErrCodeStorageLimitExceededException "StorageLimitExceededException"
+//   * StorageLimitExceededException
 //   The storage limit has been exceeded.
 //
-//   * ErrCodeStorageLimitWillExceedException "StorageLimitWillExceedException"
+//   * StorageLimitWillExceedException
 //   The storage limit will be exceeded.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeDraftUploadOutOfSyncException "DraftUploadOutOfSyncException"
+//   * DraftUploadOutOfSyncException
 //   This exception is thrown when a valid checkout ID is not presented on document
 //   version upload calls for a document that has been checked out from Web client.
 //
-//   * ErrCodeResourceAlreadyCheckedOutException "ResourceAlreadyCheckedOutException"
+//   * ResourceAlreadyCheckedOutException
 //   The resource is already checked out.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUpload
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUpload
 func (c *WorkDocs) InitiateDocumentVersionUpload(input *InitiateDocumentVersionUploadInput) (*InitiateDocumentVersionUploadOutput, error) {
 	req, out := c.InitiateDocumentVersionUploadRequest(input)
 	return out, req.Send()
@@ -3417,19 +3616,18 @@ const opRemoveAllResourcePermissions = "RemoveAllResourcePermissions"
 
 // RemoveAllResourcePermissionsRequest generates a "aws/request.Request" representing the
 // client's request for the RemoveAllResourcePermissions operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See RemoveAllResourcePermissions for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the RemoveAllResourcePermissions method directly
-// instead.
+// See RemoveAllResourcePermissions for more information on using the RemoveAllResourcePermissions
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the RemoveAllResourcePermissionsRequest method.
 //    req, resp := client.RemoveAllResourcePermissionsRequest(params)
@@ -3439,7 +3637,7 @@ const opRemoveAllResourcePermissions = "RemoveAllResourcePermissions"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissions
 func (c *WorkDocs) RemoveAllResourcePermissionsRequest(input *RemoveAllResourcePermissionsInput) (req *request.Request, output *RemoveAllResourcePermissionsOutput) {
 	op := &request.Operation{
 		Name:       opRemoveAllResourcePermissions,
@@ -3453,8 +3651,7 @@ func (c *WorkDocs) RemoveAllResourcePermissionsRequest(input *RemoveAllResourceP
 
 	output = &RemoveAllResourcePermissionsOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -3469,22 +3666,22 @@ func (c *WorkDocs) RemoveAllResourcePermissionsRequest(input *RemoveAllResourceP
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation RemoveAllResourcePermissions for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissions
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissions
 func (c *WorkDocs) RemoveAllResourcePermissions(input *RemoveAllResourcePermissionsInput) (*RemoveAllResourcePermissionsOutput, error) {
 	req, out := c.RemoveAllResourcePermissionsRequest(input)
 	return out, req.Send()
@@ -3510,19 +3707,18 @@ const opRemoveResourcePermission = "RemoveResourcePermission"
 
 // RemoveResourcePermissionRequest generates a "aws/request.Request" representing the
 // client's request for the RemoveResourcePermission operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See RemoveResourcePermission for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the RemoveResourcePermission method directly
-// instead.
+// See RemoveResourcePermission for more information on using the RemoveResourcePermission
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the RemoveResourcePermissionRequest method.
 //    req, resp := client.RemoveResourcePermissionRequest(params)
@@ -3532,7 +3728,7 @@ const opRemoveResourcePermission = "RemoveResourcePermission"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermission
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermission
 func (c *WorkDocs) RemoveResourcePermissionRequest(input *RemoveResourcePermissionInput) (req *request.Request, output *RemoveResourcePermissionOutput) {
 	op := &request.Operation{
 		Name:       opRemoveResourcePermission,
@@ -3546,8 +3742,7 @@ func (c *WorkDocs) RemoveResourcePermissionRequest(input *RemoveResourcePermissi
 
 	output = &RemoveResourcePermissionOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -3562,22 +3757,22 @@ func (c *WorkDocs) RemoveResourcePermissionRequest(input *RemoveResourcePermissi
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation RemoveResourcePermission for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+// Returned Error Types:
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermission
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermission
 func (c *WorkDocs) RemoveResourcePermission(input *RemoveResourcePermissionInput) (*RemoveResourcePermissionOutput, error) {
 	req, out := c.RemoveResourcePermissionRequest(input)
 	return out, req.Send()
@@ -3603,19 +3798,18 @@ const opUpdateDocument = "UpdateDocument"
 
 // UpdateDocumentRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateDocument operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateDocument for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateDocument method directly
-// instead.
+// See UpdateDocument for more information on using the UpdateDocument
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateDocumentRequest method.
 //    req, resp := client.UpdateDocumentRequest(params)
@@ -3625,7 +3819,7 @@ const opUpdateDocument = "UpdateDocument"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocument
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocument
 func (c *WorkDocs) UpdateDocumentRequest(input *UpdateDocumentInput) (req *request.Request, output *UpdateDocumentOutput) {
 	op := &request.Operation{
 		Name:       opUpdateDocument,
@@ -3639,8 +3833,7 @@ func (c *WorkDocs) UpdateDocumentRequest(input *UpdateDocumentInput) (req *reque
 
 	output = &UpdateDocumentOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -3656,37 +3849,41 @@ func (c *WorkDocs) UpdateDocumentRequest(input *UpdateDocumentInput) (req *reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation UpdateDocument for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeEntityAlreadyExistsException "EntityAlreadyExistsException"
+//   * EntityAlreadyExistsException
 //   The resource already exists.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
+//   * LimitExceededException
 //   The maximum of 100,000 folders under the parent folder has been exceeded.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * ConcurrentModificationException
 //   The resource hierarchy is changing.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocument
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocument
 func (c *WorkDocs) UpdateDocument(input *UpdateDocumentInput) (*UpdateDocumentOutput, error) {
 	req, out := c.UpdateDocumentRequest(input)
 	return out, req.Send()
@@ -3712,19 +3909,18 @@ const opUpdateDocumentVersion = "UpdateDocumentVersion"
 
 // UpdateDocumentVersionRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateDocumentVersion operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateDocumentVersion for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateDocumentVersion method directly
-// instead.
+// See UpdateDocumentVersion for more information on using the UpdateDocumentVersion
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateDocumentVersionRequest method.
 //    req, resp := client.UpdateDocumentVersionRequest(params)
@@ -3734,7 +3930,7 @@ const opUpdateDocumentVersion = "UpdateDocumentVersion"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersion
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersion
 func (c *WorkDocs) UpdateDocumentVersionRequest(input *UpdateDocumentVersionInput) (req *request.Request, output *UpdateDocumentVersionOutput) {
 	op := &request.Operation{
 		Name:       opUpdateDocumentVersion,
@@ -3748,8 +3944,7 @@ func (c *WorkDocs) UpdateDocumentVersionRequest(input *UpdateDocumentVersionInpu
 
 	output = &UpdateDocumentVersionOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -3768,34 +3963,34 @@ func (c *WorkDocs) UpdateDocumentVersionRequest(input *UpdateDocumentVersionInpu
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation UpdateDocumentVersion for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   * ConcurrentModificationException
 //   The resource hierarchy is changing.
 //
-//   * ErrCodeInvalidOperationException "InvalidOperationException"
+//   * InvalidOperationException
 //   The operation is invalid.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersion
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersion
 func (c *WorkDocs) UpdateDocumentVersion(input *UpdateDocumentVersionInput) (*UpdateDocumentVersionOutput, error) {
 	req, out := c.UpdateDocumentVersionRequest(input)
 	return out, req.Send()
@@ -3821,19 +4016,18 @@ const opUpdateFolder = "UpdateFolder"
 
 // UpdateFolderRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateFolder operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateFolder for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateFolder method directly
-// instead.
+// See UpdateFolder for more information on using the UpdateFolder
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateFolderRequest method.
 //    req, resp := client.UpdateFolderRequest(params)
@@ -3843,7 +4037,7 @@ const opUpdateFolder = "UpdateFolder"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolder
 func (c *WorkDocs) UpdateFolderRequest(input *UpdateFolderInput) (req *request.Request, output *UpdateFolderOutput) {
 	op := &request.Operation{
 		Name:       opUpdateFolder,
@@ -3857,8 +4051,7 @@ func (c *WorkDocs) UpdateFolderRequest(input *UpdateFolderInput) (req *request.R
 
 	output = &UpdateFolderOutput{}
 	req = c.newRequest(op, input, output)
-	req.Handlers.Unmarshal.Remove(restjson.UnmarshalHandler)
-	req.Handlers.Unmarshal.PushBackNamed(protocol.UnmarshalDiscardBodyHandler)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
 	return
 }
 
@@ -3874,37 +4067,41 @@ func (c *WorkDocs) UpdateFolderRequest(input *UpdateFolderInput) (req *request.R
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation UpdateFolder for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeEntityAlreadyExistsException "EntityAlreadyExistsException"
+//   * EntityAlreadyExistsException
 //   The resource already exists.
 //
-//   * ErrCodeProhibitedStateException "ProhibitedStateException"
+//   * ProhibitedStateException
 //   The specified document version is not in the INITIALIZED state.
 //
-//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   * ConflictingOperationException
+//   Another operation is in progress on the resource that conflicts with the
+//   current operation.
+//
+//   * ConcurrentModificationException
 //   The resource hierarchy is changing.
 //
-//   * ErrCodeLimitExceededException "LimitExceededException"
+//   * LimitExceededException
 //   The maximum of 100,000 folders under the parent folder has been exceeded.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolder
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolder
 func (c *WorkDocs) UpdateFolder(input *UpdateFolderInput) (*UpdateFolderOutput, error) {
 	req, out := c.UpdateFolderRequest(input)
 	return out, req.Send()
@@ -3930,19 +4127,18 @@ const opUpdateUser = "UpdateUser"
 
 // UpdateUserRequest generates a "aws/request.Request" representing the
 // client's request for the UpdateUser operation. The "output" return
-// value can be used to capture response data after the request's "Send" method
-// is called.
+// value will be populated with the request's response once the request completes
+// successfully.
 //
-// See UpdateUser for usage and error information.
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
 //
-// Creating a request object using this method should be used when you want to inject
-// custom logic into the request's lifecycle using a custom handler, or if you want to
-// access properties on the request object before or after sending the request. If
-// you just want the service response, call the UpdateUser method directly
-// instead.
+// See UpdateUser for more information on using the UpdateUser
+// API call, and error handling.
 //
-// Note: You must call the "Send" method on the returned request object in order
-// to execute the request.
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
 //
 //    // Example sending a request using the UpdateUserRequest method.
 //    req, resp := client.UpdateUserRequest(params)
@@ -3952,7 +4148,7 @@ const opUpdateUser = "UpdateUser"
 //        fmt.Println(resp)
 //    }
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUser
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUser
 func (c *WorkDocs) UpdateUserRequest(input *UpdateUserInput) (req *request.Request, output *UpdateUserOutput) {
 	op := &request.Operation{
 		Name:       opUpdateUser,
@@ -3981,31 +4177,34 @@ func (c *WorkDocs) UpdateUserRequest(input *UpdateUserInput) (req *request.Reque
 // See the AWS API reference guide for Amazon WorkDocs's
 // API operation UpdateUser for usage and error information.
 //
-// Returned Error Codes:
-//   * ErrCodeEntityNotExistsException "EntityNotExistsException"
+// Returned Error Types:
+//   * EntityNotExistsException
 //   The resource does not exist.
 //
-//   * ErrCodeUnauthorizedOperationException "UnauthorizedOperationException"
+//   * UnauthorizedOperationException
 //   The operation is not permitted.
 //
-//   * ErrCodeUnauthorizedResourceAccessException "UnauthorizedResourceAccessException"
+//   * UnauthorizedResourceAccessException
 //   The caller does not have access to perform the action on the resource.
 //
-//   * ErrCodeIllegalUserStateException "IllegalUserStateException"
+//   * IllegalUserStateException
 //   The user is undergoing transfer of ownership.
 //
-//   * ErrCodeFailedDependencyException "FailedDependencyException"
+//   * FailedDependencyException
 //   The AWS Directory Service cannot reach an on-premises instance. Or a dependency
-//   under the control of the organization is failing, such as a connected active
-//   directory.
+//   under the control of the organization is failing, such as a connected Active
+//   Directory.
 //
-//   * ErrCodeServiceUnavailableException "ServiceUnavailableException"
+//   * ServiceUnavailableException
 //   One or more of the dependencies is unavailable.
 //
-//   * ErrCodeDeactivatingLastSystemUserException "DeactivatingLastSystemUserException"
+//   * DeactivatingLastSystemUserException
 //   The last user in the organization is being deactivated.
 //
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUser
+//   * InvalidArgumentException
+//   The pagination marker or limit fields are not valid.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUser
 func (c *WorkDocs) UpdateUser(input *UpdateUserInput) (*UpdateUserOutput, error) {
 	req, out := c.UpdateUserRequest(input)
 	return out, req.Send()
@@ -4027,13 +4226,12 @@ func (c *WorkDocs) UpdateUserWithContext(ctx aws.Context, input *UpdateUserInput
 	return out, req.Send()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUploadRequest
 type AbortDocumentVersionUploadInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -4099,7 +4297,6 @@ func (s *AbortDocumentVersionUploadInput) SetVersionId(v string) *AbortDocumentV
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AbortDocumentVersionUploadOutput
 type AbortDocumentVersionUploadOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -4114,13 +4311,12 @@ func (s AbortDocumentVersionUploadOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUserRequest
 type ActivateUserInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the user.
 	//
@@ -4169,7 +4365,6 @@ func (s *ActivateUserInput) SetUserId(v string) *ActivateUserInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ActivateUserResponse
 type ActivateUserOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4194,7 +4389,6 @@ func (s *ActivateUserOutput) SetUser(v *User) *ActivateUserOutput {
 }
 
 // Describes the activity information.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/Activity
 type Activity struct {
 	_ struct{} `type:"structure"`
 
@@ -4204,6 +4398,12 @@ type Activity struct {
 
 	// The user who performed the action.
 	Initiator *UserMetadata `type:"structure"`
+
+	// Indicates whether an activity is indirect or direct. An indirect activity
+	// results from a direct activity performed on a parent resource. For example,
+	// sharing a parent folder (the direct activity) shares all of the subfolders
+	// and documents within the parent folder (the indirect activity).
+	IsIndirectActivity *bool `type:"boolean"`
 
 	// The ID of the organization.
 	OrganizationId *string `min:"1" type:"string"`
@@ -4221,7 +4421,7 @@ type Activity struct {
 	ResourceMetadata *ResourceMetadata `type:"structure"`
 
 	// The timestamp when the action was performed.
-	TimeStamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	TimeStamp *time.Time `type:"timestamp"`
 
 	// The activity type.
 	Type *string `type:"string" enum:"ActivityType"`
@@ -4246,6 +4446,12 @@ func (s *Activity) SetCommentMetadata(v *CommentMetadata) *Activity {
 // SetInitiator sets the Initiator field's value.
 func (s *Activity) SetInitiator(v *UserMetadata) *Activity {
 	s.Initiator = v
+	return s
+}
+
+// SetIsIndirectActivity sets the IsIndirectActivity field's value.
+func (s *Activity) SetIsIndirectActivity(v bool) *Activity {
+	s.IsIndirectActivity = &v
 	return s
 }
 
@@ -4285,13 +4491,15 @@ func (s *Activity) SetType(v string) *Activity {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissionsRequest
 type AddResourcePermissionsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
+
+	// The notification options.
+	NotificationOptions *NotificationOptions `type:"structure"`
 
 	// The users, groups, or organization being granted permission.
 	//
@@ -4352,6 +4560,12 @@ func (s *AddResourcePermissionsInput) SetAuthenticationToken(v string) *AddResou
 	return s
 }
 
+// SetNotificationOptions sets the NotificationOptions field's value.
+func (s *AddResourcePermissionsInput) SetNotificationOptions(v *NotificationOptions) *AddResourcePermissionsInput {
+	s.NotificationOptions = v
+	return s
+}
+
 // SetPrincipals sets the Principals field's value.
 func (s *AddResourcePermissionsInput) SetPrincipals(v []*SharePrincipal) *AddResourcePermissionsInput {
 	s.Principals = v
@@ -4364,7 +4578,6 @@ func (s *AddResourcePermissionsInput) SetResourceId(v string) *AddResourcePermis
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/AddResourcePermissionsResponse
 type AddResourcePermissionsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4389,7 +4602,6 @@ func (s *AddResourcePermissionsOutput) SetShareResults(v []*ShareResult) *AddRes
 }
 
 // Describes a comment.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/Comment
 type Comment struct {
 	_ struct{} `type:"structure"`
 
@@ -4402,7 +4614,7 @@ type Comment struct {
 	Contributor *User `type:"structure"`
 
 	// The time that the comment was created.
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the parent comment.
 	ParentId *string `min:"1" type:"string"`
@@ -4415,7 +4627,7 @@ type Comment struct {
 	Status *string `type:"string" enum:"CommentStatusType"`
 
 	// The text of the comment.
-	Text *string `min:"1" type:"string"`
+	Text *string `min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the root comment in the thread.
 	ThreadId *string `min:"1" type:"string"`
@@ -4491,19 +4703,20 @@ func (s *Comment) SetVisibility(v string) *Comment {
 }
 
 // Describes the metadata of a comment.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CommentMetadata
 type CommentMetadata struct {
 	_ struct{} `type:"structure"`
 
 	// The ID of the comment.
 	CommentId *string `min:"1" type:"string"`
 
+	// The status of the comment.
 	CommentStatus *string `type:"string" enum:"CommentStatusType"`
 
 	// The user who made the comment.
 	Contributor *User `type:"structure"`
 
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp that the comment was created.
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the user being replied to.
 	RecipientId *string `min:"1" type:"string"`
@@ -4549,13 +4762,125 @@ func (s *CommentMetadata) SetRecipientId(v string) *CommentMetadata {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCommentRequest
+// The resource hierarchy is changing.
+type ConcurrentModificationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ConcurrentModificationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ConcurrentModificationException) GoString() string {
+	return s.String()
+}
+
+func newErrorConcurrentModificationException(v protocol.ResponseMetadata) error {
+	return &ConcurrentModificationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ConcurrentModificationException) Code() string {
+	return "ConcurrentModificationException"
+}
+
+// Message returns the exception's message.
+func (s *ConcurrentModificationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ConcurrentModificationException) OrigErr() error {
+	return nil
+}
+
+func (s *ConcurrentModificationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ConcurrentModificationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ConcurrentModificationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Another operation is in progress on the resource that conflicts with the
+// current operation.
+type ConflictingOperationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ConflictingOperationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ConflictingOperationException) GoString() string {
+	return s.String()
+}
+
+func newErrorConflictingOperationException(v protocol.ResponseMetadata) error {
+	return &ConflictingOperationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ConflictingOperationException) Code() string {
+	return "ConflictingOperationException"
+}
+
+// Message returns the exception's message.
+func (s *ConflictingOperationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ConflictingOperationException) OrigErr() error {
+	return nil
+}
+
+func (s *ConflictingOperationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ConflictingOperationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ConflictingOperationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type CreateCommentInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -4572,7 +4897,7 @@ type CreateCommentInput struct {
 	// The text of the comment.
 	//
 	// Text is a required field
-	Text *string `min:"1" type:"string" required:"true"`
+	Text *string `min:"1" type:"string" required:"true" sensitive:"true"`
 
 	// The ID of the root comment in the thread.
 	ThreadId *string `min:"1" type:"string"`
@@ -4683,7 +5008,6 @@ func (s *CreateCommentInput) SetVisibility(v string) *CreateCommentInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCommentResponse
 type CreateCommentOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4707,13 +5031,12 @@ func (s *CreateCommentOutput) SetComment(v *Comment) *CreateCommentOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadataRequest
 type CreateCustomMetadataInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// Custom metadata in the form of name-value pairs.
 	//
@@ -4792,7 +5115,6 @@ func (s *CreateCustomMetadataInput) SetVersionId(v string) *CreateCustomMetadata
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateCustomMetadataResponse
 type CreateCustomMetadataOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -4807,13 +5129,12 @@ func (s CreateCustomMetadataOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolderRequest
 type CreateFolderInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The name of the new folder.
 	Name *string `min:"1" type:"string"`
@@ -4874,7 +5195,6 @@ func (s *CreateFolderInput) SetParentFolderId(v string) *CreateFolderInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateFolderResponse
 type CreateFolderOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -4898,13 +5218,12 @@ func (s *CreateFolderOutput) SetMetadata(v *FolderMetadata) *CreateFolderOutput 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabelsRequest
 type CreateLabelsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// List of labels to add to the resource.
 	//
@@ -4967,7 +5286,6 @@ func (s *CreateLabelsInput) SetResourceId(v string) *CreateLabelsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateLabelsResponse
 type CreateLabelsOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -4982,12 +5300,11 @@ func (s CreateLabelsOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscriptionRequest
 type CreateNotificationSubscriptionInput struct {
 	_ struct{} `type:"structure"`
 
 	// The endpoint to receive the notifications. If the protocol is HTTPS, the
-	// endpoint is a URL that begins with "https://".
+	// endpoint is a URL that begins with https.
 	//
 	// Endpoint is a required field
 	Endpoint *string `min:"1" type:"string" required:"true"`
@@ -4998,7 +5315,7 @@ type CreateNotificationSubscriptionInput struct {
 	OrganizationId *string `location:"uri" locationName:"OrganizationId" min:"1" type:"string" required:"true"`
 
 	// The protocol to use. The supported value is https, which delivers JSON-encoded
-	// messasges using HTTPS POST.
+	// messages using HTTPS POST.
 	//
 	// Protocol is a required field
 	Protocol *string `type:"string" required:"true" enum:"SubscriptionProtocolType"`
@@ -5071,7 +5388,6 @@ func (s *CreateNotificationSubscriptionInput) SetSubscriptionType(v string) *Cre
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateNotificationSubscriptionResponse
 type CreateNotificationSubscriptionOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -5095,13 +5411,12 @@ func (s *CreateNotificationSubscriptionOutput) SetSubscription(v *Subscription) 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUserRequest
 type CreateUserInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The email address of the user.
 	EmailAddress *string `min:"1" type:"string"`
@@ -5117,7 +5432,7 @@ type CreateUserInput struct {
 	// The password of the user.
 	//
 	// Password is a required field
-	Password *string `min:"4" type:"string" required:"true"`
+	Password *string `min:"4" type:"string" required:"true" sensitive:"true"`
 
 	// The amount of storage for the user.
 	StorageRule *StorageRuleType `type:"structure"`
@@ -5246,7 +5561,6 @@ func (s *CreateUserInput) SetUsername(v string) *CreateUserInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/CreateUserResponse
 type CreateUserOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -5270,13 +5584,69 @@ func (s *CreateUserOutput) SetUser(v *User) *CreateUserOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUserRequest
+// The limit has been reached on the number of custom properties for the specified
+// resource.
+type CustomMetadataLimitExceededException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s CustomMetadataLimitExceededException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s CustomMetadataLimitExceededException) GoString() string {
+	return s.String()
+}
+
+func newErrorCustomMetadataLimitExceededException(v protocol.ResponseMetadata) error {
+	return &CustomMetadataLimitExceededException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *CustomMetadataLimitExceededException) Code() string {
+	return "CustomMetadataLimitExceededException"
+}
+
+// Message returns the exception's message.
+func (s *CustomMetadataLimitExceededException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *CustomMetadataLimitExceededException) OrigErr() error {
+	return nil
+}
+
+func (s *CustomMetadataLimitExceededException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *CustomMetadataLimitExceededException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *CustomMetadataLimitExceededException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type DeactivateUserInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the user.
 	//
@@ -5325,7 +5695,6 @@ func (s *DeactivateUserInput) SetUserId(v string) *DeactivateUserInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeactivateUserOutput
 type DeactivateUserOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5340,13 +5709,68 @@ func (s DeactivateUserOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCommentRequest
+// The last user in the organization is being deactivated.
+type DeactivatingLastSystemUserException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s DeactivatingLastSystemUserException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeactivatingLastSystemUserException) GoString() string {
+	return s.String()
+}
+
+func newErrorDeactivatingLastSystemUserException(v protocol.ResponseMetadata) error {
+	return &DeactivatingLastSystemUserException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DeactivatingLastSystemUserException) Code() string {
+	return "DeactivatingLastSystemUserException"
+}
+
+// Message returns the exception's message.
+func (s *DeactivatingLastSystemUserException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DeactivatingLastSystemUserException) OrigErr() error {
+	return nil
+}
+
+func (s *DeactivatingLastSystemUserException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DeactivatingLastSystemUserException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DeactivatingLastSystemUserException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type DeleteCommentInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the comment.
 	//
@@ -5429,7 +5853,6 @@ func (s *DeleteCommentInput) SetVersionId(v string) *DeleteCommentInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCommentOutput
 type DeleteCommentOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5444,13 +5867,12 @@ func (s DeleteCommentOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadataRequest
 type DeleteCustomMetadataInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// Flag to indicate removal of all custom metadata properties from the specified
 	// resource.
@@ -5531,7 +5953,6 @@ func (s *DeleteCustomMetadataInput) SetVersionId(v string) *DeleteCustomMetadata
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteCustomMetadataResponse
 type DeleteCustomMetadataOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5546,13 +5967,12 @@ func (s DeleteCustomMetadataOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocumentRequest
 type DeleteDocumentInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -5601,7 +6021,6 @@ func (s *DeleteDocumentInput) SetDocumentId(v string) *DeleteDocumentInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteDocumentOutput
 type DeleteDocumentOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5616,13 +6035,12 @@ func (s DeleteDocumentOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContentsRequest
 type DeleteFolderContentsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the folder.
 	//
@@ -5671,7 +6089,6 @@ func (s *DeleteFolderContentsInput) SetFolderId(v string) *DeleteFolderContentsI
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderContentsOutput
 type DeleteFolderContentsOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5686,13 +6103,12 @@ func (s DeleteFolderContentsOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderRequest
 type DeleteFolderInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the folder.
 	//
@@ -5741,7 +6157,6 @@ func (s *DeleteFolderInput) SetFolderId(v string) *DeleteFolderInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteFolderOutput
 type DeleteFolderOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5756,13 +6171,12 @@ func (s DeleteFolderOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabelsRequest
 type DeleteLabelsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// Flag to request removal of all labels from the specified resource.
 	DeleteAll *bool `location:"querystring" locationName:"deleteAll" type:"boolean"`
@@ -5829,7 +6243,6 @@ func (s *DeleteLabelsInput) SetResourceId(v string) *DeleteLabelsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteLabelsResponse
 type DeleteLabelsOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5844,7 +6257,6 @@ func (s DeleteLabelsOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscriptionRequest
 type DeleteNotificationSubscriptionInput struct {
 	_ struct{} `type:"structure"`
 
@@ -5903,7 +6315,6 @@ func (s *DeleteNotificationSubscriptionInput) SetSubscriptionId(v string) *Delet
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteNotificationSubscriptionOutput
 type DeleteNotificationSubscriptionOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5918,13 +6329,12 @@ func (s DeleteNotificationSubscriptionOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUserRequest
 type DeleteUserInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Do not set this field when using administrative
+	// API actions, as in accessing the API using AWS credentials.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the user.
 	//
@@ -5973,7 +6383,6 @@ func (s *DeleteUserInput) SetUserId(v string) *DeleteUserInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DeleteUserOutput
 type DeleteUserOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5988,32 +6397,43 @@ func (s DeleteUserOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivitiesRequest
 type DescribeActivitiesInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Specifies which activity types to include in the response. If this field
+	// is left empty, all activity types are returned.
+	ActivityTypes *string `location:"querystring" locationName:"activityTypes" min:"1" type:"string"`
 
-	// The timestamp that determines the end time of the activities; the response
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
+
+	// The timestamp that determines the end time of the activities. The response
 	// includes the activities performed before the specified timestamp.
-	EndTime *time.Time `location:"querystring" locationName:"endTime" type:"timestamp" timestampFormat:"unix"`
+	EndTime *time.Time `location:"querystring" locationName:"endTime" type:"timestamp"`
+
+	// Includes indirect activities. An indirect activity results from a direct
+	// activity performed on a parent resource. For example, sharing a parent folder
+	// (the direct activity) shares all of the subfolders and documents within the
+	// parent folder (the indirect activity).
+	IncludeIndirectActivities *bool `location:"querystring" locationName:"includeIndirectActivities" type:"boolean"`
 
 	// The maximum number of items to return.
 	Limit *int64 `location:"querystring" locationName:"limit" min:"1" type:"integer"`
 
-	// The marker for the next set of results. (You received this marker from a
-	// previous call.)
+	// The marker for the next set of results.
 	Marker *string `location:"querystring" locationName:"marker" min:"1" type:"string"`
 
 	// The ID of the organization. This is a mandatory parameter when using administrative
 	// API (SigV4) requests.
 	OrganizationId *string `location:"querystring" locationName:"organizationId" min:"1" type:"string"`
 
-	// The timestamp that determines the starting time of the activities; the response
+	// The document or folder ID for which to describe activity types.
+	ResourceId *string `location:"querystring" locationName:"resourceId" min:"1" type:"string"`
+
+	// The timestamp that determines the starting time of the activities. The response
 	// includes the activities performed after the specified timestamp.
-	StartTime *time.Time `location:"querystring" locationName:"startTime" type:"timestamp" timestampFormat:"unix"`
+	StartTime *time.Time `location:"querystring" locationName:"startTime" type:"timestamp"`
 
 	// The ID of the user who performed the action. The response includes activities
 	// pertaining to this user. This is an optional parameter and is only applicable
@@ -6034,6 +6454,9 @@ func (s DescribeActivitiesInput) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *DescribeActivitiesInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "DescribeActivitiesInput"}
+	if s.ActivityTypes != nil && len(*s.ActivityTypes) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("ActivityTypes", 1))
+	}
 	if s.AuthenticationToken != nil && len(*s.AuthenticationToken) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("AuthenticationToken", 1))
 	}
@@ -6046,6 +6469,9 @@ func (s *DescribeActivitiesInput) Validate() error {
 	if s.OrganizationId != nil && len(*s.OrganizationId) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("OrganizationId", 1))
 	}
+	if s.ResourceId != nil && len(*s.ResourceId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceId", 1))
+	}
 	if s.UserId != nil && len(*s.UserId) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("UserId", 1))
 	}
@@ -6054,6 +6480,12 @@ func (s *DescribeActivitiesInput) Validate() error {
 		return invalidParams
 	}
 	return nil
+}
+
+// SetActivityTypes sets the ActivityTypes field's value.
+func (s *DescribeActivitiesInput) SetActivityTypes(v string) *DescribeActivitiesInput {
+	s.ActivityTypes = &v
+	return s
 }
 
 // SetAuthenticationToken sets the AuthenticationToken field's value.
@@ -6065,6 +6497,12 @@ func (s *DescribeActivitiesInput) SetAuthenticationToken(v string) *DescribeActi
 // SetEndTime sets the EndTime field's value.
 func (s *DescribeActivitiesInput) SetEndTime(v time.Time) *DescribeActivitiesInput {
 	s.EndTime = &v
+	return s
+}
+
+// SetIncludeIndirectActivities sets the IncludeIndirectActivities field's value.
+func (s *DescribeActivitiesInput) SetIncludeIndirectActivities(v bool) *DescribeActivitiesInput {
+	s.IncludeIndirectActivities = &v
 	return s
 }
 
@@ -6086,6 +6524,12 @@ func (s *DescribeActivitiesInput) SetOrganizationId(v string) *DescribeActivitie
 	return s
 }
 
+// SetResourceId sets the ResourceId field's value.
+func (s *DescribeActivitiesInput) SetResourceId(v string) *DescribeActivitiesInput {
+	s.ResourceId = &v
+	return s
+}
+
 // SetStartTime sets the StartTime field's value.
 func (s *DescribeActivitiesInput) SetStartTime(v time.Time) *DescribeActivitiesInput {
 	s.StartTime = &v
@@ -6098,7 +6542,6 @@ func (s *DescribeActivitiesInput) SetUserId(v string) *DescribeActivitiesInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeActivitiesResponse
 type DescribeActivitiesOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6131,13 +6574,12 @@ func (s *DescribeActivitiesOutput) SetUserActivities(v []*Activity) *DescribeAct
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeCommentsRequest
 type DescribeCommentsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -6228,7 +6670,6 @@ func (s *DescribeCommentsInput) SetVersionId(v string) *DescribeCommentsInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeCommentsResponse
 type DescribeCommentsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6262,13 +6703,12 @@ func (s *DescribeCommentsOutput) SetMarker(v string) *DescribeCommentsOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersionsRequest
 type DescribeDocumentVersionsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -6368,7 +6808,6 @@ func (s *DescribeDocumentVersionsInput) SetMarker(v string) *DescribeDocumentVer
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeDocumentVersionsResponse
 type DescribeDocumentVersionsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6402,13 +6841,12 @@ func (s *DescribeDocumentVersionsOutput) SetMarker(v string) *DescribeDocumentVe
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContentsRequest
 type DescribeFolderContentsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the folder.
 	//
@@ -6521,7 +6959,6 @@ func (s *DescribeFolderContentsInput) SetType(v string) *DescribeFolderContentsI
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeFolderContentsResponse
 type DescribeFolderContentsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6564,7 +7001,130 @@ func (s *DescribeFolderContentsOutput) SetMarker(v string) *DescribeFolderConten
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptionsRequest
+type DescribeGroupsInput struct {
+	_ struct{} `type:"structure"`
+
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
+
+	// The maximum number of items to return with this call.
+	Limit *int64 `location:"querystring" locationName:"limit" min:"1" type:"integer"`
+
+	// The marker for the next set of results. (You received this marker from a
+	// previous call.)
+	Marker *string `location:"querystring" locationName:"marker" min:"1" type:"string"`
+
+	// The ID of the organization.
+	OrganizationId *string `location:"querystring" locationName:"organizationId" min:"1" type:"string"`
+
+	// A query to describe groups by group name.
+	//
+	// SearchQuery is a required field
+	SearchQuery *string `location:"querystring" locationName:"searchQuery" min:"1" type:"string" required:"true" sensitive:"true"`
+}
+
+// String returns the string representation
+func (s DescribeGroupsInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeGroupsInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DescribeGroupsInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DescribeGroupsInput"}
+	if s.AuthenticationToken != nil && len(*s.AuthenticationToken) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("AuthenticationToken", 1))
+	}
+	if s.Limit != nil && *s.Limit < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("Limit", 1))
+	}
+	if s.Marker != nil && len(*s.Marker) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Marker", 1))
+	}
+	if s.OrganizationId != nil && len(*s.OrganizationId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("OrganizationId", 1))
+	}
+	if s.SearchQuery == nil {
+		invalidParams.Add(request.NewErrParamRequired("SearchQuery"))
+	}
+	if s.SearchQuery != nil && len(*s.SearchQuery) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("SearchQuery", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAuthenticationToken sets the AuthenticationToken field's value.
+func (s *DescribeGroupsInput) SetAuthenticationToken(v string) *DescribeGroupsInput {
+	s.AuthenticationToken = &v
+	return s
+}
+
+// SetLimit sets the Limit field's value.
+func (s *DescribeGroupsInput) SetLimit(v int64) *DescribeGroupsInput {
+	s.Limit = &v
+	return s
+}
+
+// SetMarker sets the Marker field's value.
+func (s *DescribeGroupsInput) SetMarker(v string) *DescribeGroupsInput {
+	s.Marker = &v
+	return s
+}
+
+// SetOrganizationId sets the OrganizationId field's value.
+func (s *DescribeGroupsInput) SetOrganizationId(v string) *DescribeGroupsInput {
+	s.OrganizationId = &v
+	return s
+}
+
+// SetSearchQuery sets the SearchQuery field's value.
+func (s *DescribeGroupsInput) SetSearchQuery(v string) *DescribeGroupsInput {
+	s.SearchQuery = &v
+	return s
+}
+
+type DescribeGroupsOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The list of groups.
+	Groups []*GroupMetadata `type:"list"`
+
+	// The marker to use when requesting the next set of results. If there are no
+	// additional results, the string is empty.
+	Marker *string `min:"1" type:"string"`
+}
+
+// String returns the string representation
+func (s DescribeGroupsOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DescribeGroupsOutput) GoString() string {
+	return s.String()
+}
+
+// SetGroups sets the Groups field's value.
+func (s *DescribeGroupsOutput) SetGroups(v []*GroupMetadata) *DescribeGroupsOutput {
+	s.Groups = v
+	return s
+}
+
+// SetMarker sets the Marker field's value.
+func (s *DescribeGroupsOutput) SetMarker(v string) *DescribeGroupsOutput {
+	s.Marker = &v
+	return s
+}
+
 type DescribeNotificationSubscriptionsInput struct {
 	_ struct{} `type:"structure"`
 
@@ -6631,7 +7191,6 @@ func (s *DescribeNotificationSubscriptionsInput) SetOrganizationId(v string) *De
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeNotificationSubscriptionsResponse
 type DescribeNotificationSubscriptionsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6665,13 +7224,12 @@ func (s *DescribeNotificationSubscriptionsOutput) SetSubscriptions(v []*Subscrip
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissionsRequest
 type DescribeResourcePermissionsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The maximum number of items to return with this call.
 	Limit *int64 `location:"querystring" locationName:"limit" min:"1" type:"integer"`
@@ -6679,6 +7237,9 @@ type DescribeResourcePermissionsInput struct {
 	// The marker for the next set of results. (You received this marker from a
 	// previous call)
 	Marker *string `location:"querystring" locationName:"marker" min:"1" type:"string"`
+
+	// The ID of the principal to filter permissions by.
+	PrincipalId *string `location:"querystring" locationName:"principalId" min:"1" type:"string"`
 
 	// The ID of the resource.
 	//
@@ -6707,6 +7268,9 @@ func (s *DescribeResourcePermissionsInput) Validate() error {
 	}
 	if s.Marker != nil && len(*s.Marker) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("Marker", 1))
+	}
+	if s.PrincipalId != nil && len(*s.PrincipalId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("PrincipalId", 1))
 	}
 	if s.ResourceId == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceId"))
@@ -6739,13 +7303,18 @@ func (s *DescribeResourcePermissionsInput) SetMarker(v string) *DescribeResource
 	return s
 }
 
+// SetPrincipalId sets the PrincipalId field's value.
+func (s *DescribeResourcePermissionsInput) SetPrincipalId(v string) *DescribeResourcePermissionsInput {
+	s.PrincipalId = &v
+	return s
+}
+
 // SetResourceId sets the ResourceId field's value.
 func (s *DescribeResourcePermissionsInput) SetResourceId(v string) *DescribeResourcePermissionsInput {
 	s.ResourceId = &v
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeResourcePermissionsResponse
 type DescribeResourcePermissionsOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6779,15 +7348,13 @@ func (s *DescribeResourcePermissionsOutput) SetPrincipals(v []*Principal) *Descr
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFoldersRequest
 type DescribeRootFoldersInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
+	// Amazon WorkDocs authentication token.
 	//
 	// AuthenticationToken is a required field
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" required:"true"`
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" required:"true" sensitive:"true"`
 
 	// The maximum number of items to return.
 	Limit *int64 `location:"querystring" locationName:"limit" min:"1" type:"integer"`
@@ -6847,7 +7414,6 @@ func (s *DescribeRootFoldersInput) SetMarker(v string) *DescribeRootFoldersInput
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeRootFoldersResponse
 type DescribeRootFoldersOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -6880,13 +7446,12 @@ func (s *DescribeRootFoldersOutput) SetMarker(v string) *DescribeRootFoldersOutp
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsersRequest
 type DescribeUsersInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// A comma-separated list of values. Specify "STORAGE_METADATA" to include the
 	// user storage quota and utilization information.
@@ -6909,7 +7474,7 @@ type DescribeUsersInput struct {
 	OrganizationId *string `location:"querystring" locationName:"organizationId" min:"1" type:"string"`
 
 	// A query to filter users by user name.
-	Query *string `location:"querystring" locationName:"query" min:"1" type:"string"`
+	Query *string `location:"querystring" locationName:"query" min:"1" type:"string" sensitive:"true"`
 
 	// The sorting criteria.
 	Sort *string `location:"querystring" locationName:"sort" type:"string" enum:"UserSortType"`
@@ -7019,7 +7584,6 @@ func (s *DescribeUsersInput) SetUserIds(v string) *DescribeUsersInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DescribeUsersResponse
 type DescribeUsersOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7028,7 +7592,9 @@ type DescribeUsersOutput struct {
 	Marker *string `min:"1" type:"string"`
 
 	// The total number of users included in the results.
-	TotalNumberOfUsers *int64 `type:"long"`
+	//
+	// Deprecated: TotalNumberOfUsers has been deprecated
+	TotalNumberOfUsers *int64 `deprecated:"true" type:"long"`
 
 	// The users.
 	Users []*User `type:"list"`
@@ -7062,13 +7628,69 @@ func (s *DescribeUsersOutput) SetUsers(v []*User) *DescribeUsersOutput {
 	return s
 }
 
+// This exception is thrown when the document is locked for comments and user
+// tries to create or delete a comment on that document.
+type DocumentLockedForCommentsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DocumentLockedForCommentsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DocumentLockedForCommentsException) GoString() string {
+	return s.String()
+}
+
+func newErrorDocumentLockedForCommentsException(v protocol.ResponseMetadata) error {
+	return &DocumentLockedForCommentsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DocumentLockedForCommentsException) Code() string {
+	return "DocumentLockedForCommentsException"
+}
+
+// Message returns the exception's message.
+func (s *DocumentLockedForCommentsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DocumentLockedForCommentsException) OrigErr() error {
+	return nil
+}
+
+func (s *DocumentLockedForCommentsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DocumentLockedForCommentsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DocumentLockedForCommentsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Describes the document.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DocumentMetadata
 type DocumentMetadata struct {
 	_ struct{} `type:"structure"`
 
 	// The time when the document was created.
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the creator.
 	CreatorId *string `min:"1" type:"string"`
@@ -7083,7 +7705,7 @@ type DocumentMetadata struct {
 	LatestVersionMetadata *DocumentVersionMetadata `type:"structure"`
 
 	// The time when the document was updated.
-	ModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	ModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the parent folder.
 	ParentFolderId *string `min:"1" type:"string"`
@@ -7151,21 +7773,20 @@ func (s *DocumentMetadata) SetResourceState(v string) *DocumentMetadata {
 }
 
 // Describes a version of a document.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/DocumentVersionMetadata
 type DocumentVersionMetadata struct {
 	_ struct{} `type:"structure"`
 
-	// The time stamp when the content of the document was originally created.
-	ContentCreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the content of the document was originally created.
+	ContentCreatedTimestamp *time.Time `type:"timestamp"`
 
-	// The time stamp when the content of the document was modified.
-	ContentModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the content of the document was modified.
+	ContentModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The content type of the document.
 	ContentType *string `min:"1" type:"string"`
 
-	// The time stamp when the document was first uploaded.
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the document was first uploaded.
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the creator.
 	CreatorId *string `min:"1" type:"string"`
@@ -7173,8 +7794,8 @@ type DocumentVersionMetadata struct {
 	// The ID of the version.
 	Id *string `min:"1" type:"string"`
 
-	// The time stamp when the document was last uploaded.
-	ModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the document was last uploaded.
+	ModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The name of the version.
 	Name *string `min:"1" type:"string"`
@@ -7283,13 +7904,241 @@ func (s *DocumentVersionMetadata) SetThumbnail(v map[string]*string) *DocumentVe
 	return s
 }
 
+// This exception is thrown when a valid checkout ID is not presented on document
+// version upload calls for a document that has been checked out from Web client.
+type DraftUploadOutOfSyncException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s DraftUploadOutOfSyncException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DraftUploadOutOfSyncException) GoString() string {
+	return s.String()
+}
+
+func newErrorDraftUploadOutOfSyncException(v protocol.ResponseMetadata) error {
+	return &DraftUploadOutOfSyncException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *DraftUploadOutOfSyncException) Code() string {
+	return "DraftUploadOutOfSyncException"
+}
+
+// Message returns the exception's message.
+func (s *DraftUploadOutOfSyncException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *DraftUploadOutOfSyncException) OrigErr() error {
+	return nil
+}
+
+func (s *DraftUploadOutOfSyncException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *DraftUploadOutOfSyncException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *DraftUploadOutOfSyncException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The resource already exists.
+type EntityAlreadyExistsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s EntityAlreadyExistsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EntityAlreadyExistsException) GoString() string {
+	return s.String()
+}
+
+func newErrorEntityAlreadyExistsException(v protocol.ResponseMetadata) error {
+	return &EntityAlreadyExistsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *EntityAlreadyExistsException) Code() string {
+	return "EntityAlreadyExistsException"
+}
+
+// Message returns the exception's message.
+func (s *EntityAlreadyExistsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *EntityAlreadyExistsException) OrigErr() error {
+	return nil
+}
+
+func (s *EntityAlreadyExistsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *EntityAlreadyExistsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *EntityAlreadyExistsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The resource does not exist.
+type EntityNotExistsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	EntityIds []*string `type:"list"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s EntityNotExistsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s EntityNotExistsException) GoString() string {
+	return s.String()
+}
+
+func newErrorEntityNotExistsException(v protocol.ResponseMetadata) error {
+	return &EntityNotExistsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *EntityNotExistsException) Code() string {
+	return "EntityNotExistsException"
+}
+
+// Message returns the exception's message.
+func (s *EntityNotExistsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *EntityNotExistsException) OrigErr() error {
+	return nil
+}
+
+func (s *EntityNotExistsException) Error() string {
+	return fmt.Sprintf("%s: %s\n%s", s.Code(), s.Message(), s.String())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *EntityNotExistsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *EntityNotExistsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The AWS Directory Service cannot reach an on-premises instance. Or a dependency
+// under the control of the organization is failing, such as a connected Active
+// Directory.
+type FailedDependencyException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s FailedDependencyException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s FailedDependencyException) GoString() string {
+	return s.String()
+}
+
+func newErrorFailedDependencyException(v protocol.ResponseMetadata) error {
+	return &FailedDependencyException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *FailedDependencyException) Code() string {
+	return "FailedDependencyException"
+}
+
+// Message returns the exception's message.
+func (s *FailedDependencyException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *FailedDependencyException) OrigErr() error {
+	return nil
+}
+
+func (s *FailedDependencyException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *FailedDependencyException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *FailedDependencyException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Describes a folder.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/FolderMetadata
 type FolderMetadata struct {
 	_ struct{} `type:"structure"`
 
 	// The time when the folder was created.
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the creator.
 	CreatorId *string `min:"1" type:"string"`
@@ -7304,7 +8153,7 @@ type FolderMetadata struct {
 	LatestVersionSize *int64 `type:"long"`
 
 	// The time when the folder was updated.
-	ModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	ModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The name of the folder.
 	Name *string `min:"1" type:"string"`
@@ -7398,14 +8247,13 @@ func (s *FolderMetadata) SetSize(v int64) *FolderMetadata {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUserRequest
 type GetCurrentUserInput struct {
 	_ struct{} `type:"structure"`
 
 	// Amazon WorkDocs authentication token.
 	//
 	// AuthenticationToken is a required field
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" required:"true"`
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" required:"true" sensitive:"true"`
 }
 
 // String returns the string representation
@@ -7440,7 +8288,6 @@ func (s *GetCurrentUserInput) SetAuthenticationToken(v string) *GetCurrentUserIn
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetCurrentUserResponse
 type GetCurrentUserOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7464,13 +8311,12 @@ func (s *GetCurrentUserOutput) SetUser(v *User) *GetCurrentUserOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentRequest
 type GetDocumentInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -7528,7 +8374,6 @@ func (s *GetDocumentInput) SetIncludeCustomMetadata(v bool) *GetDocumentInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentResponse
 type GetDocumentOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7561,13 +8406,12 @@ func (s *GetDocumentOutput) SetMetadata(v *DocumentMetadata) *GetDocumentOutput 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPathRequest
 type GetDocumentPathInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -7653,7 +8497,6 @@ func (s *GetDocumentPathInput) SetMarker(v string) *GetDocumentPathInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentPathResponse
 type GetDocumentPathOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7677,13 +8520,12 @@ func (s *GetDocumentPathOutput) SetPath(v *ResourcePath) *GetDocumentPathOutput 
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersionRequest
 type GetDocumentVersionInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -7771,7 +8613,6 @@ func (s *GetDocumentVersionInput) SetVersionId(v string) *GetDocumentVersionInpu
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetDocumentVersionResponse
 type GetDocumentVersionOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7804,13 +8645,12 @@ func (s *GetDocumentVersionOutput) SetMetadata(v *DocumentVersionMetadata) *GetD
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderRequest
 type GetFolderInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the folder.
 	//
@@ -7868,7 +8708,6 @@ func (s *GetFolderInput) SetIncludeCustomMetadata(v bool) *GetFolderInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderResponse
 type GetFolderOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -7901,13 +8740,12 @@ func (s *GetFolderOutput) SetMetadata(v *FolderMetadata) *GetFolderOutput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPathRequest
 type GetFolderPathInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// A comma-separated list of values. Specify "NAME" to include the names of
 	// the parent folders.
@@ -7993,7 +8831,6 @@ func (s *GetFolderPathInput) SetMarker(v string) *GetFolderPathInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GetFolderPathResponse
 type GetFolderPathOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8017,8 +8854,133 @@ func (s *GetFolderPathOutput) SetPath(v *ResourcePath) *GetFolderPathOutput {
 	return s
 }
 
+type GetResourcesInput struct {
+	_ struct{} `type:"structure"`
+
+	// The Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
+
+	// The collection type.
+	CollectionType *string `location:"querystring" locationName:"collectionType" type:"string" enum:"ResourceCollectionType"`
+
+	// The maximum number of resources to return.
+	Limit *int64 `location:"querystring" locationName:"limit" min:"1" type:"integer"`
+
+	// The marker for the next set of results. This marker was received from a previous
+	// call.
+	Marker *string `location:"querystring" locationName:"marker" min:"1" type:"string"`
+
+	// The user ID for the resource collection. This is a required field for accessing
+	// the API operation using IAM credentials.
+	UserId *string `location:"querystring" locationName:"userId" min:"1" type:"string"`
+}
+
+// String returns the string representation
+func (s GetResourcesInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetResourcesInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetResourcesInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetResourcesInput"}
+	if s.AuthenticationToken != nil && len(*s.AuthenticationToken) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("AuthenticationToken", 1))
+	}
+	if s.Limit != nil && *s.Limit < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("Limit", 1))
+	}
+	if s.Marker != nil && len(*s.Marker) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Marker", 1))
+	}
+	if s.UserId != nil && len(*s.UserId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("UserId", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAuthenticationToken sets the AuthenticationToken field's value.
+func (s *GetResourcesInput) SetAuthenticationToken(v string) *GetResourcesInput {
+	s.AuthenticationToken = &v
+	return s
+}
+
+// SetCollectionType sets the CollectionType field's value.
+func (s *GetResourcesInput) SetCollectionType(v string) *GetResourcesInput {
+	s.CollectionType = &v
+	return s
+}
+
+// SetLimit sets the Limit field's value.
+func (s *GetResourcesInput) SetLimit(v int64) *GetResourcesInput {
+	s.Limit = &v
+	return s
+}
+
+// SetMarker sets the Marker field's value.
+func (s *GetResourcesInput) SetMarker(v string) *GetResourcesInput {
+	s.Marker = &v
+	return s
+}
+
+// SetUserId sets the UserId field's value.
+func (s *GetResourcesInput) SetUserId(v string) *GetResourcesInput {
+	s.UserId = &v
+	return s
+}
+
+type GetResourcesOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The documents in the specified collection.
+	Documents []*DocumentMetadata `type:"list"`
+
+	// The folders in the specified folder.
+	Folders []*FolderMetadata `type:"list"`
+
+	// The marker to use when requesting the next set of results. If there are no
+	// additional results, the string is empty.
+	Marker *string `min:"1" type:"string"`
+}
+
+// String returns the string representation
+func (s GetResourcesOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetResourcesOutput) GoString() string {
+	return s.String()
+}
+
+// SetDocuments sets the Documents field's value.
+func (s *GetResourcesOutput) SetDocuments(v []*DocumentMetadata) *GetResourcesOutput {
+	s.Documents = v
+	return s
+}
+
+// SetFolders sets the Folders field's value.
+func (s *GetResourcesOutput) SetFolders(v []*FolderMetadata) *GetResourcesOutput {
+	s.Folders = v
+	return s
+}
+
+// SetMarker sets the Marker field's value.
+func (s *GetResourcesOutput) SetMarker(v string) *GetResourcesOutput {
+	s.Marker = &v
+	return s
+}
+
 // Describes the metadata of a user group.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/GroupMetadata
 type GroupMetadata struct {
 	_ struct{} `type:"structure"`
 
@@ -8051,19 +9013,74 @@ func (s *GroupMetadata) SetName(v string) *GroupMetadata {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUploadRequest
+// The user is undergoing transfer of ownership.
+type IllegalUserStateException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s IllegalUserStateException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s IllegalUserStateException) GoString() string {
+	return s.String()
+}
+
+func newErrorIllegalUserStateException(v protocol.ResponseMetadata) error {
+	return &IllegalUserStateException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *IllegalUserStateException) Code() string {
+	return "IllegalUserStateException"
+}
+
+// Message returns the exception's message.
+func (s *IllegalUserStateException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *IllegalUserStateException) OrigErr() error {
+	return nil
+}
+
+func (s *IllegalUserStateException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *IllegalUserStateException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *IllegalUserStateException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type InitiateDocumentVersionUploadInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
-	// The time stamp when the content of the document was originally created.
-	ContentCreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the content of the document was originally created.
+	ContentCreatedTimestamp *time.Time `type:"timestamp"`
 
-	// The time stamp when the content of the document was modified.
-	ContentModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	// The timestamp when the content of the document was modified.
+	ContentModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The content type of the document.
 	ContentType *string `min:"1" type:"string"`
@@ -8169,7 +9186,6 @@ func (s *InitiateDocumentVersionUploadInput) SetParentFolderId(v string) *Initia
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/InitiateDocumentVersionUploadResponse
 type InitiateDocumentVersionUploadOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -8202,8 +9218,320 @@ func (s *InitiateDocumentVersionUploadOutput) SetUploadMetadata(v *UploadMetadat
 	return s
 }
 
-// Describes the users and/or user groups.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/Participants
+// The pagination marker or limit fields are not valid.
+type InvalidArgumentException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidArgumentException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidArgumentException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidArgumentException(v protocol.ResponseMetadata) error {
+	return &InvalidArgumentException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidArgumentException) Code() string {
+	return "InvalidArgumentException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidArgumentException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidArgumentException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidArgumentException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidArgumentException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidArgumentException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The requested operation is not allowed on the specified comment object.
+type InvalidCommentOperationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidCommentOperationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidCommentOperationException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidCommentOperationException(v protocol.ResponseMetadata) error {
+	return &InvalidCommentOperationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidCommentOperationException) Code() string {
+	return "InvalidCommentOperationException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidCommentOperationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidCommentOperationException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidCommentOperationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidCommentOperationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidCommentOperationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The operation is invalid.
+type InvalidOperationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidOperationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidOperationException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidOperationException(v protocol.ResponseMetadata) error {
+	return &InvalidOperationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidOperationException) Code() string {
+	return "InvalidOperationException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidOperationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidOperationException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidOperationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidOperationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidOperationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The password is invalid.
+type InvalidPasswordException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s InvalidPasswordException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InvalidPasswordException) GoString() string {
+	return s.String()
+}
+
+func newErrorInvalidPasswordException(v protocol.ResponseMetadata) error {
+	return &InvalidPasswordException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *InvalidPasswordException) Code() string {
+	return "InvalidPasswordException"
+}
+
+// Message returns the exception's message.
+func (s *InvalidPasswordException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *InvalidPasswordException) OrigErr() error {
+	return nil
+}
+
+func (s *InvalidPasswordException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *InvalidPasswordException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *InvalidPasswordException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The maximum of 100,000 folders under the parent folder has been exceeded.
+type LimitExceededException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s LimitExceededException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LimitExceededException) GoString() string {
+	return s.String()
+}
+
+func newErrorLimitExceededException(v protocol.ResponseMetadata) error {
+	return &LimitExceededException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *LimitExceededException) Code() string {
+	return "LimitExceededException"
+}
+
+// Message returns the exception's message.
+func (s *LimitExceededException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *LimitExceededException) OrigErr() error {
+	return nil
+}
+
+func (s *LimitExceededException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *LimitExceededException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *LimitExceededException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// Set of options which defines notification preferences of given action.
+type NotificationOptions struct {
+	_ struct{} `type:"structure"`
+
+	// Text value to be included in the email body.
+	EmailMessage *string `type:"string" sensitive:"true"`
+
+	// Boolean value to indicate an email notification should be sent to the receipients.
+	SendEmail *bool `type:"boolean"`
+}
+
+// String returns the string representation
+func (s NotificationOptions) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NotificationOptions) GoString() string {
+	return s.String()
+}
+
+// SetEmailMessage sets the EmailMessage field's value.
+func (s *NotificationOptions) SetEmailMessage(v string) *NotificationOptions {
+	s.EmailMessage = &v
+	return s
+}
+
+// SetSendEmail sets the SendEmail field's value.
+func (s *NotificationOptions) SetSendEmail(v bool) *NotificationOptions {
+	s.SendEmail = &v
+	return s
+}
+
+// Describes the users or user groups.
 type Participants struct {
 	_ struct{} `type:"structure"`
 
@@ -8237,7 +9565,6 @@ func (s *Participants) SetUsers(v []*UserMetadata) *Participants {
 }
 
 // Describes the permissions.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/PermissionInfo
 type PermissionInfo struct {
 	_ struct{} `type:"structure"`
 
@@ -8271,7 +9598,6 @@ func (s *PermissionInfo) SetType(v string) *PermissionInfo {
 }
 
 // Describes a resource.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/Principal
 type Principal struct {
 	_ struct{} `type:"structure"`
 
@@ -8313,13 +9639,68 @@ func (s *Principal) SetType(v string) *Principal {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissionsRequest
+// The specified document version is not in the INITIALIZED state.
+type ProhibitedStateException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ProhibitedStateException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ProhibitedStateException) GoString() string {
+	return s.String()
+}
+
+func newErrorProhibitedStateException(v protocol.ResponseMetadata) error {
+	return &ProhibitedStateException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ProhibitedStateException) Code() string {
+	return "ProhibitedStateException"
+}
+
+// Message returns the exception's message.
+func (s *ProhibitedStateException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ProhibitedStateException) OrigErr() error {
+	return nil
+}
+
+func (s *ProhibitedStateException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ProhibitedStateException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ProhibitedStateException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type RemoveAllResourcePermissionsInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the resource.
 	//
@@ -8368,7 +9749,6 @@ func (s *RemoveAllResourcePermissionsInput) SetResourceId(v string) *RemoveAllRe
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveAllResourcePermissionsOutput
 type RemoveAllResourcePermissionsOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -8383,13 +9763,12 @@ func (s RemoveAllResourcePermissionsOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermissionRequest
 type RemoveResourcePermissionInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The principal ID of the resource.
 	//
@@ -8464,7 +9843,6 @@ func (s *RemoveResourcePermissionInput) SetResourceId(v string) *RemoveResourceP
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/RemoveResourcePermissionOutput
 type RemoveResourcePermissionOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -8479,8 +9857,120 @@ func (s RemoveResourcePermissionOutput) GoString() string {
 	return s.String()
 }
 
+// The response is too large to return. The request must include a filter to
+// reduce the size of the response.
+type RequestedEntityTooLargeException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s RequestedEntityTooLargeException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s RequestedEntityTooLargeException) GoString() string {
+	return s.String()
+}
+
+func newErrorRequestedEntityTooLargeException(v protocol.ResponseMetadata) error {
+	return &RequestedEntityTooLargeException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *RequestedEntityTooLargeException) Code() string {
+	return "RequestedEntityTooLargeException"
+}
+
+// Message returns the exception's message.
+func (s *RequestedEntityTooLargeException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *RequestedEntityTooLargeException) OrigErr() error {
+	return nil
+}
+
+func (s *RequestedEntityTooLargeException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *RequestedEntityTooLargeException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *RequestedEntityTooLargeException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The resource is already checked out.
+type ResourceAlreadyCheckedOutException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ResourceAlreadyCheckedOutException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ResourceAlreadyCheckedOutException) GoString() string {
+	return s.String()
+}
+
+func newErrorResourceAlreadyCheckedOutException(v protocol.ResponseMetadata) error {
+	return &ResourceAlreadyCheckedOutException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ResourceAlreadyCheckedOutException) Code() string {
+	return "ResourceAlreadyCheckedOutException"
+}
+
+// Message returns the exception's message.
+func (s *ResourceAlreadyCheckedOutException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ResourceAlreadyCheckedOutException) OrigErr() error {
+	return nil
+}
+
+func (s *ResourceAlreadyCheckedOutException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ResourceAlreadyCheckedOutException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ResourceAlreadyCheckedOutException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Describes the metadata of a resource.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ResourceMetadata
 type ResourceMetadata struct {
 	_ struct{} `type:"structure"`
 
@@ -8490,7 +9980,7 @@ type ResourceMetadata struct {
 	// The name of the resource.
 	Name *string `min:"1" type:"string"`
 
-	// The original name of the resource prior to a rename operation.
+	// The original name of the resource before a rename operation.
 	OriginalName *string `min:"1" type:"string"`
 
 	// The owner of the resource.
@@ -8560,7 +10050,6 @@ func (s *ResourceMetadata) SetVersionId(v string) *ResourceMetadata {
 }
 
 // Describes the path information of a resource.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ResourcePath
 type ResourcePath struct {
 	_ struct{} `type:"structure"`
 
@@ -8585,7 +10074,6 @@ func (s *ResourcePath) SetComponents(v []*ResourcePathComponent) *ResourcePath {
 }
 
 // Describes the resource path.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ResourcePathComponent
 type ResourcePathComponent struct {
 	_ struct{} `type:"structure"`
 
@@ -8618,8 +10106,63 @@ func (s *ResourcePathComponent) SetName(v string) *ResourcePathComponent {
 	return s
 }
 
+// One or more of the dependencies is unavailable.
+type ServiceUnavailableException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s ServiceUnavailableException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ServiceUnavailableException) GoString() string {
+	return s.String()
+}
+
+func newErrorServiceUnavailableException(v protocol.ResponseMetadata) error {
+	return &ServiceUnavailableException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *ServiceUnavailableException) Code() string {
+	return "ServiceUnavailableException"
+}
+
+// Message returns the exception's message.
+func (s *ServiceUnavailableException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *ServiceUnavailableException) OrigErr() error {
+	return nil
+}
+
+func (s *ServiceUnavailableException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *ServiceUnavailableException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *ServiceUnavailableException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Describes the recipient type and ID, if available.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/SharePrincipal
 type SharePrincipal struct {
 	_ struct{} `type:"structure"`
 
@@ -8690,9 +10233,11 @@ func (s *SharePrincipal) SetType(v string) *SharePrincipal {
 }
 
 // Describes the share results of a resource.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/ShareResult
 type ShareResult struct {
 	_ struct{} `type:"structure"`
+
+	// The ID of the invited user.
+	InviteePrincipalId *string `min:"1" type:"string"`
 
 	// The ID of the principal.
 	PrincipalId *string `min:"1" type:"string"`
@@ -8707,7 +10252,7 @@ type ShareResult struct {
 	Status *string `type:"string" enum:"ShareStatusType"`
 
 	// The status message.
-	StatusMessage *string `type:"string"`
+	StatusMessage *string `type:"string" sensitive:"true"`
 }
 
 // String returns the string representation
@@ -8718,6 +10263,12 @@ func (s ShareResult) String() string {
 // GoString returns the string representation
 func (s ShareResult) GoString() string {
 	return s.String()
+}
+
+// SetInviteePrincipalId sets the InviteePrincipalId field's value.
+func (s *ShareResult) SetInviteePrincipalId(v string) *ShareResult {
+	s.InviteePrincipalId = &v
+	return s
 }
 
 // SetPrincipalId sets the PrincipalId field's value.
@@ -8750,8 +10301,119 @@ func (s *ShareResult) SetStatusMessage(v string) *ShareResult {
 	return s
 }
 
+// The storage limit has been exceeded.
+type StorageLimitExceededException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s StorageLimitExceededException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s StorageLimitExceededException) GoString() string {
+	return s.String()
+}
+
+func newErrorStorageLimitExceededException(v protocol.ResponseMetadata) error {
+	return &StorageLimitExceededException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *StorageLimitExceededException) Code() string {
+	return "StorageLimitExceededException"
+}
+
+// Message returns the exception's message.
+func (s *StorageLimitExceededException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *StorageLimitExceededException) OrigErr() error {
+	return nil
+}
+
+func (s *StorageLimitExceededException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *StorageLimitExceededException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *StorageLimitExceededException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The storage limit will be exceeded.
+type StorageLimitWillExceedException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s StorageLimitWillExceedException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s StorageLimitWillExceedException) GoString() string {
+	return s.String()
+}
+
+func newErrorStorageLimitWillExceedException(v protocol.ResponseMetadata) error {
+	return &StorageLimitWillExceedException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *StorageLimitWillExceedException) Code() string {
+	return "StorageLimitWillExceedException"
+}
+
+// Message returns the exception's message.
+func (s *StorageLimitWillExceedException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *StorageLimitWillExceedException) OrigErr() error {
+	return nil
+}
+
+func (s *StorageLimitWillExceedException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *StorageLimitWillExceedException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *StorageLimitWillExceedException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 // Describes the storage for a user.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/StorageRuleType
 type StorageRuleType struct {
 	_ struct{} `type:"structure"`
 
@@ -8785,7 +10447,6 @@ func (s *StorageRuleType) SetStorageType(v string) *StorageRuleType {
 }
 
 // Describes a subscription.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/Subscription
 type Subscription struct {
 	_ struct{} `type:"structure"`
 
@@ -8827,13 +10488,237 @@ func (s *Subscription) SetSubscriptionId(v string) *Subscription {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentRequest
+// The limit has been reached on the number of labels for the specified resource.
+type TooManyLabelsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s TooManyLabelsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TooManyLabelsException) GoString() string {
+	return s.String()
+}
+
+func newErrorTooManyLabelsException(v protocol.ResponseMetadata) error {
+	return &TooManyLabelsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *TooManyLabelsException) Code() string {
+	return "TooManyLabelsException"
+}
+
+// Message returns the exception's message.
+func (s *TooManyLabelsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *TooManyLabelsException) OrigErr() error {
+	return nil
+}
+
+func (s *TooManyLabelsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *TooManyLabelsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *TooManyLabelsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// You've reached the limit on the number of subscriptions for the WorkDocs
+// instance.
+type TooManySubscriptionsException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s TooManySubscriptionsException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TooManySubscriptionsException) GoString() string {
+	return s.String()
+}
+
+func newErrorTooManySubscriptionsException(v protocol.ResponseMetadata) error {
+	return &TooManySubscriptionsException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *TooManySubscriptionsException) Code() string {
+	return "TooManySubscriptionsException"
+}
+
+// Message returns the exception's message.
+func (s *TooManySubscriptionsException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *TooManySubscriptionsException) OrigErr() error {
+	return nil
+}
+
+func (s *TooManySubscriptionsException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *TooManySubscriptionsException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *TooManySubscriptionsException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The operation is not permitted.
+type UnauthorizedOperationException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"message" type:"string"`
+}
+
+// String returns the string representation
+func (s UnauthorizedOperationException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UnauthorizedOperationException) GoString() string {
+	return s.String()
+}
+
+func newErrorUnauthorizedOperationException(v protocol.ResponseMetadata) error {
+	return &UnauthorizedOperationException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *UnauthorizedOperationException) Code() string {
+	return "UnauthorizedOperationException"
+}
+
+// Message returns the exception's message.
+func (s *UnauthorizedOperationException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *UnauthorizedOperationException) OrigErr() error {
+	return nil
+}
+
+func (s *UnauthorizedOperationException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *UnauthorizedOperationException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *UnauthorizedOperationException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
+// The caller does not have access to perform the action on the resource.
+type UnauthorizedResourceAccessException struct {
+	_            struct{}                  `type:"structure"`
+	RespMetadata protocol.ResponseMetadata `json:"-" xml:"-"`
+
+	Message_ *string `locationName:"Message" type:"string"`
+}
+
+// String returns the string representation
+func (s UnauthorizedResourceAccessException) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UnauthorizedResourceAccessException) GoString() string {
+	return s.String()
+}
+
+func newErrorUnauthorizedResourceAccessException(v protocol.ResponseMetadata) error {
+	return &UnauthorizedResourceAccessException{
+		RespMetadata: v,
+	}
+}
+
+// Code returns the exception type name.
+func (s *UnauthorizedResourceAccessException) Code() string {
+	return "UnauthorizedResourceAccessException"
+}
+
+// Message returns the exception's message.
+func (s *UnauthorizedResourceAccessException) Message() string {
+	if s.Message_ != nil {
+		return *s.Message_
+	}
+	return ""
+}
+
+// OrigErr always returns nil, satisfies awserr.Error interface.
+func (s *UnauthorizedResourceAccessException) OrigErr() error {
+	return nil
+}
+
+func (s *UnauthorizedResourceAccessException) Error() string {
+	return fmt.Sprintf("%s: %s", s.Code(), s.Message())
+}
+
+// Status code returns the HTTP status code for the request's response error.
+func (s *UnauthorizedResourceAccessException) StatusCode() int {
+	return s.RespMetadata.StatusCode
+}
+
+// RequestID returns the service's response RequestID for request.
+func (s *UnauthorizedResourceAccessException) RequestID() string {
+	return s.RespMetadata.RequestID
+}
+
 type UpdateDocumentInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -8846,8 +10731,7 @@ type UpdateDocumentInput struct {
 	// The ID of the parent folder.
 	ParentFolderId *string `min:"1" type:"string"`
 
-	// The resource state of the document. Note that only ACTIVE and RECYCLED are
-	// supported.
+	// The resource state of the document. Only ACTIVE and RECYCLED are supported.
 	ResourceState *string `type:"string" enum:"ResourceStateType"`
 }
 
@@ -8916,7 +10800,6 @@ func (s *UpdateDocumentInput) SetResourceState(v string) *UpdateDocumentInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentOutput
 type UpdateDocumentOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -8931,13 +10814,12 @@ func (s UpdateDocumentOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersionRequest
 type UpdateDocumentVersionInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the document.
 	//
@@ -9012,7 +10894,6 @@ func (s *UpdateDocumentVersionInput) SetVersionStatus(v string) *UpdateDocumentV
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateDocumentVersionOutput
 type UpdateDocumentVersionOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -9027,13 +10908,12 @@ func (s UpdateDocumentVersionOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolderRequest
 type UpdateFolderInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The ID of the folder.
 	//
@@ -9046,8 +10926,8 @@ type UpdateFolderInput struct {
 	// The ID of the parent folder.
 	ParentFolderId *string `min:"1" type:"string"`
 
-	// The resource state of the folder. Note that only ACTIVE and RECYCLED are
-	// accepted values from the API.
+	// The resource state of the folder. Only ACTIVE and RECYCLED are accepted values
+	// from the API.
 	ResourceState *string `type:"string" enum:"ResourceStateType"`
 }
 
@@ -9116,7 +10996,6 @@ func (s *UpdateFolderInput) SetResourceState(v string) *UpdateFolderInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateFolderOutput
 type UpdateFolderOutput struct {
 	_ struct{} `type:"structure"`
 }
@@ -9131,16 +11010,18 @@ func (s UpdateFolderOutput) GoString() string {
 	return s.String()
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUserRequest
 type UpdateUserInput struct {
 	_ struct{} `type:"structure"`
 
-	// Amazon WorkDocs authentication token. This field should not be set when using
-	// administrative API actions, as in accessing the API using AWS credentials.
-	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string"`
+	// Amazon WorkDocs authentication token. Not required when using AWS administrator
+	// credentials to access the API.
+	AuthenticationToken *string `location:"header" locationName:"Authentication" min:"1" type:"string" sensitive:"true"`
 
 	// The given name of the user.
 	GivenName *string `min:"1" type:"string"`
+
+	// Boolean value to determine whether the user is granted Poweruser privileges.
+	GrantPoweruserPrivileges *string `type:"string" enum:"BooleanEnumType"`
 
 	// The locale of the user.
 	Locale *string `type:"string" enum:"LocaleType"`
@@ -9213,6 +11094,12 @@ func (s *UpdateUserInput) SetGivenName(v string) *UpdateUserInput {
 	return s
 }
 
+// SetGrantPoweruserPrivileges sets the GrantPoweruserPrivileges field's value.
+func (s *UpdateUserInput) SetGrantPoweruserPrivileges(v string) *UpdateUserInput {
+	s.GrantPoweruserPrivileges = &v
+	return s
+}
+
 // SetLocale sets the Locale field's value.
 func (s *UpdateUserInput) SetLocale(v string) *UpdateUserInput {
 	s.Locale = &v
@@ -9249,7 +11136,6 @@ func (s *UpdateUserInput) SetUserId(v string) *UpdateUserInput {
 	return s
 }
 
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UpdateUserResponse
 type UpdateUserOutput struct {
 	_ struct{} `type:"structure"`
 
@@ -9274,7 +11160,6 @@ func (s *UpdateUserOutput) SetUser(v *User) *UpdateUserOutput {
 }
 
 // Describes the upload.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UploadMetadata
 type UploadMetadata struct {
 	_ struct{} `type:"structure"`
 
@@ -9282,7 +11167,7 @@ type UploadMetadata struct {
 	SignedHeaders map[string]*string `type:"map"`
 
 	// The URL of the upload.
-	UploadUrl *string `min:"1" type:"string"`
+	UploadUrl *string `min:"1" type:"string" sensitive:"true"`
 }
 
 // String returns the string representation
@@ -9308,12 +11193,11 @@ func (s *UploadMetadata) SetUploadUrl(v string) *UploadMetadata {
 }
 
 // Describes a user.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/User
 type User struct {
 	_ struct{} `type:"structure"`
 
 	// The time when the user was created.
-	CreatedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	CreatedTimestamp *time.Time `type:"timestamp"`
 
 	// The email address of the user.
 	EmailAddress *string `min:"1" type:"string"`
@@ -9328,7 +11212,7 @@ type User struct {
 	Locale *string `type:"string" enum:"LocaleType"`
 
 	// The time when the user was modified.
-	ModifiedTimestamp *time.Time `type:"timestamp" timestampFormat:"unix"`
+	ModifiedTimestamp *time.Time `type:"timestamp"`
 
 	// The ID of the organization.
 	OrganizationId *string `min:"1" type:"string"`
@@ -9459,7 +11343,6 @@ func (s *User) SetUsername(v string) *User {
 }
 
 // Describes the metadata of the user.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UserMetadata
 type UserMetadata struct {
 	_ struct{} `type:"structure"`
 
@@ -9475,7 +11358,7 @@ type UserMetadata struct {
 	// The surname of the user.
 	Surname *string `min:"1" type:"string"`
 
-	// The username of the user.
+	// The name of the user.
 	Username *string `min:"1" type:"string"`
 }
 
@@ -9520,14 +11403,13 @@ func (s *UserMetadata) SetUsername(v string) *UserMetadata {
 }
 
 // Describes the storage for a user.
-// Please also see https://docs.aws.amazon.com/goto/WebAPI/workdocs-2016-05-01/UserStorageMetadata
 type UserStorageMetadata struct {
 	_ struct{} `type:"structure"`
 
 	// The storage for a user.
 	StorageRule *StorageRuleType `type:"structure"`
 
-	// The amount of storage utilized, in bytes.
+	// The amount of storage used, in bytes.
 	StorageUtilizedInBytes *int64 `type:"long"`
 }
 
@@ -9568,6 +11450,12 @@ const (
 
 	// ActivityTypeDocumentVersionDeleted is a ActivityType enum value
 	ActivityTypeDocumentVersionDeleted = "DOCUMENT_VERSION_DELETED"
+
+	// ActivityTypeDocumentVersionViewed is a ActivityType enum value
+	ActivityTypeDocumentVersionViewed = "DOCUMENT_VERSION_VIEWED"
+
+	// ActivityTypeDocumentVersionDownloaded is a ActivityType enum value
+	ActivityTypeDocumentVersionDownloaded = "DOCUMENT_VERSION_DOWNLOADED"
 
 	// ActivityTypeDocumentRecycled is a ActivityType enum value
 	ActivityTypeDocumentRecycled = "DOCUMENT_RECYCLED"
@@ -9646,6 +11534,14 @@ const (
 
 	// ActivityTypeFolderMoved is a ActivityType enum value
 	ActivityTypeFolderMoved = "FOLDER_MOVED"
+)
+
+const (
+	// BooleanEnumTypeTrue is a BooleanEnumType enum value
+	BooleanEnumTypeTrue = "TRUE"
+
+	// BooleanEnumTypeFalse is a BooleanEnumType enum value
+	BooleanEnumTypeFalse = "FALSE"
 )
 
 const (
@@ -9771,6 +11667,11 @@ const (
 )
 
 const (
+	// ResourceCollectionTypeSharedWithMe is a ResourceCollectionType enum value
+	ResourceCollectionTypeSharedWithMe = "SHARED_WITH_ME"
+)
+
+const (
 	// ResourceSortTypeDate is a ResourceSortType enum value
 	ResourceSortTypeDate = "DATE"
 
@@ -9890,4 +11791,13 @@ const (
 
 	// UserTypeAdmin is a UserType enum value
 	UserTypeAdmin = "ADMIN"
+
+	// UserTypePoweruser is a UserType enum value
+	UserTypePoweruser = "POWERUSER"
+
+	// UserTypeMinimaluser is a UserType enum value
+	UserTypeMinimaluser = "MINIMALUSER"
+
+	// UserTypeWorkspacesuser is a UserType enum value
+	UserTypeWorkspacesuser = "WORKSPACESUSER"
 )

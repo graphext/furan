@@ -47,6 +47,11 @@ type DecryptionClient struct {
 //	}))
 func NewDecryptionClient(prov client.ConfigProvider, options ...func(*DecryptionClient)) *DecryptionClient {
 	s3client := s3.New(prov)
+
+	s3client.Handlers.Build.PushBack(func(r *request.Request) {
+		request.AddToUserAgent(r, "S3Crypto")
+	})
+
 	client := &DecryptionClient{
 		S3Client: s3client,
 		LoadStrategy: defaultV2LoadStrategy{
@@ -58,7 +63,7 @@ func NewDecryptionClient(prov client.ConfigProvider, options ...func(*Decryption
 			}).decryptHandler,
 		},
 		CEKRegistry: map[string]CEKEntry{
-			AESGCMNoPadding:                                          newAESGCMContentCipher,
+			AESGCMNoPadding: newAESGCMContentCipher,
 			strings.Join([]string{AESCBC, AESCBCPadder.Name()}, "/"): newAESCBCContentCipher,
 		},
 		PadderRegistry: map[string]Padder{
@@ -96,7 +101,7 @@ func (c *DecryptionClient) GetObjectRequest(input *s3.GetObjectInput) (*request.
 
 		// If KMS should return the correct CEK algorithm with the proper
 		// KMS key provider
-		cipher, err := c.contentCipherFromEnvelope(env)
+		cipher, err := c.contentCipherFromEnvelope(r.Context(), env)
 		if err != nil {
 			r.Error = err
 			out.Body.Close()
@@ -125,7 +130,7 @@ func (c *DecryptionClient) GetObject(input *s3.GetObjectInput) (*s3.GetObjectOut
 //
 // GetObjectWithContext is the same as GetObject with the additional support for
 // Context input parameters. The Context must not be nil. A nil Context will
-// cause a panic. Use the Context to add deadlining, timeouts, ect. In the future
+// cause a panic. Use the Context to add deadlining, timeouts, etc. In the future
 // this may create sub-contexts for individual underlying requests.
 func (c *DecryptionClient) GetObjectWithContext(ctx aws.Context, input *s3.GetObjectInput, opts ...request.Option) (*s3.GetObjectOutput, error) {
 	req, out := c.GetObjectRequest(input)
