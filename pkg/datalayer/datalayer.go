@@ -117,11 +117,6 @@ func (dl *PostgresDBLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUI
 	if c == nil {
 		return fmt.Errorf("channel cannot be nil")
 	}
-	conn, err := dl.p.Acquire(ctx)
-	if err != nil {
-		return fmt.Errorf("error getting db connection: %w", err)
-	}
-	defer conn.Release()
 	b, err := dl.GetBuildByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("error getting build by id: %w", err)
@@ -129,6 +124,11 @@ func (dl *PostgresDBLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUI
 	if !b.CanAddEvent() {
 		return fmt.Errorf("build status %v; no events are possible", b.Status.String())
 	}
+	conn, err := dl.p.Acquire(ctx)
+	if err != nil {
+		return fmt.Errorf("error getting db connection: %w", err)
+	}
+	defer conn.Release()
 	if _, err := conn.Exec(ctx, fmt.Sprintf("LISTEN %s;", pgChanFromID(id))); err != nil {
 		return fmt.Errorf("error listening on postgres channel: %w", err)
 	}
@@ -141,6 +141,7 @@ func (dl *PostgresDBLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUI
 	}
 }
 
+// pgChanFromID returns a legal Postgres identifier from a build ID
 func pgChanFromID(id uuid.UUID) string {
 	return "build_" + strings.ReplaceAll(id.String(), "-", "_")
 }

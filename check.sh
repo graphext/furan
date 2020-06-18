@@ -2,6 +2,5 @@ set -e -x
 
 go build
 go vet $(go list ./... |grep pkg/)
-dep check
 go test -cover $(go list ./... |grep pkg/)
-docker build -t at .
+DOCKER_BUILDKIT=1 docker build -t at .

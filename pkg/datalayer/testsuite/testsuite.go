@@ -112,6 +112,9 @@ func testDBGetBuildByID(t *testing.T, dl datalayer.DataLayer) {
 	if b.GitHubRepo != tb.GitHubRepo {
 		t.Fatalf("incorrect github repo: %v (expected %v)", b.GitHubRepo, tb.GitHubRepo)
 	}
+	if b.Request.GetBuild().GithubRepo != tb.Request.GetBuild().GithubRepo {
+		t.Fatalf("unexpected req.build.github_repo: %v", b.Request.GetBuild().GithubRepo)
+	}
 	err = dl.DeleteBuild(context.Background(), id)
 	if err != nil {
 		t.Fatalf("error deleting build: %v", err)
