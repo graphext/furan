@@ -1,7 +1,6 @@
 package jobrunner
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -25,7 +24,7 @@ type ImageInfo struct {
 type JobFactoryFunc func(info ImageInfo, build models.Build) *batchv1.Job
 
 type K8sJobRunner struct {
-	client    *kubernetes.Clientset
+	client    kubernetes.Interface
 	imageInfo ImageInfo
 	JobFunc   JobFactoryFunc
 }
@@ -82,7 +81,7 @@ func (kr K8sJobRunner) image() (ImageInfo, error) {
 
 	out.PodName = podn
 
-	pod, err := kr.client.CoreV1().Pods(out.Namespace).Get(context.Background(), out.PodName, metav1.GetOptions{})
+	pod, err := kr.client.CoreV1().Pods(out.Namespace).Get(out.PodName, metav1.GetOptions{})
 	if err != nil {
 		return out, fmt.Errorf("error getting pod: %w", err)
 	}
@@ -107,6 +106,6 @@ func (kr K8sJobRunner) Run(build models.Build) error {
 		return fmt.Errorf("JobFunc is required")
 	}
 	j := kr.JobFunc(kr.imageInfo, build)
-	_, err := kr.client.BatchV1().Jobs(kr.imageInfo.Namespace).Create(context.Background(), j, metav1.CreateOptions{})
+	_, err := kr.client.BatchV1().Jobs(kr.imageInfo.Namespace).Create(j)
 	return err
 }
