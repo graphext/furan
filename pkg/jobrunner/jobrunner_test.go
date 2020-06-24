@@ -1,6 +1,7 @@
 package jobrunner
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 
@@ -49,6 +51,9 @@ func TestK8sJobRunner_Run(t *testing.T) {
 					j := &batchv1.Job{}
 					j.Name = "foo-build-" + build.ID.String()
 					j.Labels = map[string]string{"build_id": build.ID.String()}
+					j.Spec.Selector = &metav1.LabelSelector{
+						MatchLabels: map[string]string{},
+					}
 					return j
 				},
 			},
@@ -64,7 +69,7 @@ func TestK8sJobRunner_Run(t *testing.T) {
 			},
 			verifyf: func(f fields, args args) error {
 				name := "foo-build-" + args.build.ID.String()
-				j, err := f.client.BatchV1().Jobs(f.imageInfo.Namespace).Get(name, metav1.GetOptions{})
+				j, err := f.client.BatchV1().Jobs(f.imageInfo.Namespace).Get(context.Background(), name, metav1.GetOptions{})
 				if err != nil {
 					return err
 				}
@@ -82,7 +87,7 @@ func TestK8sJobRunner_Run(t *testing.T) {
 				imageInfo: tt.fields.imageInfo,
 				JobFunc:   tt.fields.JobFunc,
 			}
-			if err := kr.Run(tt.args.build); (err != nil) != tt.wantErr {
+			if _, err := kr.Run(tt.args.build); (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if tt.verifyf != nil {
@@ -170,5 +175,142 @@ func TestK8sJobRunner_image(t *testing.T) {
 				t.Errorf("wanted image %v, got %v", tt.want.Image, got.Image)
 			}
 		})
+	}
+}
+
+func TestJobWatcher(t *testing.T) {
+	stests := []struct {
+		name  string
+		tfunc func(t *testing.T)
+	}{
+		{
+			name: "success",
+			tfunc: func(t *testing.T) {
+				fw := watch.NewFake()
+				jw := &JobWatcher{}
+				jw.init(fw, 1*time.Second)
+				go jw.start()
+				defer jw.Close()
+				go func() {
+					time.Sleep(10 * time.Millisecond)
+					fw.Modify(&batchv1.Job{
+						Status: batchv1.JobStatus{
+							Succeeded: 1,
+						},
+					})
+				}()
+				select {
+				case err := <-jw.Error():
+					t.Errorf("unexpected error: %v", err)
+				case <-jw.Done():
+					t.Logf("success")
+				}
+			},
+		},
+		{
+			name: "error",
+			tfunc: func(t *testing.T) {
+				fw := watch.NewFake()
+				jw := &JobWatcher{}
+				jw.init(fw, 1*time.Second)
+				go jw.start()
+				defer jw.Close()
+				go func() {
+					time.Sleep(10 * time.Millisecond)
+					fw.Error(&batchv1.Job{
+						Status: batchv1.JobStatus{
+							Failed: 1,
+						},
+					})
+				}()
+				select {
+				case <-jw.Error():
+					t.Logf("expected error")
+				case <-jw.Done():
+					t.Errorf("should not have succeeded")
+				}
+			},
+		},
+		{
+			name: "timeout",
+			tfunc: func(t *testing.T) {
+				fw := watch.NewFake()
+				jw := &JobWatcher{}
+				jw.init(fw, 5*time.Millisecond)
+				go jw.start()
+				defer jw.Close()
+				select {
+				case err := <-jw.Error():
+					t.Logf("expected timeout error: %v", err)
+				case <-jw.Done():
+					t.Errorf("should not have succeeded")
+				}
+			},
+		},
+		// this test needs this PR to be released in client-go:
+		// https://github.com/kubernetes/kubernetes/pull/91485
+		//{
+		//	name: "logs",
+		//	tfunc: func(t *testing.T) {
+		//		fw := watch.NewFake()
+		//		p := &corev1.Pod{}
+		//		p.Name = "foo-asdf1234"
+		//		p.Namespace = "foo"
+		//		p.Labels = map[string]string{"foo": "bar"}
+		//		p.Status = corev1.PodStatus{
+		//			ContainerStatuses: []corev1.ContainerStatus{
+		//				corev1.ContainerStatus{
+		//					Name: "foo-app-container",
+		//				},
+		//			},
+		//		}
+		//		fc := fake.NewSimpleClientset(p)
+		//		jw := &JobWatcher{
+		//			c:            fc,
+		//			matchLabels:  p.Labels,
+		//			JobName:      "foo-job",
+		//			JobNamespace: "foo",
+		//		}
+		//		jw.init(fw, 1*time.Second)
+		//		go jw.start()
+		//		defer jw.Close()
+		//		go func() {
+		//			time.Sleep(10 * time.Millisecond)
+		//			fw.Modify(&batchv1.Job{
+		//				ObjectMeta: metav1.ObjectMeta{
+		//					Name:      "foo-job",
+		//					Namespace: "foo",
+		//				},
+		//				Spec: batchv1.JobSpec{
+		//					Selector: &metav1.LabelSelector{
+		//						MatchLabels: map[string]string{
+		//							"foo": "bar",
+		//						},
+		//					},
+		//				},
+		//				Status: batchv1.JobStatus{
+		//					Succeeded: 1,
+		//				},
+		//			})
+		//		}()
+		//		select {
+		//		case err := <-jw.Error():
+		//			t.Errorf("unexpected error: %v", err)
+		//		case <-jw.Done():
+		//			t.Logf("success")
+		//		}
+		//		logs, err := jw.Logs()
+		//		if err != nil {
+		//			t.Errorf("error getting logs: %v", err)
+		//		}
+		//		if len(logs) != 1 {
+		//			t.Errorf("unexpected logs length: %v", len(logs))
+		//		}
+		//		t.Logf("logs: %+v", logs)
+		//	},
+		//},
+	}
+	for _, tt := range stests {
+		t.Run(tt.name, tt.tfunc)
 	}
 }
