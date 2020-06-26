@@ -51,11 +51,6 @@ var furanjob = batchv1.Job{
 						},
 						VolumeMounts: []corev1.VolumeMount{
 							corev1.VolumeMount{
-								Name:      "certs",
-								ReadOnly:  true,
-								MountPath: "/certs",
-							},
-							corev1.VolumeMount{
 								Name:      "bksocket",
 								MountPath: "/run/buildkit",
 							},
@@ -68,19 +63,8 @@ var furanjob = batchv1.Job{
 						Args: []string{
 							"--addr",
 							"unix:///run/buildkit/buildkitd.sock",
-							"--tlscacert",
-							"/certs/ca.pem",
-							"--tlscert",
-							"/certs/cert.pem",
-							"--tlskey",
-							"/certs/key.pem",
 						},
 						VolumeMounts: []corev1.VolumeMount{
-							corev1.VolumeMount{
-								Name:      "certs",
-								ReadOnly:  true,
-								MountPath: "/certs",
-							},
 							corev1.VolumeMount{
 								Name:      "bksocket",
 								MountPath: "/run/buildkit",
@@ -94,14 +78,6 @@ var furanjob = batchv1.Job{
 						VolumeSource: corev1.VolumeSource{
 							EmptyDir: &corev1.EmptyDirVolumeSource{
 								Medium: corev1.StorageMediumMemory,
-							},
-						},
-					},
-					corev1.Volume{
-						Name: "certs",
-						VolumeSource: corev1.VolumeSource{
-							Secret: &corev1.SecretVolumeSource{
-								SecretName: "buildkit-daemon-certs", // managed by Furan chart
 							},
 						},
 					},

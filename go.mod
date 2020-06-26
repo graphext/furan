@@ -6,6 +6,8 @@ replace github.com/docker/docker => github.com/docker/engine v17.12.0-ce-rc1.0.2
 
 replace github.com/Sirupsen/logrus v1.4.2 => github.com/sirupsen/logrus v1.4.2
 
+replace github.com/containerd/containerd v1.4.0-0 => github.com/containerd/containerd v1.4.0-beta.1.0.20200624184620-1127ffc7400e
+
 require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/docker v1.13.1
@@ -13,14 +15,15 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/golang/protobuf v1.4.2
+	github.com/google/go-cmp v0.5.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/googleapis/gnostic v0.3.1 // indirect
-	github.com/gotestyourself/gotestyourself v1.4.0 // indirect
 	github.com/jackc/pgconn v1.5.0
 	github.com/jackc/pgtype v1.3.0
 	github.com/jackc/pgx/v4 v4.6.0
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
+	github.com/moby/buildkit v0.7.1
 	github.com/spf13/cobra v1.0.0
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
@@ -34,7 +37,6 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gotest.tools v1.4.0 // indirect
 	k8s.io/api v0.18.4
 	k8s.io/apimachinery v0.18.4
 	k8s.io/client-go v0.18.4
