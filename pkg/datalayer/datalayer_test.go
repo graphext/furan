@@ -3,6 +3,7 @@ package datalayer_test
 import (
 	"log"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -13,6 +14,9 @@ import (
 	"github.com/dollarshaveclub/furan/pkg/datalayer/testsuite"
 )
 
+// running pg locally in docker:
+// $ docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=root postgres:12-alpine
+// FURAN_TEST_DB=postgresql://postgres:root@localhost:5432/postgres?sslmode=disable
 var tdb = os.Getenv("FURAN_TEST_DB")
 
 type migrationLogger struct {
@@ -44,6 +48,10 @@ func migrator(t *testing.T) *migrate.Migrate {
 func setupTestDB(t *testing.T) {
 	m := migrator(t)
 	if err := m.Up(); err != nil {
+		if strings.HasSuffix(err.Error(), "no change") {
+			// ignore if the schema was already created
+			return
+		}
 		t.Fatalf("error running up migrations: %v", err)
 	}
 }

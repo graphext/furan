@@ -12,9 +12,10 @@ import (
 )
 
 type FakeDataLayer struct {
-	mtx       sync.RWMutex
-	d         map[uuid.UUID]*models.Build
-	listeners map[uuid.UUID][]chan string
+	mtx          sync.RWMutex
+	d            map[uuid.UUID]*models.Build
+	listeners    map[uuid.UUID][]chan string
+	cxllisteners map[uuid.UUID][]chan struct{}
 }
 
 var _ DataLayer = &FakeDataLayer{}
@@ -28,6 +29,11 @@ func (fdl *FakeDataLayer) init() {
 	if fdl.listeners == nil {
 		fdl.mtx.Lock()
 		fdl.listeners = make(map[uuid.UUID][]chan string)
+		fdl.mtx.Unlock()
+	}
+	if fdl.cxllisteners == nil {
+		fdl.mtx.Lock()
+		fdl.cxllisteners = make(map[uuid.UUID][]chan struct{})
 		fdl.mtx.Unlock()
 	}
 }
@@ -107,6 +113,7 @@ func (fdl *FakeDataLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUID
 		fdl.mtx.Lock()
 		if i == 0 {
 			delete(fdl.listeners, id)
+			fdl.mtx.Unlock()
 			return
 		}
 		fdl.listeners[id] = append(fdl.listeners[id][:i], fdl.listeners[id][i+1:]...)
@@ -136,6 +143,63 @@ func (fdl *FakeDataLayer) AddEvent(ctx context.Context, id uuid.UUID, event stri
 
 	for _, c := range fdl.listeners[id] {
 		c <- event
+	}
+
+	return nil
+}
+
+func (fdl *FakeDataLayer) CancelBuild(ctx context.Context, id uuid.UUID) error {
+	fdl.init()
+
+	fdl.mtx.RLock()
+	defer fdl.mtx.RUnlock()
+
+	for _, c := range fdl.cxllisteners[id] {
+		c <- struct{}{}
+	}
+
+	return nil
+}
+
+func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUID, c chan struct{}) error {
+	fdl.init()
+
+	fdl.mtx.RLock()
+	b, ok := fdl.d[id]
+	if !ok {
+		fdl.mtx.RUnlock()
+		return fmt.Errorf("build not found")
+	}
+	fdl.mtx.RUnlock()
+
+	if !b.Running() {
+		return fmt.Errorf("cannot cxl build with status %v", b.Status)
+	}
+
+	lc := make(chan struct{})
+
+	fdl.mtx.Lock()
+	fdl.cxllisteners[id] = append(fdl.cxllisteners[id], lc)
+	i := len(fdl.cxllisteners[id]) - 1 // index of listener
+	fdl.mtx.Unlock()
+	defer func() {
+		// remove listener chan from cxllisteners
+		fdl.mtx.Lock()
+		if i == 0 {
+			delete(fdl.cxllisteners, id)
+			fdl.mtx.Unlock()
+			return
+		}
+		fdl.cxllisteners[id] = append(fdl.cxllisteners[id][:i], fdl.cxllisteners[id][i+1:]...)
+		fdl.mtx.Unlock()
+		close(lc)
+	}()
+
+	select {
+	case <-lc:
+		c <- struct{}{}
+	case <-ctx.Done():
+		return fmt.Errorf("context cancelled")
 	}
 
 	return nil

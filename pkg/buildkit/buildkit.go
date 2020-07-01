@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/gofrs/uuid"
 	"github.com/moby/buildkit/client/llb"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
@@ -57,7 +56,7 @@ func imageNames(imageRepo string, tags []string) []string {
 	return out
 }
 
-func (bks *BuildSolver) genSolveOpt(b models.Build, opts BuildOpts) (bkclient.SolveOpt, error) {
+func (bks *BuildSolver) genSolveOpt(b models.Build, opts models.BuildOpts) (bkclient.SolveOpt, error) {
 	tags := b.Tags
 	if b.CommitSHATag {
 		tags = append(tags, opts.CommitSHA)
@@ -106,17 +105,8 @@ func (bks *BuildSolver) genSolveOpt(b models.Build, opts BuildOpts) (bkclient.So
 	return sopts, nil
 }
 
-// BuildOpts models all options required to perform a build
-type BuildOpts struct {
-	BuildID                          uuid.UUID
-	ContextPath, CommitSHA           string
-	RelativeDockerfilePath           string
-	BuildArgs                        map[string]string
-	CacheImportPath, CacheExportPath string
-}
-
 // Build performs the build defined by opts
-func (bks *BuildSolver) Build(ctx context.Context, opts BuildOpts) error {
+func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error {
 	b, err := bks.dl.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
 		return fmt.Errorf("error getting build: %v: %w", opts.BuildID, err)
@@ -129,6 +119,23 @@ func (bks *BuildSolver) Build(ctx context.Context, opts BuildOpts) error {
 	defer close(c)
 	ctx2, cf := context.WithCancel(ctx)
 	defer cf()
+	cxl := make(chan struct{})
+	go func() {
+		err := bks.dl.ListenForCancellation(ctx, b.ID, cxl)
+		if err != nil {
+			bks.log("error listening for cancellation: %v", err)
+		}
+	}()
+	go func() {
+		select {
+		case <-cxl:
+			if err := bks.dl.AddEvent(ctx, b.ID, "build cancellation request received"); err != nil {
+				bks.log("error adding cancellation event: build: %v: %v", opts.BuildID, err)
+			}
+			cf()
+		case <-ctx2.Done():
+		}
+	}()
 	go func() {
 		for {
 			select {
@@ -148,12 +155,12 @@ func (bks *BuildSolver) Build(ctx context.Context, opts BuildOpts) error {
 			}
 		}
 	}()
-	resp, err := bks.bc.Solve(ctx, nil, sopts, c)
+	resp, err := bks.bc.Solve(ctx2, nil, sopts, c)
 	if err != nil {
 		return fmt.Errorf("error running solver: %w", err)
 	}
 	msg := fmt.Sprintf("solve success: %+v", resp.ExporterResponse)
-	if err := bks.dl.AddEvent(ctx, opts.BuildID, msg); err != nil {
+	if err := bks.dl.AddEvent(ctx2, opts.BuildID, msg); err != nil {
 		bks.log("error adding success event: build: %v: %v", opts.BuildID, err)
 	}
 	return nil

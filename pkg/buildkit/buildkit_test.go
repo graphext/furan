@@ -17,7 +17,7 @@ import (
 func TestBuildSolver_genSolveOpt(t *testing.T) {
 	type args struct {
 		b    models.Build
-		opts BuildOpts
+		opts models.BuildOpts
 	}
 	tests := []struct {
 		name    string
@@ -35,7 +35,7 @@ func TestBuildSolver_genSolveOpt(t *testing.T) {
 					Tags:         []string{"master", "v1.0.0"},
 					CommitSHATag: true,
 				},
-				opts: BuildOpts{
+				opts: models.BuildOpts{
 					ContextPath:            "/tmp/asdf",
 					CommitSHA:              "zxcvb",
 					RelativeDockerfilePath: ".",
@@ -107,6 +107,11 @@ type testBuildKitClient struct {
 func (tbk *testBuildKitClient) Solve(ctx context.Context, def *llb.Definition, opt bkclient.SolveOpt, statusChan chan *bkclient.SolveStatus) (*bkclient.SolveResponse, error) {
 	for i := uint(0); i < tbk.StatusMessageCount; i++ {
 		time.Sleep(tbk.MessageInterval)
+		select {
+		case <-ctx.Done():
+			return nil, fmt.Errorf("context cancelled")
+		default:
+		}
 		statusChan <- &bkclient.SolveStatus{
 			Logs: []*bkclient.VertexLog{
 				&bkclient.VertexLog{
@@ -128,7 +133,7 @@ func TestBuildSolver_Build(t *testing.T) {
 		LogF LogFunc
 	}
 	type args struct {
-		opts BuildOpts
+		opts models.BuildOpts
 	}
 	tests := []struct {
 		name       string
@@ -137,6 +142,7 @@ func TestBuildSolver_Build(t *testing.T) {
 		args       args
 		wantEvents uint
 		wantErr    bool
+		cancel     bool
 	}{
 		{
 			name: "success",
@@ -154,13 +160,40 @@ func TestBuildSolver_Build(t *testing.T) {
 				CommitSHATag: true,
 			},
 			args: args{
-				opts: BuildOpts{
+				opts: models.BuildOpts{
 					ContextPath:            "/tmp/foo",
 					CommitSHA:              "asdf",
 					RelativeDockerfilePath: ".",
 				},
 			},
 			wantEvents: 4,
+		},
+		{
+			name: "cancelled",
+			fields: fields{
+				dl: &datalayer.FakeDataLayer{},
+				bc: &testBuildKitClient{
+					MessageInterval:    10 * time.Millisecond,
+					StatusMessageCount: 3,
+				},
+			},
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepo:    "acme/foo",
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusBuilding,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					ContextPath:            "/tmp/foo",
+					CommitSHA:              "asdf",
+					RelativeDockerfilePath: ".",
+				},
+			},
+			cancel:  true,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -170,21 +203,31 @@ func TestBuildSolver_Build(t *testing.T) {
 				bc:   tt.fields.bc,
 				LogF: tt.fields.LogF,
 			}
-			id, err := tt.fields.dl.CreateBuild(context.Background(), tt.build)
+			ctx, cf := context.WithCancel(context.Background())
+			defer cf()
+			id, err := tt.fields.dl.CreateBuild(ctx, tt.build)
 			if err != nil {
 				t.Fatalf("error creating build: %v", err)
 			}
 			tt.build.ID = id
 			tt.args.opts.BuildID = id
-			if err := bks.Build(context.Background(), tt.args.opts); (err != nil) != tt.wantErr {
+			if tt.cancel {
+				go func() {
+					time.Sleep(20 * time.Millisecond)
+					tt.fields.dl.CancelBuild(ctx, id)
+				}()
+			}
+			if err := bks.Build(ctx, tt.args.opts); (err != nil) != tt.wantErr {
 				t.Errorf("Build() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			b, err := tt.fields.dl.GetBuildByID(context.Background(), tt.build.ID)
+			b, err := tt.fields.dl.GetBuildByID(ctx, tt.build.ID)
 			if err != nil {
 				t.Fatalf("error getting build: %v", err)
 			}
-			if len(b.Events) != int(tt.wantEvents) {
-				t.Errorf("wanted %v events, got %v: %+v", tt.wantEvents, len(b.Events), b.Events)
+			if tt.wantEvents > 0 {
+				if len(b.Events) != int(tt.wantEvents) {
+					t.Errorf("wanted %v events, got %v: %+v", tt.wantEvents, len(b.Events), b.Events)
+				}
 			}
 		})
 	}

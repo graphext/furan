@@ -105,7 +105,7 @@ func (kr K8sJobRunner) image() (ImageInfo, error) {
 }
 
 // Run starts a new Furan build job and returns immediately
-func (kr K8sJobRunner) Run(build models.Build) (*JobWatcher, error) {
+func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	if kr.JobFunc == nil || kr.client == nil {
 		return nil, fmt.Errorf("JobFunc is required")
 	}
@@ -141,6 +141,8 @@ type JobWatcher struct {
 	e                     chan error
 	d, stop               chan struct{}
 }
+
+var _ models.Job = &JobWatcher{}
 
 func (jw *JobWatcher) init(w watch.Interface, timeout time.Duration) {
 	jw.w = w

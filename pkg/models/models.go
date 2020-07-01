@@ -52,3 +52,28 @@ func (b Build) CanAddEvent() bool {
 	}
 	return true
 }
+
+func (b Build) Running() bool {
+	return b.CanAddEvent()
+}
+
+// BuildOpts models all options required to perform a build
+type BuildOpts struct {
+	BuildID                          uuid.UUID
+	ContextPath, CommitSHA           string
+	RelativeDockerfilePath           string
+	BuildArgs                        map[string]string
+	CacheImportPath, CacheExportPath string
+}
+
+// Job describes methods on a single abstract build job
+type Job interface {
+	// Close cleans up any resources associated with this Job
+	Close()
+	// Error returns a channel that will contain any errors associated with this Job
+	Error() chan error
+	// Done returns a signal that the Job has completed successfully
+	Done() chan struct{}
+	// Lobs returns all pod logs associated with the Job
+	Logs() (map[string]map[string][]byte, error)
+}

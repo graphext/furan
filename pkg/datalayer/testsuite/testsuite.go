@@ -48,6 +48,10 @@ func RunTests(t *testing.T, dlfunc DLFactoryFunc) {
 			"listen for and add events",
 			testDBListenAndAddEvents,
 		},
+		{
+			"cancellation and listen for cancellation",
+			testDBCancelBuildAndListenForCancellation,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -192,18 +196,28 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	defer cf()
 	c := make(chan string)
 	defer close(c)
-	revents := []string{}
+
+	elisten := make(chan struct{})
+	revents := make(chan string, 3)
 	go func() {
+		close(elisten)
 		// take any events received on c and append to revents
 		for e := range c {
-			revents = append(revents, e)
+			revents <- e
 		}
 	}()
+
+	listen := make(chan struct{}) // signals that we are listening
+
 	go func() {
+		close(listen)
 		// ListenForBuildEvents blocks and will write any received events to c
 		dl.ListenForBuildEvents(ctx, id, c)
 	}()
-	time.Sleep(10 * time.Millisecond) // allow above go routines to run
+
+	<-listen // make sure we're listening
+	<-elisten
+
 	// add some events
 	if err := dl.AddEvent(ctx, id, "something happened"); err != nil {
 		t.Fatalf("error adding event 1: %v", err)
@@ -215,8 +229,64 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 		t.Fatalf("error adding event 3: %v", err)
 	}
 	cf() // cancel context, aborting listener
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 	if i := len(revents); i != 3 {
 		t.Fatalf("expected 3 events, got %v", i)
+	}
+}
+
+func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLayer) {
+	id, err := dl.CreateBuild(context.Background(), tb)
+	if err != nil {
+		t.Fatalf("error creating build: %v", err)
+	}
+	if err := dl.ListenForCancellation(context.Background(), id, make(chan struct{})); err == nil {
+		t.Fatalf("listen should have returned error for bad build status")
+	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusBuilding); err != nil {
+		t.Fatalf("error setting build status: %v", err)
+	}
+	ctx, cf := context.WithCancel(context.Background())
+	defer cf()
+	c := make(chan struct{})
+	defer close(c)
+
+	listen := make(chan struct{}) // chan used to signal that we're listening
+
+	go func() {
+		close(listen)
+		dl.ListenForCancellation(ctx, id, c)
+	}()
+
+	cxl := make(chan struct{}) // chan used to signal cancellation
+
+	go func() {
+		<-cxl
+		if err := dl.CancelBuild(ctx, id); err != nil {
+			t.Errorf("error cancelling build: %v", err)
+		}
+		t.Logf("build cancellation sent")
+	}()
+
+	<-listen // block until we're listening
+
+	// build shouldn't be cancelled yet
+	select {
+	case <-c:
+		t.Errorf("build shouldn't be cancelled but is")
+	default:
+	}
+
+	close(cxl) // allow cancellation request to be sent
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	// build should be cancelled now
+	select {
+	case <-c:
+		t.Logf("build detected as cancelled")
+	case <-ticker.C:
+		t.Errorf("timeout: build not cancelled yet but should be")
 	}
 }

@@ -25,6 +25,8 @@ type DataLayer interface {
 	SetBuildCompletedTimestamp(context.Context, uuid.UUID, time.Time) error
 	SetBuildStatus(context.Context, uuid.UUID, models.BuildStatus) error
 	DeleteBuild(context.Context, uuid.UUID) error
+	CancelBuild(context.Context, uuid.UUID) error
+	ListenForCancellation(context.Context, uuid.UUID, chan struct{}) error
 	ListenForBuildEvents(ctx context.Context, id uuid.UUID, c chan<- string) error
 	AddEvent(ctx context.Context, id uuid.UUID, event string) error
 }
@@ -162,6 +164,55 @@ func (dl *PostgresDBLayer) AddEvent(ctx context.Context, id uuid.UUID, event str
 	if err := txn.Commit(ctx); err != nil {
 		return fmt.Errorf("error committing txn: %w", err)
 	}
+	return nil
+}
+
+// pgCxlChanFromID returns a legal Postgres identifier for the cancellation notification from a build ID
+func pgCxlChanFromID(id uuid.UUID) string {
+	return "cxl_build_" + strings.ReplaceAll(id.String(), "-", "_")
+}
+
+// CancelBuild broadcasts a cancellation request for build id
+func (dl *PostgresDBLayer) CancelBuild(ctx context.Context, id uuid.UUID) error {
+	b, err := dl.GetBuildByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting build: %w", err)
+	}
+	if !b.Running() {
+		return fmt.Errorf("build not cancellable: %v", b.Status.String())
+	}
+	q := fmt.Sprintf("NOTIFY %s, '%s';", pgCxlChanFromID(id), "cancel")
+	_, err = dl.p.Exec(ctx, q)
+	return err
+}
+
+// ListenForCancellation blocks and listens for cancellation requests for build id.
+// If a cancellation request is received, it will write a value to c and return a nil error
+func (dl *PostgresDBLayer) ListenForCancellation(ctx context.Context, id uuid.UUID, c chan struct{}) error {
+	if c == nil {
+		return fmt.Errorf("channel cannot be nil")
+	}
+	b, err := dl.GetBuildByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting build by id: %w", err)
+	}
+	if !b.Running() {
+		return fmt.Errorf("build not running: %v", b.Status.String())
+	}
+	conn, err := dl.p.Acquire(ctx)
+	if err != nil {
+		return fmt.Errorf("error getting db connection: %w", err)
+	}
+	defer conn.Release()
+	q := fmt.Sprintf("LISTEN %s;", pgCxlChanFromID(id))
+	if _, err := conn.Exec(ctx, q); err != nil {
+		return fmt.Errorf("error listening on postgres cxl channel: %w", err)
+	}
+	_, err = conn.Conn().WaitForNotification(ctx)
+	if err != nil {
+		return fmt.Errorf("error waiting for notification: %v: %w", id.String(), err)
+	}
+	c <- struct{}{}
 	return nil
 }
 
