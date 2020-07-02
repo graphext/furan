@@ -48,10 +48,12 @@ func NewBuildSolver(addr string, dl datalayer.DataLayer) (*BuildSolver, error) {
 	}, nil
 }
 
-func imageNames(imageRepo string, tags []string) []string {
-	out := make([]string, len(tags))
-	for i := range tags {
-		out[i] = imageRepo + ":" + tags[i]
+func imageNames(imageRepos []string, tags []string) []string {
+	out := make([]string, len(imageRepos)*len(tags))
+	for i := range imageRepos {
+		for j := range tags {
+			out[(i*len(tags))+j] = imageRepos[i] + ":" + tags[j]
+		}
 	}
 	return out
 }
@@ -65,7 +67,7 @@ func (bks *BuildSolver) genSolveOpt(b models.Build, opts models.BuildOpts) (bkcl
 		Type: "image",
 		Attrs: map[string]string{
 			"push": "true",
-			"name": strings.Join(imageNames(b.ImageRepo, tags), ","),
+			"name": strings.Join(imageNames(b.ImageRepos, tags), ","),
 		},
 	}
 	sopts := bkclient.SolveOpt{
@@ -121,7 +123,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	defer cf()
 	cxl := make(chan struct{})
 	go func() {
-		err := bks.dl.ListenForCancellation(ctx, b.ID, cxl)
+		err := bks.dl.ListenForCancellation(ctx2, b.ID, cxl)
 		if err != nil {
 			bks.log("error listening for cancellation: %v", err)
 		}
@@ -129,7 +131,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	go func() {
 		select {
 		case <-cxl:
-			if err := bks.dl.AddEvent(ctx, b.ID, "build cancellation request received"); err != nil {
+			if err := bks.dl.AddEvent(ctx2, b.ID, "build cancellation request received"); err != nil {
 				bks.log("error adding cancellation event: build: %v: %v", opts.BuildID, err)
 			}
 			cf()

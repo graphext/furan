@@ -71,8 +71,8 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 		return id, fmt.Errorf("error generating build id: %w", err)
 	}
 	_, err = dl.p.Exec(ctx,
-		`INSERT INTO builds (id, github_repo, github_ref, image_repo, tags, commit_sha_tag, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);`,
-		id, b.GitHubRepo, b.GitHubRef, b.ImageRepo, b.Tags, b.CommitSHATag, b.Request, models.BuildStatusNotStarted)
+		`INSERT INTO builds (id, github_repo, github_ref, image_repos, tags, commit_sha_tag, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);`,
+		id, b.GitHubRepo, b.GitHubRef, b.ImageRepos, b.Tags, b.CommitSHATag, b.Request, models.BuildStatusNotStarted)
 	if err != nil {
 		return id, fmt.Errorf("error inserting build: %w", err)
 	}
@@ -83,7 +83,7 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 func (dl *PostgresDBLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (models.Build, error) {
 	out := models.Build{}
 	var updated, completed pgtype.Timestamptz
-	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, image_repo, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.ImageRepo, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
+	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, image_repos, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
 	if err != nil {
 		return out, fmt.Errorf("error getting build by id: %w", err)
 	}

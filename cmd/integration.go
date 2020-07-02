@@ -38,11 +38,6 @@ func (iops IntegrationOptions) BuildRequest() *furanrpc.BuildRequest {
 			Ref:              iops.Ref,
 			TagWithCommitSha: true,
 		},
-		Push: &furanrpc.PushDefinition{
-			Registry: &furanrpc.PushRegistryDefinition{
-				Repo: iops.ImageRepo,
-			},
-		},
 		SkipIfExists: iops.SkipIfExists,
 	}
 }

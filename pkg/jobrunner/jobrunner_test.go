@@ -63,7 +63,7 @@ func TestK8sJobRunner_Run(t *testing.T) {
 					Created:    time.Now().UTC(),
 					GitHubRepo: "acme/foo",
 					GitHubRef:  "master",
-					ImageRepo:  "acme/foo",
+					ImageRepos: []string{"acme/foo"},
 					Request:    furanrpc.BuildRequest{},
 				},
 			},

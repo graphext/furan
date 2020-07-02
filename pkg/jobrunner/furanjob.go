@@ -2,6 +2,7 @@ package jobrunner
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	batchv1 "k8s.io/api/batch/v1"
@@ -97,7 +98,7 @@ func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 		"build-id":    build.ID.String(),
 		"source-repo": build.GitHubRepo,
 		"source-ref":  build.GitHubRef,
-		"dest-repo":   build.ImageRepo,
+		"dest-repo":   fmt.Sprintf("%v", build.ImageRepos),
 		"image-tags":  strings.Join(build.Tags, ","),
 	}
 	reqj, _ := json.Marshal(build.Request) // ignore error

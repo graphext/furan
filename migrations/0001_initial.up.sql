@@ -7,9 +7,10 @@ CREATE TABLE builds (
   completed timestamptz,
   github_repo text,
   github_ref text,
-  image_repo text,
+  image_repos text[],
   tags text[],
   commit_sha_tag boolean,
+  disable_build_cache boolean,
   request jsonb,  -- serialized protobuf BuildRequest
   status integer,
   events text[]  -- ordered array of build event strings

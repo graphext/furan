@@ -17,10 +17,11 @@ message Timestamp {
 message BuildDefinition {
   string github_repo = 1;
   string dockerfile_path = 2;
-  string ref = 3; // sha/branch/tag
+  string ref = 3; // GitHub ref (sha/branch/tag)
   repeated string tags = 4;
   bool tag_with_commit_sha = 5;
   map<string, string> args = 6;
+  bool disable_build_cache = 7;
 }
 
 message PushRegistryDefinition {
@@ -28,7 +29,7 @@ message PushRegistryDefinition {
 }
 
 message PushDefinition {
-  PushRegistryDefinition registry = 1;
+  repeated PushRegistryDefinition registries = 1;
 }
 
 // Requests
@@ -36,7 +37,7 @@ message PushDefinition {
 message BuildRequest {
   BuildDefinition build = 1;
   PushDefinition push = 2;
-  bool skip_if_exists = 3; // (registry: all tags exist, s3: object exists)
+  bool skip_if_exists = 3; // all tags exist in all image repos
 }
 
 message BuildStatusRequest {
@@ -50,57 +51,33 @@ message BuildCancelRequest {
 // Responses
 
 message BuildRequestResponse {
-  string build_id = 2;
+  string build_id = 1;
 }
 
 message BuildCancelResponse {
   string build_id = 1;
 }
 
+enum BuildState {
+  UNKNOWN = 0;
+  NOTSTARTED = 1;
+  SKIPPED = 2;
+  RUNNING = 3;
+  FAILURE = 4;
+  SUCCESS = 5;
+  CANCELLED = 6;
+}
+
 message BuildStatusResponse {
-  enum BuildState {
-    STARTED = 0;
-    BUILDING = 1;
-    PUSHING = 2;
-    SUCCESS = 3;
-    BUILD_FAILURE = 4;
-    PUSH_FAILURE = 5;
-    NOT_NECESSARY = 6;
-  }
   string build_id = 1;
   BuildRequest build_request = 2;
   BuildState state = 3;
-  bool finished = 4;
-  bool failed = 5;
-  bool cancelled = 6;
-  string started = 7; // deprecated
-  string completed = 8; // deprecated
-  double duration = 9;
-  Timestamp startedts = 10;
-  Timestamp completedts = 11;
-}
-
-// Messages server-streamed and/or published to Kafka
-
-message BuildEventError {
-  enum ErrorType {
-    FATAL = 0;
-    TEMPORARY = 1;
-    NO_ERROR = 2;
-  }
-  bool is_error = 1;
-  ErrorType error_type = 2;
+  Timestamp started = 4;
+  Timestamp completed = 5;
 }
 
 message BuildEvent {
-  enum EventType {
-    DOCKER_BUILD_STREAM = 0;
-    DOCKER_PUSH_STREAM = 1;
-    LOG = 2;
-  }
-  BuildEventError event_error = 1;
-  EventType event_type = 2;
-  string build_id = 3;
-  string message = 4;
-  bool build_finished = 5;
+  string build_id = 1;
+  string message = 2;
+  BuildState current_state = 3;
 }

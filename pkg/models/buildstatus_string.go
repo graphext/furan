@@ -10,17 +10,16 @@ func _() {
 	var x [1]struct{}
 	_ = x[BuildStatusUnknown-0]
 	_ = x[BuildStatusNotStarted-1]
-	_ = x[BuildStatusBuilding-2]
-	_ = x[BuildStatusPushing-3]
-	_ = x[BuildStatusSuccess-4]
-	_ = x[BuildStatusBuildFailure-5]
-	_ = x[BuildStatusPushFailure-6]
-	_ = x[BuildStatusNotNeeded-7]
+	_ = x[BuildStatusSkipped-2]
+	_ = x[BuildStatusRunning-3]
+	_ = x[BuildStatusFailure-4]
+	_ = x[BuildStatusSuccess-5]
+	_ = x[BuildStatusCancelled-6]
 }
 
-const _BuildStatus_name = "BuildStatusUnknownBuildStatusNotStartedBuildStatusBuildingBuildStatusPushingBuildStatusSuccessBuildStatusBuildFailureBuildStatusPushFailureBuildStatusNotNeeded"
+const _BuildStatus_name = "BuildStatusUnknownBuildStatusNotStartedBuildStatusSkippedBuildStatusRunningBuildStatusFailureBuildStatusSuccessBuildStatusCancelled"
 
-var _BuildStatus_index = [...]uint8{0, 18, 39, 58, 76, 94, 117, 139, 159}
+var _BuildStatus_index = [...]uint8{0, 18, 39, 57, 75, 93, 111, 131}
 
 func (i BuildStatus) String() string {
 	if i < 0 || i >= BuildStatus(len(_BuildStatus_index)-1) {

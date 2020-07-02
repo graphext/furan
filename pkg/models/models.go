@@ -15,46 +15,32 @@ type BuildStatus int
 const (
 	BuildStatusUnknown BuildStatus = iota
 	BuildStatusNotStarted
-	BuildStatusBuilding
-	BuildStatusPushing
+	BuildStatusSkipped
+	BuildStatusRunning
+	BuildStatusFailure
 	BuildStatusSuccess
-	BuildStatusBuildFailure
-	BuildStatusPushFailure
-	BuildStatusNotNeeded
+	BuildStatusCancelled
 )
 
 type Build struct {
 	ID                          uuid.UUID
 	Created, Updated, Completed time.Time
 	GitHubRepo, GitHubRef       string
-	ImageRepo                   string
+	ImageRepos                  []string
 	Tags                        []string
 	CommitSHATag                bool
+	DisableBuildCache           bool
 	Request                     furanrpc.BuildRequest
 	Status                      BuildStatus
 	Events                      []string
 }
 
 func (b Build) CanAddEvent() bool {
-	switch b.Status {
-	case BuildStatusUnknown:
-		fallthrough
-	case BuildStatusNotStarted:
-		fallthrough
-	case BuildStatusSuccess:
-		fallthrough
-	case BuildStatusBuildFailure:
-		fallthrough
-	case BuildStatusPushFailure:
-		fallthrough
-	case BuildStatusNotNeeded:
-		return false
-	}
-	return true
+	return b.Running()
 }
 
 func (b Build) Running() bool {
-	return b.CanAddEvent()
+	return b.Status == BuildStatusRunning
 }
 
 // BuildOpts models all options required to perform a build
@@ -72,8 +58,8 @@ type Job interface {
 	Close()
 	// Error returns a channel that will contain any errors associated with this Job
 	Error() chan error
-	// Done returns a signal that the Job has completed successfully
+	// Done returns a channel that signals that the Job has completed successfully
 	Done() chan struct{}
-	// Lobs returns all pod logs associated with the Job
+	// Logs returns all pod logs associated with the Job
 	Logs() (map[string]map[string][]byte, error)
 }

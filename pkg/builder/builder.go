@@ -9,10 +9,12 @@ import (
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
 
+// BuildRunner describes an object that can perform a build synchronously
 type BuildRunner interface {
 	Build(ctx context.Context, opts models.BuildOpts) error
 }
 
+// JobRunner describes an object that can asynchronously run a job that executes a build
 type JobRunner interface {
 	Run(build models.Build) (models.Job, error)
 }

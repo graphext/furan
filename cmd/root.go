@@ -15,9 +15,6 @@ var awsConfig config.AWSConfig
 // used by build and trigger commands
 var cliBuildRequest = furanrpc.BuildRequest{
 	Build: &furanrpc.BuildDefinition{},
-	Push: &furanrpc.PushDefinition{
-		Registry: &furanrpc.PushRegistryDefinition{},
-	},
 }
 var tags string
 

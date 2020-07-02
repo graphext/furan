@@ -35,7 +35,7 @@ func TestFuranJobFunc(t *testing.T) {
 					ID:           uuid.Must(uuid.FromString("f3b1ae8c-c9ac-46f2-8b26-8a1e185e0776")),
 					GitHubRepo:   "acme/widgets",
 					GitHubRef:    "asdf",
-					ImageRepo:    "quay.io/acme/widgets",
+					ImageRepos:   []string{"quay.io/acme/widgets"},
 					Tags:         []string{"v1.1.0"},
 					CommitSHATag: true,
 					Status:       models.BuildStatusNotStarted,
@@ -70,8 +70,8 @@ func TestFuranJobFunc(t *testing.T) {
 							return fmt.Errorf("labels: bad source ref: %v", v)
 						}
 					case "dest-repo":
-						if v != b.ImageRepo {
-							return fmt.Errorf("labels: bad iamge repo: %v", v)
+						if v != fmt.Sprintf("%v", b.ImageRepos) {
+							return fmt.Errorf("labels: bad image repo: %v", v)
 						}
 					case "image-tags":
 						if i := len(strings.Split(v, ",")); i != len(b.Tags) {

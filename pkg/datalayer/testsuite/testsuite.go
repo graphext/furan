@@ -68,7 +68,7 @@ var tb = models.Build{
 	Created:      time.Now().UTC(),
 	GitHubRepo:   "foobar/baz",
 	GitHubRef:    "master",
-	ImageRepo:    "quay.io/foobar/baz",
+	ImageRepos:   []string{"quay.io/foobar/baz"},
 	Tags:         []string{"master"},
 	CommitSHATag: true,
 	Request: furanrpc.BuildRequest{
@@ -79,7 +79,11 @@ var tb = models.Build{
 			TagWithCommitSha: true,
 		},
 		Push: &furanrpc.PushDefinition{
-			Registry: &furanrpc.PushRegistryDefinition{},
+			Registries: []*furanrpc.PushRegistryDefinition{
+				&furanrpc.PushRegistryDefinition{
+					Repo: "quay.io/foobar/baz",
+				},
+			},
 		},
 	},
 	Status: 1,
@@ -189,7 +193,7 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	if err := dl.ListenForBuildEvents(context.Background(), id, make(chan string)); err == nil {
 		t.Fatalf("listen should have returned error for bad build status")
 	}
-	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusBuilding); err != nil {
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
 		t.Fatalf("error setting build status: %v", err)
 	}
 	ctx, cf := context.WithCancel(context.Background())
@@ -197,14 +201,17 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	c := make(chan string)
 	defer close(c)
 
-	elisten := make(chan struct{})
 	revents := make(chan string, 3)
+	elisten := make(chan struct{})
+	done := make(chan struct{})
+
 	go func() {
 		close(elisten)
 		// take any events received on c and append to revents
-		for e := range c {
-			revents <- e
+		for i := 0; i < 3; i++ {
+			revents <- <-c
 		}
+		close(done)
 	}()
 
 	listen := make(chan struct{}) // signals that we are listening
@@ -228,8 +235,17 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	if err := dl.AddEvent(ctx, id, "ok done"); err != nil {
 		t.Fatalf("error adding event 3: %v", err)
 	}
-	cf() // cancel context, aborting listener
-	time.Sleep(50 * time.Millisecond)
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	select {
+	case <-done:
+		break
+	case <-ticker.C:
+		t.Fatalf("time out waiting for 3 events")
+	}
+
 	if i := len(revents); i != 3 {
 		t.Fatalf("expected 3 events, got %v", i)
 	}
@@ -243,7 +259,7 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	if err := dl.ListenForCancellation(context.Background(), id, make(chan struct{})); err == nil {
 		t.Fatalf("listen should have returned error for bad build status")
 	}
-	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusBuilding); err != nil {
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
 		t.Fatalf("error setting build status: %v", err)
 	}
 	ctx, cf := context.WithCancel(context.Background())
@@ -265,7 +281,6 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 		if err := dl.CancelBuild(ctx, id); err != nil {
 			t.Errorf("error cancelling build: %v", err)
 		}
-		t.Logf("build cancellation sent")
 	}()
 
 	<-listen // block until we're listening
@@ -285,7 +300,7 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	// build should be cancelled now
 	select {
 	case <-c:
-		t.Logf("build detected as cancelled")
+		break
 	case <-ticker.C:
 		t.Errorf("timeout: build not cancelled yet but should be")
 	}

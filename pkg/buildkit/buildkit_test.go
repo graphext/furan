@@ -31,7 +31,7 @@ func TestBuildSolver_genSolveOpt(t *testing.T) {
 				b: models.Build{
 					GitHubRepo:   "foo/bar",
 					GitHubRef:    "master",
-					ImageRepo:    "acme/foo",
+					ImageRepos:   []string{"acme/foo"},
 					Tags:         []string{"master", "v1.0.0"},
 					CommitSHATag: true,
 				},
@@ -155,7 +155,7 @@ func TestBuildSolver_Build(t *testing.T) {
 			build: models.Build{
 				GitHubRepo:   "foo/bar",
 				GitHubRef:    "master",
-				ImageRepo:    "acme/foo",
+				ImageRepos:   []string{"acme/foo"},
 				Tags:         []string{"master", "v1.0.0"},
 				CommitSHATag: true,
 			},
@@ -180,10 +180,10 @@ func TestBuildSolver_Build(t *testing.T) {
 			build: models.Build{
 				GitHubRepo:   "foo/bar",
 				GitHubRef:    "master",
-				ImageRepo:    "acme/foo",
+				ImageRepos:   []string{"acme/foo"},
 				Tags:         []string{"master", "v1.0.0"},
 				CommitSHATag: true,
-				Status:       models.BuildStatusBuilding,
+				Status:       models.BuildStatusRunning,
 			},
 			args: args{
 				opts: models.BuildOpts{
@@ -228,6 +228,88 @@ func TestBuildSolver_Build(t *testing.T) {
 				if len(b.Events) != int(tt.wantEvents) {
 					t.Errorf("wanted %v events, got %v: %+v", tt.wantEvents, len(b.Events), b.Events)
 				}
+			}
+		})
+	}
+}
+
+func Test_imageNames(t *testing.T) {
+	type args struct {
+		imageRepos []string
+		tags       []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "multi repos",
+			args: args{
+				imageRepos: []string{
+					"acme/foo",
+					"quay.io/acme/foo",
+				},
+				tags: []string{
+					"master",
+					"release",
+					"asdf",
+				},
+			},
+			want: []string{
+				"acme/foo:master",
+				"acme/foo:release",
+				"acme/foo:asdf",
+				"quay.io/acme/foo:master",
+				"quay.io/acme/foo:release",
+				"quay.io/acme/foo:asdf",
+			},
+		},
+		{
+			name: "single repo",
+			args: args{
+				imageRepos: []string{
+					"acme/foo",
+				},
+				tags: []string{
+					"master",
+					"release",
+					"asdf",
+				},
+			},
+			want: []string{
+				"acme/foo:master",
+				"acme/foo:release",
+				"acme/foo:asdf",
+			},
+		},
+		{
+			name: "no repo",
+			args: args{
+				imageRepos: []string{},
+				tags: []string{
+					"master",
+					"release",
+					"asdf",
+				},
+			},
+			want: []string{},
+		},
+		{
+			name: "no tags",
+			args: args{
+				imageRepos: []string{
+					"acme/foo",
+				},
+				tags: []string{},
+			},
+			want: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := imageNames(tt.args.imageRepos, tt.args.tags); !cmp.Equal(got, tt.want) {
+				t.Errorf("imageNames() = %v, want %v", got, tt.want)
 			}
 		})
 	}
