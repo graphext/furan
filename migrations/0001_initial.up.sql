@@ -7,6 +7,7 @@ CREATE TABLE builds (
   completed timestamptz,
   github_repo text,
   github_ref text,
+  encrypted_github_credential bytea,
   image_repos text[],
   tags text[],
   commit_sha_tag boolean,

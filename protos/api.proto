@@ -9,19 +9,29 @@ service FuranExecutor {
   rpc CancelBuild (BuildCancelRequest) returns (BuildCancelResponse) {}
 }
 
+// From https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto
 message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
   int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
   int32 nanos = 2;
 }
 
 message BuildDefinition {
   string github_repo = 1;
-  string dockerfile_path = 2;
-  string ref = 3; // GitHub ref (sha/branch/tag)
-  repeated string tags = 4;
-  bool tag_with_commit_sha = 5;
-  map<string, string> args = 6;
-  bool disable_build_cache = 7;
+  string github_credential = 2;
+  string dockerfile_path = 3;
+  string ref = 4; // GitHub ref (sha/branch/tag)
+  repeated string tags = 5;
+  bool tag_with_commit_sha = 6;
+  map<string, string> args = 7;
+  bool disable_build_cache = 8;
 }
 
 message PushRegistryDefinition {

@@ -29,6 +29,8 @@ type DataLayer interface {
 	ListenForCancellation(context.Context, uuid.UUID, chan struct{}) error
 	ListenForBuildEvents(ctx context.Context, id uuid.UUID, c chan<- string) error
 	AddEvent(ctx context.Context, id uuid.UUID, event string) error
+	SetBuildAsRunning(ctx context.Context, id uuid.UUID) error
+	ListenForBuildRunning(ctx context.Context, id uuid.UUID, c chan struct{}) error
 }
 
 // PostgresDBLayer is a DataLayer instance that utilizes a PostgreSQL database
@@ -70,9 +72,11 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 	if err != nil {
 		return id, fmt.Errorf("error generating build id: %w", err)
 	}
+	// Clear out GH credential if present
+	b.Request.GetBuild().GithubCredential = ""
 	_, err = dl.p.Exec(ctx,
-		`INSERT INTO builds (id, github_repo, github_ref, image_repos, tags, commit_sha_tag, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8);`,
-		id, b.GitHubRepo, b.GitHubRef, b.ImageRepos, b.Tags, b.CommitSHATag, b.Request, models.BuildStatusNotStarted)
+		`INSERT INTO builds (id, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);`,
+		id, b.GitHubRepo, b.GitHubRef, b.EncryptedGitHubCredential, b.ImageRepos, b.Tags, b.CommitSHATag, b.Request, models.BuildStatusNotStarted)
 	if err != nil {
 		return id, fmt.Errorf("error inserting build: %w", err)
 	}
@@ -83,7 +87,7 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 func (dl *PostgresDBLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (models.Build, error) {
 	out := models.Build{}
 	var updated, completed pgtype.Timestamptz
-	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, image_repos, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
+	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.EncryptedGitHubCredential, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
 	if err != nil {
 		return out, fmt.Errorf("error getting build by id: %w", err)
 	}
@@ -181,9 +185,22 @@ func (dl *PostgresDBLayer) CancelBuild(ctx context.Context, id uuid.UUID) error 
 	if !b.Running() {
 		return fmt.Errorf("build not cancellable: %v", b.Status.String())
 	}
+	txn, err := dl.p.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("error opening txn: %w", err)
+	}
+	defer txn.Rollback(ctx)
+	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, models.BuildStatusCancelled, id); err != nil {
+		return fmt.Errorf("error cancelling build: %w", err)
+	}
 	q := fmt.Sprintf("NOTIFY %s, '%s';", pgCxlChanFromID(id), "cancel")
-	_, err = dl.p.Exec(ctx, q)
-	return err
+	if _, err := txn.Exec(ctx, q); err != nil {
+		return fmt.Errorf("error notifying cancel channel: %w", err)
+	}
+	if err := txn.Commit(ctx); err != nil {
+		return fmt.Errorf("error committing txn: %w", err)
+	}
+	return nil
 }
 
 // ListenForCancellation blocks and listens for cancellation requests for build id.
@@ -207,6 +224,60 @@ func (dl *PostgresDBLayer) ListenForCancellation(ctx context.Context, id uuid.UU
 	q := fmt.Sprintf("LISTEN %s;", pgCxlChanFromID(id))
 	if _, err := conn.Exec(ctx, q); err != nil {
 		return fmt.Errorf("error listening on postgres cxl channel: %w", err)
+	}
+	_, err = conn.Conn().WaitForNotification(ctx)
+	if err != nil {
+		return fmt.Errorf("error waiting for notification: %v: %w", id.String(), err)
+	}
+	c <- struct{}{}
+	return nil
+}
+
+// pgRunChanFromID returns a legal Postgres identifier for the running notification from a build ID
+func pgRunChanFromID(id uuid.UUID) string {
+	return "running_build_" + strings.ReplaceAll(id.String(), "-", "_")
+}
+
+// SetBuildAsRunning updates build status to Running and sends a notification for listeners
+func (dl *PostgresDBLayer) SetBuildAsRunning(ctx context.Context, id uuid.UUID) error {
+	txn, err := dl.p.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("error opening txn: %w", err)
+	}
+	defer txn.Rollback(ctx)
+	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, models.BuildStatusRunning, id); err != nil {
+		return fmt.Errorf("error appending event: %w", err)
+	}
+	if _, err := txn.Exec(ctx, fmt.Sprintf("NOTIFY %s, 'running';", pgRunChanFromID(id))); err != nil {
+		return fmt.Errorf("error notifying channel: %w", err)
+	}
+	if err := txn.Commit(ctx); err != nil {
+		return fmt.Errorf("error committing txn: %w", err)
+	}
+	return nil
+}
+
+// ListenForBuildRunning blocks and listens for a build to be updated to Running.
+// If a notification is received, it will write a value to c and return a nil error
+func (dl *PostgresDBLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUID, c chan struct{}) error {
+	if c == nil {
+		return fmt.Errorf("channel cannot be nil")
+	}
+	b, err := dl.GetBuildByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting build by id: %w", err)
+	}
+	if b.Status != models.BuildStatusNotStarted {
+		return fmt.Errorf("unexpected build status (wanted NotStarted): %v", b.Status.String())
+	}
+	conn, err := dl.p.Acquire(ctx)
+	if err != nil {
+		return fmt.Errorf("error getting db connection: %w", err)
+	}
+	defer conn.Release()
+	q := fmt.Sprintf("LISTEN %s;", pgRunChanFromID(id))
+	if _, err := conn.Exec(ctx, q); err != nil {
+		return fmt.Errorf("error listening on postgres running channel: %w", err)
 	}
 	_, err = conn.Conn().WaitForNotification(ctx)
 	if err != nil {

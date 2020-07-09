@@ -1,9 +1,12 @@
 package models
 
 import (
+	"crypto/rand"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/nacl/secretbox"
 
 	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 )
@@ -26,6 +29,7 @@ type Build struct {
 	ID                          uuid.UUID
 	Created, Updated, Completed time.Time
 	GitHubRepo, GitHubRef       string
+	EncryptedGitHubCredential   []byte
 	ImageRepos                  []string
 	Tags                        []string
 	CommitSHATag                bool
@@ -43,6 +47,27 @@ func (b Build) Running() bool {
 	return b.Status == BuildStatusRunning
 }
 
+// EncryptAndSetGitHubCredential takes a GitHub credential, encrypts it and sets EncryptedGitHubCredential accordingly
+func (b *Build) EncryptAndSetGitHubCredential(cred []byte, key [32]byte) error {
+	var nonce [24]byte
+	if n, err := rand.Read(nonce[:]); err != nil || n != len(nonce) {
+		return errors.Wrapf(err, "error reading random bytes for nonce (read: %v)", n)
+	}
+	b.EncryptedGitHubCredential = secretbox.Seal(nonce[:], cred, &nonce, &key)
+	return nil
+}
+
+// GetGitHubCredential returns the decrypted user token using key or error
+func (b Build) GetGitHubCredential(key [32]byte) (string, error) {
+	var nonce [24]byte
+	copy(nonce[:], b.EncryptedGitHubCredential[:24])
+	tkn, ok := secretbox.Open(nil, b.EncryptedGitHubCredential[24:], &nonce, &key)
+	if !ok {
+		return "", errors.New("decryption error (incorrect key?)")
+	}
+	return string(tkn), nil
+}
+
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
 	BuildID                          uuid.UUID
@@ -58,8 +83,10 @@ type Job interface {
 	Close()
 	// Error returns a channel that will contain any errors associated with this Job
 	Error() chan error
-	// Done returns a channel that signals that the Job has completed successfully
-	Done() chan struct{}
+	// Running returns a channel that signals that the build the Job is executing has been updated to status Running
+	// This indicates that the Furan sidecar has started and is executing successfully and will take responsibility for
+	// tracking the build status from this point forward
+	Running() chan struct{}
 	// Logs returns all pod logs associated with the Job
 	Logs() (map[string]map[string][]byte, error)
 }

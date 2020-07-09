@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gofrs/uuid"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,6 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
+	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
 
@@ -29,11 +31,12 @@ type JobFactoryFunc func(info ImageInfo, build models.Build) *batchv1.Job
 
 type K8sJobRunner struct {
 	client    kubernetes.Interface
+	dl        datalayer.DataLayer
 	imageInfo ImageInfo
 	JobFunc   JobFactoryFunc
 }
 
-func NewInClusterRunner() (*K8sJobRunner, error) {
+func NewInClusterRunner(dl datalayer.DataLayer) (*K8sJobRunner, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, fmt.Errorf("error getting in-cluster config: %w", err)
@@ -44,6 +47,7 @@ func NewInClusterRunner() (*K8sJobRunner, error) {
 	}
 	kr := &K8sJobRunner{
 		client: client,
+		dl:     dl,
 	}
 	iinfo, err := kr.image()
 	if err != nil {
@@ -119,6 +123,7 @@ func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	})
 	jw := &JobWatcher{
 		c:            kr.client,
+		dl:           kr.dl,
 		JobName:      jo.Name,
 		JobNamespace: jo.Namespace,
 		matchLabels:  jo.Spec.Selector.MatchLabels,
@@ -128,18 +133,22 @@ func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	return jw, nil
 }
 
-const DefaultJobWatcherTimeout = 30 * time.Minute
+const (
+	DefaultJobWatcherTimeout = 30 * time.Minute
+)
 
 // JobWatcher is an object that keeps track of a newly-created k8s Job and
 // signals when it succeeds or fails
 type JobWatcher struct {
 	c                     kubernetes.Interface
+	dl                    datalayer.DataLayer
+	buildID               uuid.UUID
 	JobName, JobNamespace string
 	matchLabels           map[string]string
 	timeout               time.Duration
 	w                     watch.Interface
 	e                     chan error
-	d, stop               chan struct{}
+	r, stop               chan struct{}
 }
 
 var _ models.Job = &JobWatcher{}
@@ -148,7 +157,7 @@ func (jw *JobWatcher) init(w watch.Interface, timeout time.Duration) {
 	jw.w = w
 	jw.timeout = timeout
 	jw.e = make(chan error)
-	jw.d = make(chan struct{})
+	jw.r = make(chan struct{})
 	jw.stop = make(chan struct{})
 }
 
@@ -156,6 +165,23 @@ func (jw *JobWatcher) start() {
 	if jw.timeout == 0 {
 		jw.timeout = DefaultJobWatcherTimeout
 	}
+	running := make(chan struct{})
+	defer close(running)
+	ctx, cf := context.WithTimeout(context.Background(), jw.timeout)
+	defer cf()
+	go func() {
+		if jw == nil || jw.dl == nil {
+			return
+		}
+		if err := jw.dl.ListenForBuildRunning(ctx, jw.buildID, running); err != nil {
+			select {
+			case <-jw.stop:
+				return
+			default:
+			}
+			jw.e <- fmt.Errorf("error listening for build running: %w", err)
+		}
+	}()
 	ticker := time.NewTicker(jw.timeout)
 	defer ticker.Stop()
 	for {
@@ -164,6 +190,9 @@ func (jw *JobWatcher) start() {
 			return
 		case <-ticker.C:
 			jw.e <- fmt.Errorf("timeout reached: %v", jw.timeout)
+			return
+		case <-running:
+			jw.r <- struct{}{}
 			return
 		case e := <-jw.w.ResultChan():
 			jw.processEvent(e)
@@ -187,13 +216,21 @@ func (jw *JobWatcher) processEvent(e watch.Event) {
 			return
 		}
 		if j.Status.Succeeded > 0 {
-			jw.d <- struct{}{}
+			// we shouldn't still be running if the Job has finished so just return and ignore
 			return
 		}
-		if j.Status.Failed > 0 {
+		backoff := int32(6) // default Job BackoffLimit
+		if j.Spec.BackoffLimit != nil {
+			backoff = *j.Spec.BackoffLimit
+		}
+		if j.Status.Failed >= backoff {
 			jw.e <- fmt.Errorf("%v failed pods", j.Status.Failed)
 		}
 	}
+}
+
+func (jw *JobWatcher) watchJobPod() {
+
 }
 
 func (jw *JobWatcher) Close() {
@@ -201,8 +238,8 @@ func (jw *JobWatcher) Close() {
 	if jw.e != nil {
 		close(jw.e)
 	}
-	if jw.d != nil {
-		close(jw.d)
+	if jw.r != nil {
+		close(jw.r)
 	}
 	if jw.stop != nil {
 		close(jw.stop)
@@ -213,8 +250,19 @@ func (jw *JobWatcher) Error() chan error {
 	return jw.e
 }
 
-func (jw *JobWatcher) Done() chan struct{} {
-	return jw.d
+func (jw *JobWatcher) Running() chan struct{} {
+	return jw.r
+}
+
+func (jw *JobWatcher) matchLabelsForJob() ([]string, error) {
+	if len(jw.matchLabels) == 0 {
+		return nil, fmt.Errorf("empty job match labels")
+	}
+	selector := []string{}
+	for k, v := range jw.matchLabels {
+		selector = append(selector, fmt.Sprintf("%v = %v", k, v))
+	}
+	return selector, nil
 }
 
 var (
@@ -227,12 +275,9 @@ var (
 // Ex:
 // logByteSlice := output["pod-name-xyz111"]["app-container"]
 func (jw *JobWatcher) Logs() (map[string]map[string][]byte, error) {
-	if len(jw.matchLabels) == 0 {
-		return nil, fmt.Errorf("empty job match labels")
-	}
-	selector := []string{}
-	for k, v := range jw.matchLabels {
-		selector = append(selector, fmt.Sprintf("%v = %v", k, v))
+	selector, err := jw.matchLabelsForJob()
+	if err != nil {
+		return nil, fmt.Errorf("error getting job match selectors: %w", err)
 	}
 	pl, err := jw.c.CoreV1().Pods(jw.JobNamespace).List(context.Background(), metav1.ListOptions{LabelSelector: strings.Join(selector, ",")})
 	if err != nil || pl == nil {

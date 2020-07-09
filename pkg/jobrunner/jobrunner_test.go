@@ -16,6 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 
+	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
@@ -84,6 +85,7 @@ func TestK8sJobRunner_Run(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			kr := K8sJobRunner{
 				client:    tt.fields.client,
+				dl:        &datalayer.FakeDataLayer{},
 				imageInfo: tt.fields.imageInfo,
 				JobFunc:   tt.fields.JobFunc,
 			}
@@ -187,12 +189,22 @@ func TestJobWatcher(t *testing.T) {
 			name: "success",
 			tfunc: func(t *testing.T) {
 				fw := watch.NewFake()
-				jw := &JobWatcher{}
+				dl := &datalayer.FakeDataLayer{}
+				id, err := dl.CreateBuild(context.Background(), models.Build{
+					Status: models.BuildStatusNotStarted,
+				})
+				if err != nil {
+					t.Fatalf("error creating build: %v", err)
+				}
+				jw := &JobWatcher{
+					buildID: id,
+					dl:      dl,
+				}
 				jw.init(fw, 1*time.Second)
 				go jw.start()
-				defer jw.Close()
 				go func() {
 					time.Sleep(10 * time.Millisecond)
+					dl.SetBuildAsRunning(context.Background(), id)
 					fw.Modify(&batchv1.Job{
 						Status: batchv1.JobStatus{
 							Succeeded: 1,
@@ -202,7 +214,7 @@ func TestJobWatcher(t *testing.T) {
 				select {
 				case err := <-jw.Error():
 					t.Errorf("unexpected error: %v", err)
-				case <-jw.Done():
+				case <-jw.Running():
 					t.Logf("success")
 				}
 			},
@@ -211,10 +223,11 @@ func TestJobWatcher(t *testing.T) {
 			name: "error",
 			tfunc: func(t *testing.T) {
 				fw := watch.NewFake()
-				jw := &JobWatcher{}
+				jw := &JobWatcher{
+					dl: &datalayer.FakeDataLayer{},
+				}
 				jw.init(fw, 1*time.Second)
 				go jw.start()
-				defer jw.Close()
 				go func() {
 					time.Sleep(10 * time.Millisecond)
 					fw.Error(&batchv1.Job{
@@ -226,7 +239,7 @@ func TestJobWatcher(t *testing.T) {
 				select {
 				case <-jw.Error():
 					t.Logf("expected error")
-				case <-jw.Done():
+				case <-jw.Running():
 					t.Errorf("should not have succeeded")
 				}
 			},
@@ -235,14 +248,15 @@ func TestJobWatcher(t *testing.T) {
 			name: "timeout",
 			tfunc: func(t *testing.T) {
 				fw := watch.NewFake()
-				jw := &JobWatcher{}
+				jw := &JobWatcher{
+					dl: &datalayer.FakeDataLayer{},
+				}
 				jw.init(fw, 5*time.Millisecond)
 				go jw.start()
-				defer jw.Close()
 				select {
 				case err := <-jw.Error():
 					t.Logf("expected timeout error: %v", err)
-				case <-jw.Done():
+				case <-jw.Running():
 					t.Errorf("should not have succeeded")
 				}
 			},

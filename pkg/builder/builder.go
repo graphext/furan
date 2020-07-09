@@ -2,6 +2,7 @@ package builder
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gofrs/uuid"
 
@@ -26,9 +27,39 @@ type Manager struct {
 	DL      datalayer.DataLayer
 }
 
-// Start starts a single build using JobRunner and returns immediately.
-func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) (models.Job, error) {
-	return nil, nil
+func (m *Manager) validateOpts(opts models.BuildOpts, wantStatus models.BuildStatus) error {
+	return nil
+}
+
+// Start starts a single build using JobRunner and waits for the build to begin running, or returns error
+func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
+	if err := m.validateOpts(opts, models.BuildStatusNotStarted); err != nil {
+		return fmt.Errorf("invalid build opts: %w", err)
+	}
+	if m.JRunner == nil {
+		return fmt.Errorf("job runner is nil")
+	}
+	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
+	if err != nil {
+		return fmt.Errorf("error getting build: %w", err)
+	}
+	if b.Status != models.BuildStatusNotStarted {
+		return fmt.Errorf("unexpected build status (wanted NotStarted): %v", b.Status)
+	}
+	j, err := m.JRunner.Run(b)
+	if err != nil {
+		return fmt.Errorf("error running build job: %w", err)
+	}
+	defer j.Close()
+
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("context cancelled")
+	case err := <-j.Error():
+		return fmt.Errorf("job error: %w", err)
+	case <-j.Running():
+		return nil
+	}
 }
 
 // Run synchronously executes a build using BuildRunner

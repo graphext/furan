@@ -52,6 +52,10 @@ func RunTests(t *testing.T, dlfunc DLFactoryFunc) {
 			"cancellation and listen for cancellation",
 			testDBCancelBuildAndListenForCancellation,
 		},
+		{
+			"set build as running and listen for running",
+			testDBSetBuildAsRunningAndListenForBuildRunning,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -303,5 +307,54 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 		break
 	case <-ticker.C:
 		t.Errorf("timeout: build not cancelled yet but should be")
+	}
+}
+
+func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.DataLayer) {
+	id, err := dl.CreateBuild(context.Background(), tb)
+	if err != nil {
+		t.Fatalf("error creating build: %v", err)
+	}
+	ctx, cf := context.WithCancel(context.Background())
+	defer cf()
+	c := make(chan struct{})
+	defer close(c)
+
+	listen := make(chan struct{}) // chan used to signal that we're listening
+
+	go func() {
+		close(listen)
+		dl.ListenForBuildRunning(ctx, id, c)
+	}()
+
+	run := make(chan struct{}) // chan used to signal cancellation
+
+	go func() {
+		<-run
+		if err := dl.SetBuildAsRunning(ctx, id); err != nil {
+			t.Errorf("error setting build as running: %v", err)
+		}
+	}()
+
+	<-listen // block until we're listening
+
+	// build shouldn't be running yet
+	select {
+	case <-c:
+		t.Errorf("build shouldn't be running but is")
+	default:
+	}
+
+	close(run) // allow build to be set as running
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	// build should be running now
+	select {
+	case <-c:
+		break
+	case <-ticker.C:
+		t.Errorf("timeout: build not running yet but should be")
 	}
 }
