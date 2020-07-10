@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,6 +32,8 @@ type DataLayer interface {
 	AddEvent(ctx context.Context, id uuid.UUID, event string) error
 	SetBuildAsRunning(ctx context.Context, id uuid.UUID) error
 	ListenForBuildRunning(ctx context.Context, id uuid.UUID, c chan struct{}) error
+	SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error
+	ListenForBuildCompleted(ctx context.Context, id uuid.UUID, c chan models.BuildStatus) error
 }
 
 // PostgresDBLayer is a DataLayer instance that utilizes a PostgreSQL database
@@ -284,6 +287,88 @@ func (dl *PostgresDBLayer) ListenForBuildRunning(ctx context.Context, id uuid.UU
 		return fmt.Errorf("error waiting for notification: %v: %w", id.String(), err)
 	}
 	c <- struct{}{}
+	return nil
+}
+
+// pgCompletedChanFromID returns a legal Postgres identifier for the completed notification from a build ID
+func pgCompletedChanFromID(id uuid.UUID) string {
+	return "completed_build_" + strings.ReplaceAll(id.String(), "-", "_")
+}
+
+// SetBuildAsCompleted updates build status to completed (success, failure, skipped) and sends a notification for listeners
+func (dl *PostgresDBLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error {
+	switch status {
+	case models.BuildStatusSuccess:
+		fallthrough
+	case models.BuildStatusFailure:
+		fallthrough
+	case models.BuildStatusSkipped:
+		break
+	default:
+		return fmt.Errorf("invalid status for completed build: %v", status)
+	}
+	txn, err := dl.p.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("error opening txn: %w", err)
+	}
+	defer txn.Rollback(ctx)
+	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, status, id); err != nil {
+		return fmt.Errorf("error setting status: %w", err)
+	}
+	if _, err := txn.Exec(ctx, fmt.Sprintf("NOTIFY %s, '%d';", pgCompletedChanFromID(id), status)); err != nil {
+		return fmt.Errorf("error notifying channel: %w", err)
+	}
+	if err := txn.Commit(ctx); err != nil {
+		return fmt.Errorf("error committing txn: %w", err)
+	}
+	return nil
+}
+
+// ListenForBuildCompleted blocks and listens for a build to be updated to completed.
+// If a notification is received, it will write the completed build status to c and return a nil error
+func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.UUID, c chan models.BuildStatus) error {
+	if c == nil {
+		return fmt.Errorf("channel cannot be nil")
+	}
+	b, err := dl.GetBuildByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting build by id: %w", err)
+	}
+	if b.Status != models.BuildStatusRunning {
+		return fmt.Errorf("unexpected build status (wanted Running): %v", b.Status.String())
+	}
+	conn, err := dl.p.Acquire(ctx)
+	if err != nil {
+		return fmt.Errorf("error getting db connection: %w", err)
+	}
+	defer conn.Release()
+	q := fmt.Sprintf("LISTEN %s;", pgCompletedChanFromID(id))
+	if _, err := conn.Exec(ctx, q); err != nil {
+		return fmt.Errorf("error listening on postgres running channel: %w", err)
+	}
+	sn, err := conn.Conn().WaitForNotification(ctx)
+	if err != nil {
+		return fmt.Errorf("error waiting for notification: %v: %w", id.String(), err)
+	}
+	if sn == nil {
+		return fmt.Errorf("nil notification")
+	}
+	si, err := strconv.Atoi(sn.Payload)
+	if err != nil {
+		return fmt.Errorf("error parsing status received via notification: %w", err)
+	}
+	bs := models.BuildStatus(si)
+	switch bs {
+	case models.BuildStatusSuccess:
+		fallthrough
+	case models.BuildStatusFailure:
+		fallthrough
+	case models.BuildStatusSkipped:
+		break
+	default:
+		return fmt.Errorf("invalid status for completed build: %v", bs)
+	}
+	c <- bs
 	return nil
 }
 

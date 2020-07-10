@@ -56,6 +56,10 @@ func RunTests(t *testing.T, dlfunc DLFactoryFunc) {
 			"set build as running and listen for running",
 			testDBSetBuildAsRunningAndListenForBuildRunning,
 		},
+		{
+			"set build as completed and listen for completion",
+			testDBSetBuildAsCompletedAndListenForBuildCompleted,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -356,5 +360,64 @@ func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.
 		break
 	case <-ticker.C:
 		t.Errorf("timeout: build not running yet but should be")
+	}
+}
+
+func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datalayer.DataLayer) {
+	id, err := dl.CreateBuild(context.Background(), tb)
+	if err != nil {
+		t.Fatalf("error creating build: %v", err)
+	}
+
+	if err := dl.SetBuildAsRunning(context.Background(), id); err != nil {
+		t.Fatalf("error setting build as running: %v", err)
+	}
+
+	ctx, cf := context.WithCancel(context.Background())
+	defer cf()
+	c := make(chan models.BuildStatus)
+	defer close(c)
+
+	listen := make(chan struct{}) // chan used to signal that we're listening
+
+	go func() {
+		close(listen)
+		if err := dl.ListenForBuildCompleted(ctx, id, c); err != nil {
+			t.Fatalf("error listening for build completion: %v", err)
+		}
+	}()
+
+	done := make(chan struct{}) // chan used to signal completion
+
+	go func() {
+		<-done
+		if err := dl.SetBuildAsCompleted(ctx, id, models.BuildStatusSuccess); err != nil {
+			t.Errorf("error setting build as completed: %v", err)
+		}
+	}()
+
+	<-listen // block until we're listening
+
+	// build shouldn't be completed yet
+	select {
+	case <-c:
+		t.Errorf("build shouldn't be completed but is")
+	default:
+	}
+
+	close(done) // allow build to be set as running
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	// build should be completed now
+	select {
+	case s := <-c:
+		if s != models.BuildStatusSuccess {
+			t.Errorf("bad build status (wanted success): %v", s)
+		}
+		break
+	case <-ticker.C:
+		t.Errorf("timeout: build not completed yet but should be")
 	}
 }

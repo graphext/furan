@@ -12,11 +12,12 @@ import (
 )
 
 type FakeDataLayer struct {
-	mtx          sync.RWMutex
-	d            map[uuid.UUID]*models.Build
-	listeners    map[uuid.UUID][]chan string
-	cxllisteners map[uuid.UUID][]chan struct{}
-	runlisteners map[uuid.UUID][]chan struct{}
+	mtx           sync.RWMutex
+	d             map[uuid.UUID]*models.Build
+	listeners     map[uuid.UUID][]chan string
+	cxllisteners  map[uuid.UUID][]chan struct{}
+	runlisteners  map[uuid.UUID][]chan struct{}
+	donelisteners map[uuid.UUID][]chan models.BuildStatus
 }
 
 var _ DataLayer = &FakeDataLayer{}
@@ -40,6 +41,11 @@ func (fdl *FakeDataLayer) init() {
 	if fdl.runlisteners == nil {
 		fdl.mtx.Lock()
 		fdl.runlisteners = make(map[uuid.UUID][]chan struct{})
+		fdl.mtx.Unlock()
+	}
+	if fdl.donelisteners == nil {
+		fdl.mtx.Lock()
+		fdl.donelisteners = make(map[uuid.UUID][]chan models.BuildStatus)
 		fdl.mtx.Unlock()
 	}
 }
@@ -275,6 +281,70 @@ func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUI
 	select {
 	case <-lc:
 		c <- struct{}{}
+	case <-ctx.Done():
+		return fmt.Errorf("context cancelled")
+	}
+
+	return nil
+}
+
+func (fdl *FakeDataLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error {
+	fdl.init()
+
+	fdl.mtx.Lock()
+	b, ok := fdl.d[id]
+	if ok && b != nil {
+		b.Status = status
+	}
+	fdl.mtx.Unlock()
+
+	fdl.mtx.RLock()
+	defer fdl.mtx.RUnlock()
+
+	for _, c := range fdl.donelisteners[id] {
+		c <- status
+	}
+
+	return nil
+}
+
+func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.UUID, c chan models.BuildStatus) error {
+	fdl.init()
+
+	fdl.mtx.RLock()
+	b, ok := fdl.d[id]
+	if !ok {
+		fdl.mtx.RUnlock()
+		return fmt.Errorf("build not found")
+	}
+	fdl.mtx.RUnlock()
+
+	if b.Status != models.BuildStatusRunning {
+		return fmt.Errorf("bad build status: %v", b.Status)
+	}
+
+	lc := make(chan models.BuildStatus)
+
+	fdl.mtx.Lock()
+	fdl.donelisteners[id] = append(fdl.donelisteners[id], lc)
+	i := len(fdl.donelisteners[id]) - 1 // index of listener
+	fdl.mtx.Unlock()
+	defer func() {
+		// remove listener chan from donelisteners
+		fdl.mtx.Lock()
+		if i == 0 {
+			delete(fdl.donelisteners, id)
+			fdl.mtx.Unlock()
+			return
+		}
+		fdl.donelisteners[id] = append(fdl.donelisteners[id][:i], fdl.donelisteners[id][i+1:]...)
+		fdl.mtx.Unlock()
+		close(lc)
+	}()
+
+	select {
+	case s := <-lc:
+		c <- s
 	case <-ctx.Done():
 		return fmt.Errorf("context cancelled")
 	}
