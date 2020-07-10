@@ -18,6 +18,7 @@ require (
 	github.com/google/go-cmp v0.5.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/googleapis/gnostic v0.3.1 // indirect
+	github.com/hashicorp/go-multierror v1.1.0
 	github.com/jackc/pgconn v1.5.0
 	github.com/jackc/pgtype v1.3.0
 	github.com/jackc/pgx/v4 v4.6.0
