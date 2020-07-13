@@ -166,14 +166,14 @@ func (jw *JobWatcher) start() {
 		jw.timeout = DefaultJobWatcherTimeout
 	}
 	running := make(chan struct{})
-	defer close(running)
 	ctx, cf := context.WithTimeout(context.Background(), jw.timeout)
 	defer cf()
 	go func() {
 		if jw == nil || jw.dl == nil {
 			return
 		}
-		if err := jw.dl.ListenForBuildRunning(ctx, jw.buildID, running); err != nil {
+		defer close(running)
+		if err := jw.dl.ListenForBuildRunning(ctx, jw.buildID); err != nil {
 			select {
 			case <-jw.stop:
 				return

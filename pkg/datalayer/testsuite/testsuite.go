@@ -264,7 +264,7 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	if err != nil {
 		t.Fatalf("error creating build: %v", err)
 	}
-	if err := dl.ListenForCancellation(context.Background(), id, make(chan struct{})); err == nil {
+	if err := dl.ListenForCancellation(context.Background(), id); err == nil {
 		t.Fatalf("listen should have returned error for bad build status")
 	}
 	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
@@ -273,13 +273,13 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
 	c := make(chan struct{})
-	defer close(c)
 
 	listen := make(chan struct{}) // chan used to signal that we're listening
 
 	go func() {
 		close(listen)
-		dl.ListenForCancellation(ctx, id, c)
+		dl.ListenForCancellation(ctx, id)
+		close(c)
 	}()
 
 	cxl := make(chan struct{}) // chan used to signal cancellation
@@ -322,13 +322,13 @@ func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
 	c := make(chan struct{})
-	defer close(c)
 
 	listen := make(chan struct{}) // chan used to signal that we're listening
 
 	go func() {
 		close(listen)
-		dl.ListenForBuildRunning(ctx, id, c)
+		dl.ListenForBuildRunning(ctx, id)
+		close(c)
 	}()
 
 	run := make(chan struct{}) // chan used to signal cancellation
@@ -382,9 +382,11 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 
 	go func() {
 		close(listen)
-		if err := dl.ListenForBuildCompleted(ctx, id, c); err != nil {
+		bs, err := dl.ListenForBuildCompleted(ctx, id)
+		if err != nil {
 			t.Fatalf("error listening for build completion: %v", err)
 		}
+		c <- bs
 	}()
 
 	done := make(chan struct{}) // chan used to signal completion

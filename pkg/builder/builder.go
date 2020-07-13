@@ -98,11 +98,12 @@ func (m *Manager) Monitor(ctx context.Context, buildid uuid.UUID, msgs chan stri
 	ctx, cf := context.WithCancel(ctx)
 	defer cf()
 	go m.DL.ListenForBuildEvents(ctx, buildid, msgs)
-	sc := make(chan models.BuildStatus)
-	go func() {
-		msgs <- fmt.Sprintf("build completed with status %v", <-sc)
-	}()
-	return m.DL.ListenForBuildCompleted(ctx, buildid, sc)
+	bs, err := m.DL.ListenForBuildCompleted(ctx, buildid)
+	if err != nil {
+		return fmt.Errorf("error listening for build completion: %w", err)
+	}
+	msgs <- fmt.Sprintf("build completed with status %v", bs)
+	return nil
 }
 
 // Cancel aborts a build that's currently running, optionally waiting for build to signal that it has aborted
@@ -114,7 +115,8 @@ func (m *Manager) Cancel(ctx context.Context, buildid uuid.UUID, wait bool) erro
 		return fmt.Errorf("error cancelling build: %v", err)
 	}
 	if wait {
-		return m.DL.ListenForBuildCompleted(ctx, buildid, make(chan models.BuildStatus, 1))
+		_, err := m.DL.ListenForBuildCompleted(ctx, buildid)
+		return err
 	}
 	return nil
 }

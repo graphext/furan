@@ -123,10 +123,12 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	defer cf()
 	cxl := make(chan struct{})
 	go func() {
-		err := bks.dl.ListenForCancellation(ctx2, b.ID, cxl)
+		err := bks.dl.ListenForCancellation(ctx2, b.ID)
 		if err != nil {
 			bks.log("error listening for cancellation: %v", err)
+			return
 		}
+		close(cxl)
 	}()
 	go func() {
 		select {

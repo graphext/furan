@@ -180,7 +180,7 @@ func (fdl *FakeDataLayer) CancelBuild(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUID, c chan struct{}) error {
+func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUID) error {
 	fdl.init()
 
 	fdl.mtx.RLock()
@@ -216,12 +216,10 @@ func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUI
 
 	select {
 	case <-lc:
-		c <- struct{}{}
+		return nil
 	case <-ctx.Done():
 		return fmt.Errorf("context cancelled")
 	}
-
-	return nil
 }
 
 func (fdl *FakeDataLayer) SetBuildAsRunning(ctx context.Context, id uuid.UUID) error {
@@ -244,7 +242,7 @@ func (fdl *FakeDataLayer) SetBuildAsRunning(ctx context.Context, id uuid.UUID) e
 	return nil
 }
 
-func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUID, c chan struct{}) error {
+func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUID) error {
 	fdl.init()
 
 	fdl.mtx.RLock()
@@ -280,12 +278,10 @@ func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUI
 
 	select {
 	case <-lc:
-		c <- struct{}{}
+		return nil
 	case <-ctx.Done():
 		return fmt.Errorf("context cancelled")
 	}
-
-	return nil
 }
 
 func (fdl *FakeDataLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error {
@@ -308,19 +304,19 @@ func (fdl *FakeDataLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID,
 	return nil
 }
 
-func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.UUID, c chan models.BuildStatus) error {
+func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.UUID) (models.BuildStatus, error) {
 	fdl.init()
 
 	fdl.mtx.RLock()
 	b, ok := fdl.d[id]
 	if !ok {
 		fdl.mtx.RUnlock()
-		return fmt.Errorf("build not found")
+		return 0, fmt.Errorf("build not found")
 	}
 	fdl.mtx.RUnlock()
 
 	if b.Status != models.BuildStatusRunning {
-		return fmt.Errorf("bad build status: %v", b.Status)
+		return 0, fmt.Errorf("bad build status: %v", b.Status)
 	}
 
 	lc := make(chan models.BuildStatus)
@@ -344,10 +340,8 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 
 	select {
 	case s := <-lc:
-		c <- s
+		return s, nil
 	case <-ctx.Done():
-		return fmt.Errorf("context cancelled")
+		return 0, fmt.Errorf("context cancelled")
 	}
-
-	return nil
 }
