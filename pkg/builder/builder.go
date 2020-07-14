@@ -21,24 +21,26 @@ type JobRunner interface {
 	Run(build models.Build) (models.Job, error)
 }
 
+type TagChecker interface {
+	AllTagsExist(tags []string, repo string) (bool, []string, error)
+}
+
 // Manager is an object that performs high-level management of image builds
 type Manager struct {
 	BRunner BuildRunner
 	JRunner JobRunner
+	TCheck  TagChecker
 	DL      datalayer.DataLayer
 }
 
-func (m *Manager) validateOpts(opts models.BuildOpts, wantStatus models.BuildStatus) error {
-	return nil
+func (m *Manager) validateDeps() bool {
+	return m != nil && m.BRunner != nil && m.JRunner != nil && m.TCheck != nil && m.DL != nil
 }
 
 // Start starts a single build using JobRunner and waits for the build to begin running, or returns error
 func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
-	if err := m.validateOpts(opts, models.BuildStatusNotStarted); err != nil {
-		return fmt.Errorf("invalid build opts: %w", err)
-	}
-	if m.JRunner == nil {
-		return fmt.Errorf("job runner is nil")
+	if !m.validateDeps() {
+		return fmt.Errorf("missing dependency: %#v", m)
 	}
 	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
@@ -62,28 +64,56 @@ func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
 
 // Run synchronously executes a build using BuildRunner
 func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
-	if err := m.validateOpts(opts, models.BuildStatusNotStarted); err != nil {
-		return fmt.Errorf("invalid build opts: %w", err)
-	}
-	if m.BRunner == nil {
-		return fmt.Errorf("build runner is nil")
+	if !m.validateDeps() {
+		return fmt.Errorf("missing dependency: %#v", m)
 	}
 	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
 		return fmt.Errorf("error getting build: %w", err)
 	}
 
-	// TODO: check if tags exist (if requested)
+	if b.Request.SkipIfExists {
+		allexist := true
+		for _, irepo := range b.ImageRepos {
+			exists, _, err := m.TCheck.AllTagsExist(append(b.Tags, opts.CommitSHA), irepo)
+			if err != nil {
+				return fmt.Errorf("error checking for tags: %v: %w", irepo, err)
+			}
+			allexist = allexist && exists
+			if !allexist {
+				break
+			}
+		}
+		if allexist {
+			// set build as skipped
+			if err := m.DL.SetBuildAsCompleted(ctx, b.ID, models.BuildStatusSkipped); err != nil {
+				return fmt.Errorf("error setting build as skipped: %w", err)
+			}
+			return nil
+		}
+	}
 
 	if err := m.DL.SetBuildAsRunning(ctx, b.ID); err != nil {
 		return fmt.Errorf("error setting build status to running: %w", err)
 	}
-	err = m.BRunner.Build(ctx, opts)
+
+	ctx2, cf := context.WithCancel(ctx)
+	defer cf()
+
+	go func() {
+		if err := m.DL.ListenForCancellation(ctx2, b.ID); err == nil {
+			cf()
+		}
+	}()
+
+	// TODO: Fetch context, cache
+
+	err = m.BRunner.Build(ctx2, opts)
 	status := models.BuildStatusSuccess
 	if err != nil {
 		status = models.BuildStatusFailure
 	}
-	if err2 := m.DL.SetBuildAsCompleted(ctx, b.ID, status); err2 != nil {
+	if err2 := m.DL.SetBuildAsCompleted(ctx2, b.ID, status); err2 != nil {
 		err = multierror.Append(err, fmt.Errorf("error setting build as completed: %w", err2))
 	}
 	return err
@@ -92,8 +122,8 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 // Monitor monitors a build that's currently running, sending status messages on msgs until the build finishes
 // If the build fails, a non-nil error is returned
 func (m *Manager) Monitor(ctx context.Context, buildid uuid.UUID, msgs chan string) error {
-	if m.DL == nil {
-		return fmt.Errorf("datalayer is nil")
+	if !m.validateDeps() {
+		return fmt.Errorf("missing dependency: %#v", m)
 	}
 	ctx, cf := context.WithCancel(ctx)
 	defer cf()
@@ -108,8 +138,8 @@ func (m *Manager) Monitor(ctx context.Context, buildid uuid.UUID, msgs chan stri
 
 // Cancel aborts a build that's currently running, optionally waiting for build to signal that it has aborted
 func (m *Manager) Cancel(ctx context.Context, buildid uuid.UUID, wait bool) error {
-	if m.DL == nil {
-		return fmt.Errorf("datalayer is nil")
+	if !m.validateDeps() {
+		return fmt.Errorf("missing dependency: %#v", m)
 	}
 	if err := m.DL.CancelBuild(ctx, buildid); err != nil {
 		return fmt.Errorf("error cancelling build: %v", err)
