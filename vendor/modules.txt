@@ -1,5 +1,3 @@
-# github.com/AlternativaPlatform/docker-registry-client v0.0.0-20170516101328-57a5cfd72ba9
-## explicit
 # github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5
 github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/pkg/guid
@@ -22,6 +20,8 @@ github.com/Microsoft/hcsshim/internal/timeout
 github.com/Microsoft/hcsshim/internal/vmcompute
 github.com/Microsoft/hcsshim/internal/wclayer
 github.com/Microsoft/hcsshim/osversion
+# github.com/andybalholm/brotli v0.0.0-20190621154722-5f990b63d2d6
+github.com/andybalholm/brotli
 # github.com/aws/aws-sdk-go v1.33.5
 ## explicit
 github.com/aws/aws-sdk-go/aws
@@ -92,8 +92,14 @@ github.com/docker/distribution/digestset
 github.com/docker/distribution/reference
 # github.com/docker/docker v1.13.1 => github.com/docker/engine v17.12.0-ce-rc1.0.20190717161051-705d9623b7c1+incompatible
 ## explicit
-github.com/docker/docker/builder/dockerignore
 github.com/docker/docker/pkg/fileutils
+# github.com/dsnet/compress v0.0.1
+github.com/dsnet/compress
+github.com/dsnet/compress/bzip2
+github.com/dsnet/compress/bzip2/internal/sais
+github.com/dsnet/compress/internal
+github.com/dsnet/compress/internal/errors
+github.com/dsnet/compress/internal/prefix
 # github.com/evanphx/json-patch v4.2.0+incompatible
 github.com/evanphx/json-patch
 # github.com/fsnotify/fsnotify v1.4.9
@@ -120,6 +126,9 @@ github.com/golang-migrate/migrate/v4/internal/url
 github.com/golang-migrate/migrate/v4/source
 github.com/golang-migrate/migrate/v4/source/file
 github.com/golang-migrate/migrate/v4/source/httpfs
+# github.com/golang/gddo v0.0.0-20190419222130-af0f2af80721
+github.com/golang/gddo/httputil
+github.com/golang/gddo/httputil/header
 # github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 github.com/golang/groupcache/lru
 # github.com/golang/protobuf v1.4.2
@@ -129,6 +138,8 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
+# github.com/golang/snappy v0.0.1
+github.com/golang/snappy
 # github.com/google/go-cmp v0.5.0
 ## explicit
 github.com/google/go-cmp/cmp
@@ -190,6 +201,15 @@ github.com/jmespath/go-jmespath
 # github.com/json-iterator/go v1.1.9
 ## explicit
 github.com/json-iterator/go
+# github.com/klauspost/compress v1.9.2
+github.com/klauspost/compress/flate
+github.com/klauspost/compress/fse
+github.com/klauspost/compress/huff0
+github.com/klauspost/compress/snappy
+github.com/klauspost/compress/zstd
+github.com/klauspost/compress/zstd/internal/xxhash
+# github.com/klauspost/pgzip v1.2.1
+github.com/klauspost/pgzip
 # github.com/konsorten/go-windows-terminal-sequences v1.0.2
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/kr/pretty v0.2.0
@@ -198,6 +218,9 @@ github.com/konsorten/go-windows-terminal-sequences
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/mholt/archiver/v3 v3.3.0
+## explicit
+github.com/mholt/archiver/v3
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
 # github.com/moby/buildkit v0.7.1
@@ -227,6 +250,8 @@ github.com/moby/buildkit/util/system
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
+# github.com/nwaples/rardecode v1.0.0
+github.com/nwaples/rardecode
 # github.com/opencontainers/go-digest v1.0.0-rc1
 github.com/opencontainers/go-digest
 # github.com/opencontainers/image-spec v1.0.1
@@ -236,6 +261,9 @@ github.com/opencontainers/image-spec/specs-go/v1
 github.com/opentracing/opentracing-go
 github.com/opentracing/opentracing-go/ext
 github.com/opentracing/opentracing-go/log
+# github.com/pierrec/lz4 v2.0.5+incompatible
+github.com/pierrec/lz4
+github.com/pierrec/lz4/internal/xxh32
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -249,6 +277,13 @@ github.com/spf13/pflag
 # github.com/tonistiigi/fsutil v0.0.0-20200326231323-c2c7d7b0e144
 github.com/tonistiigi/fsutil
 github.com/tonistiigi/fsutil/types
+# github.com/ulikunitz/xz v0.5.6
+github.com/ulikunitz/xz
+github.com/ulikunitz/xz/internal/hash
+github.com/ulikunitz/xz/internal/xlog
+github.com/ulikunitz/xz/lzma
+# github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
+github.com/xi2/xz
 # go.opencensus.io v0.22.3
 go.opencensus.io
 go.opencensus.io/internal
