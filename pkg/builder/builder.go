@@ -106,7 +106,7 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		}
 	}()
 
-	// TODO: Fetch context, cache
+	// TODO: Fetch context
 
 	err = m.BRunner.Build(ctx2, opts)
 	status := models.BuildStatusSuccess

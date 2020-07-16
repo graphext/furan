@@ -40,8 +40,6 @@ func TestBuildSolver_genSolveOpt(t *testing.T) {
 					CommitSHA:              "zxcvb",
 					RelativeDockerfilePath: ".",
 					BuildArgs:              map[string]string{"VERSION": "zxcvb"},
-					CacheImportPath:        "/tmp/cache/input",
-					CacheExportPath:        "/tmp/cache/output",
 				},
 			},
 			want: bkclient.SolveOpt{
@@ -61,24 +59,6 @@ func TestBuildSolver_genSolveOpt(t *testing.T) {
 				Frontend: "dockerfile.v0",
 				FrontendAttrs: map[string]string{
 					"build-arg:VERSION": "zxcvb",
-				},
-				CacheExports: []bkclient.CacheOptionsEntry{
-					bkclient.CacheOptionsEntry{
-						Type: "local",
-						Attrs: map[string]string{
-							"dest": "/tmp/cache/output",
-							"mode": "max",
-						},
-					},
-				},
-				CacheImports: []bkclient.CacheOptionsEntry{
-					bkclient.CacheOptionsEntry{
-						Type: "local",
-						Attrs: map[string]string{
-							"src":  "/tmp/cache/input",
-							"mode": "max",
-						},
-					},
 				},
 			},
 		},
@@ -310,6 +290,122 @@ func Test_imageNames(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := imageNames(tt.args.imageRepos, tt.args.tags); !cmp.Equal(got, tt.want) {
 				t.Errorf("imageNames() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+type stubCacheFetcher struct {
+	FetchFunc func(b models.Build) (string, error)
+	GetFunc   func(b models.Build, path string) error
+}
+
+func (scf *stubCacheFetcher) Fetch(b models.Build) (string, error) {
+	if scf.FetchFunc != nil {
+		return scf.FetchFunc(b)
+	}
+	return "", nil
+}
+
+func (scf *stubCacheFetcher) Save(b models.Build, path string) error {
+	if scf.GetFunc != nil {
+		return scf.GetFunc(b, path)
+	}
+	return nil
+}
+
+func TestBuildSolver_loadCache(t *testing.T) {
+	type args struct {
+		opts models.BuildOpts
+	}
+	tests := []struct {
+		name    string
+		args    args
+		build   models.Build
+		verifyf func(sopt *bkclient.SolveOpt, fetchCalled bool) error
+		wantErr bool
+	}{
+		{
+			name: "s3",
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type: models.S3CacheType,
+					},
+				},
+			},
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			verifyf: func(sopt *bkclient.SolveOpt, fetchCalled bool) error {
+				if !fetchCalled {
+					return fmt.Errorf("expected fetch to be called")
+				}
+				if i := len(sopt.CacheImports); i != 1 {
+					return fmt.Errorf("wanted 1 cache import, got %v", i)
+				}
+				if t := sopt.CacheImports[0].Type; t != "local" {
+					return fmt.Errorf("expected local cache import: %v", t)
+				}
+				if _, ok := sopt.CacheImports[0].Attrs["src"]; !ok {
+					return fmt.Errorf("missing src from cache import attrs")
+				}
+				if i := len(sopt.CacheExports); i != 1 {
+					return fmt.Errorf("wanted 1 cache export, got %v", i)
+				}
+				if t := sopt.CacheExports[0].Type; t != "local" {
+					return fmt.Errorf("expected local cache export: %v", t)
+				}
+				if _, ok := sopt.CacheExports[0].Attrs["dest"]; !ok {
+					return fmt.Errorf("missing dest from cache export attrs")
+				}
+				mode, ok := sopt.CacheExports[0].Attrs["mode"]
+				if !ok {
+					return fmt.Errorf("missing mode from cache export attrs")
+				}
+				if mode != "min" {
+					return fmt.Errorf("expected min export mode: %v", mode)
+				}
+				return nil
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			dl := &datalayer.FakeDataLayer{}
+			id, _ := dl.CreateBuild(ctx, tt.build)
+			tt.args.opts.BuildID = id
+			var fetchcalled bool
+			cf := &stubCacheFetcher{
+				FetchFunc: func(b models.Build) (string, error) {
+					fetchcalled = true
+					return "foo", nil
+				},
+			}
+			bks := &BuildSolver{
+				dl:   dl,
+				s3cf: cf,
+				LogF: t.Logf,
+			}
+			sopts := &bkclient.SolveOpt{}
+			cleanup, err := bks.loadCache(ctx, tt.args.opts, sopts)
+			if cleanup != nil {
+				cleanup()
+			}
+			if (err != nil) != tt.wantErr {
+				t.Errorf("loadCache() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.verifyf != nil {
+				if err := tt.verifyf(sopts, fetchcalled); err != nil {
+					t.Errorf("verify failed: %v", err)
+				}
 			}
 		})
 	}

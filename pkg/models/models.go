@@ -68,13 +68,29 @@ func (b Build) GetGitHubCredential(key [32]byte) (string, error) {
 	return string(tkn), nil
 }
 
+//go:generate stringer -type=BuildCacheType
+
+type BuildCacheType int
+
+const (
+	UnknownCacheType BuildCacheType = iota
+	DisabledCacheType
+	InlineCacheType
+	S3CacheType
+)
+
+type CacheOpts struct {
+	Type    BuildCacheType
+	MaxMode bool
+}
+
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
-	BuildID                          uuid.UUID
-	ContextPath, CommitSHA           string
-	RelativeDockerfilePath           string
-	BuildArgs                        map[string]string
-	CacheImportPath, CacheExportPath string
+	BuildID                uuid.UUID
+	ContextPath, CommitSHA string
+	RelativeDockerfilePath string
+	BuildArgs              map[string]string
+	Cache                  CacheOpts
 }
 
 // Job describes methods on a single abstract build job
@@ -89,4 +105,14 @@ type Job interface {
 	Running() chan struct{}
 	// Logs returns all pod logs associated with the Job
 	Logs() (map[string]map[string][]byte, error)
+}
+
+// CacheFetcher describes an object that fetches and saves build cache
+type CacheFetcher interface {
+	// Fetch fetches the build cache for a build and returns a local filesystem
+	// path where it was written. Caller is responsible for cleaning up the path when finished.
+	Fetch(b Build) (string, error)
+	// Save persists the build cache for a build located at path.
+	// Caller is responsible for cleaning up the path afterward.
+	Save(b Build, path string) error
 }
