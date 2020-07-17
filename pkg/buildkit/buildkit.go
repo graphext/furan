@@ -73,7 +73,7 @@ func (bks *BuildSolver) loadCache(ctx context.Context, opts models.BuildOpts, so
 	switch opts.Cache.Type {
 	case models.S3CacheType:
 		cleanup := func() {}
-		path, err := bks.s3cf.Fetch(b)
+		path, err := bks.s3cf.Fetch(ctx, b)
 		if err != nil {
 			return cleanup, fmt.Errorf("error fetching cache from s3: %w", err)
 		}
@@ -145,7 +145,7 @@ func (bks *BuildSolver) saveCache(ctx context.Context, opts models.BuildOpts, so
 		if !ok {
 			return fmt.Errorf("cache exports dest attribute is missing: %#v", sopts.CacheExports[0])
 		}
-		if err := bks.s3cf.Save(b, expath); err != nil {
+		if err := bks.s3cf.Save(ctx, b, expath); err != nil {
 			return fmt.Errorf("error saving exported cache to S3: %w", err)
 		}
 	}

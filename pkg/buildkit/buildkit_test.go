@@ -296,20 +296,20 @@ func Test_imageNames(t *testing.T) {
 }
 
 type stubCacheFetcher struct {
-	FetchFunc func(b models.Build) (string, error)
-	GetFunc   func(b models.Build, path string) error
+	FetchFunc func(ctx context.Context, b models.Build) (string, error)
+	GetFunc   func(ctx context.Context, b models.Build, path string) error
 }
 
-func (scf *stubCacheFetcher) Fetch(b models.Build) (string, error) {
+func (scf *stubCacheFetcher) Fetch(ctx context.Context, b models.Build) (string, error) {
 	if scf.FetchFunc != nil {
-		return scf.FetchFunc(b)
+		return scf.FetchFunc(ctx, b)
 	}
 	return "", nil
 }
 
-func (scf *stubCacheFetcher) Save(b models.Build, path string) error {
+func (scf *stubCacheFetcher) Save(ctx context.Context, b models.Build, path string) error {
 	if scf.GetFunc != nil {
-		return scf.GetFunc(b, path)
+		return scf.GetFunc(ctx, b, path)
 	}
 	return nil
 }
@@ -462,7 +462,7 @@ func TestBuildSolver_loadCache(t *testing.T) {
 			tt.args.opts.BuildID = id
 			var fetchcalled bool
 			cf := &stubCacheFetcher{
-				FetchFunc: func(b models.Build) (string, error) {
+				FetchFunc: func(ctx context.Context, b models.Build) (string, error) {
 					fetchcalled = true
 					return "foo", nil
 				},
@@ -499,7 +499,7 @@ func TestBuildSolver_saveCache(t *testing.T) {
 		name      string
 		build     models.Build
 		args      args
-		getfunc   func(b models.Build, path string) error
+		getfunc   func(ctx context.Context, b models.Build, path string) error
 		getcalled bool
 		wantErr   bool
 	}{
@@ -531,7 +531,7 @@ func TestBuildSolver_saveCache(t *testing.T) {
 					},
 				},
 			},
-			getfunc: func(b models.Build, path string) error {
+			getfunc: func(ctx context.Context, b models.Build, path string) error {
 				if path != "/foo/bar" {
 					return fmt.Errorf("bad path: %v", path)
 				}
@@ -628,10 +628,10 @@ func TestBuildSolver_saveCache(t *testing.T) {
 			tt.args.opts.BuildID = id
 			var getcalled bool
 			cf := &stubCacheFetcher{
-				GetFunc: func(b models.Build, path string) error {
+				GetFunc: func(ctx context.Context, b models.Build, path string) error {
 					getcalled = true
 					if tt.getfunc != nil {
-						return tt.getfunc(b, path)
+						return tt.getfunc(ctx, b, path)
 					}
 					return nil
 				},

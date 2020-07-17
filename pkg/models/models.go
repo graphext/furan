@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"crypto/rand"
 	"time"
 
@@ -111,8 +112,8 @@ type Job interface {
 type CacheFetcher interface {
 	// Fetch fetches the build cache for a build and returns a local filesystem
 	// path where it was written. Caller is responsible for cleaning up the path when finished.
-	Fetch(b Build) (string, error)
+	Fetch(ctx context.Context, b Build) (string, error)
 	// Save persists the build cache for a build located at path.
 	// Caller is responsible for cleaning up the path afterward.
-	Save(b Build, path string) error
+	Save(ctx context.Context, b Build, path string) error
 }
