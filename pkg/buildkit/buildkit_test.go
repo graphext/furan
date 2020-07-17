@@ -374,6 +374,85 @@ func TestBuildSolver_loadCache(t *testing.T) {
 				return nil
 			},
 		},
+		{
+			name: "s3 max mode",
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type:    models.S3CacheType,
+						MaxMode: true,
+					},
+				},
+			},
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			verifyf: func(sopt *bkclient.SolveOpt, fetchCalled bool) error {
+				// other verifications skipped, the test above catches them
+				if i := len(sopt.CacheExports); i != 1 {
+					return fmt.Errorf("wanted 1 cache export, got %v", i)
+				}
+				mode, ok := sopt.CacheExports[0].Attrs["mode"]
+				if !ok {
+					return fmt.Errorf("missing mode from cache export attrs")
+				}
+				if mode != "max" {
+					return fmt.Errorf("expected max export mode: %v", mode)
+				}
+				return nil
+			},
+		},
+		{
+			name: "inline",
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type: models.InlineCacheType,
+					},
+				},
+			},
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			verifyf: func(sopt *bkclient.SolveOpt, fetchCalled bool) error {
+				if fetchCalled {
+					return fmt.Errorf("expected fetch to not be called")
+				}
+				if i := len(sopt.CacheImports); i != 1 {
+					return fmt.Errorf("wanted 1 cache import, got %v", i)
+				}
+				if t := sopt.CacheImports[0].Type; t != "registry" {
+					return fmt.Errorf("expected registry cache import: %v", t)
+				}
+				ref, ok := sopt.CacheImports[0].Attrs["ref"]
+				if !ok {
+					return fmt.Errorf("missing ref from cache import attrs")
+				}
+				if ref != "acme/foo" {
+					return fmt.Errorf("bad cache import ref: %v", ref)
+				}
+				if i := len(sopt.CacheExports); i != 1 {
+					return fmt.Errorf("wanted 1 cache export, got %v", i)
+				}
+				if t := sopt.CacheExports[0].Type; t != "inline" {
+					return fmt.Errorf("expected inline cache export: %v", t)
+				}
+				if i := len(sopt.CacheExports[0].Attrs); i != 0 {
+					return fmt.Errorf("expected empty cache exports attrs: len: %v", i)
+				}
+				return nil
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -406,6 +485,167 @@ func TestBuildSolver_loadCache(t *testing.T) {
 				if err := tt.verifyf(sopts, fetchcalled); err != nil {
 					t.Errorf("verify failed: %v", err)
 				}
+			}
+		})
+	}
+}
+
+func TestBuildSolver_saveCache(t *testing.T) {
+	type args struct {
+		opts  models.BuildOpts
+		sopts bkclient.SolveOpt
+	}
+	tests := []struct {
+		name      string
+		build     models.Build
+		args      args
+		getfunc   func(b models.Build, path string) error
+		getcalled bool
+		wantErr   bool
+	}{
+		{
+			name: "s3",
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type:    models.S3CacheType,
+						MaxMode: true,
+					},
+				},
+				sopts: bkclient.SolveOpt{
+					CacheExports: []bkclient.CacheOptionsEntry{
+						bkclient.CacheOptionsEntry{
+							Type: "local",
+							Attrs: map[string]string{
+								"dest": "/foo/bar",
+							},
+						},
+					},
+				},
+			},
+			getfunc: func(b models.Build, path string) error {
+				if path != "/foo/bar" {
+					return fmt.Errorf("bad path: %v", path)
+				}
+				return nil
+			},
+			getcalled: true,
+			wantErr:   false,
+		},
+		{
+			name: "s3 with bad export: missing dest",
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type:    models.S3CacheType,
+						MaxMode: true,
+					},
+				},
+				sopts: bkclient.SolveOpt{
+					CacheExports: []bkclient.CacheOptionsEntry{
+						bkclient.CacheOptionsEntry{
+							Type:  "local",
+							Attrs: map[string]string{},
+						},
+					},
+				},
+			},
+			getcalled: false,
+			wantErr:   true,
+		},
+		{
+			name: "s3 with bad export: wrong type",
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type:    models.S3CacheType,
+						MaxMode: true,
+					},
+				},
+				sopts: bkclient.SolveOpt{
+					CacheExports: []bkclient.CacheOptionsEntry{
+						bkclient.CacheOptionsEntry{
+							Type:  "inline",
+							Attrs: map[string]string{},
+						},
+					},
+				},
+			},
+			getcalled: false,
+			wantErr:   true,
+		},
+		{
+			name: "inline",
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+				Status:       models.BuildStatusRunning,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					Cache: models.CacheOpts{
+						Type: models.InlineCacheType,
+					},
+				},
+				sopts: bkclient.SolveOpt{},
+			},
+			getcalled: false,
+			wantErr:   false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			dl := &datalayer.FakeDataLayer{}
+			id, _ := dl.CreateBuild(ctx, tt.build)
+			tt.args.opts.BuildID = id
+			var getcalled bool
+			cf := &stubCacheFetcher{
+				GetFunc: func(b models.Build, path string) error {
+					getcalled = true
+					if tt.getfunc != nil {
+						return tt.getfunc(b, path)
+					}
+					return nil
+				},
+			}
+			bks := &BuildSolver{
+				dl:   dl,
+				s3cf: cf,
+				LogF: t.Logf,
+			}
+			if err := bks.saveCache(ctx, tt.args.opts, tt.args.sopts); (err != nil) != tt.wantErr {
+				t.Errorf("saveCache() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if getcalled != tt.getcalled {
+				t.Errorf("cache fetcher get called flag was %v but wanted %v", getcalled, tt.getcalled)
 			}
 		})
 	}
