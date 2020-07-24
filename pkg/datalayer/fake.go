@@ -147,7 +147,12 @@ func (fdl *FakeDataLayer) AddEvent(ctx context.Context, id uuid.UUID, event stri
 	fdl.init()
 
 	fdl.mtx.Lock()
-	fdl.d[id].Events = append(fdl.d[id].Events, event)
+	b, ok := fdl.d[id]
+	if !ok {
+		fdl.mtx.Unlock()
+		return nil
+	}
+	b.Events = append(fdl.d[id].Events, event)
 	fdl.mtx.Unlock()
 
 	fdl.mtx.RLock()
