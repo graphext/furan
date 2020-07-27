@@ -116,7 +116,7 @@ func (cm *CacheManager) Save(ctx context.Context, b models.Build, path string) e
 	f.Close()
 	defer os.Remove(f.Name())
 	tgz := archiver.NewTarGz()
-	defer tgz.Close()
+	tgz.OverwriteExisting = true
 	start := time.Now().UTC()
 	if err := tgz.Archive([]string{path}, f.Name()); err != nil {
 		return fmt.Errorf("error archiving build cache: %w", err)

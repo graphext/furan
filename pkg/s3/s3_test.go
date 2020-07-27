@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -157,6 +158,138 @@ func TestCacheManager_Fetch(t *testing.T) {
 				if err := tt.verifyf(got); err != nil {
 					t.Errorf("error: %v", err)
 				}
+			}
+		})
+	}
+}
+
+type fakeUploader struct {
+	s3manageriface.UploaderAPI
+	UploadWithContextFunc func(aws.Context, *s3manager.UploadInput, ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+}
+
+func (fd *fakeUploader) UploadWithContext(ctx aws.Context, in *s3manager.UploadInput, opts ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+	if fd.UploadWithContextFunc != nil {
+		return fd.UploadWithContextFunc(ctx, in, opts...)
+	}
+	return &s3manager.UploadOutput{}, nil
+}
+
+func TestCacheManager_Save(t *testing.T) {
+	type fields struct {
+		Region string
+		Bucket string
+		Keypfx string
+	}
+	type args struct {
+		b models.Build
+	}
+	tests := []struct {
+		name      string
+		fields    fields
+		args      args
+		pathfunc  func() string
+		uploaderr error
+		wantErr   bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Region: "us-west-2",
+				Bucket: "foo",
+				Keypfx: "some/prefix/",
+			},
+			args: args{
+				b: models.Build{},
+			},
+			pathfunc: func() string {
+				tdir, _ := ioutil.TempDir("", "")
+				f, _ := os.Create(filepath.Join(tdir, "foo.txt"))
+				f.Write([]byte("asdf1234\n"))
+				f.Close()
+				return tdir
+			},
+		},
+		{
+			name: "no such file",
+			fields: fields{
+				Region: "us-west-2",
+				Bucket: "foo",
+				Keypfx: "some/prefix/",
+			},
+			args: args{
+				b: models.Build{},
+			},
+			pathfunc: func() string {
+				return "/path/to/does/not/exist"
+			},
+			wantErr: true,
+		},
+		{
+			name: "upload error",
+			fields: fields{
+				Region: "us-west-2",
+				Bucket: "foo",
+				Keypfx: "some/prefix/",
+			},
+			args: args{
+				b: models.Build{},
+			},
+			pathfunc: func() string {
+				tdir, _ := ioutil.TempDir("", "")
+				f, _ := os.Create(filepath.Join(tdir, "foo.txt"))
+				f.Write([]byte("asdf1234\n"))
+				f.Close()
+				return tdir
+			},
+			uploaderr: fmt.Errorf("upload error happened"),
+			wantErr:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cm := &CacheManager{
+				DL:     &datalayer.FakeDataLayer{},
+				Region: tt.fields.Region,
+				Bucket: tt.fields.Bucket,
+				Keypfx: tt.fields.Keypfx,
+			}
+			s3uf := func(s *session.Session) s3manageriface.UploaderAPI {
+				if s.Config.Region == nil {
+					t.Errorf("aws session region is nil")
+					return nil
+				}
+				if *s.Config.Region != tt.fields.Region {
+					t.Errorf("bad aws region: %v (wanted %v)", *s.Config.Region, tt.fields.Region)
+					return nil
+				}
+				return &fakeUploader{
+					UploadWithContextFunc: func(ctx aws.Context, in *s3manager.UploadInput, opts ...func(uploader *s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+						if in == nil || in.Bucket == nil || in.Key == nil {
+							return nil, fmt.Errorf("one or more inputs are nil")
+						}
+						if *in.Bucket != tt.fields.Bucket {
+							return nil, fmt.Errorf("bad bucket: %v (wanted %v)", in.Bucket, tt.fields.Bucket)
+						}
+						if k := cm.keyForBuild(tt.args.b); *in.Key != k {
+							return nil, fmt.Errorf("bad key: %v (wanted %v)", *in.Key, k)
+						}
+						if tt.uploaderr != nil {
+							return nil, tt.uploaderr
+						}
+						_, err := ioutil.ReadAll(in.Body)
+						if err != nil {
+							return nil, fmt.Errorf("error reading input: %v", err)
+						}
+						return &s3manager.UploadOutput{}, nil
+					},
+				}
+			}
+			cm.S3UploaderFactoryFunc = s3uf
+			p := tt.pathfunc()
+			defer os.RemoveAll(p)
+			if err := cm.Save(context.Background(), tt.args.b, p); (err != nil) != tt.wantErr {
+				t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
