@@ -14,12 +14,13 @@ func _() {
 	_ = x[BuildStatusRunning-3]
 	_ = x[BuildStatusFailure-4]
 	_ = x[BuildStatusSuccess-5]
-	_ = x[BuildStatusCancelled-6]
+	_ = x[BuildStatusCancelRequested-6]
+	_ = x[BuildStatusCancelled-7]
 }
 
-const _BuildStatus_name = "BuildStatusUnknownBuildStatusNotStartedBuildStatusSkippedBuildStatusRunningBuildStatusFailureBuildStatusSuccessBuildStatusCancelled"
+const _BuildStatus_name = "BuildStatusUnknownBuildStatusNotStartedBuildStatusSkippedBuildStatusRunningBuildStatusFailureBuildStatusSuccessBuildStatusCancelRequestedBuildStatusCancelled"
 
-var _BuildStatus_index = [...]uint8{0, 18, 39, 57, 75, 93, 111, 131}
+var _BuildStatus_index = [...]uint8{0, 18, 39, 57, 75, 93, 111, 137, 157}
 
 func (i BuildStatus) String() string {
 	if i < 0 || i >= BuildStatus(len(_BuildStatus_index)-1) {

@@ -171,7 +171,7 @@ func (fdl *FakeDataLayer) CancelBuild(ctx context.Context, id uuid.UUID) error {
 	fdl.mtx.Lock()
 	b, ok := fdl.d[id]
 	if ok && b != nil {
-		b.Status = models.BuildStatusCancelled
+		b.Status = models.BuildStatusCancelRequested
 	}
 	fdl.mtx.Unlock()
 
@@ -183,6 +183,13 @@ func (fdl *FakeDataLayer) CancelBuild(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (fdl *FakeDataLayer) CancellationListeners() uint {
+	fdl.init()
+	fdl.mtx.RLock()
+	defer fdl.mtx.RUnlock()
+	return uint(len(fdl.cxllisteners))
 }
 
 func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUID) error {
@@ -320,7 +327,12 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 	}
 	fdl.mtx.RUnlock()
 
-	if b.Status != models.BuildStatusRunning {
+	switch b.Status {
+	case models.BuildStatusRunning:
+		fallthrough
+	case models.BuildStatusCancelRequested:
+		break
+	default:
 		return 0, fmt.Errorf("bad build status: %v", b.Status)
 	}
 

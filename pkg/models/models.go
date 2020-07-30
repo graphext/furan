@@ -23,6 +23,7 @@ const (
 	BuildStatusRunning
 	BuildStatusFailure
 	BuildStatusSuccess
+	BuildStatusCancelRequested
 	BuildStatusCancelled
 )
 
@@ -88,7 +89,7 @@ type CacheOpts struct {
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
 	BuildID                uuid.UUID
-	ContextPath, CommitSHA string
+	ContextPath, CommitSHA string // set by Builder
 	RelativeDockerfilePath string
 	BuildArgs              map[string]string
 	Cache                  CacheOpts
@@ -116,4 +117,10 @@ type CacheFetcher interface {
 	// Save persists the build cache for a build located at path.
 	// Caller is responsible for cleaning up the path afterward.
 	Save(ctx context.Context, b Build, path string) error
+}
+
+// CodeFetcher represents an object capable of fetching code
+type CodeFetcher interface {
+	GetCommitSHA(ctx context.Context, repo, ref string) (string, error)
+	Fetch(ctx context.Context, repo, ref, destinationPath string) error
 }

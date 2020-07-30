@@ -15,13 +15,9 @@ import (
 	"github.com/google/go-github/github"
 	"github.com/mholt/archiver/v3"
 	"golang.org/x/oauth2"
-)
 
-// CodeFetcher represents an object capable of fetching code
-type CodeFetcher interface {
-	GetCommitSHA(ctx context.Context, repo, ref string) (string, error)
-	Fetch(ctx context.Context, repo, ref, destinationPath string) error
-}
+	"github.com/dollarshaveclub/furan/pkg/models"
+)
 
 // GitHubFetcher represents a github data fetcher
 type GitHubFetcher struct {
@@ -29,7 +25,7 @@ type GitHubFetcher struct {
 	hc http.Client
 }
 
-var _ CodeFetcher = &GitHubFetcher{}
+var _ models.CodeFetcher = &GitHubFetcher{}
 
 // NewGitHubFetcher returns a new github fetcher
 func NewGitHubFetcher(token string) *GitHubFetcher {

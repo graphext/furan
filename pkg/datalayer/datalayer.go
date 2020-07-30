@@ -193,7 +193,7 @@ func (dl *PostgresDBLayer) CancelBuild(ctx context.Context, id uuid.UUID) error 
 		return fmt.Errorf("error opening txn: %w", err)
 	}
 	defer txn.Rollback(ctx)
-	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, models.BuildStatusCancelled, id); err != nil {
+	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, models.BuildStatusCancelRequested, id); err != nil {
 		return fmt.Errorf("error cancelling build: %w", err)
 	}
 	q := fmt.Sprintf("NOTIFY %s, '%s';", pgCxlChanFromID(id), "cancel")
@@ -295,6 +295,8 @@ func (dl *PostgresDBLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID
 	case models.BuildStatusFailure:
 		fallthrough
 	case models.BuildStatusSkipped:
+		fallthrough
+	case models.BuildStatusCancelled:
 		break
 	default:
 		return fmt.Errorf("invalid status for completed build: %v", status)
@@ -322,10 +324,17 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 	b, err := dl.GetBuildByID(ctx, id)
 	if err != nil {
 		return 0, fmt.Errorf("error getting build by id: %w", err)
+
 	}
-	if b.Status != models.BuildStatusRunning {
-		return 0, fmt.Errorf("unexpected build status (wanted Running): %v", b.Status.String())
+	switch b.Status {
+	case models.BuildStatusRunning:
+		fallthrough
+	case models.BuildStatusCancelRequested:
+		break
+	default:
+		return 0, fmt.Errorf("bad build status: %v", b.Status)
 	}
+
 	conn, err := dl.p.Acquire(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("error getting db connection: %w", err)
@@ -353,6 +362,8 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 	case models.BuildStatusFailure:
 		fallthrough
 	case models.BuildStatusSkipped:
+		fallthrough
+	case models.BuildStatusCancelled:
 		break
 	default:
 		return 0, fmt.Errorf("invalid status for completed build: %v", bs)

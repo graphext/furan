@@ -3,6 +3,8 @@ package builder
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/gofrs/uuid"
 	"github.com/hashicorp/go-multierror"
@@ -27,14 +29,16 @@ type TagChecker interface {
 
 // Manager is an object that performs high-level management of image builds
 type Manager struct {
-	BRunner BuildRunner
-	JRunner JobRunner
-	TCheck  TagChecker
-	DL      datalayer.DataLayer
+	BRunner        BuildRunner
+	JRunner        JobRunner
+	TCheck         TagChecker
+	FetcherFactory func(token string) models.CodeFetcher
+	GitHubTokenKey [32]byte
+	DL             datalayer.DataLayer
 }
 
 func (m *Manager) validateDeps() bool {
-	return m != nil && m.BRunner != nil && m.JRunner != nil && m.TCheck != nil && m.DL != nil
+	return m != nil && m.BRunner != nil && m.JRunner != nil && m.TCheck != nil && m.DL != nil && m.FetcherFactory != nil
 }
 
 // Start starts a single build using JobRunner and waits for the build to begin running, or returns error
@@ -72,6 +76,20 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		return fmt.Errorf("error getting build: %w", err)
 	}
 
+	tkn, err := b.GetGitHubCredential(m.GitHubTokenKey)
+	if err != nil {
+		return fmt.Errorf("error decrypting github token: %w", err)
+	}
+
+	fetcher := m.FetcherFactory(tkn)
+
+	csha, err := fetcher.GetCommitSHA(ctx, b.GitHubRepo, b.GitHubRef)
+	if err != nil {
+		return fmt.Errorf("error getting commit sha: %w", err)
+	}
+
+	opts.CommitSHA = csha
+
 	if b.Request.SkipIfExists {
 		allexist := true
 		for _, irepo := range b.ImageRepos {
@@ -93,6 +111,18 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		}
 	}
 
+	tdir, err := ioutil.TempDir("", "furan-build-context-*")
+	if err != nil {
+		return fmt.Errorf("error creating temp dir for build context: %w", err)
+	}
+	defer os.RemoveAll(tdir)
+	err = fetcher.Fetch(ctx, b.GitHubRepo, b.GitHubRef, tdir)
+	if err != nil {
+		return fmt.Errorf("error fetching repo: %w", err)
+	}
+
+	opts.ContextPath = tdir
+
 	if err := m.DL.SetBuildAsRunning(ctx, b.ID); err != nil {
 		return fmt.Errorf("error setting build status to running: %w", err)
 	}
@@ -106,12 +136,16 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		}
 	}()
 
-	// TODO: Fetch context
-
 	err = m.BRunner.Build(ctx2, opts)
 	status := models.BuildStatusSuccess
 	if err != nil {
 		status = models.BuildStatusFailure
+		select {
+		case <-ctx2.Done():
+			status = models.BuildStatusCancelled
+		default:
+			break
+		}
 	}
 	if err2 := m.DL.SetBuildAsCompleted(ctx2, b.ID, status); err2 != nil {
 		err = multierror.Append(err, fmt.Errorf("error setting build as completed: %w", err2))
@@ -120,7 +154,6 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 }
 
 // Monitor monitors a build that's currently running, sending status messages on msgs until the build finishes
-// If the build fails, a non-nil error is returned
 func (m *Manager) Monitor(ctx context.Context, buildid uuid.UUID, msgs chan string) error {
 	if !m.validateDeps() {
 		return fmt.Errorf("missing dependency: %#v", m)
