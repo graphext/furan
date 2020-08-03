@@ -12,71 +12,16 @@ import (
 	"github.com/dollarshaveclub/furan/pkg/buildkit"
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/pkg/github"
+	"github.com/dollarshaveclub/furan/pkg/jobrunner"
 	"github.com/dollarshaveclub/furan/pkg/models"
 	"github.com/dollarshaveclub/furan/pkg/tagcheck"
 )
 
-type fakeJob struct {
-	ErrorChan   chan error
-	RunningChan chan struct{}
-	LogContent  map[string]map[string][]byte
-}
-
-var _ models.Job = &fakeJob{}
-
-func newFakeJob(logs map[string]map[string][]byte) *fakeJob {
-	return &fakeJob{
-		ErrorChan:   make(chan error),
-		RunningChan: make(chan struct{}),
-		LogContent:  logs,
-	}
-}
-
-func (fj *fakeJob) Close() {}
-func (fj *fakeJob) Error() chan error {
-	return fj.ErrorChan
-}
-func (fj *fakeJob) Running() chan struct{} {
-	return fj.RunningChan
-}
-func (fj *fakeJob) Logs() (map[string]map[string][]byte, error) {
-	return fj.LogContent, nil
-}
-
-type fakeJRunner struct {
-	RunFunc func(build models.Build) (models.Job, error)
-}
-
-func (fj *fakeJRunner) Run(build models.Build) (models.Job, error) {
-	if fj.RunFunc != nil {
-		return fj.RunFunc(build)
-	}
-	return newFakeJob(nil), nil
-}
-
-type fakeFetcher struct {
-	FetchFunc        func(ctx context.Context, repo string, ref string, destinationPath string) error
-	GetCommitSHAFunc func(ctx context.Context, repo string, ref string) (string, error)
-}
-
-func (ff *fakeFetcher) Fetch(ctx context.Context, repo string, ref string, destinationPath string) error {
-	if ff.FetchFunc != nil {
-		return ff.FetchFunc(ctx, repo, ref, destinationPath)
-	}
-	return nil
-}
-
-func (ff *fakeFetcher) GetCommitSHA(ctx context.Context, repo string, ref string) (string, error) {
-	if ff.GetCommitSHAFunc != nil {
-		return ff.GetCommitSHAFunc(ctx, repo, ref)
-	}
-	return "", nil
-}
-
 func TestManager_Start(t *testing.T) {
 	type fields struct {
-		BRunner        BuildRunner
-		TCheck         TagChecker
+		BRunner        models.Builder
+		TCheck         models.TagChecker
 		FetcherFactory func(token string) models.CodeFetcher
 	}
 	type args struct {
@@ -95,7 +40,7 @@ func TestManager_Start(t *testing.T) {
 				BRunner: &buildkit.BuildSolver{},
 				TCheck:  &tagcheck.Checker{},
 				FetcherFactory: func(token string) models.CodeFetcher {
-					return &fakeFetcher{}
+					return &github.FakeFetcher{}
 				},
 			},
 			args: args{
@@ -109,7 +54,7 @@ func TestManager_Start(t *testing.T) {
 				BRunner: &buildkit.BuildSolver{},
 				TCheck:  &tagcheck.Checker{},
 				FetcherFactory: func(token string) models.CodeFetcher {
-					return &fakeFetcher{}
+					return &github.FakeFetcher{}
 				},
 			},
 			args: args{
@@ -124,7 +69,7 @@ func TestManager_Start(t *testing.T) {
 				BRunner: &buildkit.BuildSolver{},
 				TCheck:  &tagcheck.Checker{},
 				FetcherFactory: func(token string) models.CodeFetcher {
-					return &fakeFetcher{}
+					return &github.FakeFetcher{}
 				},
 			},
 			args: args{
@@ -147,9 +92,9 @@ func TestManager_Start(t *testing.T) {
 				ImageRepos: []string{"acme/foo"},
 			})
 			tt.args.opts.BuildID = id
-			fjr := &fakeJRunner{
+			fjr := &jobrunner.FakeJobRunner{
 				RunFunc: func(build models.Build) (models.Job, error) {
-					fj := newFakeJob(nil)
+					fj := jobrunner.NewFakeJob(nil)
 					if tt.jobrunning {
 						go func() {
 							time.Sleep(10 * time.Millisecond)
@@ -183,32 +128,6 @@ func TestManager_Start(t *testing.T) {
 		})
 	}
 }
-
-type fakeChecker struct {
-	AllTagsExistFunc func(tags []string, repo string) (bool, []string, error)
-}
-
-func (fc *fakeChecker) AllTagsExist(tags []string, repo string) (bool, []string, error) {
-	if fc.AllTagsExistFunc != nil {
-		return fc.AllTagsExistFunc(tags, repo)
-	}
-	return false, nil, nil
-}
-
-var _ TagChecker = &fakeChecker{}
-
-type fakeRunner struct {
-	BuildFunc func(ctx context.Context, opts models.BuildOpts) error
-}
-
-func (fr *fakeRunner) Build(ctx context.Context, opts models.BuildOpts) error {
-	if fr.BuildFunc != nil {
-		return fr.BuildFunc(ctx, opts)
-	}
-	return nil
-}
-
-var _ BuildRunner = &fakeRunner{}
 
 func TestManager_Run(t *testing.T) {
 	tests := []struct {
@@ -409,7 +328,7 @@ func TestManager_Run(t *testing.T) {
 				if token != ghtoken {
 					t.Errorf("bad github token: %v (wanted %v)", token, ghtoken)
 				}
-				return &fakeFetcher{
+				return &github.FakeFetcher{
 					GetCommitSHAFunc: func(ctx context.Context, repo string, ref string) (string, error) {
 						if repo != b.GitHubRepo {
 							t.Errorf("bad repo: %v (wanted %v)", repo, b.GitHubRepo)
@@ -433,7 +352,7 @@ func TestManager_Run(t *testing.T) {
 
 			buildEntered := make(chan struct{})
 
-			fr := &fakeRunner{
+			fr := &buildkit.FakeBuilder{
 				BuildFunc: func(ctx context.Context, opts models.BuildOpts) error {
 					close(buildEntered)
 					if opts.CommitSHA != tt.commitSHA {
@@ -453,10 +372,10 @@ func TestManager_Run(t *testing.T) {
 			m := &Manager{
 				DL:             dl,
 				BRunner:        fr,
-				TCheck:         &fakeChecker{AllTagsExistFunc: tt.allTagsExistFunc},
+				TCheck:         &tagcheck.FakeChecker{AllTagsExistFunc: tt.allTagsExistFunc},
 				FetcherFactory: ff,
 				GitHubTokenKey: key,
-				JRunner:        &fakeJRunner{},
+				JRunner:        &jobrunner.FakeJobRunner{},
 			}
 
 			if tt.decrypterr {

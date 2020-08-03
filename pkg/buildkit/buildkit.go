@@ -31,6 +31,8 @@ type BuildSolver struct {
 	LogF LogFunc
 }
 
+var _ models.Builder = &BuildSolver{}
+
 func (bks *BuildSolver) log(msg string, args ...interface{}) {
 	if bks.LogF != nil {
 		bks.LogF(msg, args...)

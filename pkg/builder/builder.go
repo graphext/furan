@@ -12,25 +12,11 @@ import (
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
 
-// BuildRunner describes an object that can perform a build synchronously
-type BuildRunner interface {
-	Build(ctx context.Context, opts models.BuildOpts) error
-}
-
-// JobRunner describes an object that can asynchronously run a job that executes a build
-type JobRunner interface {
-	Run(build models.Build) (models.Job, error)
-}
-
-type TagChecker interface {
-	AllTagsExist(tags []string, repo string) (bool, []string, error)
-}
-
 // Manager is an object that performs high-level management of image builds
 type Manager struct {
-	BRunner        BuildRunner
-	JRunner        JobRunner
-	TCheck         TagChecker
+	BRunner        models.Builder
+	JRunner        models.JobRunner
+	TCheck         models.TagChecker
 	FetcherFactory func(token string) models.CodeFetcher
 	GitHubTokenKey [32]byte
 	DL             datalayer.DataLayer

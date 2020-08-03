@@ -36,7 +36,7 @@ var DefaultCacheOpts = models.CacheOpts{
 // Server represents an object that responds to gRPC calls
 type Server struct {
 	DL datalayer.DataLayer
-	BR models.Builder
+	BM models.BuildManager
 	// CFFactory is a function that returns a CodeFetcher. Token should be considered optional.
 	CFFactory func(token string) models.CodeFetcher
 	Opts      Options
@@ -115,6 +115,10 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		Status:            models.BuildStatusNotStarted,
 	}
 
+	if err := b.EncryptAndSetGitHubCredential([]byte(req.GetBuild().GithubCredential), gr.Opts.CredentialDecryptionKey); err != nil {
+		return nil, status.Errorf(codes.Internal, "error encrypting credential: %v", err)
+	}
+
 	id, err := gr.DL.CreateBuild(ctx, b)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "error creating build in db: %v", err)
@@ -146,7 +150,7 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		ctx2, cf := context.WithTimeout(context.Background(), JobHandoffTimeout)
 		defer cf()
 		gr.buildevent(id, "creating build job")
-		if err := gr.BR.Start(ctx2, opts); err != nil {
+		if err := gr.BM.Start(ctx2, opts); err != nil {
 			gr.buildevent(id, "error starting build job: %v", err)
 			// new context because the error could be caused by context cancellation
 			if err2 := gr.DL.SetBuildAsCompleted(context.Background(), id, models.BuildStatusFailure); err2 != nil {

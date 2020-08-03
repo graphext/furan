@@ -166,6 +166,10 @@ type Job interface {
 	Logs() (map[string]map[string][]byte, error)
 }
 
+type JobRunner interface {
+	Run(build Build) (Job, error)
+}
+
 // CacheFetcher describes an object that fetches and saves build cache
 type CacheFetcher interface {
 	// Fetch fetches the build cache for a build and returns a local filesystem
@@ -182,8 +186,17 @@ type CodeFetcher interface {
 	Fetch(ctx context.Context, repo, ref, destinationPath string) error
 }
 
-// Builder describes an object that manages builds
+// Builder describes an image build backend
 type Builder interface {
+	Build(ctx context.Context, opts BuildOpts) error
+}
+
+// BuilderManager describes an object that manages builds
+type BuildManager interface {
 	Start(ctx context.Context, opts BuildOpts) error
 	Run(ctx context.Context, opts BuildOpts) error
+}
+
+type TagChecker interface {
+	AllTagsExist(tags []string, repo string) (bool, []string, error)
 }
