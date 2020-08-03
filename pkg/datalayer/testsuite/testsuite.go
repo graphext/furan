@@ -198,11 +198,14 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	if err != nil {
 		t.Fatalf("error creating build: %v", err)
 	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusFailure); err != nil {
+		t.Fatalf("error setting build status 1: %v", err)
+	}
 	if err := dl.ListenForBuildEvents(context.Background(), id, make(chan string)); err == nil {
 		t.Fatalf("listen should have returned error for bad build status")
 	}
 	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
-		t.Fatalf("error setting build status: %v", err)
+		t.Fatalf("error setting build status 2: %v", err)
 	}
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()

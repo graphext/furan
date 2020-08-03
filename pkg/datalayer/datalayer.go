@@ -86,12 +86,17 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 	return id, nil
 }
 
+var ErrNotFound = fmt.Errorf("not found")
+
 // GetBuildByID fetches a build object from the DB
 func (dl *PostgresDBLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (models.Build, error) {
 	out := models.Build{}
 	var updated, completed pgtype.Timestamptz
 	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.EncryptedGitHubCredential, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return out, ErrNotFound
+		}
 		return out, fmt.Errorf("error getting build by id: %w", err)
 	}
 	if updated.Status == pgtype.Present {
@@ -120,7 +125,7 @@ func (dl *PostgresDBLayer) DeleteBuild(ctx context.Context, id uuid.UUID) (err e
 }
 
 // ListenForBuildEvents blocks and listens for the build events to occur for a build, writing any events that are received to c.
-// If build is not currently running an error will be returned immediately.
+// If build is not currently listenable an error will be returned immediately.
 // Always returns a non-nil error.
 func (dl *PostgresDBLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUID, c chan<- string) error {
 	if c == nil {
@@ -130,7 +135,7 @@ func (dl *PostgresDBLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUI
 	if err != nil {
 		return fmt.Errorf("error getting build by id: %w", err)
 	}
-	if !b.CanAddEvent() {
+	if !b.EventListenable() {
 		return fmt.Errorf("build status %v; no events are possible", b.Status.String())
 	}
 	conn, err := dl.p.Acquire(ctx)
@@ -157,6 +162,13 @@ func pgChanFromID(id uuid.UUID) string {
 
 // AddEvent appends an event to a build and notifies any listeners to that channel
 func (dl *PostgresDBLayer) AddEvent(ctx context.Context, id uuid.UUID, event string) error {
+	b, err := dl.GetBuildByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error getting build by id: %w", err)
+	}
+	if !b.CanAddEvent() {
+		return fmt.Errorf("build status %v; cannot add new event", b.Status.String())
+	}
 	txn, err := dl.p.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("error opening txn: %w", err)
@@ -289,16 +301,7 @@ func pgCompletedChanFromID(id uuid.UUID) string {
 
 // SetBuildAsCompleted updates build status to completed (success, failure, skipped) and sends a notification for listeners
 func (dl *PostgresDBLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error {
-	switch status {
-	case models.BuildStatusSuccess:
-		fallthrough
-	case models.BuildStatusFailure:
-		fallthrough
-	case models.BuildStatusSkipped:
-		fallthrough
-	case models.BuildStatusCancelled:
-		break
-	default:
+	if !status.TerminalState() {
 		return fmt.Errorf("invalid status for completed build: %v", status)
 	}
 	txn, err := dl.p.Begin(ctx)
@@ -326,13 +329,9 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 		return 0, fmt.Errorf("error getting build by id: %w", err)
 
 	}
-	switch b.Status {
-	case models.BuildStatusRunning:
-		fallthrough
-	case models.BuildStatusCancelRequested:
-		break
-	default:
-		return 0, fmt.Errorf("bad build status: %v", b.Status)
+	// if build is already finished, return status
+	if b.Status.TerminalState() {
+		return b.Status, nil
 	}
 
 	conn, err := dl.p.Acquire(ctx)
@@ -356,16 +355,7 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 		return 0, fmt.Errorf("error parsing status received via notification: %w", err)
 	}
 	bs := models.BuildStatus(si)
-	switch bs {
-	case models.BuildStatusSuccess:
-		fallthrough
-	case models.BuildStatusFailure:
-		fallthrough
-	case models.BuildStatusSkipped:
-		fallthrough
-	case models.BuildStatusCancelled:
-		break
-	default:
+	if !bs.TerminalState() {
 		return 0, fmt.Errorf("invalid status for completed build: %v", bs)
 	}
 	return bs, nil

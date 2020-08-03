@@ -64,7 +64,7 @@ func (fdl *FakeDataLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (model
 	defer fdl.mtx.RUnlock()
 	bsr, ok := fdl.d[id]
 	if !ok {
-		return models.Build{}, fmt.Errorf("not found")
+		return models.Build{}, ErrNotFound
 	}
 	return *bsr, nil
 }

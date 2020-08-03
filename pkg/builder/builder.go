@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/gofrs/uuid"
 	"github.com/hashicorp/go-multierror"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
@@ -151,35 +150,4 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		err = multierror.Append(err, fmt.Errorf("error setting build as completed: %w", err2))
 	}
 	return err
-}
-
-// Monitor monitors a build that's currently running, sending status messages on msgs until the build finishes
-func (m *Manager) Monitor(ctx context.Context, buildid uuid.UUID, msgs chan string) error {
-	if !m.validateDeps() {
-		return fmt.Errorf("missing dependency: %#v", m)
-	}
-	ctx, cf := context.WithCancel(ctx)
-	defer cf()
-	go m.DL.ListenForBuildEvents(ctx, buildid, msgs)
-	bs, err := m.DL.ListenForBuildCompleted(ctx, buildid)
-	if err != nil {
-		return fmt.Errorf("error listening for build completion: %w", err)
-	}
-	msgs <- fmt.Sprintf("build completed with status %v", bs)
-	return nil
-}
-
-// Cancel aborts a build that's currently running, optionally waiting for build to signal that it has aborted
-func (m *Manager) Cancel(ctx context.Context, buildid uuid.UUID, wait bool) error {
-	if !m.validateDeps() {
-		return fmt.Errorf("missing dependency: %#v", m)
-	}
-	if err := m.DL.CancelBuild(ctx, buildid); err != nil {
-		return fmt.Errorf("error cancelling build: %v", err)
-	}
-	if wait {
-		_, err := m.DL.ListenForBuildCompleted(ctx, buildid)
-		return err
-	}
-	return nil
 }

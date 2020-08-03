@@ -9,6 +9,7 @@ replace github.com/Sirupsen/logrus v1.4.2 => github.com/sirupsen/logrus v1.4.2
 replace github.com/containerd/containerd v1.4.0-0 => github.com/containerd/containerd v1.4.0-beta.1.0.20200624184620-1127ffc7400e
 
 require (
+	github.com/DataDog/datadog-go v3.7.2+incompatible // indirect
 	github.com/aws/aws-sdk-go v1.33.7
 	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.0.0-20200626212615-d883bee51b56
 	github.com/davecgh/go-spew v1.1.1
@@ -28,6 +29,8 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/moby/buildkit v0.7.1
+	github.com/opentracing/opentracing-go v1.1.0 // indirect
+	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.0.0
 	golang.org/x/crypto v0.0.0-20200707235045-ab33eee955e0
@@ -38,8 +41,9 @@ require (
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20200610104632-a5b850bcf112 // indirect
-	google.golang.org/grpc v1.29.1
+	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0 // indirect
+	gopkg.in/DataDog/dd-trace-go.v1 v1.25.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	k8s.io/api v0.18.4

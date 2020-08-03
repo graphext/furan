@@ -17,15 +17,60 @@ import (
 type BuildStatus int
 
 const (
+	// Invalid or unknown status
 	BuildStatusUnknown BuildStatus = iota
+	// Build has been requested but not started yet
 	BuildStatusNotStarted
+	// Build was requested but determined to be unnecessary
 	BuildStatusSkipped
+	// Build is currently running in a k8s job
 	BuildStatusRunning
+	// Build failed or internal error
 	BuildStatusFailure
+	// Build successfully completed & pushed
 	BuildStatusSuccess
+	// Build cancellation was requested but build has not yet aborted
 	BuildStatusCancelRequested
+	// Build was aborted due to cancellation request
 	BuildStatusCancelled
 )
+
+func (bs BuildStatus) State() furanrpc.BuildState {
+	switch bs {
+	case BuildStatusUnknown:
+		return furanrpc.BuildState_UNKNOWN
+	case BuildStatusNotStarted:
+		return furanrpc.BuildState_NOTSTARTED
+	case BuildStatusSkipped:
+		return furanrpc.BuildState_SKIPPED
+	case BuildStatusRunning:
+		return furanrpc.BuildState_RUNNING
+	case BuildStatusFailure:
+		return furanrpc.BuildState_FAILURE
+	case BuildStatusSuccess:
+		return furanrpc.BuildState_SUCCESS
+	case BuildStatusCancelRequested:
+		return furanrpc.BuildState_CANCEL_REQUESTED
+	case BuildStatusCancelled:
+		return furanrpc.BuildState_CANCELLED
+	default:
+		return furanrpc.BuildState_UNKNOWN
+	}
+}
+
+// TerminalState returns whether the status is in a final (terminal) state that will not change
+func (bs BuildStatus) TerminalState() bool {
+	switch bs {
+	case BuildStatusSuccess:
+		fallthrough
+	case BuildStatusFailure:
+		fallthrough
+	case BuildStatusCancelled:
+		return true
+	default:
+		return false
+	}
+}
 
 type Build struct {
 	ID                          uuid.UUID
@@ -41,8 +86,14 @@ type Build struct {
 	Events                      []string
 }
 
+// CanAddEvent indicates whether b is in a state where events can be added
 func (b Build) CanAddEvent() bool {
-	return b.Running()
+	return b.EventListenable()
+}
+
+// EventListenable indicates where b is in a state where events can be listened for
+func (b Build) EventListenable() bool {
+	return !b.Status.TerminalState()
 }
 
 func (b Build) Running() bool {
@@ -86,6 +137,12 @@ type CacheOpts struct {
 	MaxMode bool
 }
 
+func (co *CacheOpts) ZeroValueDefaults() {
+	if co.Type == UnknownCacheType {
+		co.Type = DisabledCacheType
+	}
+}
+
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
 	BuildID                uuid.UUID
@@ -123,4 +180,10 @@ type CacheFetcher interface {
 type CodeFetcher interface {
 	GetCommitSHA(ctx context.Context, repo, ref string) (string, error)
 	Fetch(ctx context.Context, repo, ref, destinationPath string) error
+}
+
+// Builder describes an object that manages builds
+type Builder interface {
+	Start(ctx context.Context, opts BuildOpts) error
+	Run(ctx context.Context, opts BuildOpts) error
 }

@@ -75,7 +75,8 @@ enum BuildState {
   RUNNING = 3;
   FAILURE = 4;
   SUCCESS = 5;
-  CANCELLED = 6;
+  CANCEL_REQUESTED = 6;
+  CANCELLED = 7;
 }
 
 message BuildStatusResponse {
