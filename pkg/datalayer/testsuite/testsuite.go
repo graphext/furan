@@ -99,11 +99,16 @@ var tb = models.Build{
 }
 
 func testDBCreateBuild(t *testing.T, dl datalayer.DataLayer) {
-	id, err := dl.CreateBuild(context.Background(), tb)
+	ctx := context.Background()
+	id, err := dl.CreateBuild(ctx, tb)
 	if err != nil {
 		t.Fatalf("error creating build: %v", err)
 	}
-	err = dl.DeleteBuild(context.Background(), id)
+	b, _ := dl.GetBuildByID(ctx, id)
+	if b.Status != models.BuildStatusNotStarted {
+		t.Fatalf("bad status: %v", b.Status)
+	}
+	err = dl.DeleteBuild(ctx, id)
 	if err != nil {
 		t.Fatalf("error deleting build: %v", err)
 	}

@@ -55,6 +55,7 @@ func (fdl *FakeDataLayer) CreateBuild(ctx context.Context, b models.Build) (uuid
 	fdl.mtx.Lock()
 	defer fdl.mtx.Unlock()
 	b.ID = uuid.Must(uuid.NewV4())
+	b.Status = models.BuildStatusNotStarted
 	fdl.d[b.ID] = &b
 	return b.ID, nil
 }
@@ -123,6 +124,11 @@ func (fdl *FakeDataLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUID
 	defer func() {
 		// remove listener chan from listeners
 		fdl.mtx.Lock()
+		i = len(fdl.listeners[id]) - 1
+		if i < 0 {
+			fdl.mtx.Unlock()
+			return
+		}
 		if i == 0 {
 			delete(fdl.listeners, id)
 			fdl.mtx.Unlock()
@@ -216,6 +222,11 @@ func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUI
 	defer func() {
 		// remove listener chan from cxllisteners
 		fdl.mtx.Lock()
+		i = len(fdl.cxllisteners[id]) - 1
+		if i < 0 {
+			fdl.mtx.Unlock()
+			return
+		}
 		if i == 0 {
 			delete(fdl.cxllisteners, id)
 			fdl.mtx.Unlock()
@@ -278,6 +289,11 @@ func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUI
 	defer func() {
 		// remove listener chan from runlisteners
 		fdl.mtx.Lock()
+		i = len(fdl.runlisteners[id]) - 1
+		if i < 0 {
+			fdl.mtx.Unlock()
+			return
+		}
 		if i == 0 {
 			delete(fdl.runlisteners, id)
 			fdl.mtx.Unlock()
@@ -325,16 +341,13 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 		fdl.mtx.RUnlock()
 		return 0, fmt.Errorf("build not found")
 	}
-	fdl.mtx.RUnlock()
-
-	switch b.Status {
-	case models.BuildStatusRunning:
-		fallthrough
-	case models.BuildStatusCancelRequested:
-		break
-	default:
-		return 0, fmt.Errorf("bad build status: %v", b.Status)
+	// if build is already finished, return status
+	if b.Status.TerminalState() {
+		status := b.Status
+		fdl.mtx.RUnlock()
+		return status, nil
 	}
+	fdl.mtx.RUnlock()
 
 	lc := make(chan models.BuildStatus)
 
@@ -345,6 +358,11 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 	defer func() {
 		// remove listener chan from donelisteners
 		fdl.mtx.Lock()
+		i = len(fdl.donelisteners[id]) - 1
+		if i < 0 {
+			fdl.mtx.Unlock()
+			return
+		}
 		if i == 0 {
 			delete(fdl.donelisteners, id)
 			fdl.mtx.Unlock()

@@ -25,6 +25,7 @@ type Options struct {
 	CredentialDecryptionKey [32]byte
 	Cache                   models.CacheOpts
 	LogFunc                 func(msg string, args ...interface{})
+	JobHandoffTimeout       time.Duration
 }
 
 // DefaultCacheOpts is the cache options that will be used if not overridden in Options
@@ -80,9 +81,9 @@ func (gr *Server) buildevent(id uuid.UUID, msg string, args ...interface{}) {
 	}
 }
 
-// JobHandoffTimeout is the maximum amount of time we will wait for job handoff to occur
+// DefaultJobHandoffTimeout is the default maximum amount of time we will wait for job handoff to occur
 // once the build job is running
-var JobHandoffTimeout = 5 * time.Minute
+var DefaultJobHandoffTimeout = 5 * time.Minute
 
 // StartBuild creates a new asynchronous build job
 func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*furanrpc.BuildRequestResponse, error) {
@@ -147,7 +148,11 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	// once everything is validated and we are ready to start job,
 	// do the job creation and handoff asynchronously and return id to client
 	go func() {
-		ctx2, cf := context.WithTimeout(context.Background(), JobHandoffTimeout)
+		jht := DefaultJobHandoffTimeout
+		if gr.Opts.JobHandoffTimeout != 0 {
+			jht = gr.Opts.JobHandoffTimeout
+		}
+		ctx2, cf := context.WithTimeout(context.Background(), jht)
 		defer cf()
 		gr.buildevent(id, "creating build job")
 		if err := gr.BM.Start(ctx2, opts); err != nil {

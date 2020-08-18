@@ -203,25 +203,20 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	defer close(c)
 	ctx2, cf := context.WithCancel(ctx)
 	defer cf()
-	cxl := make(chan struct{})
+
+	// this goroutine blocks and listens for cancellation
+	// it returns when cancellation is received or the context is cancelled
 	go func() {
-		err := bks.dl.ListenForCancellation(ctx2, b.ID)
-		if err != nil {
+		defer cf()
+		if err := bks.dl.ListenForCancellation(ctx2, b.ID); err != nil {
 			bks.log("error listening for cancellation: %v", err)
 			return
 		}
-		close(cxl)
+		bks.dl.AddEvent(ctx2, b.ID, "build cancellation request received")
 	}()
-	go func() {
-		select {
-		case <-cxl:
-			if err := bks.dl.AddEvent(ctx2, b.ID, "build cancellation request received"); err != nil {
-				bks.log("error adding cancellation event: build: %v: %v", opts.BuildID, err)
-			}
-			cf()
-		case <-ctx2.Done():
-		}
-	}()
+
+	// this goroutine reads build messages and adds them as events
+	// it returns when the context is cancelled or c is closed
 	go func() {
 		for {
 			select {
@@ -241,6 +236,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 			}
 		}
 	}()
+
 	resp, err := bks.bc.Solve(ctx2, nil, sopts, c)
 	if err != nil {
 		return fmt.Errorf("error running solver: %w", err)
