@@ -14,6 +14,7 @@ import (
 type FakeDataLayer struct {
 	mtx           sync.RWMutex
 	d             map[uuid.UUID]*models.Build
+	apikeys       map[uuid.UUID]*models.APIKey
 	listeners     map[uuid.UUID][]chan string
 	cxllisteners  map[uuid.UUID][]chan struct{}
 	runlisteners  map[uuid.UUID][]chan struct{}
@@ -26,6 +27,11 @@ func (fdl *FakeDataLayer) init() {
 	if fdl.d == nil {
 		fdl.mtx.Lock()
 		fdl.d = make(map[uuid.UUID]*models.Build)
+		fdl.mtx.Unlock()
+	}
+	if fdl.apikeys == nil {
+		fdl.mtx.Lock()
+		fdl.apikeys = make(map[uuid.UUID]*models.APIKey)
 		fdl.mtx.Unlock()
 	}
 	if fdl.listeners == nil {
@@ -379,4 +385,32 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 	case <-ctx.Done():
 		return 0, fmt.Errorf("context cancelled")
 	}
+}
+
+func (fdl *FakeDataLayer) CreateAPIKey(ctx context.Context, ak models.APIKey) (uuid.UUID, error) {
+	fdl.init()
+	fdl.mtx.Lock()
+	defer fdl.mtx.Unlock()
+	ak.ID = uuid.Must(uuid.NewV4())
+	fdl.apikeys[ak.ID] = &ak
+	return ak.ID, nil
+}
+
+func (fdl *FakeDataLayer) GetAPIKey(ctx context.Context, id uuid.UUID) (models.APIKey, error) {
+	fdl.init()
+	fdl.mtx.RLock()
+	defer fdl.mtx.RUnlock()
+	apk, ok := fdl.apikeys[id]
+	if !ok {
+		return models.APIKey{}, ErrNotFound
+	}
+	return *apk, nil
+}
+
+func (fdl *FakeDataLayer) DeleteAPIKey(ctx context.Context, id uuid.UUID) error {
+	fdl.init()
+	fdl.mtx.Lock()
+	defer fdl.mtx.Unlock()
+	delete(fdl.apikeys, id)
+	return nil
 }

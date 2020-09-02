@@ -60,6 +60,18 @@ func RunTests(t *testing.T, dlfunc DLFactoryFunc) {
 			"set build as completed and listen for completion",
 			testDBSetBuildAsCompletedAndListenForBuildCompleted,
 		},
+		{
+			"create API key",
+			testDBCreateAPIKey,
+		},
+		{
+			"get API key",
+			testDBGetAPIKey,
+		},
+		{
+			"delete API key",
+			testDBDeleteAPIKey,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -390,10 +402,7 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 
 	go func() {
 		close(listen)
-		bs, err := dl.ListenForBuildCompleted(ctx, id)
-		if err != nil {
-			t.Fatalf("error listening for build completion: %v", err)
-		}
+		bs, _ := dl.ListenForBuildCompleted(ctx, id)
 		c <- bs
 	}()
 
@@ -429,5 +438,67 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 		break
 	case <-ticker.C:
 		t.Errorf("timeout: build not completed yet but should be")
+	}
+}
+
+func testDBCreateAPIKey(t *testing.T, dl datalayer.DataLayer) {
+	ctx := context.Background()
+	id, err := dl.CreateAPIKey(ctx, models.APIKey{ReadOnly: true})
+	if err != nil {
+		t.Fatalf("error creating api key: %v", err)
+	}
+	if id == uuid.Nil {
+		t.Fatalf("zero value id")
+	}
+	ak, err := dl.GetAPIKey(ctx, id)
+	if err != nil {
+		t.Fatalf("error getting key: %v", err)
+	}
+	if !ak.ReadOnly {
+		t.Fatalf("expected read only")
+	}
+	err = dl.DeleteAPIKey(ctx, id)
+	if err != nil {
+		t.Fatalf("error deleting api key: %v", err)
+	}
+}
+
+func testDBGetAPIKey(t *testing.T, dl datalayer.DataLayer) {
+	ctx := context.Background()
+	id, err := dl.CreateAPIKey(ctx, models.APIKey{ReadOnly: true})
+	if err != nil {
+		t.Fatalf("error creating api key: %v", err)
+	}
+	ak, err := dl.GetAPIKey(ctx, id)
+	if err != nil {
+		t.Fatalf("error getting api key: %v", err)
+	}
+	if !ak.ReadOnly {
+		t.Fatalf("expected read only")
+	}
+	_, err = dl.GetAPIKey(ctx, uuid.Must(uuid.NewV4()))
+	if err == nil {
+		t.Fatalf("expected id missing error")
+	}
+	err = dl.DeleteAPIKey(ctx, id)
+	if err != nil {
+		t.Fatalf("error deleting build: %v", err)
+	}
+}
+
+func testDBDeleteAPIKey(t *testing.T, dl datalayer.DataLayer) {
+	ctx := context.Background()
+	id, err := dl.CreateAPIKey(ctx, models.APIKey{ReadOnly: true})
+	if err != nil {
+		t.Fatalf("error creating api key: %v", err)
+	}
+	err = dl.DeleteAPIKey(ctx, id)
+	if err != nil {
+		t.Fatalf("error deleting api key: %v", err)
+	}
+	err = dl.DeleteAPIKey(ctx, uuid.Must(uuid.NewV4()))
+	// should succeed even if api key doesn't exist
+	if err != nil {
+		t.Fatalf("error deleting missing api key: %v", err)
 	}
 }

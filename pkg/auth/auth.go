@@ -17,7 +17,7 @@ import (
 
 type Provider struct {
 	QuayIOToken                  string
-	AccessKeyID, SecretAccessKey string // AWS credentials scoped to ECR onl
+	AccessKeyID, SecretAccessKey string // AWS credentials scoped to ECR only
 	ECRAuthClientFactoryFunc     func(s *awssession.Session, cfg *aws.Config) ecrapi.Client
 }
 

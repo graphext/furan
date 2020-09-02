@@ -200,3 +200,11 @@ type BuildManager interface {
 type TagChecker interface {
 	AllTagsExist(tags []string, repo string) (bool, []string, error)
 }
+
+// APIKey models a user-created API key
+type APIKey struct {
+	ID                            uuid.UUID
+	Created                       time.Time
+	GitHubUser, Name, Description string
+	ReadOnly                      bool
+}

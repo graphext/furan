@@ -2,14 +2,20 @@ package grpc
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/golang/protobuf/proto"
+	"github.com/jhump/protoreflect/desc"
+	"github.com/jhump/protoreflect/grpcreflect"
 	"google.golang.org/grpc/codes"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 
@@ -21,6 +27,8 @@ import (
 type Options struct {
 	// TraceSvcName is the service name for APM tracing (optional)
 	TraceSvcName string
+	// TLSCertificate is the TLS certificate used to secure the gRPC transport. If nil, TLS will be disabled.
+	TLSCertificate *tls.Certificate
 	// CredentialDecryptionKey is the secretbox key used to decrypt the build github credential
 	CredentialDecryptionKey [32]byte
 	Cache                   models.CacheOpts
@@ -42,31 +50,126 @@ type Server struct {
 	CFFactory func(token string) models.CodeFetcher
 	Opts      Options
 	s         *grpc.Server
+	methods   map[string]*desc.MethodDescriptor
 }
 
-// Listen starts the RPC listener on addr:port and blocks until the server is signalled to stop.
+// Listen starts the RPC listener on addr (host:port) and blocks until the server is signalled to stop.
 // Always returns a non-nil error.
-func (gr *Server) Listen(addr string, port uint) error {
+func (gr *Server) Listen(addr string) error {
 	if gr.DL == nil {
 		return fmt.Errorf("DataLayer is required")
 	}
 	if gr.CFFactory == nil {
 		return fmt.Errorf("CFFactory is required")
 	}
-	addr = fmt.Sprintf("%v:%v", addr, port)
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		gr.logf("error starting gRPC listener: %v", err)
 		return err
 	}
-	// TODO Note (mk): We should consider upgrading our go grpc package so that we
-	// can take advantage of stream interceptor
-	ui := grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(gr.Opts.TraceSvcName))
-	s := grpc.NewServer(grpc.UnaryInterceptor(ui))
+
+	// APM tracing
+	tri := grpctrace.UnaryServerInterceptor(grpctrace.WithServiceName(gr.Opts.TraceSvcName))
+	stri := grpctrace.StreamServerInterceptor(grpctrace.WithServiceName(gr.Opts.TraceSvcName))
+
+	// API key authentication
+	// Unary
+	uauthi := func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		if gr.apiKeyAuth(ctx, info.FullMethod) {
+			return handler(ctx, req)
+		}
+		return nil, status.Errorf(codes.Unauthenticated, "failed API key authentication")
+	}
+	// Stream
+	sauthi := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if gr.apiKeyAuth(ss.Context(), info.FullMethod) {
+			return handler(srv, ss)
+		}
+		return status.Errorf(codes.Unauthenticated, "failed API key authentication")
+	}
+
+	ops := []grpc.ServerOption{
+		grpc.ChainStreamInterceptor(sauthi, stri),
+		grpc.ChainUnaryInterceptor(uauthi, tri),
+	}
+
+	if gr.Opts.TLSCertificate != nil {
+		ops = append(ops, grpc.Creds(credentials.NewServerTLSFromCert(gr.Opts.TLSCertificate)))
+	}
+
+	s := grpc.NewServer(ops...)
 	gr.s = s
 	furanrpc.RegisterFuranExecutorServer(s, gr)
+
+	// Load methods metadata
+	sds, err := grpcreflect.LoadServiceDescriptors(s)
+	if err != nil {
+		return fmt.Errorf("error loading grpc service descriptors: %w", err)
+	}
+	if len(sds) != 1 {
+		return fmt.Errorf("unexpected number of grpc services: %v (wanted 1)", len(sds))
+	}
+	svc, ok := sds["furanrpc.FuranExecutor"]
+	if !ok {
+		return fmt.Errorf("missing service furanrpc.FuranExecutor: %#v", sds)
+	}
+	mthds := svc.GetMethods()
+	gr.methods = make(map[string]*desc.MethodDescriptor, len(mthds))
+	for _, md := range mthds {
+		mn := fmt.Sprintf("/%s/%s", svc.GetFullyQualifiedName(), md.GetName())
+		gr.methods[mn] = md
+	}
+
 	gr.logf("gRPC listening on: %v", addr)
 	return s.Serve(l)
+}
+
+// APIKeyLabel is the request metadata label used for the API key
+const APIKeyLabel = "api_key"
+
+func (gr *Server) apiKeyAuth(ctx context.Context, rpcname string) bool {
+	mi, ok := gr.methods[rpcname]
+	if !ok {
+		gr.logf("method name not found in methods metadata: %v", rpcname)
+		return false
+	}
+	ro, err := proto.GetExtension(mi.GetMethodOptions(), furanrpc.E_ReadOnly)
+	if err != nil {
+		gr.logf("error getting read only method option: %v", err)
+		return false
+	}
+	readonly, ok := ro.(*bool)
+	if !ok {
+		gr.logf("unexpected type for read_only method option: %v: %T", rpcname, ro)
+		return false
+	}
+	if readonly == nil {
+		gr.logf("read_only option is nil: %v", rpcname)
+		return false
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		apik := md.Get(APIKeyLabel)
+		if len(apik) == 1 {
+			ak, err := uuid.FromString(apik[0])
+			if err != nil {
+				gr.logf("error parsing api key: %v", err)
+				return false
+			}
+			akey, err := gr.DL.GetAPIKey(ctx, ak)
+			if err != nil {
+				gr.logf("error getting api key from db: %v: %v", ak, err)
+				return false
+			}
+			// is this API key marked as read-only and is the method a read-only method?
+			if akey.ReadOnly && !*readonly {
+				gr.logf("read-only API key but method requires greater permissions")
+				return false
+			}
+			return true
+		}
+	}
+	return false
 }
 
 func (gr *Server) logf(msg string, args ...interface{}) {

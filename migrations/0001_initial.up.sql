@@ -17,6 +17,15 @@ CREATE TABLE builds (
   events text[]  -- ordered array of build event strings
 );
 
+CREATE TABLE api_keys (
+    id uuid PRIMARY KEY,
+    created timestamptz NOT NULL DEFAULT now(),
+    name text,
+    description text,
+    github_user text,
+    read_only boolean
+);
+
 CREATE OR REPLACE FUNCTION trigger_set_updated_timestamp()
     RETURNS TRIGGER AS $$
 BEGIN

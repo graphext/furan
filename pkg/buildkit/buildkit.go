@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/moby/buildkit/client/llb"
+	"github.com/moby/buildkit/session"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
@@ -25,10 +26,11 @@ var _ client = &bkclient.Client{}
 type LogFunc func(msg string, args ...interface{})
 
 type BuildSolver struct {
-	dl   datalayer.DataLayer
-	s3cf models.CacheFetcher
-	bc   client
-	LogF LogFunc
+	dl               datalayer.DataLayer
+	s3cf             models.CacheFetcher
+	bc               client
+	AuthProviderFunc func() []session.Attachable
+	LogF             LogFunc
 }
 
 var _ models.Builder = &BuildSolver{}
@@ -178,6 +180,9 @@ func (bks *BuildSolver) genSolveOpt(b models.Build, opts models.BuildOpts) (bkcl
 	}
 	for k, v := range opts.BuildArgs {
 		sopts.FrontendAttrs["build-arg:"+k] = v
+	}
+	if bks.AuthProviderFunc != nil {
+		sopts.Session = bks.AuthProviderFunc()
 	}
 	return sopts, nil
 }

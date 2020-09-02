@@ -14,22 +14,27 @@ import (
 
 // Manager is an object that performs high-level management of image builds
 type Manager struct {
-	BRunner        models.Builder
-	JRunner        models.JobRunner
-	TCheck         models.TagChecker
+	// BRunner is needed for Run()
+	BRunner models.Builder
+	// JRunner is needed for Start()
+	JRunner models.JobRunner
+	// TCheck is needed for Run()
+	TCheck models.TagChecker
+	// FetcherFactory is needed for Run()
 	FetcherFactory func(token string) models.CodeFetcher
+	// GitHubTokenKey is needed for Run()
 	GitHubTokenKey [32]byte
-	DL             datalayer.DataLayer
-}
-
-func (m *Manager) validateDeps() bool {
-	return m != nil && m.BRunner != nil && m.JRunner != nil && m.TCheck != nil && m.DL != nil && m.FetcherFactory != nil
+	// DL is needed for all methods
+	DL datalayer.DataLayer
 }
 
 // Start starts a single build using JobRunner and waits for the build to begin running, or returns error
 func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
-	if !m.validateDeps() {
-		return fmt.Errorf("missing dependency: %#v", m)
+	if m.JRunner == nil {
+		return fmt.Errorf("JRunner is required: %#v", m)
+	}
+	if m.DL == nil {
+		return fmt.Errorf("DL is required")
 	}
 	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
@@ -53,8 +58,8 @@ func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
 
 // Run synchronously executes a build using BuildRunner
 func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
-	if !m.validateDeps() {
-		return fmt.Errorf("missing dependency: %#v", m)
+	if m.BRunner == nil || m.TCheck == nil || m.FetcherFactory == nil || m.DL == nil {
+		return fmt.Errorf("missing is dependencies: %#v", m)
 	}
 	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {

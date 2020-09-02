@@ -34,6 +34,9 @@ type DataLayer interface {
 	ListenForBuildRunning(ctx context.Context, id uuid.UUID) error
 	SetBuildAsCompleted(ctx context.Context, id uuid.UUID, status models.BuildStatus) error
 	ListenForBuildCompleted(ctx context.Context, id uuid.UUID) (models.BuildStatus, error)
+	CreateAPIKey(ctx context.Context, apikey models.APIKey) (uuid.UUID, error)
+	GetAPIKey(ctx context.Context, id uuid.UUID) (models.APIKey, error)
+	DeleteAPIKey(ctx context.Context, id uuid.UUID) error
 }
 
 // PostgresDBLayer is a DataLayer instance that utilizes a PostgreSQL database
@@ -359,6 +362,39 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 		return 0, fmt.Errorf("invalid status for completed build: %v", bs)
 	}
 	return bs, nil
+}
+
+// CreateAPIKey creates a new API key with a random UUID
+func (dl *PostgresDBLayer) CreateAPIKey(ctx context.Context, apikey models.APIKey) (uuid.UUID, error) {
+	id, err := uuid.NewV4()
+	if err != nil {
+		return id, fmt.Errorf("error generating api key id: %w", err)
+	}
+	_, err = dl.p.Exec(ctx,
+		`INSERT INTO api_keys (id, github_user, name, description, read_only) VALUES ($1,$2,$3,$4,$5);`,
+		id, apikey.GitHubUser, apikey.Name, apikey.Description, apikey.ReadOnly)
+	if err != nil {
+		return id, fmt.Errorf("error inserting api key: %w", err)
+	}
+	return id, nil
+}
+
+// GetAPIKey gets the API key for id
+func (dl *PostgresDBLayer) GetAPIKey(ctx context.Context, id uuid.UUID) (models.APIKey, error) {
+	out := models.APIKey{}
+	err := dl.p.QueryRow(ctx, `SELECT id, created, github_user, name, description, read_only FROM api_keys WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &out.GitHubUser, &out.Name, &out.Description, &out.ReadOnly)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return out, ErrNotFound
+		}
+		return out, fmt.Errorf("error getting api key by id: %w", err)
+	}
+	return out, nil
+}
+
+func (dl *PostgresDBLayer) DeleteAPIKey(ctx context.Context, id uuid.UUID) error {
+	_, err := dl.p.Exec(ctx, `DELETE FROM api_keys WHERE id = $1;`, id)
+	return err
 }
 
 func (dl *PostgresDBLayer) spewerr(err error) {

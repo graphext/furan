@@ -1,26 +1,45 @@
 package config
 
-type GitConfig struct {
-	Token string // GitHub token
+/*
+"secret" struct tags are secret ids for PVC auto-fill
+*/
+
+type VaultConfig struct {
+	Addr        string
+	Token       string
+	TokenAuth   bool
+	K8sAuth     bool
+	K8sJWTPath  string
+	K8sAuthPath string
+	K8sRole     string
+}
+
+type GitHubConfig struct {
+	Token string `secret:"github/token"`
+}
+
+type QuayConfig struct {
+	Token string `secret:"quay/token"`
 }
 
 // AWSConfig contains all information needed to access AWS services
 type AWSConfig struct {
-	AccessKeyID      string
-	SecretAccessKey  string
+	Region           string
+	CacheBucket      string
+	CacheKeyPrefix   string
+	AccessKeyID      string `secret:"aws/access_key_id"`
+	SecretAccessKey  string `secret:"aws/secret_access_key"`
 	EnableECR        bool
 	ECRRegistryHosts []string
 }
 
 type DBConfig struct {
-	PostgresURI string
+	PostgresURI             string `secret:"db/uri"`
+	CredentialEncryptionKey []byte `secret:"db/credential_encryption_key"`
+	CredEncKeyArray         [32]byte
 }
 
 type ServerConfig struct {
-	HTTPSPort       uint
-	GRPCPort        uint
-	PPROFPort       uint
-	HTTPSAddr       string
-	GRPCAddr        string
-	HealthcheckAddr string
+	HTTPSAddr string
+	GRPCAddr  string
 }
