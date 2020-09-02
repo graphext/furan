@@ -98,13 +98,4 @@ func server(cmd *cobra.Command, args []string) {
 
 	log.Println(grs.Listen(serverConfig.GRPCAddr))
 
-	/* Cost - Another copy of the ecom stack
-	Cost per month
-	Hydra
-	DQAs thorugh
-	web analytics
-	email integration
-	simple as possible
-
-	*/
 }
