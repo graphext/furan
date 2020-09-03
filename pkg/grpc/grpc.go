@@ -9,7 +9,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/golang/protobuf/proto"
-	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/grpcreflect"
 	"google.golang.org/grpc/codes"
 
@@ -50,7 +49,42 @@ type Server struct {
 	CFFactory func(token string) models.CodeFetcher
 	Opts      Options
 	s         *grpc.Server
-	methods   map[string]*desc.MethodDescriptor
+	methods   map[string]bool // methods read-only flags (set once during Listen setup, read only from multiple goroutines afterward)
+}
+
+const serviceName = "furanrpc.FuranExecutor"
+
+func methodsFromFuranService(s *grpc.Server) (map[string]bool, error) {
+	sds, err := grpcreflect.LoadServiceDescriptors(s)
+	if err != nil {
+		return nil, fmt.Errorf("error loading grpc service descriptors: %w", err)
+	}
+	if len(sds) != 1 {
+		return nil, fmt.Errorf("unexpected number of grpc services: %v (wanted 1)", len(sds))
+	}
+	svc, ok := sds[serviceName]
+	if !ok {
+		return nil, fmt.Errorf("missing service %v: %#v", serviceName, sds)
+	}
+	mthds := svc.GetMethods()
+	methods := make(map[string]bool, len(mthds))
+	sn := svc.GetFullyQualifiedName()
+	for _, md := range mthds {
+		ro, err := proto.GetExtension(md.GetOptions(), furanrpc.E_ReadOnly)
+		if err != nil {
+			return nil, fmt.Errorf("error getting read only method option: %w", err)
+		}
+		readonly, ok := ro.(*bool)
+		if !ok {
+			return nil, fmt.Errorf("unexpected type for read_only method option: %v: %T", md.GetName(), ro)
+		}
+		if readonly == nil {
+			return nil, fmt.Errorf("read_only option is nil: %v", md.GetName())
+		}
+		mn := fmt.Sprintf("/%s/%s", sn, md.GetName())
+		methods[mn] = *readonly
+	}
+	return methods, nil
 }
 
 // Listen starts the RPC listener on addr (host:port) and blocks until the server is signalled to stop.
@@ -101,24 +135,12 @@ func (gr *Server) Listen(addr string) error {
 	gr.s = s
 	furanrpc.RegisterFuranExecutorServer(s, gr)
 
-	// Load methods metadata
-	sds, err := grpcreflect.LoadServiceDescriptors(s)
+	// Load methods metadata for auth
+	methods, err := methodsFromFuranService(s)
 	if err != nil {
-		return fmt.Errorf("error loading grpc service descriptors: %w", err)
+		return fmt.Errorf("error generating methods from service: %w", err)
 	}
-	if len(sds) != 1 {
-		return fmt.Errorf("unexpected number of grpc services: %v (wanted 1)", len(sds))
-	}
-	svc, ok := sds["furanrpc.FuranExecutor"]
-	if !ok {
-		return fmt.Errorf("missing service furanrpc.FuranExecutor: %#v", sds)
-	}
-	mthds := svc.GetMethods()
-	gr.methods = make(map[string]*desc.MethodDescriptor, len(mthds))
-	for _, md := range mthds {
-		mn := fmt.Sprintf("/%s/%s", svc.GetFullyQualifiedName(), md.GetName())
-		gr.methods[mn] = md
-	}
+	gr.methods = methods
 
 	gr.logf("gRPC listening on: %v", addr)
 	return s.Serve(l)
@@ -128,23 +150,13 @@ func (gr *Server) Listen(addr string) error {
 const APIKeyLabel = "api_key"
 
 func (gr *Server) apiKeyAuth(ctx context.Context, rpcname string) bool {
-	mi, ok := gr.methods[rpcname]
+	if gr.methods == nil {
+		gr.logf("BUG: methods map is nil")
+		return false
+	}
+	ro, ok := gr.methods[rpcname]
 	if !ok {
 		gr.logf("method name not found in methods metadata: %v", rpcname)
-		return false
-	}
-	ro, err := proto.GetExtension(mi.GetMethodOptions(), furanrpc.E_ReadOnly)
-	if err != nil {
-		gr.logf("error getting read only method option: %v", err)
-		return false
-	}
-	readonly, ok := ro.(*bool)
-	if !ok {
-		gr.logf("unexpected type for read_only method option: %v: %T", rpcname, ro)
-		return false
-	}
-	if readonly == nil {
-		gr.logf("read_only option is nil: %v", rpcname)
 		return false
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -153,22 +165,29 @@ func (gr *Server) apiKeyAuth(ctx context.Context, rpcname string) bool {
 		if len(apik) == 1 {
 			ak, err := uuid.FromString(apik[0])
 			if err != nil {
-				gr.logf("error parsing api key: %v", err)
+				gr.logf("invalid api key: %v", err)
 				return false
 			}
 			akey, err := gr.DL.GetAPIKey(ctx, ak)
 			if err != nil {
+				if err == datalayer.ErrNotFound {
+					gr.logf("unknown api key: %v", ak)
+					return false
+				}
 				gr.logf("error getting api key from db: %v: %v", ak, err)
 				return false
 			}
 			// is this API key marked as read-only and is the method a read-only method?
-			if akey.ReadOnly && !*readonly {
+			if akey.ReadOnly && !ro {
 				gr.logf("read-only API key but method requires greater permissions")
 				return false
 			}
 			return true
 		}
+		gr.logf("multiple api keys present")
+		return false
 	}
+	gr.logf("api key missing")
 	return false
 }
 

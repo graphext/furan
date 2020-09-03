@@ -9,7 +9,9 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"github.com/dollarshaveclub/furan/pkg/builder"
@@ -544,6 +546,208 @@ func TestServer_CancelBuild(t *testing.T) {
 			}
 			if resp.BuildId != id.String() {
 				t.Errorf("bad id %v, wanted %v", resp.BuildId, id)
+			}
+		})
+	}
+}
+
+func TestServer_apiKeyAuth(t *testing.T) {
+	type fields struct {
+		dlsetup func(dl datalayer.DataLayer) uuid.UUID
+	}
+	type args struct {
+		rpcname string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		ctxf   func(id uuid.UUID) context.Context
+		want   bool
+	}{
+		{
+			name: "authorized",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: false})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: true,
+		},
+		{
+			name: "authorized cancel",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: false})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/CancelBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: true,
+		},
+		{
+			name: "read only authorized",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: true})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/GetBuildStatus",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: true,
+		},
+		{
+			name: "read only unauthorized",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: true})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: false,
+		},
+		{
+			name: "unknown key",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					return uuid.Must(uuid.NewV4())
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: false,
+		},
+		{
+			name: "missing key",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					return uuid.UUID{}
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				return context.Background()
+			},
+			want: false,
+		},
+		{
+			name: "multiple keys",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: false})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 2)
+				md[APIKeyLabel] = []string{
+					id.String(),
+					uuid.Must(uuid.NewV4()).String(),
+				}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: false,
+		},
+		{
+			name: "invalid key",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					return uuid.UUID{}
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/StartBuild",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{"some_invalid_key"}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: false,
+		},
+		{
+			name: "invalid rpc",
+			fields: fields{
+				dlsetup: func(dl datalayer.DataLayer) uuid.UUID {
+					id, _ := dl.CreateAPIKey(context.Background(), models.APIKey{Name: "foo", ReadOnly: false})
+					return id
+				},
+			},
+			args: args{
+				rpcname: "/furanrpc.FuranExecutor/SomeInvalidRPC",
+			},
+			ctxf: func(id uuid.UUID) context.Context {
+				md := make(metadata.MD, 1)
+				md[APIKeyLabel] = []string{id.String()}
+				return metadata.NewIncomingContext(context.Background(), md)
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dl := &datalayer.FakeDataLayer{}
+			var id uuid.UUID
+			if tt.fields.dlsetup != nil {
+				id = tt.fields.dlsetup(dl)
+			}
+			gr := &Server{
+				DL: dl,
+				Opts: Options{
+					LogFunc: t.Logf,
+				},
+			}
+			s := grpc.NewServer()
+			furanrpc.RegisterFuranExecutorServer(s, gr)
+			methods, err := methodsFromFuranService(s)
+			if err != nil {
+				t.Errorf("error getting methods: %v", err)
+			}
+			gr.methods = methods
+			if got := gr.apiKeyAuth(tt.ctxf(id), tt.args.rpcname); got != tt.want {
+				t.Errorf("apiKeyAuth() = %v, want %v", got, tt.want)
 			}
 		})
 	}
