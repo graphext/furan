@@ -1,62 +1,82 @@
-# Default values for furan.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-replicaCount: 8
-maxSurge: 25%
-maxUnavailable: 25%
+replicaCount: 1
+createServiceAccount: false
+createRole: false
+serviceAccountName: furan-development
 image:
-  repository: quay.io/dollarshaveclub/furan
+  repository: 932427637498.dkr.ecr.us-west-2.amazonaws.com/furan
   tag: master
-  pullPolicy: Always
-  pullSecrets: image-pull-secrets
+  pullPolicy: IfNotPresent
+  pullSecrets: ""
 
-service:
-  create: true
-  type: ClusterIP
+run_migrations: false
 
-  httpInternalPort: 4000
-  httpExternalPort: 4000
+annotations:
 
-  grpcInternalPort: 4001
-  grpcExternalPort: 4001
-
-  httpHealthcheckPort: 4002
-  httpHealthcheckPath: /health
-  performanceProfilingPort: 4003
-
-metrics_disabled: true
-
-# If enabled, ECR will use the same AWS credentials (from Vault) as configured for S3
-ecr:
-  enabled: false
-  # comma-delimited list of ECR hosts
-  hosts: "123456789.dkr.ecr.us-west-2.amazonaws.com,123456789.dkr.ecr.us-east-1.amazonaws.com"
-
-datadog:
-  overrideDefaultTags: 'env:dev'
-  statsdAddr: datadog.tools.svc.cluster.local:8125
-  tracingAgentAddr: datadog.tools.svc.cluster.local:8126
-  serviceName: furan-dqa
-
-db:
-  useConsulDiscovery: false
-  nodes: "furan-scylladb"
-  initialize: true
-kafkaBrokers: "furan-kafka-furan:9092"
+app:
+  secrets_backend: "vault"
+  secrets_mapping: "secret/{{ .ID }}"
 
 vault:
-  useTokenAuth: true
-  useK8sAuth: false
-  addr: "http://furan-vault:8200"
+  address: "http://vault:8200"
   token: "root"
+  use_token_auth: true
+  use_k8s_auth: false
+  k8sAuthPath: "auth/kube.shave.io" 
+  agentInjector:
+    enabled: false
+    initFirst: true
+    logLevel: info
+  secretsPrefix: secret/services/furan/qa
+  secrets:
+  - path: db/uri
+    key: value
+  - path: db/credential_encryption_key
+    key: value
+  - path: github/token
+    key: value
+  - path: quay/token
+    key: value
 
-consulAddr: "furan-consul:8500"
+service:
+  name: furan
+  type: ClusterIP
+  externalPort: 4000
+  internalPort: 4000
 
-ramdisk:
+ingress:
   enabled: false
+  hosts:
+    - furan.development.shave.io
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: "true"
 
-dind:
-  mtu: 1500
+livenessProbe:
+  initialDelaySeconds: 100
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
 
 dnsPolicy: ClusterFirst
-dnsConfig: {}
+dnsConfig:
+  options:
+    - name: ndots
+      value: "2"
+    - name: attempts
+      value: "5"
+    - name: timeout
+      value: "1"
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

@@ -1,29 +1,16 @@
-{{- if .Values.service.create -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: furan
+  name: {{ .Values.service.name }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+{{ include "labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
-  selector:
-    appsel: furan
   ports:
-  {{ if and .Values.service.type (eq .Values.service.type "NodePort") }}
-    - port: {{ .Values.service.grpcExternalPort }}
-      targetPort: {{ .Values.service.grpcInternalPort }}
+    - port: {{ .Values.service.externalPort }}
+      targetPort: {{ .Values.service.internalPort }}
       protocol: TCP
-      name: grpc
-      nodePort: {{ .Values.service.nodePort }}
-  {{ else }}
-    - port: {{ .Values.service.httpExternalPort }}
-      targetPort: {{ .Values.service.httpInternalPort }}
-      protocol: TCP
-      name: http
-    - port: {{ .Values.service.grpcExternalPort }}
-      targetPort: {{ .Values.service.grpcInternalPort }}
-      protocol: TCP
-      name: grpc
-  {{ end }}
-{{- end -}}
+      name: {{ .Values.service.name }}
+  selector:
+    app: {{ template "name" . }}
+    release: {{ .Release.Name }}

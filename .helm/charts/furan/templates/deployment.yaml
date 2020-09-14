@@ -3,156 +3,104 @@ kind: Deployment
 metadata:
   name: {{ template "fullname" . }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+{{ include "labels" . | indent 4 }}
 spec:
-  strategy:
-    rollingUpdate:
-      maxSurge: {{ .Values.maxSurge }}
-      maxUnavailable: {{ .Values.maxUnavailable }}
-    type: RollingUpdate
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}
-      appsel: furan
+{{ include "labels" . | indent 6 }}
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        app: {{ template "fullname" . }}
-        appsel: furan
+{{ include "labels" . | indent 8 }}
+      annotations:
+{{- if .Values.annotations }}
+      {{- range $key, $value := .Values.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+{{- end }}
+      {{- if .Values.vault.agentInjector.enabled }}
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/log-level: "{{ .Values.vault.agentInjector.logLevel }}"
+        vault.hashicorp.com/auth-path: "{{ .Values.vault.k8sAuthPath }}"
+        vault.hashicorp.com/role: "{{ .Values.serviceAccountName }}"
+        vault.hashicorp.com/agent-init-first: "{{ .Values.vault.agentInjector.initFirst }}"
+{{ include "vault-agent-default-kv1-secrets-v1-template" . | indent 8 }}     
+      {{- end }}
     spec:
-      {{ if .Values.vault.useK8sAuth }}
-      serviceAccountName: {{ .Values.vault.serviceaccount }}
-      {{ end }}
+      serviceAccountName: "{{ .Values.serviceAccountName }}"
       dnsPolicy: {{ .Values.dnsPolicy }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
       imagePullSecrets:
-        - name: "{{ .Values.image.pullSecrets }}"
-      volumes:
-      - name: docker-engine
-        emptyDir: {}
-      - name: docker-data
-      {{ if eq .Values.ramdisk.enabled true }}
-        emptyDir:
-          medium: Memory
-          sizeLimit: {{ .Values.ramdisk.size }}
-      {{ else }}
-        emptyDir: {}
-      {{ end }}
+        - name: {{ .Values.image.pullSecrets | quote }}
       containers:
-      - name: docker
-        image: docker:17.06.1-ce-dind
-        imagePullPolicy: IfNotPresent
-        args:
-          - --storage-driver=overlay2
-          - --mtu={{ .Values.dind.mtu }}
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: docker-engine
-          mountPath: /var/run
-        - name: docker-data
-          mountPath: /var/lib/docker
-        resources:
-{{ toYaml .Values.docker_resources | indent 10 }}
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        args:
-          - /go/bin/furan
-        {{ if eq .Values.vault.useTokenAuth true }}
-          - -k
-        {{ end }}
-        {{ if eq .Values.db.initialize true }}
-          - -i
-        {{ end }}
-        {{ if eq .Values.db.useConsulDiscovery true }}
-          - -z
-        {{ else }}
-          - -n
-          - {{ .Values.db.nodes }}
-        {{ end }}
-          - -f
-          - {{ .Values.kafkaBrokers }}
-        {{ if .Values.vault.prefix}}
-          - -x
-          - {{ .Values.vault.prefix }}
-        {{ end }}
-        {{ if eq .Values.vault.useK8sAuth true }}
-          - '--vault-k8s-jwt-path'
-          - /var/run/secrets/kubernetes.io/serviceaccount/token
-          - '--vault-k8s-role'
-          - '{{ .Values.vault.role }}'
-          - '--vault-k8s-auth-path'
-          - '{{ .Values.vault.authPath }}'
-        {{ end }}
-          - server
-          - --log-to-sumo=false
-        {{ if .Values.s3_error_log_bucket }}
-          - --s3-error-logs
-          - --s3-error-log-bucket
-          - {{ .Values.s3_error_log_bucket }}
-        {{ end }}
-          - --docker-storage-path
-          - /opt/docker-storage
-        {{ if .Values.metrics_disabled }}
-          - '--disable-metrics'
-        {{ end }}
-        {{ if .Values.datadog.statsdAddr }}
-          - --dogstatsd-addr={{ .Values.datadog.statsdAddr }}
-        {{ end }}
-        {{ if .Values.datadog.overrideDefaultTags }}
-          - --default-metrics-tags={{ .Values.datadog.overrideDefaultTags }}
-        {{ end }}
-        {{ if .Values.datadog.tracingAgentAddr }}
-          - --datadog-tracing-agent-addr={{ .Values.datadog.tracingAgentAddr }}
-        {{ end }}
-        {{ if .Values.datadog.serviceName }}
-          - --datadog-service-name={{ .Values.datadog.serviceName }}
-        {{ end }}
-          - --consul-addr={{ .Values.consulAddr }}
-        {{ if .Values.ecr.enabled }}
-          - "--ecr"
-          {{ if .Values.ecr.hosts }}
-          - "--ecr-registry-hosts"
-          - "{{ .Values.ecr.hosts }}"
-          {{ end }}
-        {{ end }}
-        env:
-        - name: DOCKER_HOST
-          value: unix:///var/run/docker.sock
-        - name: VAULT_ADDR
-          value: {{ .Values.vault.addr }}
-      {{ if eq .Values.vault.useTokenAuth true }}
-        - name: VAULT_TOKEN
-          value: {{ .Values.vault.token }}
-      {{ end }}
-        - name: CONSUL_HTTP_ADDR
-          value: {{ .Values.consulAddr }}
-        ports:
-        - containerPort: {{ .Values.service.httpInternalPort }}
-        - containerPort: {{ .Values.service.grpcInternalPort }}
-        - containerPort: {{ .Values.service.httpHealthcheckPort }}
-        - containerPort: {{ .Values.service.performanceProfilingPort }}
-        volumeMounts:
-        - name: docker-engine
-          mountPath: /var/run
-        livenessProbe:
-          initialDelaySeconds: 100
-          timeoutSeconds: 1
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
-          httpGet:
-            path: {{ .Values.service.httpHealthcheckPath }}
-            port: {{ .Values.service.httpHealthcheckPort }}
-        readinessProbe:
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
-          periodSeconds: 2
-          successThreshold: 1
-          failureThreshold: 1
-          httpGet:
-            path: {{ .Values.service.httpHealthcheckPath }}
-            port: {{ .Values.service.httpHealthcheckPort }}
-        resources:
-{{ toYaml .Values.resources | indent 10 }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/usr/local/bin/furan"
+          args:
+            - "--secrets-backend"
+            - "{{ .Values.app.secrets_backend }}"
+            - "--secrets-mapping"
+            - "{{ .Values.app.secrets_mapping }}"
+            {{ if eq .Values.app.secrets_backend "vault" -}}
+            - "--vault-addr"
+            - "{{ .Values.vault.address }}"
+            {{ if .Values.vault.use_token_auth -}}
+            - "--vault-token-auth"
+            - "--vault-token"
+            - "{{ .Values.vault.token }}"
+            {{ end }} # if token auth
+            {{ if .Values.vault.use_k8s_auth }}
+            - "--vault-k8s-auth"
+            - "--vault-k8s-role"
+            - "{{ .Values.serviceAccountName }}"
+            - "--vault-k8s-auth-path"
+            - "{{ .Values.vault.auth_path }}"
+            {{ end }} # if k8s auth
+            {{ end }} # if vault
+            - 'server'
+            - '--grpc-addr'
+            - '0.0.0.0:{{ .Values.service.internalPort }}'
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+              protocol: TCP
+          env:
+            # downward API values required for job runner
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{  .Values.livenessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.service.internalPort }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{  .Values.readinessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.service.internalPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.volumes }}
+      volumes:
+{{ toYaml .Values.volumes | indent 8 }}
+    {{- end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
