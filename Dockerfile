@@ -9,6 +9,7 @@ FROM alpine:3.11
 RUN mkdir -p /opt/migrations && \
 apk --no-cache add ca-certificates && apk --no-cache upgrade
 COPY --from=0 /tmp/furan/furan /usr/local/bin/furan
+COPY --from=0 /tmp/furan/migrations/* /opt/migrations/
 
 ENV MIGRATIONS_PATH /opt/migrations
 

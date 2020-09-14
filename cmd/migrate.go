@@ -20,12 +20,13 @@ var migrateCmd = &cobra.Command{
 }
 
 var migrationsPath, postgresURI, migrationCommand string
-var verboseMigrations bool
+var uriFromVault, verboseMigrations bool
 
 func init() {
 	migrateCmd.Flags().StringVar(&migrationCommand, "cmd", "up", "Migration command (one of: up, down, version)")
 	migrateCmd.Flags().StringVar(&migrationsPath, "migrations-path", "migrations", "Path to migrations files")
 	migrateCmd.Flags().StringVar(&postgresURI, "postgres-uri", "", "PostgreSQL connection URL (ex: postgres://user:pwd@localhost:5432/furan?sslmode=enable)")
+	migrateCmd.Flags().BoolVar(&uriFromVault, "db-uri-from-vault", false, "Fetch DB URI from Vault or secrets provider (see root command for details and options)")
 	migrateCmd.Flags().BoolVar(&verboseMigrations, "verbose", false, "verbose mode")
 	RootCmd.AddCommand(migrateCmd)
 }
@@ -45,6 +46,10 @@ func (ml *migrationLogger) Verbose() bool {
 }
 
 func domigrations(cmd *cobra.Command, args []string) {
+	if uriFromVault {
+		// TODO: Implement secrets fetching for URI
+		clierr("not implemented yet!")
+	}
 	m, err := migrate.New(
 		path.Join("file://", migrationsPath),
 		postgresURI)

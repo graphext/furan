@@ -41,16 +41,16 @@ var sf = &secrets.Fetcher{}
 
 func init() {
 	// Secrets
-	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Addr, "vault-addr", "a", os.Getenv("VAULT_ADDR"), "Vault URL (if using Vault secret backend)")
-	RootCmd.PersistentFlags().StringVarP(&vaultConfig.Token, "vault-token", "b", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth & Vault secret backend)")
-	RootCmd.PersistentFlags().BoolVarP(&vaultConfig.TokenAuth, "vault-token-auth", "c", false, "Use Vault token-based auth (if using Vault secret backend)")
+	RootCmd.PersistentFlags().StringVar(&vaultConfig.Addr, "vault-addr", os.Getenv("VAULT_ADDR"), "Vault URL (if using Vault secret backend)")
+	RootCmd.PersistentFlags().StringVar(&vaultConfig.Token, "vault-token", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth & Vault secret backend)")
+	RootCmd.PersistentFlags().BoolVar(&vaultConfig.TokenAuth, "vault-token-auth", false, "Use Vault token-based auth (if using Vault secret backend)")
 	RootCmd.PersistentFlags().BoolVar(&vaultConfig.K8sAuth, "vault-k8s-auth", false, "Use Vault k8s auth (if using Vault secret backend)")
 	RootCmd.PersistentFlags().StringVar(&vaultConfig.K8sJWTPath, "vault-k8s-jwt-path", "/var/run/secrets/kubernetes.io/serviceaccount/token", "Vault k8s JWT file path (if using k8s auth & Vault secret backend)")
 	RootCmd.PersistentFlags().StringVar(&vaultConfig.K8sRole, "vault-k8s-role", "", "Vault k8s role (if using k8s auth & Vault secret backend)")
 	RootCmd.PersistentFlags().StringVar(&vaultConfig.K8sAuthPath, "vault-k8s-auth-path", "kubernetes", "Vault k8s auth path (if using k8s auth & Vault secret backend)")
 	RootCmd.PersistentFlags().StringVar(&secretsbackend, "secrets-backend", "vault", "Secret backend (one of: vault,env,json,filetree)")
 	RootCmd.PersistentFlags().StringVar(&sf.JSONFile, "secrets-json-file", "secrets.json", "Secret JSON file path (if using json backend)")
-	RootCmd.PersistentFlags().StringVar(&sf.FileTreeRoot, "secrets-json-file", "/vault/secrets/", "Secrets filetree root path (if using filetree backend)")
+	RootCmd.PersistentFlags().StringVar(&sf.FileTreeRoot, "secrets-filetree-root", "/vault/secrets/", "Secrets filetree root path (if using filetree backend)")
 	RootCmd.PersistentFlags().StringVar(&sf.Mapping, "secrets-mapping", "", "Secrets mapping template string (required)")
 
 	// AWS S3 Cache
@@ -64,6 +64,7 @@ func init() {
 }
 
 func secretsSetup() {
+	sf.VaultOptions = vaultConfig
 	switch secretsbackend {
 	case "vault":
 		sf.Backend = secrets.VaultBackend
