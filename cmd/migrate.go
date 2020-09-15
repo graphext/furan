@@ -60,10 +60,16 @@ func domigrations(cmd *cobra.Command, args []string) {
 	switch migrationCommand {
 	case "up":
 		if err := m.Up(); err != nil {
+			if err == migrate.ErrNoChange {
+				break
+			}
 			clierr("error running up migrations: %v", err)
 		}
 	case "down":
 		if err := m.Down(); err != nil {
+			if err == migrate.ErrNoChange {
+				break
+			}
 			clierr("error running down migrations: %v", err)
 		}
 	case "version":
