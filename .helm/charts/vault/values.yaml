@@ -15,4 +15,4 @@ service:
     internalPort: 8200
     externalPort: 8200
 
-keyPrefix: secret/production/furan/
+keyPrefix: production/furan/
