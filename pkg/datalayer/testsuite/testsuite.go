@@ -254,7 +254,7 @@ func testDBListenAndAddEvents(t *testing.T, dl datalayer.DataLayer) {
 	<-elisten
 
 	// add some events
-	if err := dl.AddEvent(ctx, id, "something happened"); err != nil {
+	if err := dl.AddEvent(ctx, id, "something happened - 'embedded quoted string'"); err != nil {
 		t.Fatalf("error adding event 1: %v", err)
 	}
 	if err := dl.AddEvent(ctx, id, "something else happened"); err != nil {

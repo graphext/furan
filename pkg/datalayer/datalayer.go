@@ -163,6 +163,11 @@ func pgChanFromID(id uuid.UUID) string {
 	return "build_" + strings.ReplaceAll(id.String(), "-", "_")
 }
 
+// quoteString is copied from https://github.com/jackc/pgx/blob/master/internal/sanitize/sanitize.go
+func quoteString(str string) string {
+	return "'" + strings.Replace(str, "'", "''", -1) + "'"
+}
+
 // AddEvent appends an event to a build and notifies any listeners to that channel
 func (dl *PostgresDBLayer) AddEvent(ctx context.Context, id uuid.UUID, event string) error {
 	b, err := dl.GetBuildByID(ctx, id)
@@ -180,7 +185,7 @@ func (dl *PostgresDBLayer) AddEvent(ctx context.Context, id uuid.UUID, event str
 	if _, err := txn.Exec(ctx, `UPDATE builds SET events = array_append(events, $1) WHERE id = $2;`, event, id); err != nil {
 		return fmt.Errorf("error appending event: %w", err)
 	}
-	if _, err := txn.Exec(ctx, fmt.Sprintf("NOTIFY %s, '%s';", pgChanFromID(id), event)); err != nil {
+	if _, err := txn.Exec(ctx, fmt.Sprintf("NOTIFY %s, %s;", pgChanFromID(id), quoteString(event))); err != nil {
 		return fmt.Errorf("error notifying channel: %w", err)
 	}
 	if err := txn.Commit(ctx); err != nil {
