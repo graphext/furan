@@ -17,14 +17,18 @@ CREATE TABLE builds (
   events text[]  -- ordered array of build event strings
 );
 
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE api_keys (
-    id uuid PRIMARY KEY,
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     created timestamptz NOT NULL DEFAULT now(),
-    name text,
-    description text,
-    github_user text,
-    read_only boolean
+    name text DEFAULT '',
+    description text DEFAULT '',
+    github_user text DEFAULT '',
+    read_only boolean NOT NULL DEFAULT false
 );
+
+INSERT INTO api_keys (name, description) VALUES ('root', 'root api key');
 
 CREATE OR REPLACE FUNCTION trigger_set_updated_timestamp()
     RETURNS TRIGGER AS $$
