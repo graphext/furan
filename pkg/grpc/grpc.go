@@ -26,8 +26,8 @@ import (
 type Options struct {
 	// TraceSvcName is the service name for APM tracing (optional)
 	TraceSvcName string
-	// TLSCertificate is the TLS certificate used to secure the gRPC transport. If nil, TLS will be disabled.
-	TLSCertificate *tls.Certificate
+	// TLSCertificate is the TLS certificate used to secure the gRPC transport.
+	TLSCertificate tls.Certificate
 	// CredentialDecryptionKey is the secretbox key used to decrypt the build github credential
 	CredentialDecryptionKey [32]byte
 	Cache                   models.CacheOpts
@@ -125,10 +125,7 @@ func (gr *Server) Listen(addr string) error {
 	ops := []grpc.ServerOption{
 		grpc.ChainStreamInterceptor(sauthi, stri),
 		grpc.ChainUnaryInterceptor(uauthi, tri),
-	}
-
-	if gr.Opts.TLSCertificate != nil {
-		ops = append(ops, grpc.Creds(credentials.NewServerTLSFromCert(gr.Opts.TLSCertificate)))
+		grpc.Creds(credentials.NewServerTLSFromCert(&gr.Opts.TLSCertificate)),
 	}
 
 	s := grpc.NewServer(ops...)
