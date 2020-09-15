@@ -1,9 +1,9 @@
-// +build linux darwin freebsd netbsd openbsd
-
 package cmd
 
 import (
+	"crypto/tls"
 	"log"
+
 	// Import pprof handlers into http.DefaultServeMux
 	_ "net/http/pprof"
 
@@ -35,11 +35,16 @@ var serverCmd = &cobra.Command{
 
 var defaultcachetype, tracesvcname string
 var defaultcachemaxmode bool
+var tlscert, tlskey string
 
 func init() {
 	serverCmd.PersistentFlags().StringVar(&serverConfig.HTTPSAddr, "https-addr", "0.0.0.0:4001", "REST HTTPS listen address")
 	serverCmd.PersistentFlags().StringVar(&serverConfig.GRPCAddr, "grpc-addr", "0.0.0.0:4000", "gRPC listen address")
 	serverCmd.PersistentFlags().StringVar(&tracesvcname, "trace-svc", "furan2", "APM trace service name (optional)")
+
+	// TLS cert
+	serverCmd.PersistentFlags().StringVar(&tlscert, "tls-cert-file", "", "Path to TLS certificate (optional, overrides secrets provider)")
+	serverCmd.PersistentFlags().StringVar(&tlskey, "tls-key-file", "", "Path to TLS key (optional, overrides secrets provider)")
 
 	// Default cache options
 	serverCmd.PersistentFlags().StringVar(&defaultcachetype, "default-cache-type", "disabled", "Default cache type (if not specified in build request): s3, inline, disabled")
@@ -82,10 +87,20 @@ func server(cmd *cobra.Command, args []string) {
 		DL:      dl,
 	}
 
+	var cert tls.Certificate
+	if tlskey != "" && tlscert != "" {
+		c, err := tls.LoadX509KeyPair(tlscert, tlskey)
+		if err != nil {
+			clierr("error loading tls cert/key: %v", err)
+		}
+		cert = c
+	}
+
 	gopts := grpc.Options{
 		TraceSvcName:            tracesvcname,
 		CredentialDecryptionKey: dbConfig.CredEncKeyArray,
 		Cache:                   cachedefaults(),
+		TLSCertificate:          cert,
 		LogFunc:                 log.Printf,
 	}
 

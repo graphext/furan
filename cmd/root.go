@@ -7,32 +7,25 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/dollarshaveclub/furan/pkg/config"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/secrets"
 )
 
 var awsConfig config.AWSConfig
 var vaultConfig config.VaultConfig
 
-var tags string
 var secretsbackend string
-
-// used by build and trigger commands
-var cliBuildRequest = furanrpc.BuildRequest{
-	Build: &furanrpc.BuildDefinition{},
-}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "furan",
-	Short: "Docker image builder",
-	Long:  `API application to build Docker images on command`,
+	Use:          "furan",
+	Short:        "Docker image builder",
+	Long:         `API application to build Docker images on command`,
+	SilenceUsage: true,
 }
 
 // Execute is the entry point for the app
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(-1)
 	}
 }

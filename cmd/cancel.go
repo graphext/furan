@@ -17,9 +17,7 @@ var cancelCmd = &cobra.Command{
 var cancelReq = &furanrpc.BuildCancelRequest{}
 
 func init() {
-	cancelCmd.PersistentFlags().StringVar(&remoteFuranHost, "remote-host", "", "Remote Furan server with gRPC port (eg: furan.me.com:4001)")
-	cancelCmd.PersistentFlags().BoolVar(&discoverFuranHost, "consul-discovery", false, "Discover Furan hosts via Consul")
-	cancelCmd.PersistentFlags().StringVar(&consulFuranSvcName, "svc-name", "furan", "Consul service name for Furan hosts")
+	cancelCmd.PersistentFlags().StringVar(&clientops.Address, "remote-host", "", "Remote Furan server with gRPC port (eg: furan.me.com:4001)")
 	cancelCmd.PersistentFlags().StringVar(&cancelReq.BuildId, "build-id", "", "Build ID")
 	RootCmd.AddCommand(cancelCmd)
 }
