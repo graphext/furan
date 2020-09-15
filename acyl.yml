@@ -13,6 +13,7 @@ application:
     - 'createRole=true'
     - 'is_dqa=true'
     - 'run_migrations=true'
+    - 'app.use_dev_cert=true'
 
 dependencies:
   direct:
@@ -29,6 +30,7 @@ dependencies:
       chart_repo_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault'
       chart_repo_vars_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault/values.yaml'
       value_overrides:
+        - 'image.pullPolicy=Always'
         - 'secrets.github/token=asdf'
         - 'secrets.quay/token=asdf'
         - 'secrets.aws/access_key_id=asdf'

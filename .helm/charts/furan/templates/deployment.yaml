@@ -65,6 +65,12 @@ spec:
             - 'server'
             - '--grpc-addr'
             - '0.0.0.0:{{ .Values.service.internalPort }}'
+            {{ if .Values.app.use_dev_cert -}}
+            - "--tls-cert-file"
+            - "/opt/tlscert/tls.crt"
+            - "--tls-key-file"
+            - "/opt/tlscert/tls.key"
+            {{ end }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               protocol: TCP
@@ -78,6 +84,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+          volumeMounts:
+            {{ if .Values.app.use_dev_cert }}
+            - name: tlscert
+              mountPath: /opt/tlscert
+            {{ end }}
           livenessProbe:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             timeoutSeconds: {{  .Values.livenessProbe.timeoutSeconds }}
@@ -96,10 +107,12 @@ spec:
               port: {{ .Values.service.internalPort }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- if .Values.volumes }}
       volumes:
-{{ toYaml .Values.volumes | indent 8 }}
-    {{- end }}
+        {{ if .Values.app.use_dev_cert }}
+        - name: tlscert
+          secret:
+            secretName: tlscert
+        {{ end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
