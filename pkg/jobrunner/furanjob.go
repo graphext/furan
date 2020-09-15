@@ -41,6 +41,7 @@ var furanjob = batchv1.Job{
 				Name: "",
 			},
 			Spec: corev1.PodSpec{
+				RestartPolicy: corev1.RestartPolicyOnFailure,
 				Containers: []corev1.Container{
 					corev1.Container{
 						Name:            "furan",
@@ -95,15 +96,20 @@ func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 	j.Namespace = info.Namespace
 	j.Name = "furan-build-" + build.ID.String()
 	j.Labels = map[string]string{
-		"build-id":    build.ID.String(),
-		"source-repo": build.GitHubRepo,
-		"source-ref":  build.GitHubRef,
-		"dest-repo":   fmt.Sprintf("%v", build.ImageRepos),
-		"image-tags":  strings.Join(build.Tags, ","),
+		// a valid label must be an empty string or consist of alphanumeric characters,
+		// '-', '_' or '.', and must start and end with an alphanumeric character (e.g.
+		//'MyValue',  or 'my_value',  or '12345', regex used for validation is
+		//'(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')
+		// every value that may not be a valid label must be an annotation
+		"build-id": build.ID.String(),
 	}
 	reqj, _ := json.Marshal(build.Request) // ignore error
 	j.Annotations = map[string]string{
 		"build-request": string(reqj), // if reqj == nil, this will be an empty string
+		"source-repo":   build.GitHubRepo,
+		"source-ref":    build.GitHubRef,
+		"dest-repo":     fmt.Sprintf("%v", build.ImageRepos),
+		"image-tags":    strings.Join(build.Tags, ","),
 	}
 	j.Spec.Template.Spec.Containers[0].Image = info.Image
 	j.Spec.Template.Spec.Containers[0].Args = append(
