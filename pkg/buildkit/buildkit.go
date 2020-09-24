@@ -3,8 +3,10 @@ package buildkit
 import (
 	"context"
 	"io/ioutil"
+	"net"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/session"
@@ -29,6 +31,7 @@ type BuildSolver struct {
 	dl               datalayer.DataLayer
 	s3cf             models.CacheFetcher
 	bc               client
+	addr             string
 	AuthProviderFunc func() []session.Attachable
 	LogF             LogFunc
 }
@@ -53,6 +56,7 @@ func NewBuildSolver(addr string, s3cf models.CacheFetcher, dl datalayer.DataLaye
 		dl:   dl,
 		s3cf: s3cf,
 		bc:   bc,
+		addr: addr,
 	}, nil
 }
 
@@ -187,6 +191,30 @@ func (bks *BuildSolver) genSolveOpt(b models.Build, opts models.BuildOpts) (bkcl
 	return sopts, nil
 }
 
+var (
+	SocketConnectTimeout    = 2 * time.Minute
+	SocketConnectRetryDelay = 5 * time.Second
+)
+
+// verifyAddr ensures that the buildkit socket is connectable, returning an error if timeout is reached and
+// the socket is still unavailable
+func (bks *BuildSolver) verifyAddr() error {
+	deadline := time.Now().UTC().Add(SocketConnectTimeout)
+	for {
+		now := time.Now().UTC()
+		if now.Equal(deadline) || now.After(deadline) {
+			return fmt.Errorf("timeout waiting for buildkit socket (%v)", SocketConnectTimeout)
+		}
+		conn, err := net.Dial("unix", strings.TrimPrefix(bks.addr, "unix://"))
+		if err != nil {
+			time.Sleep(SocketConnectRetryDelay)
+			continue
+		}
+		conn.Close()
+		return nil
+	}
+}
+
 // Build performs the build defined by opts
 func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error {
 	b, err := bks.dl.GetBuildByID(ctx, opts.BuildID)
@@ -205,7 +233,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	defer cleanup()
 
 	c := make(chan *bkclient.SolveStatus)
-	defer close(c)
+
 	ctx2, cf := context.WithCancel(ctx)
 	defer cf()
 
@@ -241,6 +269,11 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 			}
 		}
 	}()
+
+	// make sure the buildkit socket is available
+	if err := bks.verifyAddr(); err != nil {
+		return fmt.Errorf("error verifying that buildkit is available: %w", err)
+	}
 
 	resp, err := bks.bc.Solve(ctx2, nil, sopts, c)
 	if err != nil {

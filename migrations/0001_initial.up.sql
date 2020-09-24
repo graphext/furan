@@ -12,6 +12,7 @@ CREATE TABLE builds (
   tags text[],
   commit_sha_tag boolean,
   disable_build_cache boolean,
+  build_options jsonb, -- misc build options from the request
   request jsonb,  -- serialized protobuf BuildRequest
   status integer,
   events text[]  -- ordered array of build event strings

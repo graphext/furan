@@ -21,9 +21,11 @@ import (
 )
 
 // ImageInfo models information about /this/ currently running Furan pod/container
+// These are the values that are injected into build jobs
 type ImageInfo struct {
 	Namespace, PodName, Image string
 	ImagePullSecrets          []string
+	RootArgs                  []string // All args prior to the "server" command (secrets setup, etc)
 }
 
 // JobFactoryFunc is a function that generates a new image build Job given an ImageInfo
@@ -98,14 +100,30 @@ func (kr K8sJobRunner) image() (ImageInfo, error) {
 		out.ImagePullSecrets = append(out.ImagePullSecrets, ips.Name)
 	}
 
-	for _, c := range pod.Spec.Containers {
+	var furancidx int
+	for i, c := range pod.Spec.Containers {
 		if c.Name == "furan" {
 			out.Image = c.Image
-			return out, nil
+			furancidx = i
 		}
 	}
+	if out.Image == "" {
+		return out, fmt.Errorf("furan container not found in pod")
+	}
 
-	return out, fmt.Errorf("furan container not found in pod")
+	// "RootArgs" are all arguments prior to the "server" command
+	out.RootArgs = []string{}
+	for _, arg := range pod.Spec.Containers[furancidx].Args {
+		if arg == "server" {
+			break
+		}
+		out.RootArgs = append(out.RootArgs, arg)
+	}
+	if fargs := pod.Spec.Containers[furancidx].Args; len(out.RootArgs) == len(fargs) {
+		return out, fmt.Errorf("server command not found in furan args: %+v", fargs)
+	}
+
+	return out, nil
 }
 
 // Run starts a new Furan build job and returns immediately
@@ -118,12 +136,14 @@ func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating job: %w", err)
 	}
+	kr.dl.AddEvent(context.Background(), build.ID, "job created: "+jo.Name)
 	w, err := kr.client.BatchV1().Jobs(kr.imageInfo.Namespace).Watch(context.Background(), metav1.ListOptions{
 		FieldSelector: fmt.Sprintf("metadata.name=%s,metadata.namespace=%s", jo.Name, jo.Namespace),
 	})
 	jw := &JobWatcher{
 		c:            kr.client,
 		dl:           kr.dl,
+		buildID:      build.ID,
 		JobName:      jo.Name,
 		JobNamespace: jo.Namespace,
 		matchLabels:  jo.Spec.Selector.MatchLabels,
@@ -165,6 +185,7 @@ func (jw *JobWatcher) start() {
 	if jw.timeout == 0 {
 		jw.timeout = DefaultJobWatcherTimeout
 	}
+	brunerr := make(chan error, 1)
 	running := make(chan struct{})
 	ctx, cf := context.WithTimeout(context.Background(), jw.timeout)
 	defer cf()
@@ -179,71 +200,81 @@ func (jw *JobWatcher) start() {
 				return
 			default:
 			}
-			jw.e <- fmt.Errorf("error listening for build running: %w", err)
+			brunerr <- fmt.Errorf("error listening for build running: %w", err)
+			return
 		}
+		jw.dl.AddEvent(ctx, jw.buildID, "job running, handoff successful")
+	}()
+	// cleanup
+	defer func() {
+		jw.w.Stop()
+		close(jw.e)
+		close(jw.r)
 	}()
 	ticker := time.NewTicker(jw.timeout)
 	defer ticker.Stop()
 	for {
 		select {
-		case <-jw.stop:
+		case <-jw.stop: // stop signalled
 			return
-		case <-ticker.C:
+		case <-ticker.C: // timeout
 			jw.e <- fmt.Errorf("timeout reached: %v", jw.timeout)
 			return
-		case <-running:
+		case <-running: // job running (handoff completed)
 			jw.r <- struct{}{}
 			return
-		case e := <-jw.w.ResultChan():
-			jw.processEvent(e)
+		case err := <-brunerr: // listen for handoff error
+			jw.e <- err
+			return
+		case e := <-jw.w.ResultChan(): // job modification events
+			if jw.processEvent(e) {
+				return
+			}
 		}
 	}
 }
 
-func (jw *JobWatcher) processEvent(e watch.Event) {
+// processEvent processes a watch event and returns whether the job watcher should be stopped
+func (jw *JobWatcher) processEvent(e watch.Event) bool {
 	if e.Object == nil {
-		return
+		return false
 	}
 	switch e.Type {
 	case watch.Deleted:
 		jw.e <- fmt.Errorf("job was deleted")
+		return true
 	case watch.Error:
 		jw.e <- fmt.Errorf("error: %v", e.Object)
+		return true
 	case watch.Modified:
 		j, ok := e.Object.(*batchv1.Job)
 		if !ok {
 			jw.e <- fmt.Errorf("watch modified event object is not a job: %T", e.Object)
-			return
+			return true
 		}
+		jw.dl.AddEvent(context.Background(), jw.buildID, fmt.Sprintf("job event received: %v; status: %+v", e.Type, j.Status))
 		if j.Status.Succeeded > 0 {
-			// we shouldn't still be running if the Job has finished so just return and ignore
-			return
+			jw.dl.AddEvent(context.Background(), jw.buildID, "job marked as succeeded/finished unexpectedly, ending watch")
+			jw.r <- struct{}{}
+			return true
 		}
-		backoff := int32(6) // default Job BackoffLimit
-		if j.Spec.BackoffLimit != nil {
-			backoff = *j.Spec.BackoffLimit
-		}
-		if j.Status.Failed >= backoff {
-			jw.e <- fmt.Errorf("%v failed pods", j.Status.Failed)
+		if len(j.Status.Conditions) > 0 {
+			lc := j.Status.Conditions[len(j.Status.Conditions)-1]
+			if lc.Type == batchv1.JobFailed && lc.Reason == "BackoffLimitExceeded" {
+				var bo int32
+				if j.Spec.BackoffLimit != nil {
+					bo = *j.Spec.BackoffLimit
+				}
+				jw.e <- fmt.Errorf("job backoff limit exceeded (%v), giving up", bo)
+				return true
+			}
 		}
 	}
+	return false
 }
 
 func (jw *JobWatcher) watchJobPod() {
 
-}
-
-func (jw *JobWatcher) Close() {
-	jw.w.Stop()
-	if jw.e != nil {
-		close(jw.e)
-	}
-	if jw.r != nil {
-		close(jw.r)
-	}
-	if jw.stop != nil {
-		close(jw.stop)
-	}
 }
 
 func (jw *JobWatcher) Error() chan error {

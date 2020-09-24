@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jinzhu/copier"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,6 +18,11 @@ var (
 	jobCompletions           = int32(1)
 	jobBackoffLimit          = int32(3)
 	jobActiveDeadlineSeconds = int64(60 * 60) // 1 hour
+)
+
+const (
+	bkSocketMountPath = "/run/buildkit"
+	bkSocketName      = "buildkitd.sock"
 )
 
 // furanjob models a Job to execute a single image build/push
@@ -39,37 +45,48 @@ var furanjob = batchv1.Job{
 			ObjectMeta: metav1.ObjectMeta{
 				// Metadata is set below
 				Name: "",
+				Annotations: map[string]string{
+					"container.apparmor.security.beta.kubernetes.io/buildkitd": "unconfined",
+					"container.seccomp.security.alpha.kubernetes.io/buildkitd": "unconfined",
+				},
 			},
 			Spec: corev1.PodSpec{
 				RestartPolicy: corev1.RestartPolicyOnFailure,
 				Containers: []corev1.Container{
 					corev1.Container{
 						Name:            "furan",
-						Image:           "",
+						Image:           "", // injected below with the image tag set on the server pod creating the job
 						ImagePullPolicy: "IfNotPresent",
+						Command: []string{
+							"/usr/local/bin/furan",
+						},
 						Args: []string{
+							// all root flags are injected here (secrets setup, etc)
 							"runbuild",
-							// "--build-id <id>" is injected below
+							"--buildkit-addr",
+							"unix://" + bkSocketMountPath + "/" + bkSocketName,
+							// "--build-id <id>" is injected here
 						},
 						VolumeMounts: []corev1.VolumeMount{
 							corev1.VolumeMount{
 								Name:      "bksocket",
-								MountPath: "/run/buildkit",
+								MountPath: bkSocketMountPath,
 							},
 						},
 					},
 					corev1.Container{
 						Name:            "buildkitd",
-						Image:           "moby/buildkit:v0.7.1",
+						Image:           "moby/buildkit:v0.7.2-rootless",
 						ImagePullPolicy: "IfNotPresent",
 						Args: []string{
+							"--oci-worker-no-process-sandbox",
 							"--addr",
-							"unix:///run/buildkit/buildkitd.sock",
+							"unix://" + bkSocketMountPath + "/" + bkSocketName,
 						},
 						VolumeMounts: []corev1.VolumeMount{
 							corev1.VolumeMount{
 								Name:      "bksocket",
-								MountPath: "/run/buildkit",
+								MountPath: bkSocketMountPath,
 							},
 						},
 					},
@@ -90,11 +107,22 @@ var furanjob = batchv1.Job{
 	},
 }
 
+// truncateName returns the first n runes of s if the length exceeds N
+func truncateName(s string, n uint) string {
+	if r := []rune(s); len(r) > int(n) {
+		return string(r[0 : n-1])
+	}
+	return s
+}
+
 // FuranJobFunc is a JobFactoryFunc that generates a Kubernetes Job to execute a build
 func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
-	j := furanjob
+	var j batchv1.Job
+	if err := copier.Copy(&j, &furanjob); err != nil {
+		panic(fmt.Errorf("error deep copying struct: %w", err))
+	}
 	j.Namespace = info.Namespace
-	j.Name = "furan-build-" + build.ID.String()
+	j.Name = truncateName("furan-build-"+strings.Replace(build.GitHubRepo, "/", "-", -1)+"-"+build.ID.String(), 63)
 	j.Labels = map[string]string{
 		// a valid label must be an empty string or consist of alphanumeric characters,
 		// '-', '_' or '.', and must start and end with an alphanumeric character (e.g.
@@ -116,6 +144,10 @@ func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 		j.Spec.Template.Spec.Containers[0].Args,
 		"--build-id",
 		build.ID.String())
+	j.Spec.Template.Spec.Containers[0].Args = append(
+		info.RootArgs,
+		j.Spec.Template.Spec.Containers[0].Args...,
+	)
 	for _, ips := range info.ImagePullSecrets {
 		j.Spec.Template.Spec.ImagePullSecrets = append(
 			j.Spec.Template.Spec.ImagePullSecrets,

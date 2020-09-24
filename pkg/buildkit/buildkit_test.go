@@ -3,6 +3,9 @@ package buildkit
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"net"
+	"os"
 	"testing"
 	"time"
 
@@ -85,6 +88,7 @@ type testBuildKitClient struct {
 }
 
 func (tbk *testBuildKitClient) Solve(ctx context.Context, def *llb.Definition, opt bkclient.SolveOpt, statusChan chan *bkclient.SolveStatus) (*bkclient.SolveResponse, error) {
+	defer close(statusChan)
 	for i := uint(0); i < tbk.StatusMessageCount; i++ {
 		time.Sleep(tbk.MessageInterval)
 		select {
@@ -120,6 +124,7 @@ func TestBuildSolver_Build(t *testing.T) {
 		fields     fields
 		build      models.Build
 		args       args
+		connecterr bool
 		wantEvents uint
 		wantErr    bool
 		cancel     bool
@@ -175,12 +180,74 @@ func TestBuildSolver_Build(t *testing.T) {
 			cancel:  true,
 			wantErr: true,
 		},
+		{
+			name: "connect error",
+			fields: fields{
+				dl: &datalayer.FakeDataLayer{},
+				bc: &testBuildKitClient{
+					StatusMessageCount: 3,
+				},
+			},
+			build: models.Build{
+				GitHubRepo:   "foo/bar",
+				GitHubRef:    "master",
+				ImageRepos:   []string{"acme/foo"},
+				Tags:         []string{"master", "v1.0.0"},
+				CommitSHATag: true,
+			},
+			args: args{
+				opts: models.BuildOpts{
+					ContextPath:            "/tmp/foo",
+					CommitSHA:              "asdf",
+					RelativeDockerfilePath: ".",
+				},
+			},
+			connecterr: true,
+			wantErr:    true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			oldtimeout := SocketConnectTimeout
+			SocketConnectTimeout = 100 * time.Millisecond
+			oldretry := SocketConnectRetryDelay
+			SocketConnectRetryDelay = 100 * time.Millisecond
+			defer func() { SocketConnectTimeout = oldtimeout; SocketConnectRetryDelay = oldretry }()
+			var addr string
+			listening := make(chan struct{})
+			if tt.connecterr {
+				addr = "unix:///invalid/path"
+				close(listening)
+			} else {
+				go func() {
+					tf, err := ioutil.TempFile("", "furan-test-socket-*")
+					if err != nil {
+						t.Errorf("error creating temp file: %v", err)
+						return
+					}
+					tf.Close()
+					os.Remove(tf.Name())
+					addr = "unix://" + tf.Name()
+					l, err := net.Listen("unix", tf.Name())
+					if err != nil {
+						t.Errorf("error listening on socket: %v", err)
+						return
+					}
+					defer l.Close()
+					close(listening)
+					conn, err := l.Accept()
+					if err != nil {
+						t.Errorf("error accepting connection: %v", err)
+						return
+					}
+					conn.Close()
+				}()
+			}
+			<-listening
 			bks := &BuildSolver{
 				dl:   tt.fields.dl,
 				bc:   tt.fields.bc,
+				addr: addr,
 				LogF: tt.fields.LogF,
 			}
 			ctx, cf := context.WithCancel(context.Background())
@@ -197,9 +264,13 @@ func TestBuildSolver_Build(t *testing.T) {
 					tt.fields.dl.CancelBuild(ctx, id)
 				}()
 			}
+			if err := tt.fields.dl.SetBuildAsRunning(ctx, id); err != nil {
+				t.Errorf("error setting build as running: %v", err)
+			}
 			if err := bks.Build(ctx, tt.args.opts); (err != nil) != tt.wantErr {
 				t.Errorf("Build() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			time.Sleep(50 * time.Millisecond) // make sure that all events get recorded
 			b, err := tt.fields.dl.GetBuildByID(ctx, tt.build.ID)
 			if err != nil {
 				t.Fatalf("error getting build: %v", err)

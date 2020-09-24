@@ -222,8 +222,8 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	for i := range req.GetPush().GetRegistries() {
 		irepos[i] = req.GetPush().GetRegistries()[i].Repo
 	}
-	reqc := *req
-	reqc.GetBuild().GithubCredential = ""
+	cred := req.Build.GithubCredential
+	req.Build.GithubCredential = ""
 	b := models.Build{
 		GitHubRepo:        req.GetBuild().GithubRepo,
 		GitHubRef:         req.GetBuild().Ref,
@@ -231,20 +231,19 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		Tags:              req.GetBuild().GetTags(),
 		CommitSHATag:      req.GetBuild().TagWithCommitSha,
 		DisableBuildCache: req.GetBuild().DisableBuildCache,
-		Request:           reqc,
+		Request:           *req,
 		Status:            models.BuildStatusNotStarted,
 	}
 
-	if err := b.EncryptAndSetGitHubCredential([]byte(req.GetBuild().GithubCredential), gr.Opts.CredentialDecryptionKey); err != nil {
+	if cred == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "github credential is missing")
+	}
+
+	if err := b.EncryptAndSetGitHubCredential([]byte(cred), gr.Opts.CredentialDecryptionKey); err != nil {
 		return nil, status.Errorf(codes.Internal, "error encrypting credential: %v", err)
 	}
 
-	id, err := gr.DL.CreateBuild(ctx, b)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "error creating build in db: %v", err)
-	}
-
-	dockerfile := "Dockerfile" // default relative Dockerfile path
+	dockerfile := "." // default relative Dockerfile path
 	if req.GetBuild().DockerfilePath != "" {
 		dockerfile = req.GetBuild().DockerfilePath
 	}
@@ -258,11 +257,19 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	}
 
 	opts := models.BuildOpts{
-		BuildID:                id,
 		RelativeDockerfilePath: dockerfile,
 		BuildArgs:              req.GetBuild().GetArgs(),
 		Cache:                  copts,
 	}
+
+	b.BuildOptions = opts
+
+	id, err := gr.DL.CreateBuild(ctx, b)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error creating build in db: %v", err)
+	}
+
+	opts.BuildID = id
 
 	// once everything is validated and we are ready to start job,
 	// do the job creation and handoff asynchronously and return id to client
@@ -273,18 +280,11 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		}
 		ctx2, cf := context.WithTimeout(context.Background(), jht)
 		defer cf()
+		created := time.Now().UTC()
 		gr.buildevent(id, "creating build job")
 		if err := gr.BM.Start(ctx2, opts); err != nil {
+			gr.logf("error starting build job: %v", err)
 			gr.buildevent(id, "error starting build job: %v", err)
-			// new context because the error could be caused by context cancellation
-			if err2 := gr.DL.SetBuildAsCompleted(context.Background(), id, models.BuildStatusFailure); err2 != nil {
-				gr.logf("error setting build as failed: %v: %v", id, err2)
-			}
-			return
-		}
-		gr.buildevent(id, "build k8s job running, waiting for handoff")
-		if err := gr.DL.ListenForBuildRunning(ctx2, id); err != nil {
-			gr.buildevent(id, "error waiting for handoff: %v", err)
 			// new context because the error could be caused by context cancellation
 			if err2 := gr.DL.SetBuildAsCompleted(context.Background(), id, models.BuildStatusFailure); err2 != nil {
 				gr.logf("error setting build as failed: %v: %v", id, err2)
@@ -295,7 +295,7 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		// the build to Running.
 		// The Furan container in the k8s job is now responsible for updating this build.
 		// Therefore, this goroutine can now exit
-		gr.buildevent(id, "successful build handoff")
+		gr.buildevent(id, "build is running (handoff took %v)", time.Now().UTC().Sub(created))
 	}()
 
 	return &furanrpc.BuildRequestResponse{
@@ -337,7 +337,7 @@ func (gr *Server) GetBuildStatus(ctx context.Context, req *furanrpc.BuildStatusR
 }
 
 // MonitorBuild streams events from a specified build until completion
-func (gr *Server) MonitorBuild(req *furanrpc.BuildStatusRequest, stream furanrpc.FuranExecutor_MonitorBuildServer) (err error) {
+func (gr *Server) MonitorBuild(req *furanrpc.BuildStatusRequest, stream furanrpc.FuranExecutor_MonitorBuildServer) error {
 	id, err := uuid.FromString(req.BuildId)
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "invalid build id: %v", err)
@@ -349,21 +349,23 @@ func (gr *Server) MonitorBuild(req *furanrpc.BuildStatusRequest, stream furanrpc
 		}
 		return status.Errorf(codes.Internal, "error getting build: %v", err)
 	}
-	// if build is completed, return the last event with status and close connection
-	if b.Status.TerminalState() {
-		var event string
-		if len(b.Events) > 0 {
-			event = b.Events[len(b.Events)-1]
-		}
+
+	// send any existing events on the stream
+	for _, ev := range b.Events {
 		if err := stream.Send(&furanrpc.BuildEvent{
 			BuildId:      b.ID.String(),
-			Message:      event,
-			CurrentState: b.Status.State(),
+			Message:      ev,
+			CurrentState: b.Status.State(), // TODO: we should capture the current state at the time of the event in the database events column
 		}); err != nil {
-			gr.logf("error sending build event on RPC stream: %v", err)
+			return status.Errorf(codes.Internal, "error sending build event on RPC stream: %v", err)
 		}
+	}
+
+	// if build is completed, close the stream
+	if b.Status.TerminalState() {
 		return nil
 	}
+
 	events := make(chan string)
 	defer close(events)
 	ctx, cf := context.WithCancel(stream.Context())
@@ -374,6 +376,11 @@ func (gr *Server) MonitorBuild(req *furanrpc.BuildStatusRequest, stream furanrpc
 	go func() {
 		err := gr.DL.ListenForBuildEvents(ctx, b.ID, events)
 		if err != nil {
+			select {
+			case <-ctx.Done():
+				return // if context is cancelled, don't log error
+			default:
+			}
 			gr.logf("error listening for build events: %v", err)
 		}
 	}()
@@ -384,6 +391,11 @@ func (gr *Server) MonitorBuild(req *furanrpc.BuildStatusRequest, stream furanrpc
 		for event := range events {
 			b, err := gr.DL.GetBuildByID(ctx, b.ID)
 			if err != nil {
+				select {
+				case <-ctx.Done():
+					return // if context is cancelled, don't log error
+				default:
+				}
 				gr.logf("error getting build: %v", err)
 				return
 			}

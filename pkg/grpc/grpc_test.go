@@ -33,22 +33,24 @@ func TestServer_StartBuild(t *testing.T) {
 		Cache:        models.CacheOpts{},
 		LogFunc:      nil,
 	}}
-	req := &furanrpc.BuildRequest{
-		Build: &furanrpc.BuildDefinition{
-			GithubRepo:       "acme/foo",
-			GithubCredential: "asdf1234",
-			Ref:              "master",
-			Tags:             []string{"master", "v1.0"},
-			TagWithCommitSha: true,
-		},
-		Push: &furanrpc.PushDefinition{
-			Registries: []*furanrpc.PushRegistryDefinition{
-				&furanrpc.PushRegistryDefinition{
-					Repo: "quay.io/acme/foo",
+	reqf := func() *furanrpc.BuildRequest {
+		return &furanrpc.BuildRequest{
+			Build: &furanrpc.BuildDefinition{
+				GithubRepo:       "acme/foo",
+				GithubCredential: "asdf1234",
+				Ref:              "master",
+				Tags:             []string{"master", "v1.0"},
+				TagWithCommitSha: true,
+			},
+			Push: &furanrpc.PushDefinition{
+				Registries: []*furanrpc.PushRegistryDefinition{
+					&furanrpc.PushRegistryDefinition{
+						Repo: "quay.io/acme/foo",
+					},
 				},
 			},
-		},
-		SkipIfExists: true,
+			SkipIfExists: true,
+		}
 	}
 	tests := []struct {
 		name      string
@@ -63,7 +65,7 @@ func TestServer_StartBuild(t *testing.T) {
 			name:   "success",
 			fields: flds,
 			args: args{
-				req: req,
+				req: reqf(),
 			},
 			rundelay: 10 * time.Millisecond,
 		},
@@ -71,22 +73,10 @@ func TestServer_StartBuild(t *testing.T) {
 			name:   "build start error",
 			fields: flds,
 			args: args{
-				req: req,
+				req: reqf(),
 			},
 			rundelay: 10 * time.Millisecond,
 			builderr: fmt.Errorf("error starting build"),
-		},
-		{
-			name: "job handoff timeout",
-			fields: fields{
-				Opts: Options{
-					JobHandoffTimeout: 10 * time.Millisecond,
-				},
-			},
-			args: args{
-				req: req,
-			},
-			rundelay: 100 * time.Second,
 		},
 		{
 			name:   "invalid req: empty github repo",
@@ -192,7 +182,7 @@ func TestServer_StartBuild(t *testing.T) {
 			dl := &datalayer.FakeDataLayer{}
 			bm := &builder.FakeBuildManager{
 				StartFunc: func(ctx context.Context, opts models.BuildOpts) error {
-					df := "Dockerfile"
+					df := "."
 					if tt.args.req.Build.DockerfilePath != "" {
 						df = tt.args.req.Build.DockerfilePath
 					}
@@ -215,6 +205,7 @@ func TestServer_StartBuild(t *testing.T) {
 							}
 						}()
 					}
+					time.Sleep(tt.rundelay) // give time for listener
 					return tt.builderr
 				}}
 			key := make([]byte, 32)
@@ -242,6 +233,7 @@ func TestServer_StartBuild(t *testing.T) {
 				},
 				Opts: tt.fields.Opts,
 			}
+			cred := tt.args.req.Build.GithubCredential // StartBuild will clear out the request credential
 			got, err := gr.StartBuild(ctx, tt.args.req)
 			if err != nil {
 				if !tt.wantErr {
@@ -262,8 +254,8 @@ func TestServer_StartBuild(t *testing.T) {
 			if err != nil {
 				t.Errorf("error decrypting credential: %v", err)
 			}
-			if tkn != tt.args.req.Build.GithubCredential {
-				t.Errorf("bad credential: %v (wanted %v)", tkn, tt.args.req.Build.GithubCredential)
+			if tkn != cred {
+				t.Errorf("bad credential: %v (wanted %v)", tkn, cred)
 			}
 			if i := len(b.ImageRepos); i != len(tt.args.req.Push.Registries) {
 				t.Errorf("bad number of image repos: %v (wanted %v)", len(tt.args.req.Push.Registries), i)
@@ -277,17 +269,17 @@ func TestServer_StartBuild(t *testing.T) {
 			if b.DisableBuildCache != tt.args.req.Build.DisableBuildCache {
 				t.Errorf("bad DisableBuildCache: %v (wanted %v)", b.DisableBuildCache, tt.args.req.Build.DisableBuildCache)
 			}
-			ctx, cf := context.WithTimeout(ctx, 2*tt.rundelay)
+			ctx, cf := context.WithTimeout(ctx, 4*tt.rundelay)
 			defer cf()
 
-			if tt.builderr == nil && tt.fields.Opts.JobHandoffTimeout == 0 {
+			if tt.builderr == nil {
 				if err := dl.ListenForBuildRunning(ctx, id); err != nil {
 					t.Errorf("error listening for build running: %v", err)
 				}
 			} else {
 				bs, err := dl.ListenForBuildCompleted(ctx, id)
 				if err != nil {
-					t.Errorf("error listening for build running: %v", err)
+					t.Errorf("error listening for build completed: %v", err)
 				}
 				// build start error, so build status should be failure
 				if bs != models.BuildStatusFailure {

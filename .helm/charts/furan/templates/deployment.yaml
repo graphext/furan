@@ -42,6 +42,8 @@ spec:
           command:
             - "/usr/local/bin/furan"
           args:
+            # all secrets-related args *must* come before the "server" command
+            # these will be copied and injected into build job definitions
             - "--secrets-backend"
             - "{{ .Values.app.secrets_backend }}"
             - "--secrets-mapping"

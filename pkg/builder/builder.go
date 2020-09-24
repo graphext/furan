@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sync"
 
-	"github.com/hashicorp/go-multierror"
+	"github.com/gofrs/uuid"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
@@ -44,7 +45,6 @@ func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
 	if err != nil {
 		return fmt.Errorf("error running build job: %w", err)
 	}
-	defer j.Close()
 
 	select {
 	case <-ctx.Done():
@@ -56,15 +56,73 @@ func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
 	}
 }
 
+type atomicBool struct {
+	sync.Mutex
+	b bool
+}
+
+func (ab *atomicBool) set(val bool) {
+	ab.Lock()
+	ab.b = val
+	ab.Unlock()
+}
+
+func (ab *atomicBool) get() bool {
+	var out bool
+	ab.Lock()
+	out = ab.b
+	ab.Unlock()
+	return out
+}
+
 // Run synchronously executes a build using BuildRunner
-func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
+func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 	if m.BRunner == nil || m.TCheck == nil || m.FetcherFactory == nil || m.DL == nil {
-		return fmt.Errorf("missing is dependencies: %#v", m)
+		return fmt.Errorf("missing dependencies: %#v", m)
 	}
-	b, err := m.DL.GetBuildByID(ctx, opts.BuildID)
+	b, err := m.DL.GetBuildByID(ctx, buildID)
 	if err != nil {
 		return fmt.Errorf("error getting build: %w", err)
 	}
+
+	if b.Status != models.BuildStatusNotStarted {
+		return fmt.Errorf("build already attempted or has unexpected status (%v), wanted NotStarted, aborting", b.Status)
+	}
+
+	opts := b.BuildOptions
+	opts.BuildID = b.ID
+
+	// This marks build handoff to this process
+	// From this point forward, this process is responsible for updating build in the DB
+	if err := m.DL.SetBuildAsRunning(ctx, b.ID); err != nil {
+		return fmt.Errorf("error setting build status to running: %w", err)
+	}
+
+	ctx2, cf := context.WithCancel(ctx)
+	defer cf()
+
+	cancelled := &atomicBool{}
+	go func() {
+		if err := m.DL.ListenForCancellation(ctx2, b.ID); err == nil {
+			cf()
+			cancelled.set(true)
+		}
+	}()
+
+	// ensure the build is always marked as completed
+	defer func() {
+		if err != nil {
+			status := models.BuildStatusFailure
+			msg := fmt.Sprintf("error running build: %v", err)
+			if cancelled.get() {
+				status = models.BuildStatusCancelled
+				msg = "build was cancelled"
+			}
+			ctx := context.Background() // existing context may be cancelled
+			m.DL.AddEvent(ctx, b.ID, msg)
+			m.DL.SetBuildAsCompleted(ctx, b.ID, status)
+		}
+	}()
 
 	tkn, err := b.GetGitHubCredential(m.GitHubTokenKey)
 	if err != nil {
@@ -73,7 +131,7 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 
 	fetcher := m.FetcherFactory(tkn)
 
-	csha, err := fetcher.GetCommitSHA(ctx, b.GitHubRepo, b.GitHubRef)
+	csha, err := fetcher.GetCommitSHA(ctx2, b.GitHubRepo, b.GitHubRef)
 	if err != nil {
 		return fmt.Errorf("error getting commit sha: %w", err)
 	}
@@ -94,7 +152,7 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		}
 		if allexist {
 			// set build as skipped
-			if err := m.DL.SetBuildAsCompleted(ctx, b.ID, models.BuildStatusSkipped); err != nil {
+			if err := m.DL.SetBuildAsCompleted(ctx2, b.ID, models.BuildStatusSkipped); err != nil {
 				return fmt.Errorf("error setting build as skipped: %w", err)
 			}
 			return nil
@@ -106,39 +164,19 @@ func (m *Manager) Run(ctx context.Context, opts models.BuildOpts) error {
 		return fmt.Errorf("error creating temp dir for build context: %w", err)
 	}
 	defer os.RemoveAll(tdir)
-	err = fetcher.Fetch(ctx, b.GitHubRepo, b.GitHubRef, tdir)
+	err = fetcher.Fetch(ctx2, b.GitHubRepo, b.GitHubRef, tdir)
 	if err != nil {
 		return fmt.Errorf("error fetching repo: %w", err)
 	}
 
 	opts.ContextPath = tdir
 
-	if err := m.DL.SetBuildAsRunning(ctx, b.ID); err != nil {
-		return fmt.Errorf("error setting build status to running: %w", err)
-	}
-
-	ctx2, cf := context.WithCancel(ctx)
-	defer cf()
-
-	go func() {
-		if err := m.DL.ListenForCancellation(ctx2, b.ID); err == nil {
-			cf()
-		}
-	}()
-
 	err = m.BRunner.Build(ctx2, opts)
-	status := models.BuildStatusSuccess
 	if err != nil {
-		status = models.BuildStatusFailure
-		select {
-		case <-ctx2.Done():
-			status = models.BuildStatusCancelled
-		default:
-			break
-		}
+		return fmt.Errorf("error executing build: %w", err)
 	}
-	if err2 := m.DL.SetBuildAsCompleted(ctx2, b.ID, status); err2 != nil {
-		err = multierror.Append(err, fmt.Errorf("error setting build as completed: %w", err2))
+	if err := m.DL.SetBuildAsCompleted(ctx2, b.ID, models.BuildStatusSuccess); err != nil {
+		return fmt.Errorf("error setting build as completed: %w", err)
 	}
-	return err
+	return nil
 }

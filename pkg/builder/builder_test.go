@@ -194,8 +194,8 @@ func TestManager_Run(t *testing.T) {
 			wantErr:    true,
 			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
 				b, _ := dl.GetBuildByID(context.Background(), id)
-				if b.Status != models.BuildStatusNotStarted {
-					return fmt.Errorf("bad status: %v (wanted NotStarted)", b.Status)
+				if b.Status != models.BuildStatusFailure {
+					return fmt.Errorf("bad status: %v (wanted BuildStatusFailure)", b.Status)
 				}
 				return nil
 			},
@@ -206,8 +206,8 @@ func TestManager_Run(t *testing.T) {
 			wantErr:      true,
 			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
 				b, _ := dl.GetBuildByID(context.Background(), id)
-				if b.Status != models.BuildStatusNotStarted {
-					return fmt.Errorf("bad status: %v (wanted NotStarted)", b.Status)
+				if b.Status != models.BuildStatusFailure {
+					return fmt.Errorf("bad status: %v (wanted BuildStatusFailure)", b.Status)
 				}
 				return nil
 			},
@@ -222,8 +222,8 @@ func TestManager_Run(t *testing.T) {
 			wantErr:  true,
 			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
 				b, _ := dl.GetBuildByID(context.Background(), id)
-				if b.Status != models.BuildStatusNotStarted {
-					return fmt.Errorf("bad status: %v (wanted NotStarted)", b.Status)
+				if b.Status != models.BuildStatusFailure {
+					return fmt.Errorf("bad status: %v (wanted BuildStatusFailure)", b.Status)
 				}
 				return nil
 			},
@@ -253,8 +253,8 @@ func TestManager_Run(t *testing.T) {
 			wantErr: true,
 			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
 				b, _ := dl.GetBuildByID(context.Background(), id)
-				if b.Status != models.BuildStatusNotStarted {
-					return fmt.Errorf("bad status: %v (wanted NotStarted)", b.Status)
+				if b.Status != models.BuildStatusFailure {
+					return fmt.Errorf("bad status: %v (wanted BuildStatusFailure)", b.Status)
 				}
 				return nil
 			},
@@ -396,7 +396,7 @@ func TestManager_Run(t *testing.T) {
 				}()
 			}
 
-			if err := m.Run(ctx, models.BuildOpts{BuildID: id}); (err != nil) != tt.wantErr {
+			if err := m.Run(ctx, id); (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 

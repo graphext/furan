@@ -81,6 +81,7 @@ type Build struct {
 	Tags                        []string
 	CommitSHATag                bool
 	DisableBuildCache           bool
+	BuildOptions                BuildOpts
 	Request                     furanrpc.BuildRequest
 	Status                      BuildStatus
 	Events                      []string
@@ -98,6 +99,10 @@ func (b Build) EventListenable() bool {
 
 func (b Build) Running() bool {
 	return b.Status == BuildStatusRunning
+}
+
+func TimeFromRPCTimestamp(ts furanrpc.Timestamp) time.Time {
+	return time.Unix(ts.Seconds, int64(ts.Nanos))
 }
 
 // EncryptAndSetGitHubCredential takes a GitHub credential, encrypts it and sets EncryptedGitHubCredential accordingly
@@ -118,6 +123,9 @@ func (b Build) GetGitHubCredential(key [32]byte) (string, error) {
 	if !ok {
 		return "", errors.New("decryption error (incorrect key?)")
 	}
+	if tkn == nil {
+		return "", errors.New("decrypted token was nil")
+	}
 	return string(tkn), nil
 }
 
@@ -133,8 +141,8 @@ const (
 )
 
 type CacheOpts struct {
-	Type    BuildCacheType
-	MaxMode bool
+	Type    BuildCacheType `json:"build_cache_type"`
+	MaxMode bool           `json:"max_mode"`
 }
 
 func (co *CacheOpts) ZeroValueDefaults() {
@@ -145,17 +153,15 @@ func (co *CacheOpts) ZeroValueDefaults() {
 
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
-	BuildID                uuid.UUID
-	ContextPath, CommitSHA string // set by Builder
-	RelativeDockerfilePath string
-	BuildArgs              map[string]string
-	Cache                  CacheOpts
+	BuildID                uuid.UUID         `json:"-"`
+	ContextPath, CommitSHA string            `json:"-"` // set by Builder
+	RelativeDockerfilePath string            `json:"relative_dockerfile_path"`
+	BuildArgs              map[string]string `json:"build_args"`
+	Cache                  CacheOpts         `json:"cache_opts"`
 }
 
 // Job describes methods on a single abstract build job
 type Job interface {
-	// Close cleans up any resources associated with this Job
-	Close()
 	// Error returns a channel that will contain any errors associated with this Job
 	Error() chan error
 	// Running returns a channel that signals that the build the Job is executing has been updated to status Running
@@ -194,7 +200,7 @@ type Builder interface {
 // BuilderManager describes an object that manages builds
 type BuildManager interface {
 	Start(ctx context.Context, opts BuildOpts) error
-	Run(ctx context.Context, opts BuildOpts) error
+	Run(ctx context.Context, id uuid.UUID) error
 }
 
 type TagChecker interface {

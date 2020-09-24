@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -287,13 +288,19 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	if err := dl.ListenForCancellation(context.Background(), id); err == nil {
 		t.Fatalf("listen should have returned error for bad build status")
 	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusCancelRequested); err != nil {
+		t.Fatalf("error setting build status to cancelled: %v", err)
+	}
+	if err := dl.ListenForCancellation(context.Background(), id); err != nil {
+		t.Fatalf("listen should have returned immediately since status is cancel requested")
+	}
 	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
-		t.Fatalf("error setting build status: %v", err)
+		t.Fatalf("error setting build status to running: %v", err)
 	}
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
-	c := make(chan struct{})
 
+	c := make(chan struct{})      // chan signals that ListenForCancellation returned
 	listen := make(chan struct{}) // chan used to signal that we're listening
 
 	go func() {
@@ -304,9 +311,12 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 
 	cxl := make(chan struct{}) // chan used to signal cancellation
 
+	cancelled := make(chan struct{}) // chan signals that cancellation is completed
 	go func() {
+		defer close(cancelled)
 		<-cxl
 		if err := dl.CancelBuild(ctx, id); err != nil {
+			fmt.Println(err.Error())
 			t.Errorf("error cancelling build: %v", err)
 		}
 	}()
@@ -325,6 +335,8 @@ func testDBCancelBuildAndListenForCancellation(t *testing.T, dl datalayer.DataLa
 	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
+	<-cancelled
+
 	// build should be cancelled now
 	select {
 	case <-c:
@@ -339,10 +351,26 @@ func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.
 	if err != nil {
 		t.Fatalf("error creating build: %v", err)
 	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusSuccess); err != nil {
+		t.Fatalf("error setting build status to success: %v", err)
+	}
+	if err := dl.ListenForBuildRunning(context.Background(), id); err == nil {
+		t.Fatalf("listen should have returned error for bad build status")
+	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
+		t.Fatalf("error setting build status to running: %v", err)
+	}
+	if err := dl.ListenForBuildRunning(context.Background(), id); err != nil {
+		t.Fatalf("listen should have returned immediately since status is running")
+	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusNotStarted); err != nil {
+		t.Fatalf("error setting build status to not started: %v", err)
+	}
+
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
-	c := make(chan struct{})
 
+	c := make(chan struct{})      // chan signals that ListenForBuildRunning returned
 	listen := make(chan struct{}) // chan used to signal that we're listening
 
 	go func() {
@@ -351,9 +379,11 @@ func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.
 		close(c)
 	}()
 
-	run := make(chan struct{}) // chan used to signal cancellation
+	run := make(chan struct{}) // chan used to signal running
 
+	running := make(chan struct{}) // chan signals that build was set as running
 	go func() {
+		defer close(running)
 		<-run
 		if err := dl.SetBuildAsRunning(ctx, id); err != nil {
 			t.Errorf("error setting build as running: %v", err)
@@ -374,6 +404,8 @@ func testDBSetBuildAsRunningAndListenForBuildRunning(t *testing.T, dl datalayer.
 	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
+	<-running
+
 	// build should be running now
 	select {
 	case <-c:
@@ -389,15 +421,27 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 		t.Fatalf("error creating build: %v", err)
 	}
 
-	if err := dl.SetBuildAsRunning(context.Background(), id); err != nil {
-		t.Fatalf("error setting build as running: %v", err)
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusUnknown); err != nil {
+		t.Fatalf("error setting build status to unknown: %v", err)
+	}
+	if _, err := dl.ListenForBuildCompleted(context.Background(), id); err == nil {
+		t.Fatalf("listen should have returned error for unknown build status")
+	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusSuccess); err != nil {
+		t.Fatalf("error setting build status to success: %v", err)
+	}
+	if _, err := dl.ListenForBuildCompleted(context.Background(), id); err != nil {
+		t.Fatalf("listen should have returned immediately since status is success")
+	}
+	if err := dl.SetBuildStatus(context.Background(), id, models.BuildStatusRunning); err != nil {
+		t.Fatalf("error setting build status to running: %v", err)
 	}
 
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
-	c := make(chan models.BuildStatus)
-	defer close(c)
 
+	c := make(chan models.BuildStatus) // chan signals that build has completed
+	defer close(c)
 	listen := make(chan struct{}) // chan used to signal that we're listening
 
 	go func() {
@@ -408,7 +452,9 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 
 	done := make(chan struct{}) // chan used to signal completion
 
+	completed := make(chan struct{}) // chan signals that build was set as completed
 	go func() {
+		defer close(completed)
 		<-done
 		if err := dl.SetBuildAsCompleted(ctx, id, models.BuildStatusSuccess); err != nil {
 			t.Errorf("error setting build as completed: %v", err)
@@ -428,6 +474,8 @@ func testDBSetBuildAsCompletedAndListenForBuildCompleted(t *testing.T, dl datala
 
 	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
+
+	<-completed
 
 	// build should be completed now
 	select {

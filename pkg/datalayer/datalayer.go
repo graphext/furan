@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,9 @@ func NewPostgresDBLayer(pguri string) (*PostgresDBLayer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error parsing pg db uri: %w", err)
 	}
+	dbcfg.MinConns = 2
+	dbcfg.HealthCheckPeriod = 5 * time.Second
+	dbcfg.MaxConnIdleTime = 10 * time.Second
 	dbcfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
 		conn.ConnInfo().RegisterDataType(pgtype.DataType{
 			Value: &pgtypeuuid.UUID{},
@@ -72,6 +76,33 @@ func (dl *PostgresDBLayer) Close() {
 	dl.p.Close()
 }
 
+var retries = 5
+var retryDelay = 10 * time.Millisecond
+
+// retry executes f and will perform retries if a timeout error is returned
+func retry(f func() error) error {
+	if f == nil {
+		return fmt.Errorf("retry: f is nil")
+	}
+	var err error
+	for i := 0; i < retries; i++ {
+		err = f()
+		if err != nil {
+			operr, ok := err.(*net.OpError)
+			if !ok { // some other error, do not retry
+				return err
+			}
+			if !operr.Timeout() && !operr.Temporary() {
+				return err
+			}
+			time.Sleep(retryDelay)
+			continue
+		}
+		return nil
+	}
+	return fmt.Errorf("retries exceeded: %w", err)
+}
+
 // CreateBuild inserts a new build into the DB returning the ID
 func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uuid.UUID, error) {
 	id, err := uuid.NewV4()
@@ -81,8 +112,8 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 	// Clear out GH credential if present
 	b.Request.GetBuild().GithubCredential = ""
 	_, err = dl.p.Exec(ctx,
-		`INSERT INTO builds (id, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);`,
-		id, b.GitHubRepo, b.GitHubRef, b.EncryptedGitHubCredential, b.ImageRepos, b.Tags, b.CommitSHATag, b.Request, models.BuildStatusNotStarted)
+		`INSERT INTO builds (id, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, build_options, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);`,
+		id, b.GitHubRepo, b.GitHubRef, b.EncryptedGitHubCredential, b.ImageRepos, b.Tags, b.CommitSHATag, b.BuildOptions, b.Request, models.BuildStatusNotStarted)
 	if err != nil {
 		return id, fmt.Errorf("error inserting build: %w", err)
 	}
@@ -95,7 +126,9 @@ var ErrNotFound = fmt.Errorf("not found")
 func (dl *PostgresDBLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (models.Build, error) {
 	out := models.Build{}
 	var updated, completed pgtype.Timestamptz
-	err := dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.EncryptedGitHubCredential, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.Request, &out.Status, &out.Events)
+	err := retry(func() error {
+		return dl.p.QueryRow(ctx, `SELECT id, created, updated, completed, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, build_options, request, status, events FROM builds WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &updated, &completed, &out.GitHubRepo, &out.GitHubRef, &out.EncryptedGitHubCredential, &out.ImageRepos, &out.Tags, &out.CommitSHATag, &out.BuildOptions, &out.Request, &out.Status, &out.Events)
+	})
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return out, ErrNotFound
@@ -233,8 +266,13 @@ func (dl *PostgresDBLayer) ListenForCancellation(ctx context.Context, id uuid.UU
 	if err != nil {
 		return fmt.Errorf("error getting build by id: %w", err)
 	}
-	if !b.Running() {
-		return fmt.Errorf("build not running: %v", b.Status.String())
+	switch {
+	case b.Running():
+		break
+	case b.Status == models.BuildStatusCancelRequested || b.Status == models.BuildStatusCancelled:
+		return nil
+	default:
+		return fmt.Errorf("unexpected status for build (wanted Running or Cancelled): %v", b.Status.String())
 	}
 	conn, err := dl.p.Acquire(ctx)
 	if err != nil {
@@ -276,15 +314,21 @@ func (dl *PostgresDBLayer) SetBuildAsRunning(ctx context.Context, id uuid.UUID) 
 	return nil
 }
 
-// ListenForBuildRunning blocks and listens for a build to be updated to Running.
+// ListenForBuildRunning blocks and listens for a build to be updated to Running. If it's already running, this method
+// returns immediately. If the build is in any status other than NotStarted or Running, an error is returned.
 // If a notification is received, a nil error will be returned
 func (dl *PostgresDBLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUID) error {
 	b, err := dl.GetBuildByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("error getting build by id: %w", err)
 	}
-	if b.Status != models.BuildStatusNotStarted {
-		return fmt.Errorf("unexpected build status (wanted NotStarted): %v", b.Status.String())
+	switch b.Status {
+	case models.BuildStatusRunning:
+		return nil
+	case models.BuildStatusNotStarted:
+		break
+	default:
+		return fmt.Errorf("unexpected build status (wanted Running or NotStarted): %v", b.Status.String())
 	}
 	conn, err := dl.p.Acquire(ctx)
 	if err != nil {
@@ -317,7 +361,7 @@ func (dl *PostgresDBLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID
 		return fmt.Errorf("error opening txn: %w", err)
 	}
 	defer txn.Rollback(ctx)
-	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1 WHERE id = $2;`, status, id); err != nil {
+	if _, err := txn.Exec(ctx, `UPDATE builds SET status = $1, completed = $2 WHERE id = $3;`, status, time.Now().UTC(), id); err != nil {
 		return fmt.Errorf("error setting status: %w", err)
 	}
 	if _, err := txn.Exec(ctx, fmt.Sprintf("NOTIFY %s, '%d';", pgCompletedChanFromID(id), status)); err != nil {
@@ -330,6 +374,8 @@ func (dl *PostgresDBLayer) SetBuildAsCompleted(ctx context.Context, id uuid.UUID
 }
 
 // ListenForBuildCompleted blocks and listens for a build to be updated to completed.
+// If build is already completed, this method will return immediately.
+// If it hasn't completed, it must be in NotStarted or Running status or an error will be returned.
 // If a notification is received, the completed build status and a nil error are returned
 func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.UUID) (models.BuildStatus, error) {
 	b, err := dl.GetBuildByID(ctx, id)
@@ -337,9 +383,14 @@ func (dl *PostgresDBLayer) ListenForBuildCompleted(ctx context.Context, id uuid.
 		return 0, fmt.Errorf("error getting build by id: %w", err)
 
 	}
-	// if build is already finished, return status
-	if b.Status.TerminalState() {
+
+	switch {
+	case b.Status.TerminalState(): // if build is already finished, return status
 		return b.Status, nil
+	case b.Status == models.BuildStatusRunning || b.Status == models.BuildStatusNotStarted:
+		break
+	default:
+		return b.Status, fmt.Errorf("unknown or invalid build status: %v", b.Status)
 	}
 
 	conn, err := dl.p.Acquire(ctx)
@@ -387,7 +438,9 @@ func (dl *PostgresDBLayer) CreateAPIKey(ctx context.Context, apikey models.APIKe
 // GetAPIKey gets the API key for id
 func (dl *PostgresDBLayer) GetAPIKey(ctx context.Context, id uuid.UUID) (models.APIKey, error) {
 	out := models.APIKey{}
-	err := dl.p.QueryRow(ctx, `SELECT id, created, github_user, name, description, read_only FROM api_keys WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &out.GitHubUser, &out.Name, &out.Description, &out.ReadOnly)
+	err := retry(func() error {
+		return dl.p.QueryRow(ctx, `SELECT id, created, github_user, name, description, read_only FROM api_keys WHERE id = $1;`, id).Scan(&out.ID, &out.Created, &out.GitHubUser, &out.Name, &out.Description, &out.ReadOnly)
+	})
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return out, ErrNotFound

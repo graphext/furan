@@ -11,6 +11,7 @@ import (
 
 	"github.com/dollarshaveclub/furan/pkg/client"
 	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/pkg/models"
 )
 
 var monitorBuild bool
@@ -41,7 +42,7 @@ func init() {
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.GithubCredential, "github-token", os.Getenv("GITHUB_TOKEN"), "github token")
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.GithubRepo, "github-repo", "", "source github repo")
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Ref, "source-ref", "master", "source git ref")
-	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.DockerfilePath, "dockerfile-path", "Dockerfile", "Dockerfile path (optional)")
+	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.DockerfilePath, "dockerfile-path", ".", "Dockerfile path (optional)")
 	triggerCmd.PersistentFlags().StringArrayVar(&tags, "tags", []string{"master"}, "image tags (comma-delimited)")
 	triggerCmd.PersistentFlags().BoolVar(&triggerBuildRequest.Build.TagWithCommitSha, "tag-sha", false, "additionally tag with git commit SHA (optional)")
 	triggerCmd.PersistentFlags().BoolVar(&triggerBuildRequest.SkipIfExists, "skip-if-exists", false, "if build already exists at destination, skip build/push (registry: all tags exist, s3: object exists)")
@@ -91,21 +92,29 @@ func trigger(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return fmt.Errorf("error monitoring build: %w", err)
 		}
-		var prevstate furanrpc.BuildState
 		var i uint
 		for {
 			be, err := mc.Recv()
 			if err != nil {
 				if err == io.EOF {
-					fmt.Fprintf(os.Stderr, "build completed: state: %v (%d msgs received)\n", prevstate, i)
-					return nil
+					break
+
 				}
 				return fmt.Errorf("error getting build message: %w", err)
 			}
 			fmt.Fprintf(os.Stderr, "%v (status: %v)\n", be.Message, be.CurrentState)
-			prevstate = be.CurrentState
 			i++
 		}
+		bs, err := rb.GetBuildStatus(context.Background(), id)
+		if err != nil {
+			return fmt.Errorf("error getting final build status: %w", err)
+		}
+		duration := " "
+		if bs.Started != nil && bs.Completed != nil {
+			duration = fmt.Sprintf(" (duration: %v) ", models.TimeFromRPCTimestamp(*bs.Completed).Sub(models.TimeFromRPCTimestamp(*bs.Started)))
+		}
+		fmt.Fprintf(os.Stderr, "build completed: state: %v%v(%d msgs received)\n", bs.State, duration, i)
+		return nil
 	}
 
 	return nil

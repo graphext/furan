@@ -102,14 +102,22 @@ func TestK8sJobRunner_Run(t *testing.T) {
 }
 
 func TestK8sJobRunner_image(t *testing.T) {
-	fpod := func(podname, ns, cname, ips string) *corev1.Pod {
+	fpod := func(podname, ns, cname, ips string, omitserver bool) *corev1.Pod {
 		p := &corev1.Pod{}
 		p.Name = podname
 		p.Namespace = ns
+		args := []string{
+			"--foo=bar",
+			"--baz=123",
+		}
+		if !omitserver {
+			args = append(args, "server", "--asdf=zxcv")
+		}
 		p.Spec.Containers = []corev1.Container{
 			corev1.Container{
 				Name:  cname,
 				Image: "foo/furan:master",
+				Args:  args,
 			},
 		}
 		p.Spec.ImagePullSecrets = []corev1.LocalObjectReference{
@@ -125,7 +133,7 @@ func TestK8sJobRunner_image(t *testing.T) {
 	}{
 		{
 			name:   "success",
-			podObj: fpod("furan", "furan-production", "furan", "asdf1234"),
+			podObj: fpod("furan", "furan-production", "furan", "asdf1234", false),
 			want: ImageInfo{
 				Namespace:        "furan-production",
 				PodName:          "furan",
@@ -140,7 +148,12 @@ func TestK8sJobRunner_image(t *testing.T) {
 		},
 		{
 			name:    "no furan container",
-			podObj:  fpod("furan", "furan-production", "something", "asdf1234"),
+			podObj:  fpod("furan", "furan-production", "something", "asdf1234", false),
+			wantErr: true,
+		},
+		{
+			name:    "no server command",
+			podObj:  fpod("furan", "furan-production", "furan", "asdf1234", true),
 			wantErr: true,
 		},
 	}
@@ -201,15 +214,18 @@ func TestJobWatcher(t *testing.T) {
 					dl:      dl,
 				}
 				jw.init(fw, 1*time.Second)
-				go jw.start()
+				sent := make(chan struct{})
 				go func() {
-					time.Sleep(10 * time.Millisecond)
-					dl.SetBuildAsRunning(context.Background(), id)
+					close(sent)
 					fw.Modify(&batchv1.Job{
 						Status: batchv1.JobStatus{
 							Succeeded: 1,
 						},
 					})
+				}()
+				go func() {
+					<-sent
+					jw.start()
 				}()
 				select {
 				case err := <-jw.Error():
@@ -229,7 +245,6 @@ func TestJobWatcher(t *testing.T) {
 				jw.init(fw, 1*time.Second)
 				go jw.start()
 				go func() {
-					time.Sleep(10 * time.Millisecond)
 					fw.Error(&batchv1.Job{
 						Status: batchv1.JobStatus{
 							Failed: 1,
@@ -248,8 +263,11 @@ func TestJobWatcher(t *testing.T) {
 			name: "timeout",
 			tfunc: func(t *testing.T) {
 				fw := watch.NewFake()
+				dl := &datalayer.FakeDataLayer{}
+				id, _ := dl.CreateBuild(context.Background(), models.Build{})
 				jw := &JobWatcher{
-					dl: &datalayer.FakeDataLayer{},
+					dl:      dl,
+					buildID: id,
 				}
 				jw.init(fw, 5*time.Millisecond)
 				go jw.start()
@@ -263,66 +281,69 @@ func TestJobWatcher(t *testing.T) {
 		},
 		// this test needs this PR to be released in client-go:
 		// https://github.com/kubernetes/kubernetes/pull/91485
-		//{
-		//	name: "logs",
-		//	tfunc: func(t *testing.T) {
-		//		fw := watch.NewFake()
-		//		p := &corev1.Pod{}
-		//		p.Name = "foo-asdf1234"
-		//		p.Namespace = "foo"
-		//		p.Labels = map[string]string{"foo": "bar"}
-		//		p.Status = corev1.PodStatus{
-		//			ContainerStatuses: []corev1.ContainerStatus{
-		//				corev1.ContainerStatus{
-		//					Name: "foo-app-container",
-		//				},
-		//			},
-		//		}
-		//		fc := fake.NewSimpleClientset(p)
-		//		jw := &JobWatcher{
-		//			c:            fc,
-		//			matchLabels:  p.Labels,
-		//			JobName:      "foo-job",
-		//			JobNamespace: "foo",
-		//		}
-		//		jw.init(fw, 1*time.Second)
-		//		go jw.start()
-		//		defer jw.Close()
-		//		go func() {
-		//			time.Sleep(10 * time.Millisecond)
-		//			fw.Modify(&batchv1.Job{
-		//				ObjectMeta: metav1.ObjectMeta{
-		//					Name:      "foo-job",
-		//					Namespace: "foo",
-		//				},
-		//				Spec: batchv1.JobSpec{
-		//					Selector: &metav1.LabelSelector{
-		//						MatchLabels: map[string]string{
-		//							"foo": "bar",
-		//						},
-		//					},
-		//				},
-		//				Status: batchv1.JobStatus{
-		//					Succeeded: 1,
-		//				},
-		//			})
-		//		}()
-		//		select {
-		//		case err := <-jw.Error():
-		//			t.Errorf("unexpected error: %v", err)
-		//		case <-jw.Done():
-		//			t.Logf("success")
-		//		}
-		//		logs, err := jw.Logs()
-		//		if err != nil {
-		//			t.Errorf("error getting logs: %v", err)
-		//		}
-		//		if len(logs) != 1 {
-		//			t.Errorf("unexpected logs length: %v", len(logs))
-		//		}
-		//		t.Logf("logs: %+v", logs)
-		//	},
-		//},
+		{
+			name: "logs",
+			tfunc: func(t *testing.T) {
+				fw := watch.NewFake()
+				p := &corev1.Pod{}
+				p.Name = "foo-asdf1234"
+				p.Namespace = "foo"
+				p.Labels = map[string]string{"foo": "bar"}
+				p.Status = corev1.PodStatus{
+					ContainerStatuses: []corev1.ContainerStatus{
+						corev1.ContainerStatus{
+							Name: "foo-app-container",
+						},
+					},
+				}
+				dl := &datalayer.FakeDataLayer{}
+				id, _ := dl.CreateBuild(context.Background(), models.Build{})
+				fc := fake.NewSimpleClientset(p)
+				jw := &JobWatcher{
+					c:            fc,
+					dl:           dl,
+					buildID:      id,
+					matchLabels:  p.Labels,
+					JobName:      "foo-job",
+					JobNamespace: "foo",
+				}
+				jw.init(fw, 1*time.Second)
+				go jw.start()
+				go func() {
+					time.Sleep(10 * time.Millisecond)
+					fw.Modify(&batchv1.Job{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "foo-job",
+							Namespace: "foo",
+						},
+						Spec: batchv1.JobSpec{
+							Selector: &metav1.LabelSelector{
+								MatchLabels: map[string]string{
+									"foo": "bar",
+								},
+							},
+						},
+						Status: batchv1.JobStatus{
+							Succeeded: 1,
+						},
+					})
+				}()
+				select {
+				case err := <-jw.Error():
+					t.Errorf("unexpected error: %v", err)
+				case <-jw.Running():
+					t.Logf("success")
+				}
+				logs, err := jw.Logs()
+				if err != nil {
+					t.Errorf("error getting logs: %v", err)
+				}
+				if len(logs) != 1 {
+					t.Errorf("unexpected logs length: %v", len(logs))
+				}
+				t.Logf("logs: %+v", string(logs["foo-asdf1234"]["foo-app-container"]))
+			},
+		},
 	}
 	for _, tt := range stests {
 		t.Run(tt.name, tt.tfunc)

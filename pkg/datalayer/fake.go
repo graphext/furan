@@ -142,7 +142,6 @@ func (fdl *FakeDataLayer) ListenForBuildEvents(ctx context.Context, id uuid.UUID
 		}
 		fdl.listeners[id] = append(fdl.listeners[id][:i], fdl.listeners[id][i+1:]...)
 		fdl.mtx.Unlock()
-		close(lc)
 	}()
 
 	for {
@@ -215,8 +214,13 @@ func (fdl *FakeDataLayer) ListenForCancellation(ctx context.Context, id uuid.UUI
 	}
 	fdl.mtx.RUnlock()
 
-	if !b.Running() {
-		return fmt.Errorf("cannot cxl build with status %v", b.Status)
+	switch {
+	case b.Running():
+		break
+	case b.Status == models.BuildStatusCancelRequested || b.Status == models.BuildStatusCancelled:
+		return nil
+	default:
+		return fmt.Errorf("unexpected status for build (wanted Running or Cancelled): %v", b.Status.String())
 	}
 
 	lc := make(chan struct{})
@@ -282,8 +286,13 @@ func (fdl *FakeDataLayer) ListenForBuildRunning(ctx context.Context, id uuid.UUI
 	}
 	fdl.mtx.RUnlock()
 
-	if b.Status != models.BuildStatusNotStarted {
-		return fmt.Errorf("bad build status: %v", b.Status)
+	switch b.Status {
+	case models.BuildStatusRunning:
+		return nil
+	case models.BuildStatusNotStarted:
+		break
+	default:
+		return fmt.Errorf("unexpected build status (wanted Running or NotStarted): %v", b.Status.String())
 	}
 
 	lc := make(chan struct{})
@@ -347,11 +356,15 @@ func (fdl *FakeDataLayer) ListenForBuildCompleted(ctx context.Context, id uuid.U
 		fdl.mtx.RUnlock()
 		return 0, fmt.Errorf("build not found")
 	}
-	// if build is already finished, return status
-	if b.Status.TerminalState() {
-		status := b.Status
+	switch {
+	case b.Status.TerminalState(): // if build is already finished, return status
 		fdl.mtx.RUnlock()
-		return status, nil
+		return b.Status, nil
+	case b.Status == models.BuildStatusRunning || b.Status == models.BuildStatusNotStarted:
+		break
+	default:
+		fdl.mtx.RUnlock()
+		return b.Status, fmt.Errorf("unknown or invalid build status: %v", b.Status)
 	}
 	fdl.mtx.RUnlock()
 

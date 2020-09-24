@@ -3,7 +3,6 @@ package jobrunner
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/gofrs/uuid"
@@ -45,13 +44,13 @@ func TestFuranJobFunc(t *testing.T) {
 				if got.Namespace != "foo" {
 					return fmt.Errorf("bad namespace: %v", got.Namespace)
 				}
-				if got.Name != "furan-build-"+b.ID.String() {
+				if got.Name != "furan-build-"+"acme-widgets-"+b.ID.String() {
 					return fmt.Errorf("bad job name: %v", got.Name)
 				}
-				if i := len(got.Labels); i != 5 {
+				if i := len(got.Labels); i != 1 {
 					return fmt.Errorf("bad job label count: %v", i)
 				}
-				for _, l := range []string{"build-id", "source-repo", "source-ref", "dest-repo", "image-tags"} {
+				for _, l := range []string{"build-id"} {
 					v, ok := got.Labels[l]
 					if !ok {
 						return fmt.Errorf("missing label: %v", l)
@@ -61,22 +60,8 @@ func TestFuranJobFunc(t *testing.T) {
 						if v != b.ID.String() {
 							return fmt.Errorf("labels: bad build id: %v", v)
 						}
-					case "source-repo":
-						if v != b.GitHubRepo {
-							return fmt.Errorf("labels: bad source repo: %v", v)
-						}
-					case "source-ref":
-						if v != b.GitHubRef {
-							return fmt.Errorf("labels: bad source ref: %v", v)
-						}
-					case "dest-repo":
-						if v != fmt.Sprintf("%v", b.ImageRepos) {
-							return fmt.Errorf("labels: bad image repo: %v", v)
-						}
-					case "image-tags":
-						if i := len(strings.Split(v, ",")); i != len(b.Tags) {
-							return fmt.Errorf("labels: bad tag length: %v", i)
-						}
+					default:
+						return fmt.Errorf("unknown label: %v", l)
 					}
 				}
 				b2 := models.Build{}
