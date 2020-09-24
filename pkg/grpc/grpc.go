@@ -319,12 +319,12 @@ func (gr *Server) GetBuildStatus(ctx context.Context, req *furanrpc.BuildStatusR
 	var started, completed *furanrpc.Timestamp
 	started = &furanrpc.Timestamp{
 		Seconds: int64(b.Created.Second()),
-		Nanos:   int32(b.Created.Nanosecond()),
+		Nanos:   int64(b.Created.Nanosecond()),
 	}
 	if !b.Completed.IsZero() {
 		completed = &furanrpc.Timestamp{
 			Seconds: int64(b.Completed.Second()),
-			Nanos:   int32(b.Completed.Nanosecond()),
+			Nanos:   int64(b.Completed.Nanosecond()),
 		}
 	}
 	return &furanrpc.BuildStatusResponse{
