@@ -115,6 +115,9 @@ func truncateName(s string, n uint) string {
 	return s
 }
 
+// JobLabel is a label added to every build job to aid search/aggregation
+var JobLabel = "created-by:furan2"
+
 // FuranJobFunc is a JobFactoryFunc that generates a Kubernetes Job to execute a build
 func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 	var j batchv1.Job
@@ -123,13 +126,17 @@ func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 	}
 	j.Namespace = info.Namespace
 	j.Name = truncateName("furan-build-"+strings.Replace(build.GitHubRepo, "/", "-", -1)+"-"+build.ID.String(), 63)
+	jlabel := strings.Split(JobLabel, ":")
+	if len(jlabel) != 2 {
+		panic(fmt.Errorf("invalid job label (<name>:<value> is required): %v", JobLabel))
+	}
 	j.Labels = map[string]string{
 		// a valid label must be an empty string or consist of alphanumeric characters,
 		// '-', '_' or '.', and must start and end with an alphanumeric character (e.g.
 		//'MyValue',  or 'my_value',  or '12345', regex used for validation is
 		//'(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')
-		// every value that may not be a valid label must be an annotation
 		"build-id": build.ID.String(),
+		jlabel[0]:  jlabel[1],
 	}
 	reqj, _ := json.Marshal(build.Request) // ignore error
 	j.Annotations = map[string]string{

@@ -47,7 +47,7 @@ func TestFuranJobFunc(t *testing.T) {
 				if got.Name != "furan-build-"+"acme-widgets-"+b.ID.String() {
 					return fmt.Errorf("bad job name: %v", got.Name)
 				}
-				if i := len(got.Labels); i != 1 {
+				if i := len(got.Labels); i != 2 {
 					return fmt.Errorf("bad job label count: %v", i)
 				}
 				for _, l := range []string{"build-id"} {
