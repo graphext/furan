@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -140,6 +142,7 @@ func TestManager_Run(t *testing.T) {
 		fetcherr         error
 		cancel           bool
 		builderr         error
+		contexterr       bool
 		wantErr          bool
 		verifyfunc       func(dl datalayer.DataLayer, id uuid.UUID) error
 	}{
@@ -220,6 +223,22 @@ func TestManager_Run(t *testing.T) {
 			},
 			fetcherr: fmt.Errorf("something happened"),
 			wantErr:  true,
+			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
+				b, _ := dl.GetBuildByID(context.Background(), id)
+				if b.Status != models.BuildStatusFailure {
+					return fmt.Errorf("bad status: %v (wanted BuildStatusFailure)", b.Status)
+				}
+				return nil
+			},
+		},
+		{
+			name:      "bad context directory",
+			commitSHA: "asdf",
+			allTagsExistFunc: func(tags []string, repo string) (bool, []string, error) {
+				return false, tags, nil
+			},
+			contexterr: true,
+			wantErr:    true,
 			verifyfunc: func(dl datalayer.DataLayer, id uuid.UUID) error {
 				b, _ := dl.GetBuildByID(context.Background(), id)
 				if b.Status != models.BuildStatusFailure {
@@ -344,6 +363,10 @@ func TestManager_Run(t *testing.T) {
 						}
 						if ref != b.GitHubRef {
 							t.Errorf("bad ref: %v (wanted %v)", ref, b.GitHubRef)
+						}
+						if !tt.contexterr && tt.fetcherr == nil {
+							p := filepath.Join(destinationPath, "foobar-1234")
+							os.Mkdir(p, os.ModePerm)
 						}
 						return tt.fetcherr
 					},

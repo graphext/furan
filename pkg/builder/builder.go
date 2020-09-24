@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/gofrs/uuid"
 
@@ -75,6 +77,23 @@ func (ab *atomicBool) get() bool {
 	return out
 }
 
+// getContextSubdir gets the single subdirectory under path which contains the context, or error
+func getContextSubdir(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("error opening path: %w", err)
+	}
+	defer f.Close()
+	fi, err := f.Readdir(-1)
+	if err != nil {
+		return "", fmt.Errorf("error reading path directory entries: %w", err)
+	}
+	if len(fi) != 1 {
+		return "", fmt.Errorf("expected exactly one subdirectory, got %v", len(fi))
+	}
+	return fi[0].Name(), nil
+}
+
 // Run synchronously executes a build using BuildRunner
 func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 	if m.BRunner == nil || m.TCheck == nil || m.FetcherFactory == nil || m.DL == nil {
@@ -120,6 +139,7 @@ func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 			}
 			ctx := context.Background() // existing context may be cancelled
 			m.DL.AddEvent(ctx, b.ID, msg)
+			time.Sleep(100 * time.Millisecond) // brief pause to try to ensure the last error message gets through to any listeners
 			m.DL.SetBuildAsCompleted(ctx, b.ID, status)
 		}
 	}()
@@ -169,7 +189,13 @@ func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 		return fmt.Errorf("error fetching repo: %w", err)
 	}
 
-	opts.ContextPath = tdir
+	subdir, err := getContextSubdir(tdir)
+	if err != nil {
+		return fmt.Errorf("error getting context subdirectory: %w", err)
+	}
+
+	opts.ContextPath = filepath.Join(tdir, subdir)
+	opts.RelativeDockerfilePath = filepath.Join(opts.ContextPath, b.BuildOptions.RelativeDockerfilePath)
 
 	err = m.BRunner.Build(ctx2, opts)
 	if err != nil {
