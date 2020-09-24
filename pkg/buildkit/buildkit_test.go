@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	bkclient "github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/client/llb"
+	"github.com/opencontainers/go-digest"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
@@ -96,9 +97,24 @@ func (tbk *testBuildKitClient) Solve(ctx context.Context, def *llb.Definition, o
 			return nil, fmt.Errorf("context cancelled")
 		default:
 		}
+		digest := digest.NewDigestFromBytes(digest.Canonical, []byte("foo"))
 		statusChan <- &bkclient.SolveStatus{
+			Vertexes: []*bkclient.Vertex{
+				&bkclient.Vertex{
+					Digest: digest,
+					Name:   "foo",
+				},
+			},
+			Statuses: []*bkclient.VertexStatus{
+				&bkclient.VertexStatus{
+					ID:     "something",
+					Vertex: digest,
+					Name:   "foo",
+				},
+			},
 			Logs: []*bkclient.VertexLog{
 				&bkclient.VertexLog{
+					Vertex:    digest,
 					Timestamp: time.Now().UTC(),
 					Data:      []byte(fmt.Sprintf("this is a build log message: %v", i)),
 				},
@@ -214,6 +230,7 @@ func TestBuildSolver_Build(t *testing.T) {
 			SocketConnectRetryDelay = 100 * time.Millisecond
 			defer func() { SocketConnectTimeout = oldtimeout; SocketConnectRetryDelay = oldretry }()
 			var addr string
+			eventSink = nil
 			listening := make(chan struct{})
 			if tt.connecterr {
 				addr = "unix:///invalid/path"
@@ -270,7 +287,7 @@ func TestBuildSolver_Build(t *testing.T) {
 			if err := bks.Build(ctx, tt.args.opts); (err != nil) != tt.wantErr {
 				t.Errorf("Build() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			time.Sleep(50 * time.Millisecond) // make sure that all events get recorded
+			time.Sleep(500 * time.Millisecond) // make sure that all events get recorded
 			b, err := tt.fields.dl.GetBuildByID(ctx, tt.build.ID)
 			if err != nil {
 				t.Fatalf("error getting build: %v", err)

@@ -2,14 +2,17 @@ package buildkit
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 	"net"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/session"
+	"github.com/moby/buildkit/util/progress/progressui"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
@@ -215,6 +218,33 @@ func (bks *BuildSolver) verifyAddr() error {
 	}
 }
 
+// eventWriter is an io.Writer that sends writes as build events and pass-through writes to Sink if non-nil
+type eventWriter struct {
+	Ctx     context.Context
+	Sink    io.Writer
+	BuildID uuid.UUID
+	DL      datalayer.DataLayer
+}
+
+// Write sends p as a build event for BuildID (converted to string and trimmed of all leading and trailing whitespace)
+// If Sink is defined, p is written to it unchanged
+// If p is empty or only whitespace, the write is ignored
+func (ew *eventWriter) Write(p []byte) (n int, err error) {
+	str := strings.TrimSpace(string(p))
+	if str == "" {
+		return len(p), nil
+	}
+	ew.DL.AddEvent(ew.Ctx, ew.BuildID, str)
+	if ew.Sink != nil {
+		return ew.Sink.Write(p)
+	}
+	return len(p), nil
+}
+
+var _ io.Writer = &eventWriter{}
+
+var eventSink = os.Stderr
+
 // Build performs the build defined by opts
 func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error {
 	b, err := bks.dl.GetBuildByID(ctx, opts.BuildID)
@@ -249,24 +279,25 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	}()
 
 	// this goroutine reads build messages and adds them as events
-	// it returns when the context is cancelled or c is closed
+	// it returns when the context is cancelled
 	go func() {
-		for {
+		ew := &eventWriter{
+			Ctx:     ctx2,
+			Sink:    eventSink,
+			BuildID: opts.BuildID,
+			DL:      bks.dl,
+		}
+		// this is the same package used by the Docker CLI to display build status to the terminal
+		// we're emulating the "plain" terminal output option, which gets written to build events and stderr
+		// by eventWriter
+		err := progressui.DisplaySolveStatus(ctx2, "", nil, ew, c)
+		if err != nil {
 			select {
 			case <-ctx2.Done():
 				return
-			case ss := <-c:
-				if ss == nil { // channel closed
-					return
-				}
-				for _, l := range ss.Logs {
-					if l != nil {
-						if err := bks.dl.AddEvent(ctx2, opts.BuildID, string(l.Data)); err != nil {
-							bks.log("error adding event: build: %v: %v", opts.BuildID, err)
-						}
-					}
-				}
+			default:
 			}
+			bks.log("DisplaySolveStatus error: %v", err)
 		}
 	}()
 
