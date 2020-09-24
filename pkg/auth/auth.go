@@ -49,6 +49,7 @@ func (p *Provider) Credentials(ctx context.Context, req *bkauth.CredentialsReque
 		username = u
 		secret = s
 	case isQuay(req.Host):
+		username = "$oauthtoken"
 		secret = p.QuayIOToken
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported registry host: %v", req.Host)

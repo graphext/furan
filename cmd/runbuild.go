@@ -3,11 +3,14 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/moby/buildkit/session"
 	"github.com/spf13/cobra"
 
+	"github.com/dollarshaveclub/furan/pkg/auth"
 	"github.com/dollarshaveclub/furan/pkg/builder"
 	"github.com/dollarshaveclub/furan/pkg/buildkit"
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
@@ -69,6 +72,12 @@ func runbuild(cmd *cobra.Command, args []string) error {
 	bks, err := buildkit.NewBuildSolver(bkaddr, cm, dl)
 	if err != nil {
 		return fmt.Errorf("error initializing build solver: %w", err)
+	}
+	bks.LogF = log.Printf
+	bks.AuthProviderFunc = func() []session.Attachable {
+		return []session.Attachable{
+			auth.New(quayConfig.Token, awsConfig.AccessKeyID, awsConfig.SecretAccessKey),
+		}
 	}
 
 	bm := &builder.Manager{

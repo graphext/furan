@@ -131,7 +131,7 @@ func TestProvider_Credentials(t *testing.T) {
 			quaytoken: "asdf1234",
 			req:       &bkauth.CredentialsRequest{Host: "quay.io"},
 			want: &bkauth.CredentialsResponse{
-				Username: "",
+				Username: "$oauthtoken",
 				Secret:   "asdf1234",
 			},
 		},
