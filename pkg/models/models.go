@@ -102,7 +102,7 @@ func (b Build) Running() bool {
 }
 
 func TimeFromRPCTimestamp(ts furanrpc.Timestamp) time.Time {
-	return time.Unix(ts.Seconds, int64(ts.Nanos))
+	return time.Unix(ts.Seconds, ts.Nanos).UTC()
 }
 
 // EncryptAndSetGitHubCredential takes a GitHub credential, encrypts it and sets EncryptedGitHubCredential accordingly
