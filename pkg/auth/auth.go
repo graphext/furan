@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -51,6 +52,8 @@ func (p *Provider) Credentials(ctx context.Context, req *bkauth.CredentialsReque
 	case isQuay(req.Host):
 		username = "$oauthtoken"
 		secret = p.QuayIOToken
+	case strings.HasSuffix(req.Host, ".docker.io"): // allow anonymous pulls from Docker Hub (with empty creds)
+		break
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported registry host: %v", req.Host)
 	}
