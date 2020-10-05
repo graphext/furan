@@ -115,6 +115,12 @@ func (c *Client) solve(ctx context.Context, def *llb.Definition, runGateway runG
 	}
 
 	var ex ExportEntry
+	if len(opt.Exports) > 1 {
+		return nil, errors.New("currently only single Exports can be specified")
+	}
+	if len(opt.Exports) == 1 {
+		ex = opt.Exports[0]
+	}
 
 	if !opt.SessionPreInitialized {
 		if len(syncedDirs) > 0 {
@@ -123,13 +129,6 @@ func (c *Client) solve(ctx context.Context, def *llb.Definition, runGateway runG
 
 		for _, a := range opt.Session {
 			s.Allow(a)
-		}
-
-		if len(opt.Exports) > 1 {
-			return nil, errors.New("currently only single Exports can be specified")
-		}
-		if len(opt.Exports) == 1 {
-			ex = opt.Exports[0]
 		}
 
 		switch ex.Type {
@@ -178,10 +177,7 @@ func (c *Client) solve(ctx context.Context, def *llb.Definition, runGateway runG
 		defer cancelSolve()
 
 		defer func() { // make sure the Status ends cleanly on build errors
-			go func() {
-				<-time.After(3 * time.Second)
-				cancelStatus()
-			}()
+			cancelStatus()
 			logrus.Debugf("stopping session")
 			s.Close()
 		}()
@@ -192,7 +188,7 @@ func (c *Client) solve(ctx context.Context, def *llb.Definition, runGateway runG
 
 		frontendInputs := make(map[string]*pb.Definition)
 		for key, st := range opt.FrontendInputs {
-			def, err := st.Marshal()
+			def, err := st.Marshal(ctx)
 			if err != nil {
 				return err
 			}
