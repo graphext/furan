@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"crypto/tls"
 	"log"
+	"time"
 
 	// Import pprof handlers into http.DefaultServeMux
 	_ "net/http/pprof"
@@ -36,11 +38,16 @@ var serverCmd = &cobra.Command{
 var defaultcachetype, tracesvcname string
 var defaultcachemaxmode bool
 var tlscert, tlskey string
+var jcinterval, jcage time.Duration
 
 func init() {
 	serverCmd.PersistentFlags().StringVar(&serverConfig.HTTPSAddr, "https-addr", "0.0.0.0:4001", "REST HTTPS listen address")
 	serverCmd.PersistentFlags().StringVar(&serverConfig.GRPCAddr, "grpc-addr", "0.0.0.0:4000", "gRPC listen address")
 	serverCmd.PersistentFlags().StringVar(&tracesvcname, "trace-svc", "furan2", "APM trace service name (optional)")
+
+	// Job cleanup
+	serverCmd.PersistentFlags().DurationVar(&jcinterval, "job-cleanup-interval", 30*time.Minute, "Build job cleanup check interval")
+	serverCmd.PersistentFlags().DurationVar(&jcage, "job-cleanup-min-age", 48*time.Hour, "Minimum age for build jobs to be eligible for cleanup (deletion)")
 
 	// TLS cert
 	serverCmd.PersistentFlags().StringVar(&tlscert, "tls-cert-file", "", "Path to TLS certificate (optional, overrides secrets provider)")
@@ -76,11 +83,17 @@ func server(cmd *cobra.Command, args []string) {
 		clierr("error configuring database: %v", err)
 	}
 
+	ctx := context.Background()
+
 	jr, err := jobrunner.NewInClusterRunner(dl)
 	if err != nil {
 		clierr("error setting up in-cluster job runner: %v", err)
 	}
 	jr.JobFunc = jobrunner.FuranJobFunc
+	jr.LogFunc = log.Printf
+	if err := jr.StartCleanup(ctx, jcinterval, jcage, jobrunner.JobLabel); err != nil {
+		clierr("error starting job cleanup: %v", err)
+	}
 
 	bm := &builder.Manager{
 		JRunner: jr,

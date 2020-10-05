@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -161,7 +163,9 @@ func TestK8sJobRunner_image(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			objs := []runtime.Object{}
 			if tt.podObj != nil {
-				os.Setenv("POD_NAMESPACE", tt.podObj.Namespace)
+				olddfns := defaultNS
+				defer func() { defaultNS = olddfns }()
+				defaultNS = tt.podObj.Namespace
 				os.Setenv("POD_NAME", tt.podObj.Name)
 				objs = append(objs, tt.podObj)
 			}
@@ -347,5 +351,92 @@ func TestJobWatcher(t *testing.T) {
 	}
 	for _, tt := range stests {
 		t.Run(tt.name, tt.tfunc)
+	}
+}
+
+func TestK8sJobRunner_doCleanup(t *testing.T) {
+	type args struct {
+		ctx    context.Context
+		lkey   string
+		lval   string
+		cutoff time.Time
+	}
+	tests := []struct {
+		name      string
+		objs      []runtime.Object
+		args      args
+		wantCount int
+		wantErr   bool
+	}{
+		{
+			name: "cleanup",
+			objs: []runtime.Object{
+				&batchv1.Job{ // this object should be deleted
+					ObjectMeta: metav1.ObjectMeta{
+						Name:              "asdf123",
+						Namespace:         "default",
+						CreationTimestamp: metav1.Time{Time: time.Now().UTC().Add((24 * time.Hour) * -1)},
+						Labels: map[string]string{
+							"somelabel": "ppppppppp",
+						},
+					},
+				},
+				&batchv1.Job{ // too new
+					ObjectMeta: metav1.ObjectMeta{
+						Name:              "qwerty",
+						Namespace:         "default",
+						CreationTimestamp: metav1.Time{Time: time.Now().UTC()},
+						Labels: map[string]string{
+							"somelabel": "ppppppppp",
+						},
+					},
+				},
+				&batchv1.Job{ // wrong label
+					ObjectMeta: metav1.ObjectMeta{
+						Name:              "qwerty2",
+						Namespace:         "default",
+						CreationTimestamp: metav1.Time{Time: time.Now().UTC().Add((24 * time.Hour) * -1)},
+						Labels: map[string]string{
+							"otherlabel": "aaaaaa",
+						},
+					},
+				},
+				&corev1.Pod{ // not a job (Pod)
+					ObjectMeta: metav1.ObjectMeta{
+						Name:              "qwerty3",
+						Namespace:         "default",
+						CreationTimestamp: metav1.Time{Time: time.Now().UTC().Add((24 * time.Hour) * -1)},
+						Labels: map[string]string{
+							"somelabel": "ppppppppp",
+						},
+					},
+				},
+			},
+			args: args{
+				lkey:   "somelabel",
+				lval:   "ppppppppp",
+				cutoff: time.Now().UTC().Add((1 * time.Hour) * -1),
+			},
+			wantCount: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var count int32
+			kr := K8sJobRunner{
+				client: fake.NewSimpleClientset(tt.objs...),
+				LogFunc: func(msg string, args ...interface{}) {
+					if strings.Contains(msg, "deleting old job") {
+						atomic.AddInt32(&count, 1)
+					}
+				},
+			}
+			if err := kr.doCleanup(context.Background(), tt.args.lkey, tt.args.lval, tt.args.cutoff); (err != nil) != tt.wantErr {
+				t.Errorf("doCleanup() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if int(count) != tt.wantCount {
+				t.Errorf("wanted count %v, got %v", tt.wantCount, count)
+			}
+		})
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -36,6 +37,13 @@ type K8sJobRunner struct {
 	dl        datalayer.DataLayer
 	imageInfo ImageInfo
 	JobFunc   JobFactoryFunc
+	LogFunc   func(msg string, args ...interface{})
+}
+
+func (kr K8sJobRunner) log(msg string, args ...interface{}) {
+	if kr.LogFunc != nil {
+		kr.LogFunc(msg, args...)
+	}
 }
 
 func NewInClusterRunner(dl datalayer.DataLayer) (*K8sJobRunner, error) {
@@ -59,6 +67,8 @@ func NewInClusterRunner(dl datalayer.DataLayer) (*K8sJobRunner, error) {
 	return kr, nil
 }
 
+var defaultNS = "default"
+
 // namespace returns the namespace we're currently running in, or "default"
 func (kr K8sJobRunner) namespace() string {
 	// using the downward API
@@ -73,7 +83,7 @@ func (kr K8sJobRunner) namespace() string {
 		}
 	}
 
-	return "default"
+	return defaultNS
 }
 
 // image returns the image info for the pod/container we are currently running in, or error
@@ -151,6 +161,66 @@ func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	jw.init(w, 0)
 	go jw.start()
 	return jw, nil
+}
+
+func cleanupJitter(interval time.Duration) time.Duration {
+	rand.Seed(time.Now().UTC().UnixNano())
+	return time.Duration(rand.Intn(int(interval) / 10)) // random duration up to 10% of interval
+}
+
+// StartCleanup begins an asynchronous cleanup process every interval that deletes old build jobs older than now - age.
+// Build jobs are identified in the current namespace by label, which is expected to be in the form "<key>:<value>".
+// Cancel the context to signal the process to exit.
+func (kr K8sJobRunner) StartCleanup(ctx context.Context, interval, age time.Duration, label string) error {
+	ls := strings.Split(label, ":")
+	if len(ls) != 2 {
+		return fmt.Errorf("malformed label (wanted key:value): %v", label)
+	}
+	if interval == 0 || age == 0 {
+		return fmt.Errorf("nonzero interval and age are required")
+	}
+	go func() {
+		kr.log("jobrunner: cleanup: starting with interval %v", interval)
+		t := time.NewTicker(interval)
+		defer t.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				kr.log("jobrunner: cleanup: context cancelled, exiting")
+				return
+			case <-t.C:
+				time.Sleep(cleanupJitter(interval)) // avoid multiple replicas attempting cleanup at exactly the same time
+				if err := kr.doCleanup(ctx, ls[0], ls[1], time.Now().UTC().Add(age*-1)); err != nil {
+					kr.log("jobrunner: cleanup: error performing cleanup (exiting): %v", err)
+					return
+				}
+			}
+		}
+	}()
+	return nil
+}
+
+var bgdel = metav1.DeletePropagationBackground
+
+func (kr K8sJobRunner) doCleanup(ctx context.Context, lkey, lval string, cutoff time.Time) error {
+	ns := kr.namespace()
+	jl, err := kr.client.BatchV1().Jobs(ns).List(ctx, metav1.ListOptions{
+		LabelSelector: lkey + "=" + lval,
+	})
+	if err != nil {
+		return fmt.Errorf("error listing jobs: %w", err)
+	}
+	for _, j := range jl.Items {
+		if j.CreationTimestamp.Time.Before(cutoff) {
+			kr.log("jobrunner: cleanup: deleting old job: %v (created %v)", j.Name, j.CreationTimestamp)
+			if err := kr.client.BatchV1().Jobs(ns).Delete(ctx, j.Name, metav1.DeleteOptions{
+				PropagationPolicy: &bgdel,
+			}); err != nil {
+				return fmt.Errorf("error deleting job: %v: %w", j.Name, err)
+			}
+		}
+	}
+	return nil
 }
 
 const (

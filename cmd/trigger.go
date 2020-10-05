@@ -35,10 +35,14 @@ var imagerepos, tags []string
 
 var clientops client.Options
 
+func setclientflags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVar(&clientops.Address, "remote-host", "", "Remote Furan server with gRPC port (eg: furan.me.com:4001)")
+	cmd.PersistentFlags().StringVar(&clientops.APIKey, "api-key", "", "API key")
+	cmd.PersistentFlags().BoolVar(&clientops.TLSInsecureSkipVerify, "tls-skip-verify", false, "Disable TLS certificate verification for RPC calls (INSECURE)")
+}
+
 func init() {
-	triggerCmd.PersistentFlags().StringVar(&clientops.Address, "remote-host", "", "Remote Furan server with gRPC port (eg: furan.me.com:4001)")
-	triggerCmd.PersistentFlags().StringVar(&clientops.APIKey, "api-key", "", "API key")
-	triggerCmd.PersistentFlags().BoolVar(&clientops.TLSInsecureSkipVerify, "tls-skip-verify", false, "Disable TLS certificate verification for RPC calls (INSECURE)")
+	setclientflags(triggerCmd)
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.GithubCredential, "github-token", os.Getenv("GITHUB_TOKEN"), "github token")
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.GithubRepo, "github-repo", "", "source github repo")
 	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Ref, "source-ref", "master", "source git ref")
