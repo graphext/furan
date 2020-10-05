@@ -276,7 +276,8 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 		// this is the same package used by the Docker CLI to display build status to the terminal
 		// we're emulating the "plain" terminal output option, which gets written to build events and stderr
 		// by eventWriter
-		err := progressui.DisplaySolveStatus(ctx, "", nil, ew, c)
+		// Use a new context to allow it to read all values from c (prevents client hanging)
+		err := progressui.DisplaySolveStatus(context.TODO(), "", nil, ew, c)
 		if err != nil {
 			select {
 			case <-ctx.Done():

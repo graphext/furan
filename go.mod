@@ -10,8 +10,6 @@ replace github.com/containerd/containerd v1.4.0-0 => github.com/containerd/conta
 
 replace github.com/jaguilar/vt100 => github.com/tonistiigi/vt100 v0.0.0-20190402012908-ad4c4a574305
 
-replace github.com/moby/buildkit => github.com/bkeroackdsc/buildkit v0.7.1-0.20201005212445-2d6e4c98f985
-
 require (
 	github.com/DataDog/datadog-go v3.7.2+incompatible // indirect
 	github.com/Microsoft/hcsshim v0.8.10 // indirect

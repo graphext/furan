@@ -2,7 +2,6 @@ package filesync
 
 import (
 	"bufio"
-	"context"
 	io "io"
 	"os"
 	"time"
@@ -14,13 +13,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Stream interface {
-	Context() context.Context
-	SendMsg(m interface{}) error
-	RecvMsg(m interface{}) error
-}
-
-func sendDiffCopy(stream Stream, fs fsutil.FS, progress progressCb) error {
+func sendDiffCopy(stream grpc.Stream, fs fsutil.FS, progress progressCb) error {
 	return errors.WithStack(fsutil.Send(stream.Context(), stream, fs, progress))
 }
 
@@ -48,7 +41,7 @@ type streamWriterCloser struct {
 func (wc *streamWriterCloser) Write(dt []byte) (int, error) {
 	if err := wc.ClientStream.SendMsg(&BytesMessage{Data: dt}); err != nil {
 		// SendMsg return EOF on remote errors
-		if errors.Is(err, io.EOF) {
+		if errors.Cause(err) == io.EOF {
 			if err := errors.WithStack(wc.ClientStream.RecvMsg(struct{}{})); err != nil {
 				return 0, err
 			}
@@ -70,7 +63,7 @@ func (wc *streamWriterCloser) Close() error {
 	return nil
 }
 
-func recvDiffCopy(ds grpc.ClientStream, dest string, cu CacheUpdater, progress progressCb, filter func(string, *fstypes.Stat) bool) error {
+func recvDiffCopy(ds grpc.Stream, dest string, cu CacheUpdater, progress progressCb, filter func(string, *fstypes.Stat) bool) error {
 	st := time.Now()
 	defer func() {
 		logrus.Debugf("diffcopy took: %v", time.Since(st))
@@ -90,7 +83,7 @@ func recvDiffCopy(ds grpc.ClientStream, dest string, cu CacheUpdater, progress p
 	}))
 }
 
-func syncTargetDiffCopy(ds grpc.ServerStream, dest string) error {
+func syncTargetDiffCopy(ds grpc.Stream, dest string) error {
 	if err := os.MkdirAll(dest, 0700); err != nil {
 		return errors.Wrapf(err, "failed to create synctarget dest dir %s", dest)
 	}
@@ -108,11 +101,11 @@ func syncTargetDiffCopy(ds grpc.ServerStream, dest string) error {
 	}))
 }
 
-func writeTargetFile(ds grpc.ServerStream, wc io.WriteCloser) error {
+func writeTargetFile(ds grpc.Stream, wc io.WriteCloser) error {
 	for {
 		bm := BytesMessage{}
 		if err := ds.RecvMsg(&bm); err != nil {
-			if errors.Is(err, io.EOF) {
+			if errors.Cause(err) == io.EOF {
 				return nil
 			}
 			return errors.WithStack(err)

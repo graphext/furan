@@ -1,7 +1,6 @@
 package llb
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"path"
@@ -25,35 +24,17 @@ var (
 	keySecurity  = contextKeyT("llb.security")
 )
 
-func AddEnvf(key, value string, v ...interface{}) StateOption {
-	return addEnvf(key, value, true, v...)
-}
-
-func AddEnv(key, value string) StateOption {
-	return addEnvf(key, value, false)
-}
-
 func addEnvf(key, value string, replace bool, v ...interface{}) StateOption {
 	if replace {
 		value = fmt.Sprintf(value, v...)
 	}
 	return func(s State) State {
-		return s.withValue(keyEnv, func(ctx context.Context) (interface{}, error) {
-			env, err := getEnv(s)(ctx)
-			if err != nil {
-				return nil, err
-			}
-			return env.AddOrReplace(key, value), nil
-		})
+		return s.WithValue(keyEnv, getEnv(s).AddOrReplace(key, value))
 	}
 }
 
-func Dir(str string) StateOption {
+func dir(str string) StateOption {
 	return dirf(str, false)
-}
-
-func Dirf(str string, v ...interface{}) StateOption {
-	return dirf(str, true, v...)
 }
 
 func dirf(value string, replace bool, v ...interface{}) StateOption {
@@ -61,86 +42,61 @@ func dirf(value string, replace bool, v ...interface{}) StateOption {
 		value = fmt.Sprintf(value, v...)
 	}
 	return func(s State) State {
-		return s.withValue(keyDir, func(ctx context.Context) (interface{}, error) {
-			if !path.IsAbs(value) {
-				prev, err := getDir(s)(ctx)
-				if err != nil {
-					return nil, err
-				}
-				if prev == "" {
-					prev = "/"
-				}
-				value = path.Join(prev, value)
+		if !path.IsAbs(value) {
+			prev := getDir(s)
+			if prev == "" {
+				prev = "/"
 			}
-			return value, nil
-		})
+			value = path.Join(prev, value)
+		}
+		return s.WithValue(keyDir, value)
 	}
 }
 
-func User(str string) StateOption {
+func user(str string) StateOption {
 	return func(s State) State {
 		return s.WithValue(keyUser, str)
 	}
 }
 
-func Reset(other State) StateOption {
+func reset(s_ State) StateOption {
 	return func(s State) State {
 		s = NewState(s.Output())
-		s.prev = &other
+		s.ctx = s_.ctx
 		return s
 	}
 }
 
-func getEnv(s State) func(context.Context) (EnvList, error) {
-	return func(ctx context.Context) (EnvList, error) {
-		v, err := s.getValue(keyEnv)(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if v != nil {
-			return v.(EnvList), nil
-		}
-		return EnvList{}, nil
+func getEnv(s State) EnvList {
+	v := s.Value(keyEnv)
+	if v != nil {
+		return v.(EnvList)
 	}
+	return EnvList{}
 }
 
-func getDir(s State) func(context.Context) (string, error) {
-	return func(ctx context.Context) (string, error) {
-		v, err := s.getValue(keyDir)(ctx)
-		if err != nil {
-			return "", err
-		}
-		if v != nil {
-			return v.(string), nil
-		}
-		return "", nil
+func getDir(s State) string {
+	v := s.Value(keyDir)
+	if v != nil {
+		return v.(string)
 	}
+	return ""
 }
 
-func getArgs(s State) func(context.Context) ([]string, error) {
-	return func(ctx context.Context) ([]string, error) {
-		v, err := s.getValue(keyArgs)(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if v != nil {
-			return v.([]string), nil
-		}
-		return nil, nil
+func getArgs(s State) []string {
+	v := s.Value(keyArgs)
+	if v != nil {
+		return v.([]string)
 	}
+	return nil
 }
 
-func getUser(s State) func(context.Context) (string, error) {
-	return func(ctx context.Context) (string, error) {
-		v, err := s.getValue(keyUser)(ctx)
-		if err != nil {
-			return "", err
-		}
-		if v != nil {
-			return v.(string), nil
-		}
-		return "", nil
+func getUser(s State) string {
+	v := s.Value(keyUser)
+	if v != nil {
+		return v.(string)
 	}
+	return ""
 }
 
 func args(args ...string) StateOption {
@@ -155,7 +111,7 @@ func shlexf(str string, replace bool, v ...interface{}) StateOption {
 	}
 	return func(s State) State {
 		arg, err := shlex.Split(str)
-		if err != nil { //nolint
+		if err != nil {
 			// TODO: handle error
 		}
 		return args(arg...)(s)
@@ -168,43 +124,27 @@ func platform(p specs.Platform) StateOption {
 	}
 }
 
-func getPlatform(s State) func(context.Context) (*specs.Platform, error) {
-	return func(ctx context.Context) (*specs.Platform, error) {
-		v, err := s.getValue(keyPlatform)(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if v != nil {
-			p := v.(specs.Platform)
-			return &p, nil
-		}
-		return nil, nil
+func getPlatform(s State) *specs.Platform {
+	v := s.Value(keyPlatform)
+	if v != nil {
+		p := v.(specs.Platform)
+		return &p
 	}
+	return nil
 }
 
 func extraHost(host string, ip net.IP) StateOption {
 	return func(s State) State {
-		return s.withValue(keyExtraHost, func(ctx context.Context) (interface{}, error) {
-			v, err := getExtraHosts(s)(ctx)
-			if err != nil {
-				return nil, err
-			}
-			return append(v, HostIP{Host: host, IP: ip}), nil
-		})
+		return s.WithValue(keyExtraHost, append(getExtraHosts(s), HostIP{Host: host, IP: ip}))
 	}
 }
 
-func getExtraHosts(s State) func(context.Context) ([]HostIP, error) {
-	return func(ctx context.Context) ([]HostIP, error) {
-		v, err := s.getValue(keyExtraHost)(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if v != nil {
-			return v.([]HostIP), nil
-		}
-		return nil, nil
+func getExtraHosts(s State) []HostIP {
+	v := s.Value(keyExtraHost)
+	if v != nil {
+		return v.([]HostIP)
 	}
+	return nil
 }
 
 type HostIP struct {
@@ -212,42 +152,32 @@ type HostIP struct {
 	IP   net.IP
 }
 
-func Network(v pb.NetMode) StateOption {
+func network(v pb.NetMode) StateOption {
 	return func(s State) State {
 		return s.WithValue(keyNetwork, v)
 	}
 }
-func getNetwork(s State) func(context.Context) (pb.NetMode, error) {
-	return func(ctx context.Context) (pb.NetMode, error) {
-		v, err := s.getValue(keyNetwork)(ctx)
-		if err != nil {
-			return 0, err
-		}
-		if v != nil {
-			n := v.(pb.NetMode)
-			return n, nil
-		}
-		return NetModeSandbox, nil
+func getNetwork(s State) pb.NetMode {
+	v := s.Value(keyNetwork)
+	if v != nil {
+		n := v.(pb.NetMode)
+		return n
 	}
+	return NetModeSandbox
 }
 
-func Security(v pb.SecurityMode) StateOption {
+func security(v pb.SecurityMode) StateOption {
 	return func(s State) State {
 		return s.WithValue(keySecurity, v)
 	}
 }
-func getSecurity(s State) func(context.Context) (pb.SecurityMode, error) {
-	return func(ctx context.Context) (pb.SecurityMode, error) {
-		v, err := s.getValue(keySecurity)(ctx)
-		if err != nil {
-			return 0, err
-		}
-		if v != nil {
-			n := v.(pb.SecurityMode)
-			return n, nil
-		}
-		return SecurityModeSandbox, nil
+func getSecurity(s State) pb.SecurityMode {
+	v := s.Value(keySecurity)
+	if v != nil {
+		n := v.(pb.SecurityMode)
+		return n
 	}
+	return SecurityModeSandbox
 }
 
 type EnvList []KeyValue
