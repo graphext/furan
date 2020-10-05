@@ -278,7 +278,8 @@ func TestBuildSolver_Build(t *testing.T) {
 			if tt.cancel {
 				go func() {
 					time.Sleep(20 * time.Millisecond)
-					tt.fields.dl.CancelBuild(ctx, id)
+					//tt.fields.dl.CancelBuild(ctx, id)
+					cf()
 				}()
 			}
 			if err := tt.fields.dl.SetBuildAsRunning(ctx, id); err != nil {

@@ -264,25 +264,11 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 
 	c := make(chan *bkclient.SolveStatus)
 
-	ctx2, cf := context.WithCancel(ctx)
-	defer cf()
-
-	// this goroutine blocks and listens for cancellation
-	// it returns when cancellation is received or the context is cancelled
-	go func() {
-		defer cf()
-		if err := bks.dl.ListenForCancellation(ctx2, b.ID); err != nil {
-			bks.log("error listening for cancellation: %v", err)
-			return
-		}
-		bks.dl.AddEvent(ctx2, b.ID, "build cancellation request received")
-	}()
-
 	// this goroutine reads build messages and adds them as events
 	// it returns when the context is cancelled
 	go func() {
 		ew := &eventWriter{
-			Ctx:     ctx2,
+			Ctx:     ctx,
 			Sink:    eventSink,
 			BuildID: opts.BuildID,
 			DL:      bks.dl,
@@ -290,10 +276,10 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 		// this is the same package used by the Docker CLI to display build status to the terminal
 		// we're emulating the "plain" terminal output option, which gets written to build events and stderr
 		// by eventWriter
-		err := progressui.DisplaySolveStatus(ctx2, "", nil, ew, c)
+		err := progressui.DisplaySolveStatus(ctx, "", nil, ew, c)
 		if err != nil {
 			select {
-			case <-ctx2.Done():
+			case <-ctx.Done():
 				return
 			default:
 			}
@@ -306,16 +292,16 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 		return fmt.Errorf("error verifying that buildkit is available: %w", err)
 	}
 
-	resp, err := bks.bc.Solve(ctx2, nil, sopts, c)
+	resp, err := bks.bc.Solve(ctx, nil, sopts, c)
 	if err != nil {
 		return fmt.Errorf("error running solver: %w", err)
 	}
 	if err := bks.saveCache(ctx, opts, sopts); err != nil {
 		// non-fatal error if we can't save cache
-		bks.dl.AddEvent(ctx2, opts.BuildID, fmt.Sprintf("warning: error saving build cache: %v", err))
+		bks.dl.AddEvent(ctx, opts.BuildID, fmt.Sprintf("warning: error saving build cache: %v", err))
 	}
 	msg := fmt.Sprintf("solve success: %+v", resp.ExporterResponse)
-	if err := bks.dl.AddEvent(ctx2, opts.BuildID, msg); err != nil {
+	if err := bks.dl.AddEvent(ctx, opts.BuildID, msg); err != nil {
 		bks.log("error adding success event: build: %v: %v", opts.BuildID, err)
 	}
 	return nil
