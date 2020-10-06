@@ -14,6 +14,7 @@ import (
 	"github.com/dollarshaveclub/furan/pkg/builder"
 	"github.com/dollarshaveclub/furan/pkg/config"
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/github"
 	"github.com/dollarshaveclub/furan/pkg/grpc"
 	"github.com/dollarshaveclub/furan/pkg/jobrunner"
@@ -60,15 +61,15 @@ func init() {
 	RootCmd.AddCommand(serverCmd)
 }
 
-func cachedefaults() models.CacheOpts {
-	out := models.CacheOpts{}
+func cachedefaults() furanrpc.BuildCacheOpts {
+	out := furanrpc.BuildCacheOpts{}
 	switch defaultcachetype {
 	case "s3":
-		out.Type = models.S3CacheType
+		out.Type = furanrpc.BuildCacheOpts_S3
 	case "inline":
-		out.Type = models.InlineCacheType
+		out.Type = furanrpc.BuildCacheOpts_INLINE
 	case "disabled":
-		out.Type = models.DisabledCacheType
+		out.Type = furanrpc.BuildCacheOpts_DISABLED
 	default:
 		log.Printf("unknown cache type: %v; ignoring", defaultcachetype)
 		// leave as unset/unknown

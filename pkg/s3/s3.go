@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -66,6 +67,15 @@ func (cm *CacheManager) keyForBuild(b models.Build) string {
 	return cm.Keypfx + b.GitHubRepo + "_buildcache.tar.gz"
 }
 
+func awsError(err error) error {
+	aerr, ok := err.(awserr.Error)
+	if ok {
+		// only return the short error message, not the full multiline details
+		return fmt.Errorf(aerr.Code())
+	}
+	return err
+}
+
 // Fetch fetches the cache for a build from S3 and returns the temporary filesystem path where it can be found.
 // Caller is responsible for cleaning the path up when finished with the data.
 func (cm *CacheManager) Fetch(ctx context.Context, b models.Build) (string, error) {
@@ -80,13 +90,15 @@ func (cm *CacheManager) Fetch(ctx context.Context, b models.Build) (string, erro
 	defer os.Remove(f.Name())
 	defer f.Close()
 	key := cm.keyForBuild(b)
+	cm.DL.AddEvent(ctx, b.ID, fmt.Sprintf("downloading cache: s3://%v/%v", cm.Bucket, key))
 	start := time.Now().UTC()
 	n, err := dlc.DownloadWithContext(ctx, f, &s3.GetObjectInput{
 		Bucket: &cm.Bucket,
 		Key:    &key,
 	})
 	if err != nil {
-		return "", fmt.Errorf("error downloading cache from S3: %w", err)
+		// only return the short error since this is probably going into a build event
+		return "", fmt.Errorf("error downloading cache from S3: %w", awsError(err))
 	}
 	cm.DL.AddEvent(ctx, b.ID, fmt.Sprintf("successfully downloaded cache from S3 (size %v bytes; elapsed: %v)", n, time.Since(start)))
 	start = time.Now().UTC()
@@ -117,6 +129,7 @@ func (cm *CacheManager) Save(ctx context.Context, b models.Build, path string) e
 	defer os.Remove(f.Name())
 	tgz := archiver.NewTarGz()
 	tgz.OverwriteExisting = true
+	cm.DL.AddEvent(ctx, b.ID, "archiving build cache snapshot")
 	start := time.Now().UTC()
 	if err := tgz.Archive([]string{path}, f.Name()); err != nil {
 		return fmt.Errorf("error archiving build cache: %w", err)
@@ -134,12 +147,14 @@ func (cm *CacheManager) Save(ctx context.Context, b models.Build, path string) e
 	defer f.Close()
 	key := cm.keyForBuild(b)
 	start = time.Now().UTC()
+	cm.DL.AddEvent(ctx, b.ID, fmt.Sprintf("uploading cache: s3://%v/%v", cm.Bucket, key))
 	if _, err := ulc.UploadWithContext(ctx, &s3manager.UploadInput{
 		Body:   f,
 		Bucket: &cm.Bucket,
 		Key:    &key,
 	}); err != nil {
-		return fmt.Errorf("error uploading build cache: %w", err)
+		// only return the short error since this is probably going into a build event
+		return fmt.Errorf("error uploading build cache: %w", awsError(err))
 	}
 	cm.DL.AddEvent(ctx, b.ID, fmt.Sprintf("successfully uploaded cache from S3 (size %v bytes; elapsed: %v)", sz, time.Since(start)))
 	return nil

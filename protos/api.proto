@@ -27,6 +27,17 @@ message Timestamp {
   int32 nanos = 2;
 }
 
+message BuildCacheOpts {
+  enum CacheType {
+    UNKNOWN = 0;
+    DISABLED = 1;
+    S3 = 2; // manually cache to/from the S3 bucket configured server-side
+    INLINE = 3; // BuildKit OCI inline cache
+  }
+  CacheType type = 1;
+  bool max_mode = 2; // BuildKit cache "max mode" (default: false)
+}
+
 message BuildDefinition {
   string github_repo = 1;
   string github_credential = 2;
@@ -35,7 +46,7 @@ message BuildDefinition {
   repeated string tags = 5;
   bool tag_with_commit_sha = 6;
   map<string, string> args = 7;
-  bool disable_build_cache = 8;
+  BuildCacheOpts cache_options = 8;
 }
 
 message PushRegistryDefinition {

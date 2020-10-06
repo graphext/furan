@@ -64,6 +64,15 @@ spec:
             - "{{ .Values.vault.auth_path }}"
             {{ end }} # if k8s auth
             {{ end }} # if vault
+            - "--aws-region" # S3 and ECR
+            - "{{ .Values.app.aws.region }}"
+            {{ if .Values.app.aws.s3_cache_enabled }}
+            - "--s3-cache-bucket"
+            - "{{ .Values.app.aws.s3bucket }}"
+            - "--s3-cache-key-pfx"
+            - "{{ .Values.app.aws.s3keypfx }}"
+            {{ end }} # if s3 cache enabled
+            # === End auto-injected job flags ===
             - 'server'
             - '--grpc-addr'
             - '0.0.0.0:{{ .Values.service.internalPort }}'

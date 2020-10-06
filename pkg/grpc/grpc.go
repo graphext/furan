@@ -30,15 +30,15 @@ type Options struct {
 	TLSCertificate tls.Certificate
 	// CredentialDecryptionKey is the secretbox key used to decrypt the build github credential
 	CredentialDecryptionKey [32]byte
-	Cache                   models.CacheOpts
+	Cache                   furanrpc.BuildCacheOpts
 	LogFunc                 func(msg string, args ...interface{})
 	JobHandoffTimeout       time.Duration
 }
 
 // DefaultCacheOpts is the cache options that will be used if not overridden in Options
-var DefaultCacheOpts = models.CacheOpts{
-	Type:    models.S3CacheType,
-	MaxMode: true,
+var DefaultCacheOpts = furanrpc.BuildCacheOpts{
+	Type:    furanrpc.BuildCacheOpts_DISABLED,
+	MaxMode: false,
 }
 
 // Server represents an object that responds to gRPC calls
@@ -225,14 +225,13 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	cred := req.Build.GithubCredential
 	req.Build.GithubCredential = ""
 	b := models.Build{
-		GitHubRepo:        req.GetBuild().GithubRepo,
-		GitHubRef:         req.GetBuild().Ref,
-		ImageRepos:        irepos,
-		Tags:              req.GetBuild().GetTags(),
-		CommitSHATag:      req.GetBuild().TagWithCommitSha,
-		DisableBuildCache: req.GetBuild().DisableBuildCache,
-		Request:           *req,
-		Status:            models.BuildStatusNotStarted,
+		GitHubRepo:   req.GetBuild().GithubRepo,
+		GitHubRef:    req.GetBuild().Ref,
+		ImageRepos:   irepos,
+		Tags:         req.GetBuild().GetTags(),
+		CommitSHATag: req.GetBuild().TagWithCommitSha,
+		Request:      *req,
+		Status:       models.BuildStatusNotStarted,
 	}
 
 	if cred == "" {
@@ -249,11 +248,13 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	}
 
 	copts := gr.Opts.Cache
-	if copts.Type == models.UnknownCacheType {
+	if copts.Type == furanrpc.BuildCacheOpts_UNKNOWN {
 		copts = DefaultCacheOpts
 	}
-	if req.GetBuild().DisableBuildCache {
-		copts.Type = models.DisabledCacheType
+	if req.Build.CacheOptions != nil {
+		if req.Build.CacheOptions.Type != furanrpc.BuildCacheOpts_UNKNOWN {
+			copts = *req.Build.CacheOptions
+		}
 	}
 
 	opts := models.BuildOpts{

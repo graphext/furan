@@ -80,7 +80,6 @@ type Build struct {
 	ImageRepos                  []string
 	Tags                        []string
 	CommitSHATag                bool
-	DisableBuildCache           bool
 	BuildOptions                BuildOpts
 	Request                     furanrpc.BuildRequest
 	Status                      BuildStatus
@@ -106,7 +105,7 @@ func TimeFromRPCTimestamp(ts furanrpc.Timestamp) time.Time {
 	return time.Unix(ts.Seconds, int64(ts.Nanos)).UTC()
 }
 
-// RPCTimestamptFromTime takes a time.Time and returns an RPC timestamp
+// RPCTimestampFromTime takes a time.Time and returns an RPC timestamp
 func RPCTimestampFromTime(t time.Time) furanrpc.Timestamp {
 	return furanrpc.Timestamp{
 		Seconds: t.Unix(),
@@ -138,35 +137,13 @@ func (b Build) GetGitHubCredential(key [32]byte) (string, error) {
 	return string(tkn), nil
 }
 
-//go:generate stringer -type=BuildCacheType
-
-type BuildCacheType int
-
-const (
-	UnknownCacheType BuildCacheType = iota
-	DisabledCacheType
-	InlineCacheType
-	S3CacheType
-)
-
-type CacheOpts struct {
-	Type    BuildCacheType `json:"build_cache_type"`
-	MaxMode bool           `json:"max_mode"`
-}
-
-func (co *CacheOpts) ZeroValueDefaults() {
-	if co.Type == UnknownCacheType {
-		co.Type = DisabledCacheType
-	}
-}
-
 // BuildOpts models all options required to perform a build
 type BuildOpts struct {
-	BuildID                uuid.UUID         `json:"-"`
-	ContextPath, CommitSHA string            `json:"-"` // set by Builder
-	RelativeDockerfilePath string            `json:"relative_dockerfile_path"`
-	BuildArgs              map[string]string `json:"build_args"`
-	Cache                  CacheOpts         `json:"cache_opts"`
+	BuildID                uuid.UUID               `json:"-"`
+	ContextPath, CommitSHA string                  `json:"-"` // set by Builder
+	RelativeDockerfilePath string                  `json:"relative_dockerfile_path"`
+	BuildArgs              map[string]string       `json:"build_args"`
+	Cache                  furanrpc.BuildCacheOpts `json:"cache_opts"`
 }
 
 // Job describes methods on a single abstract build job

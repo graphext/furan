@@ -15,6 +15,7 @@ import (
 	"github.com/moby/buildkit/util/progress/progressui"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/models"
 
 	"fmt"
@@ -74,34 +75,23 @@ func imageNames(imageRepos []string, tags []string) []string {
 }
 
 // loadCache fetches and configures this build cache (if requested & available) and sets sopts appropriately
-// A cleanup function is returned
-func (bks *BuildSolver) loadCache(ctx context.Context, opts models.BuildOpts, sopts *bkclient.SolveOpt) (func(), error) {
+// A cleanup function and the configured cache export path (after build) is returned
+func (bks *BuildSolver) loadCache(ctx context.Context, opts models.BuildOpts, sopts *bkclient.SolveOpt) (func(), string, error) {
 	b, err := bks.dl.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
-		return func() {}, fmt.Errorf("error getting build by id: %w", err)
+		return func() {}, "", fmt.Errorf("error getting build by id: %w", err)
 	}
 
 	switch opts.Cache.Type {
-	case models.S3CacheType:
+	case furanrpc.BuildCacheOpts_S3:
 		cleanup := func() {}
-		path, err := bks.s3cf.Fetch(ctx, b)
-		if err != nil {
-			return cleanup, fmt.Errorf("error fetching cache from s3: %w", err)
-		}
-		cleanup = func() { os.RemoveAll(path) }
-		sopts.CacheImports = []bkclient.CacheOptionsEntry{
-			bkclient.CacheOptionsEntry{
-				Type: "local",
-				Attrs: map[string]string{
-					"src": path,
-				},
-			},
-		}
+		// create the cache export path first because even if cache fetch fails due to NotFound,
+		// we still want the build to export the cache so we can save to S3 afterward
 		exportpath, err := ioutil.TempDir("", "build-cache-export-*")
 		if err != nil {
-			return cleanup, fmt.Errorf("error creating cache export path: %w", err)
+			return cleanup, "", fmt.Errorf("error creating cache export path: %w", err)
 		}
-		cleanup = func() { os.RemoveAll(path); os.RemoveAll(exportpath) }
+		cleanup = func() { os.RemoveAll(exportpath) }
 		mode := "min"
 		if opts.Cache.MaxMode {
 			mode = "max"
@@ -115,8 +105,21 @@ func (bks *BuildSolver) loadCache(ctx context.Context, opts models.BuildOpts, so
 				},
 			},
 		}
-		return cleanup, nil
-	case models.InlineCacheType:
+		path, err := bks.s3cf.Fetch(ctx, b)
+		if err != nil {
+			return cleanup, exportpath, fmt.Errorf("error fetching cache from s3: %w", err)
+		}
+		cleanup = func() { os.RemoveAll(exportpath); os.RemoveAll(path) }
+		sopts.CacheImports = []bkclient.CacheOptionsEntry{
+			bkclient.CacheOptionsEntry{
+				Type: "local",
+				Attrs: map[string]string{
+					"src": path,
+				},
+			},
+		}
+		return cleanup, exportpath, nil
+	case furanrpc.BuildCacheOpts_INLINE:
 		sopts.CacheImports = make([]bkclient.CacheOptionsEntry, len(b.ImageRepos))
 		for i := range b.ImageRepos {
 			sopts.CacheImports[i] = bkclient.CacheOptionsEntry{
@@ -134,27 +137,21 @@ func (bks *BuildSolver) loadCache(ctx context.Context, opts models.BuildOpts, so
 		}
 	}
 
-	return func() {}, nil
+	return func() {}, "", nil
 }
 
 // saveCache persists the exported build cache (if requested & available)
-func (bks *BuildSolver) saveCache(ctx context.Context, opts models.BuildOpts, sopts bkclient.SolveOpt) error {
+func (bks *BuildSolver) saveCache(ctx context.Context, opts models.BuildOpts, expath string) error {
 	b, err := bks.dl.GetBuildByID(ctx, opts.BuildID)
 	if err != nil {
 		return fmt.Errorf("error getting build by id: %w", err)
 	}
 
 	// we only need to explicitly persist cache if using S3 (w/ local exporter)
-	if opts.Cache.Type == models.S3CacheType {
-		if i := len(sopts.CacheExports); i != 1 {
-			return fmt.Errorf("unexpected CacheExports length (wanted 1): %v", i)
-		}
-		if t := sopts.CacheExports[0].Type; t != "local" {
-			return fmt.Errorf("unexpected CacheExports type (wanted local): %v", t)
-		}
-		expath, ok := sopts.CacheExports[0].Attrs["dest"]
-		if !ok {
-			return fmt.Errorf("cache exports dest attribute is missing: %#v", sopts.CacheExports[0])
+	// expath will be the local filesystem cache export path configured and returned by loadCache()
+	if opts.Cache.Type == furanrpc.BuildCacheOpts_S3 {
+		if expath == "" {
+			return fmt.Errorf("cache export path is empty")
 		}
 		if err := bks.s3cf.Save(ctx, b, expath); err != nil {
 			return fmt.Errorf("error saving exported cache to S3: %w", err)
@@ -255,7 +252,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	if err != nil {
 		return fmt.Errorf("error generating solve options: %w", err)
 	}
-	cleanup, err := bks.loadCache(ctx, opts, &sopts)
+	cleanup, expath, err := bks.loadCache(ctx, opts, &sopts)
 	if err != nil {
 		// non-fatal error if we can't load cache for some reason
 		bks.dl.AddEvent(ctx, b.ID, fmt.Sprintf("warning: error loading cache: %v", err))
@@ -297,7 +294,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 	if err != nil {
 		return fmt.Errorf("error running solver: %w", err)
 	}
-	if err := bks.saveCache(ctx, opts, sopts); err != nil {
+	if err := bks.saveCache(ctx, opts, expath); err != nil {
 		// non-fatal error if we can't save cache
 		bks.dl.AddEvent(ctx, opts.BuildID, fmt.Sprintf("warning: error saving build cache: %v", err))
 	}

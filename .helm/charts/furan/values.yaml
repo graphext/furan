@@ -16,6 +16,11 @@ app:
   secrets_backend: "vault"
   secrets_mapping: "secret/{{ .ID }}"
   use_dev_cert: false
+  aws:
+    s3_cache_enabled: false
+    region: us-west-2
+    s3bucket: ''
+    s3keypfx: ''
 
 vault:
   address: "http://vault:8200"

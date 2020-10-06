@@ -30,7 +30,7 @@ func TestServer_StartBuild(t *testing.T) {
 	}
 	flds := fields{Opts: Options{
 		TraceSvcName: "",
-		Cache:        models.CacheOpts{},
+		Cache:        furanrpc.BuildCacheOpts{},
 		LogFunc:      nil,
 	}}
 	reqf := func() *furanrpc.BuildRequest {
@@ -41,6 +41,7 @@ func TestServer_StartBuild(t *testing.T) {
 				Ref:              "master",
 				Tags:             []string{"master", "v1.0"},
 				TagWithCommitSha: true,
+				CacheOptions:     &furanrpc.BuildCacheOpts{},
 			},
 			Push: &furanrpc.PushDefinition{
 				Registries: []*furanrpc.PushRegistryDefinition{
@@ -189,7 +190,7 @@ func TestServer_StartBuild(t *testing.T) {
 					if opts.RelativeDockerfilePath != df {
 						t.Errorf("Start: bad dockerfile path: %v (wanted %v)", opts.RelativeDockerfilePath, df)
 					}
-					if !tt.args.req.Build.DisableBuildCache {
+					if tt.args.req.Build.CacheOptions.Type == furanrpc.BuildCacheOpts_UNKNOWN {
 						if !cmp.Equal(DefaultCacheOpts, opts.Cache) {
 							t.Errorf("Start: bad cache opts: %#v (wanted %#v)", opts.Cache, DefaultCacheOpts)
 						}
@@ -266,8 +267,10 @@ func TestServer_StartBuild(t *testing.T) {
 			if b.CommitSHATag != tt.args.req.Build.TagWithCommitSha {
 				t.Errorf("bad CommitSHATag: %v (wanted %v)", b.CommitSHATag, tt.args.req.Build.TagWithCommitSha)
 			}
-			if b.DisableBuildCache != tt.args.req.Build.DisableBuildCache {
-				t.Errorf("bad DisableBuildCache: %v (wanted %v)", b.DisableBuildCache, tt.args.req.Build.DisableBuildCache)
+			if tt.args.req.Build.CacheOptions.Type != furanrpc.BuildCacheOpts_UNKNOWN {
+				if b.BuildOptions.Cache.Type != tt.args.req.Build.CacheOptions.Type {
+					t.Errorf("bad cache type: %v (wanted %v)", b.BuildOptions.Cache.Type, tt.args.req.Build.CacheOptions.Type)
+				}
 			}
 			ctx, cf := context.WithTimeout(ctx, 4*tt.rundelay)
 			defer cf()

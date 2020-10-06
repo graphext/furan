@@ -16,6 +16,8 @@ import (
 
 var monitorBuild bool
 var buildArgs []string
+var cachetype string
+var cachemaxmode bool
 var rpctimeout, buildtimeout time.Duration
 
 // triggerCmd represents the trigger command
@@ -50,7 +52,8 @@ func init() {
 	triggerCmd.PersistentFlags().StringArrayVar(&tags, "tags", []string{}, "image tags (comma-delimited)")
 	triggerCmd.PersistentFlags().BoolVar(&triggerBuildRequest.Build.TagWithCommitSha, "tag-sha", true, "additionally tag with git commit SHA (optional)")
 	triggerCmd.PersistentFlags().BoolVar(&triggerBuildRequest.SkipIfExists, "skip-if-exists", false, "if build already exists at destination, skip build/push (registry: all tags exist, s3: object exists)")
-	triggerCmd.PersistentFlags().BoolVar(&triggerBuildRequest.Build.DisableBuildCache, "disable-build-cache", false, "Disable build cache")
+	triggerCmd.PersistentFlags().StringVar(&cachetype, "build-cache-type", "disabled", "Build cache type (one of: disabled, s3, inline)")
+	triggerCmd.PersistentFlags().BoolVar(&cachemaxmode, "build-cache-max-mode", false, "Build cache max mode (see BuildKit docs)")
 	triggerCmd.PersistentFlags().StringSliceVar(&buildArgs, "build-arg", []string{}, "Build arg to use for build request")
 	triggerCmd.PersistentFlags().StringArrayVar(&imagerepos, "image-repos", []string{}, "Image repositories (comma-separated)")
 	triggerCmd.PersistentFlags().BoolVar(&monitorBuild, "monitor", true, "Monitor build after triggering")
@@ -77,6 +80,18 @@ func trigger(cmd *cobra.Command, args []string) error {
 
 	if !triggerBuildRequest.Build.TagWithCommitSha && len(tags) == 0 {
 		return fmt.Errorf("at least one tag is required if not tagging with commit SHA")
+	}
+
+	triggerBuildRequest.Build.CacheOptions = &furanrpc.BuildCacheOpts{MaxMode: cachemaxmode}
+	switch cachetype {
+	case "disabled":
+		triggerBuildRequest.Build.CacheOptions.Type = furanrpc.BuildCacheOpts_DISABLED
+	case "s3":
+		triggerBuildRequest.Build.CacheOptions.Type = furanrpc.BuildCacheOpts_S3
+	case "inline":
+		triggerBuildRequest.Build.CacheOptions.Type = furanrpc.BuildCacheOpts_INLINE
+	default:
+		return fmt.Errorf("unknown or invalid build cache type: %v", cachetype)
 	}
 
 	ctx, cf := context.WithTimeout(context.Background(), rpctimeout)

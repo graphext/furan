@@ -11,7 +11,6 @@ CREATE TABLE builds (
   image_repos text[],
   tags text[],
   commit_sha_tag boolean,
-  disable_build_cache boolean,
   build_options jsonb, -- misc build options from the request
   request jsonb,  -- serialized protobuf BuildRequest
   status integer,

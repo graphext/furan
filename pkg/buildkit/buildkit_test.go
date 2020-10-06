@@ -15,6 +15,7 @@ import (
 	"github.com/opencontainers/go-digest"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
 
@@ -418,8 +419,8 @@ func TestBuildSolver_loadCache(t *testing.T) {
 			name: "s3",
 			args: args{
 				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type: models.S3CacheType,
+					Cache: furanrpc.BuildCacheOpts{
+						Type: furanrpc.BuildCacheOpts_S3,
 					},
 				},
 			},
@@ -467,8 +468,8 @@ func TestBuildSolver_loadCache(t *testing.T) {
 			name: "s3 max mode",
 			args: args{
 				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type:    models.S3CacheType,
+					Cache: furanrpc.BuildCacheOpts{
+						Type:    furanrpc.BuildCacheOpts_S3,
 						MaxMode: true,
 					},
 				},
@@ -500,8 +501,8 @@ func TestBuildSolver_loadCache(t *testing.T) {
 			name: "inline",
 			args: args{
 				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type: models.InlineCacheType,
+					Cache: furanrpc.BuildCacheOpts{
+						Type: furanrpc.BuildCacheOpts_INLINE,
 					},
 				},
 			},
@@ -562,7 +563,7 @@ func TestBuildSolver_loadCache(t *testing.T) {
 				LogF: t.Logf,
 			}
 			sopts := &bkclient.SolveOpt{}
-			cleanup, err := bks.loadCache(ctx, tt.args.opts, sopts)
+			cleanup, _, err := bks.loadCache(ctx, tt.args.opts, sopts)
 			if cleanup != nil {
 				cleanup()
 			}
@@ -581,8 +582,8 @@ func TestBuildSolver_loadCache(t *testing.T) {
 
 func TestBuildSolver_saveCache(t *testing.T) {
 	type args struct {
-		opts  models.BuildOpts
-		sopts bkclient.SolveOpt
+		opts   models.BuildOpts
+		expath string
 	}
 	tests := []struct {
 		name      string
@@ -604,21 +605,12 @@ func TestBuildSolver_saveCache(t *testing.T) {
 			},
 			args: args{
 				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type:    models.S3CacheType,
+					Cache: furanrpc.BuildCacheOpts{
+						Type:    furanrpc.BuildCacheOpts_S3,
 						MaxMode: true,
 					},
 				},
-				sopts: bkclient.SolveOpt{
-					CacheExports: []bkclient.CacheOptionsEntry{
-						bkclient.CacheOptionsEntry{
-							Type: "local",
-							Attrs: map[string]string{
-								"dest": "/foo/bar",
-							},
-						},
-					},
-				},
+				expath: "/foo/bar",
 			},
 			getfunc: func(ctx context.Context, b models.Build, path string) error {
 				if path != "/foo/bar" {
@@ -627,85 +619,6 @@ func TestBuildSolver_saveCache(t *testing.T) {
 				return nil
 			},
 			getcalled: true,
-			wantErr:   false,
-		},
-		{
-			name: "s3 with bad export: missing dest",
-			build: models.Build{
-				GitHubRepo:   "foo/bar",
-				GitHubRef:    "master",
-				ImageRepos:   []string{"acme/foo"},
-				Tags:         []string{"master", "v1.0.0"},
-				CommitSHATag: true,
-				Status:       models.BuildStatusRunning,
-			},
-			args: args{
-				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type:    models.S3CacheType,
-						MaxMode: true,
-					},
-				},
-				sopts: bkclient.SolveOpt{
-					CacheExports: []bkclient.CacheOptionsEntry{
-						bkclient.CacheOptionsEntry{
-							Type:  "local",
-							Attrs: map[string]string{},
-						},
-					},
-				},
-			},
-			getcalled: false,
-			wantErr:   true,
-		},
-		{
-			name: "s3 with bad export: wrong type",
-			build: models.Build{
-				GitHubRepo:   "foo/bar",
-				GitHubRef:    "master",
-				ImageRepos:   []string{"acme/foo"},
-				Tags:         []string{"master", "v1.0.0"},
-				CommitSHATag: true,
-				Status:       models.BuildStatusRunning,
-			},
-			args: args{
-				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type:    models.S3CacheType,
-						MaxMode: true,
-					},
-				},
-				sopts: bkclient.SolveOpt{
-					CacheExports: []bkclient.CacheOptionsEntry{
-						bkclient.CacheOptionsEntry{
-							Type:  "inline",
-							Attrs: map[string]string{},
-						},
-					},
-				},
-			},
-			getcalled: false,
-			wantErr:   true,
-		},
-		{
-			name: "inline",
-			build: models.Build{
-				GitHubRepo:   "foo/bar",
-				GitHubRef:    "master",
-				ImageRepos:   []string{"acme/foo"},
-				Tags:         []string{"master", "v1.0.0"},
-				CommitSHATag: true,
-				Status:       models.BuildStatusRunning,
-			},
-			args: args{
-				opts: models.BuildOpts{
-					Cache: models.CacheOpts{
-						Type: models.InlineCacheType,
-					},
-				},
-				sopts: bkclient.SolveOpt{},
-			},
-			getcalled: false,
 			wantErr:   false,
 		},
 	}
@@ -730,7 +643,7 @@ func TestBuildSolver_saveCache(t *testing.T) {
 				s3cf: cf,
 				LogF: t.Logf,
 			}
-			if err := bks.saveCache(ctx, tt.args.opts, tt.args.sopts); (err != nil) != tt.wantErr {
+			if err := bks.saveCache(ctx, tt.args.opts, tt.args.expath); (err != nil) != tt.wantErr {
 				t.Errorf("saveCache() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if getcalled != tt.getcalled {
