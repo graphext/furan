@@ -101,8 +101,17 @@ func (b Build) Running() bool {
 	return b.Status == BuildStatusRunning
 }
 
+// TimeFromRPCTimestamp returns a UTC time.Time for an RPC timestamp
 func TimeFromRPCTimestamp(ts furanrpc.Timestamp) time.Time {
-	return time.Unix(ts.Seconds, ts.Nanos).UTC()
+	return time.Unix(ts.Seconds, int64(ts.Nanos)).UTC()
+}
+
+// RPCTimestamptFromTime takes a time.Time and returns an RPC timestamp
+func RPCTimestampFromTime(t time.Time) furanrpc.Timestamp {
+	return furanrpc.Timestamp{
+		Seconds: t.Unix(),
+		Nanos:   int32(t.Nanosecond()),
+	}
 }
 
 // EncryptAndSetGitHubCredential takes a GitHub credential, encrypts it and sets EncryptedGitHubCredential accordingly

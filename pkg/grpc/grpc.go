@@ -316,23 +316,17 @@ func (gr *Server) GetBuildStatus(ctx context.Context, req *furanrpc.BuildStatusR
 		}
 		return nil, status.Errorf(codes.Internal, "error getting build: %v", err)
 	}
-	var started, completed *furanrpc.Timestamp
-	started = &furanrpc.Timestamp{
-		Seconds: int64(b.Created.Second()),
-		Nanos:   int64(b.Created.Nanosecond()),
-	}
+	var started, completed furanrpc.Timestamp
+	started = models.RPCTimestampFromTime(b.Created)
 	if !b.Completed.IsZero() {
-		completed = &furanrpc.Timestamp{
-			Seconds: int64(b.Completed.Second()),
-			Nanos:   int64(b.Completed.Nanosecond()),
-		}
+		completed = models.RPCTimestampFromTime(b.Completed)
 	}
 	return &furanrpc.BuildStatusResponse{
 		BuildId:      b.ID.String(),
 		BuildRequest: &b.Request,
 		State:        b.Status.State(),
-		Started:      started,
-		Completed:    completed,
+		Started:      &started,
+		Completed:    &completed,
 	}, nil
 }
 

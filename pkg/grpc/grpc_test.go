@@ -357,8 +357,8 @@ func TestServer_GetBuildStatus(t *testing.T) {
 				if got.State != tt.b.Status.State() {
 					t.Errorf("bad state: %v (wanted %v)", got.State, tt.b.Status.State())
 				}
-				if got.Started.Seconds != int64(tt.b.Created.Second()) {
-					t.Errorf("bad started seconds: %v (wanted %v)", got.Started.Seconds, tt.b.Created.Second())
+				if !tt.b.Created.Equal(models.TimeFromRPCTimestamp(*got.Started)) {
+					t.Errorf("bad started timestamp: %v (wanted %v)", got.Started, tt.b.Created)
 				}
 			}
 		})
