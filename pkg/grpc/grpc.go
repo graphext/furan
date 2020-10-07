@@ -304,6 +304,21 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 	}, nil
 }
 
+func buildStatusResponseFromBuild(b models.Build) *furanrpc.BuildStatusResponse {
+	var started, completed furanrpc.Timestamp
+	started = models.RPCTimestampFromTime(b.Created)
+	if !b.Completed.IsZero() {
+		completed = models.RPCTimestampFromTime(b.Completed)
+	}
+	return &furanrpc.BuildStatusResponse{
+		BuildId:      b.ID.String(),
+		BuildRequest: &b.Request,
+		State:        b.Status.State(),
+		Started:      &started,
+		Completed:    &completed,
+	}
+}
+
 // GetBuildStatus returns the current status for a build
 func (gr *Server) GetBuildStatus(ctx context.Context, req *furanrpc.BuildStatusRequest) (_ *furanrpc.BuildStatusResponse, err error) {
 	id, err := uuid.FromString(req.BuildId)
@@ -317,18 +332,7 @@ func (gr *Server) GetBuildStatus(ctx context.Context, req *furanrpc.BuildStatusR
 		}
 		return nil, status.Errorf(codes.Internal, "error getting build: %v", err)
 	}
-	var started, completed furanrpc.Timestamp
-	started = models.RPCTimestampFromTime(b.Created)
-	if !b.Completed.IsZero() {
-		completed = models.RPCTimestampFromTime(b.Completed)
-	}
-	return &furanrpc.BuildStatusResponse{
-		BuildId:      b.ID.String(),
-		BuildRequest: &b.Request,
-		State:        b.Status.State(),
-		Started:      &started,
-		Completed:    &completed,
-	}, nil
+	return buildStatusResponseFromBuild(b), nil
 }
 
 // MonitorBuild streams events from a specified build until completion
@@ -435,6 +439,51 @@ func (gr *Server) CancelBuild(ctx context.Context, req *furanrpc.BuildCancelRequ
 	return &furanrpc.BuildCancelResponse{
 		BuildId: id.String(),
 	}, nil
+}
+
+func datalayerListBuildsOptions(req furanrpc.ListBuildsRequest) datalayer.ListBuildsOptions {
+	out := datalayer.ListBuildsOptions{
+		WithGitHubRepo: req.WithGithubRepo,
+		WithGitHubRef:  req.WithGithubRef,
+		WithImageRepo:  req.WithImageRepo,
+		WithStatus:     models.BuildStatusFromState(req.WithBuildState),
+		Limit:          uint(req.Limit),
+	}
+	if req.CompletedAfter != nil {
+		out.CompletedAfter = models.TimeFromRPCTimestamp(*req.CompletedAfter)
+	}
+	if req.StartedAfter != nil {
+		out.StartedAfter = models.TimeFromRPCTimestamp(*req.StartedAfter)
+	}
+	if req.CompletedBefore != nil {
+		out.CompletedBefore = models.TimeFromRPCTimestamp(*req.CompletedBefore)
+	}
+	if req.StartedBefore != nil {
+		out.StartedBefore = models.TimeFromRPCTimestamp(*req.StartedBefore)
+	}
+	return out
+}
+
+func (gr *Server) ListBuilds(ctx context.Context, req *furanrpc.ListBuildsRequest) (*furanrpc.ListBuildsResponse, error) {
+	if req.WithGithubRepo == "" &&
+		req.WithGithubRef == "" &&
+		req.WithImageRepo == "" &&
+		req.WithBuildState == furanrpc.BuildState_UNKNOWN &&
+		req.CompletedAfter == nil &&
+		req.StartedAfter == nil &&
+		req.CompletedBefore == nil &&
+		req.StartedBefore == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "at least one list option is required")
+	}
+	builds, err := gr.DL.ListBuilds(ctx, datalayerListBuildsOptions(*req))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error getting builds from db: %v", err)
+	}
+	out := make([]*furanrpc.BuildStatusResponse, len(builds))
+	for i := 0; i < len(builds); i++ {
+		out[i] = buildStatusResponseFromBuild(builds[i])
+	}
+	return &furanrpc.ListBuildsResponse{Builds: out}, nil
 }
 
 // Shutdown gracefully stops the  server

@@ -58,6 +58,29 @@ func (bs BuildStatus) State() furanrpc.BuildState {
 	}
 }
 
+func BuildStatusFromState(s furanrpc.BuildState) BuildStatus {
+	switch s {
+	case furanrpc.BuildState_UNKNOWN:
+		return BuildStatusUnknown
+	case furanrpc.BuildState_NOTSTARTED:
+		return BuildStatusNotStarted
+	case furanrpc.BuildState_SKIPPED:
+		return BuildStatusSkipped
+	case furanrpc.BuildState_RUNNING:
+		return BuildStatusRunning
+	case furanrpc.BuildState_FAILURE:
+		return BuildStatusFailure
+	case furanrpc.BuildState_SUCCESS:
+		return BuildStatusSuccess
+	case furanrpc.BuildState_CANCEL_REQUESTED:
+		return BuildStatusCancelRequested
+	case furanrpc.BuildState_CANCELLED:
+		return BuildStatusCancelled
+	default:
+		return BuildStatusUnknown
+	}
+}
+
 // TerminalState returns whether the status is in a final (terminal) state that will not change
 func (bs BuildStatus) TerminalState() bool {
 	switch bs {

@@ -15,7 +15,7 @@ service FuranExecutor {
   rpc GetBuildStatus (BuildStatusRequest) returns (BuildStatusResponse) { option (read_only) = true; }
   rpc MonitorBuild (BuildStatusRequest) returns (stream BuildEvent) { option (read_only) = true; }
   rpc CancelBuild (BuildCancelRequest) returns (BuildCancelResponse) { option (read_only) = false; }
-  //rpc ListBuilds (ListBuildsRequest) returns (ListBuildsResponse) { option (read_only) = true; }
+  rpc ListBuilds (ListBuildsRequest) returns (ListBuildsResponse) { option (read_only) = true; }
 }
 
 // From https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto
@@ -118,18 +118,18 @@ message BuildEvent {
 //   started_after = <1 week ago>
 //   AND
 //   completed_before = <24 hours ago>
-//message ListBuildsRequest {
-//  string with_github_repo = 1;
-//  string with_github_ref = 2;
-//  string with_image_repo = 3;
-//  BuildState with_build_state = 4;
-//  Timestamp completed_after = 5;
-//  Timestamp started_after = 6;
-//  Timestamp completed_before = 7;
-//  Timestamp started_before = 8;
-//  uint32 limit = 9;
-//}
-//
-//message ListBuildsResponse {
-//  repeated BuildStatusResponse builds = 1;
-//}
+message ListBuildsRequest {
+  string with_github_repo = 1;
+  string with_github_ref = 2;
+  string with_image_repo = 3;
+  BuildState with_build_state = 4;
+  Timestamp completed_after = 5;
+  Timestamp started_after = 6;
+  Timestamp completed_before = 7;
+  Timestamp started_before = 8;
+  uint32 limit = 9;
+}
+
+message ListBuildsResponse {
+  repeated BuildStatusResponse builds = 1;
+}

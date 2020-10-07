@@ -749,3 +749,128 @@ func TestServer_apiKeyAuth(t *testing.T) {
 		})
 	}
 }
+
+func TestServer_ListBuilds(t *testing.T) {
+	type args struct {
+		req    *furanrpc.ListBuildsRequest
+		builds []models.Build
+	}
+	tests := []struct {
+		name      string
+		args      args
+		wantCount uint
+		wantErr   bool
+	}{
+		{
+			name: "by repo",
+			args: args{
+				req: &furanrpc.ListBuildsRequest{
+					WithGithubRepo: "foo/bar",
+				},
+				builds: []models.Build{
+					models.Build{
+						GitHubRepo: "asdf/asdf",
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+					},
+				},
+			},
+			wantCount: 1,
+		},
+		{
+			name: "by ref",
+			args: args{
+				req: &furanrpc.ListBuildsRequest{
+					WithGithubRef: "master",
+				},
+				builds: []models.Build{
+					models.Build{
+						GitHubRepo: "asdf/asdf",
+						GitHubRef:  "master",
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+					},
+				},
+			},
+			wantCount: 2,
+		},
+		{
+			name: "multi options",
+			args: args{
+				req: &furanrpc.ListBuildsRequest{
+					WithGithubRepo: "foo/bar",
+					WithGithubRef:  "master",
+					WithImageRepo:  "1234/1234",
+				},
+				builds: []models.Build{
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+						ImageRepos: []string{"1234/1234"},
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+						ImageRepos: []string{"1234/1234"},
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+					},
+				},
+			},
+			wantCount: 2,
+		},
+		{
+			name: "multi options with limit",
+			args: args{
+				req: &furanrpc.ListBuildsRequest{
+					WithGithubRepo: "foo/bar",
+					WithGithubRef:  "master",
+					WithImageRepo:  "1234/1234",
+					Limit:          1,
+				},
+				builds: []models.Build{
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+						ImageRepos: []string{"1234/1234"},
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+						ImageRepos: []string{"1234/1234"},
+					},
+					models.Build{
+						GitHubRepo: "foo/bar",
+						GitHubRef:  "master",
+					},
+				},
+			},
+			wantCount: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			dl := &datalayer.FakeDataLayer{}
+			for _, b := range tt.args.builds {
+				dl.CreateBuild(ctx, b)
+			}
+			gr := &Server{
+				DL: dl,
+			}
+			got, err := gr.ListBuilds(ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListBuilds() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if len(got.Builds) != int(tt.wantCount) {
+				t.Errorf("bad build count %v (wanted %v)", len(got.Builds), tt.wantCount)
+			}
+		})
+	}
+}
