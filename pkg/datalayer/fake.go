@@ -62,6 +62,7 @@ func (fdl *FakeDataLayer) CreateBuild(ctx context.Context, b models.Build) (uuid
 	defer fdl.mtx.Unlock()
 	b.ID = uuid.Must(uuid.NewV4())
 	b.Status = models.BuildStatusNotStarted
+	b.Created = time.Now().UTC()
 	fdl.d[b.ID] = &b
 	return b.ID, nil
 }
@@ -74,6 +75,97 @@ func (fdl *FakeDataLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (model
 		return models.Build{}, ErrNotFound
 	}
 	return *bsr, nil
+}
+
+func (fdl *FakeDataLayer) ListBuilds(ctx context.Context, opts ListBuildsOptions) ([]models.Build, error) {
+	fdl.init()
+	fdl.mtx.RLock()
+	defer fdl.mtx.RUnlock()
+	zero := ListBuildsOptions{}
+	if opts == zero {
+		return nil, fmt.Errorf("at least one list option must be supplied")
+	}
+	// make sure a full table dump isn't getting requested
+	if !opts.CompletedBefore.IsZero() && !opts.CompletedAfter.IsZero() {
+		if opts.CompletedBefore.Equal(opts.CompletedAfter) {
+			return nil, fmt.Errorf("CompletedBefore and CompletedAfter cannot be equal")
+		}
+	}
+	if !opts.StartedBefore.IsZero() && !opts.StartedAfter.IsZero() {
+		if opts.StartedBefore.Equal(opts.StartedAfter) {
+			return nil, fmt.Errorf("StartedBefore and StartedAfter cannot be equal")
+		}
+	}
+	filter := func(builds []models.Build, cf func(e models.Build) bool) []models.Build {
+		pres := []models.Build{}
+		for _, b := range builds {
+			if cf(b) {
+				pres = append(pres, b)
+			}
+		}
+		return pres
+	}
+	out := make([]models.Build, len(fdl.d))
+	i := 0
+	for _, v := range fdl.d {
+		out[i] = *v
+		i++
+	}
+	if opts.WithGitHubRepo != "" {
+		out = filter(out, func(e models.Build) bool {
+			return e.GitHubRepo == opts.WithGitHubRepo
+		})
+	}
+	if opts.WithGitHubRef != "" {
+		out = filter(out, func(e models.Build) bool {
+			return e.GitHubRef == opts.WithGitHubRef
+		})
+	}
+	if opts.WithImageRepo != "" {
+		out = filter(out, func(e models.Build) bool {
+			for _, ir := range e.ImageRepos {
+				if ir == opts.WithImageRepo {
+					return true
+				}
+			}
+			return false
+		})
+	}
+	if opts.WithStatus != models.BuildStatusUnknown {
+		out = filter(out, func(e models.Build) bool {
+			return e.Status == opts.WithStatus
+		})
+	}
+	if !opts.CompletedAfter.IsZero() {
+		out = filter(out, func(e models.Build) bool {
+			return e.Completed.After(opts.CompletedAfter) || e.Completed.Equal(opts.CompletedAfter)
+		})
+	}
+	if !opts.StartedAfter.IsZero() {
+		out = filter(out, func(e models.Build) bool {
+			return e.Created.After(opts.StartedAfter) || e.Created.Equal(opts.StartedAfter)
+		})
+	}
+	if !opts.CompletedBefore.IsZero() {
+		out = filter(out, func(e models.Build) bool {
+			if e.Completed.IsZero() {
+				return false
+			}
+			return e.Completed.Before(opts.CompletedBefore)
+		})
+	}
+	if !opts.StartedBefore.IsZero() {
+		out = filter(out, func(e models.Build) bool {
+			if e.Created.IsZero() {
+				return false
+			}
+			return e.Created.Before(opts.StartedBefore)
+		})
+	}
+	if opts.Limit > 0 && len(out) > int(opts.Limit) {
+		return out[:opts.Limit], nil
+	}
+	return out, nil
 }
 
 func (fdl *FakeDataLayer) SetBuildCompletedTimestamp(ctx context.Context, id uuid.UUID, ts time.Time) error {

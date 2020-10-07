@@ -24,6 +24,7 @@ import (
 type DataLayer interface {
 	CreateBuild(context.Context, models.Build) (uuid.UUID, error)
 	GetBuildByID(context.Context, uuid.UUID) (models.Build, error)
+	ListBuilds(context.Context, ListBuildsOptions) ([]models.Build, error)
 	SetBuildCompletedTimestamp(context.Context, uuid.UUID, time.Time) error
 	SetBuildStatus(context.Context, uuid.UUID, models.BuildStatus) error
 	DeleteBuild(context.Context, uuid.UUID) error
@@ -110,7 +111,9 @@ func (dl *PostgresDBLayer) CreateBuild(ctx context.Context, b models.Build) (uui
 		return id, fmt.Errorf("error generating build id: %w", err)
 	}
 	// Clear out GH credential if present
-	b.Request.GetBuild().GithubCredential = ""
+	if b.Request.Build != nil {
+		b.Request.Build.GithubCredential = ""
+	}
 	_, err = dl.p.Exec(ctx,
 		`INSERT INTO builds (id, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, build_options, request, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);`,
 		id, b.GitHubRepo, b.GitHubRef, b.EncryptedGitHubCredential, b.ImageRepos, b.Tags, b.CommitSHATag, b.BuildOptions, b.Request, models.BuildStatusNotStarted)
@@ -140,6 +143,106 @@ func (dl *PostgresDBLayer) GetBuildByID(ctx context.Context, id uuid.UUID) (mode
 	}
 	if completed.Status == pgtype.Present {
 		out.Completed = completed.Time
+	}
+	return out, nil
+}
+
+// ListBuildsOptions models all options for listing builds. Fields (when set) are combined with
+// an implicit AND. If you supply impossible options, no builds will be returned.
+type ListBuildsOptions struct {
+	WithGitHubRepo  string
+	WithGitHubRef   string
+	WithImageRepo   string
+	WithStatus      models.BuildStatus
+	CompletedAfter  time.Time // after or equal to
+	StartedAfter    time.Time // after or equal to
+	CompletedBefore time.Time
+	StartedBefore   time.Time
+	Limit           uint // Return no more than this many builds
+}
+
+// ListBuilds lists all builds according to opts. At least one field of opts must be a non-zero value.
+func (dl *PostgresDBLayer) ListBuilds(ctx context.Context, opts ListBuildsOptions) ([]models.Build, error) {
+	zero := ListBuildsOptions{}
+	if opts == zero {
+		return nil, fmt.Errorf("at least one list option must be supplied")
+	}
+	// make sure a full table dump isn't getting requested
+	if !opts.CompletedBefore.IsZero() && !opts.CompletedAfter.IsZero() {
+		if opts.CompletedBefore.Equal(opts.CompletedAfter) {
+			return nil, fmt.Errorf("CompletedBefore and CompletedAfter cannot be equal")
+		}
+	}
+	if !opts.StartedBefore.IsZero() && !opts.StartedAfter.IsZero() {
+		if opts.StartedBefore.Equal(opts.StartedAfter) {
+			return nil, fmt.Errorf("StartedBefore and StartedAfter cannot be equal")
+		}
+	}
+	args := []interface{}{}
+	placeholder := func() string {
+		return fmt.Sprintf("$%d", len(args)+1)
+	}
+	conditionals := []string{}
+	if opts.WithGitHubRepo != "" {
+		conditionals = append(conditionals, fmt.Sprintf("(github_repo = %v)", placeholder()))
+		args = append(args, opts.WithGitHubRepo)
+	}
+	if opts.WithGitHubRef != "" {
+		conditionals = append(conditionals, fmt.Sprintf("(github_ref = %v)", placeholder()))
+		args = append(args, opts.WithGitHubRef)
+	}
+	if opts.WithImageRepo != "" {
+		conditionals = append(conditionals, fmt.Sprintf("(%v = ANY (image_repos))", placeholder()))
+		args = append(args, opts.WithImageRepo)
+	}
+	if opts.WithStatus != models.BuildStatusUnknown {
+		conditionals = append(conditionals, fmt.Sprintf("(status = %v)", placeholder()))
+		args = append(args, opts.WithStatus)
+	}
+	if !opts.CompletedAfter.IsZero() {
+		conditionals = append(conditionals, fmt.Sprintf("(completed >= %v)", placeholder()))
+		args = append(args, opts.CompletedAfter)
+	}
+	if !opts.StartedAfter.IsZero() {
+		conditionals = append(conditionals, fmt.Sprintf("(created >= %v)", placeholder()))
+		args = append(args, opts.StartedAfter)
+	}
+	if !opts.CompletedBefore.IsZero() {
+		conditionals = append(conditionals, fmt.Sprintf("(completed < %v)", placeholder()))
+		args = append(args, opts.CompletedBefore)
+	}
+	if !opts.StartedBefore.IsZero() {
+		conditionals = append(conditionals, fmt.Sprintf("(created < %v)", placeholder()))
+		args = append(args, opts.StartedBefore)
+	}
+	q := `SELECT 
+	id, created, updated, completed, github_repo, github_ref, encrypted_github_credential, image_repos, tags, commit_sha_tag, build_options, request, status, events 
+	FROM builds WHERE `
+	whereClause := strings.Join(conditionals, " AND ")
+	var limitClause string
+	if opts.Limit > 0 {
+		limitClause = fmt.Sprintf(" LIMIT %d", opts.Limit)
+	}
+	q += whereClause + limitClause + ";"
+	rows, err := dl.p.Query(ctx, q, args...)
+	if err != nil {
+		return nil, fmt.Errorf("error querying db: %w", err)
+	}
+	defer rows.Close()
+	out := []models.Build{}
+	for rows.Next() {
+		var updated, completed pgtype.Timestamptz
+		var b models.Build
+		if err := rows.Scan(&b.ID, &b.Created, &updated, &completed, &b.GitHubRepo, &b.GitHubRef, &b.EncryptedGitHubCredential, &b.ImageRepos, &b.Tags, &b.CommitSHATag, &b.BuildOptions, &b.Request, &b.Status, &b.Events); err != nil {
+			return nil, fmt.Errorf("error scanning build: %w", err)
+		}
+		if updated.Status == pgtype.Present {
+			b.Updated = updated.Time
+		}
+		if completed.Status == pgtype.Present {
+			b.Completed = completed.Time
+		}
+		out = append(out, b)
 	}
 	return out, nil
 }

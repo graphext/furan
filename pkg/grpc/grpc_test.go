@@ -334,6 +334,8 @@ func TestServer_GetBuildStatus(t *testing.T) {
 				id = uuid.Must(uuid.NewV4())
 			} else {
 				id, _ = dl.CreateBuild(ctx, *tt.b)
+				b, _ := dl.GetBuildByID(ctx, id)
+				tt.b.Created = b.Created
 			}
 			gr := &Server{
 				DL: dl,

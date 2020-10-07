@@ -38,6 +38,10 @@ func RunTests(t *testing.T, dlfunc DLFactoryFunc) {
 			testDBGetBuildByID,
 		},
 		{
+			"list builds",
+			testDBListBuilds,
+		},
+		{
 			"set build completed timestamp",
 			testDBSetBuildCompletedTimestamp,
 		},
@@ -156,6 +160,155 @@ func testDBGetBuildByID(t *testing.T, dl datalayer.DataLayer) {
 	err = dl.DeleteBuild(context.Background(), id)
 	if err != nil {
 		t.Fatalf("error deleting build: %v", err)
+	}
+}
+
+func testDBListBuilds(t *testing.T, dl datalayer.DataLayer) {
+	ctx := context.Background()
+	startedAfter := time.Now().UTC() // started timestamps are automatically set during creation
+	id1, _ := dl.CreateBuild(ctx, models.Build{GitHubRepo: "foo/bar"})
+	id2, _ := dl.CreateBuild(ctx, models.Build{GitHubRef: "asdf"})
+	id3, _ := dl.CreateBuild(ctx, models.Build{ImageRepos: []string{"some/repo"}})
+	id4, _ := dl.CreateBuild(ctx, models.Build{})
+	dl.SetBuildStatus(ctx, id4, models.BuildStatusFailure)
+	completedAfter := time.Date(2020, time.January, 4, 1, 1, 1, 1, time.UTC)
+	completedBefore := time.Date(2020, time.January, 2, 1, 1, 1, 1, time.UTC)
+	id5, _ := dl.CreateBuild(ctx, models.Build{})
+	dl.SetBuildCompletedTimestamp(ctx, id5, completedAfter.Add(1*time.Hour))
+	id6, _ := dl.CreateBuild(ctx, models.Build{})
+	dl.SetBuildCompletedTimestamp(ctx, id6, completedBefore.Add(-1*time.Hour))
+	startedBefore := time.Now().UTC().Add(1 * time.Hour)
+
+	_, err := dl.ListBuilds(ctx, datalayer.ListBuildsOptions{})
+	if err == nil {
+		t.Errorf("empty list options should return error")
+	}
+
+	timestamp := startedAfter
+	_, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{
+		StartedBefore: timestamp,
+		StartedAfter:  timestamp,
+	})
+	if err == nil {
+		t.Errorf("duplicate timestamps should return error")
+	}
+
+	builds, err := dl.ListBuilds(ctx, datalayer.ListBuildsOptions{WithGitHubRepo: "foo/bar"})
+	if err != nil {
+		t.Errorf("list builds by github repo failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id1 || builds[0].GitHubRepo != "foo/bar" {
+		t.Errorf("bad result for listing by github repo: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{WithGitHubRef: "asdf"})
+	if err != nil {
+		t.Errorf("list builds by github ref failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id2 || builds[0].GitHubRef != "asdf" {
+		t.Errorf("bad result for listing by github ref: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{WithImageRepo: "some/repo"})
+	if err != nil {
+		t.Errorf("list builds by image repo failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id3 || builds[0].ImageRepos[0] != "some/repo" {
+		t.Errorf("bad result for listing by image repo: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{WithStatus: models.BuildStatusFailure})
+	if err != nil {
+		t.Errorf("list builds by status failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id4 || builds[0].Status != models.BuildStatusFailure {
+		t.Errorf("bad result for listing by status: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{CompletedAfter: completedAfter})
+	if err != nil {
+		t.Errorf("list builds by completed after failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id5 || !(builds[0].Completed.After(completedAfter) || builds[0].Completed.Equal(completedAfter)) {
+		t.Errorf("bad result for listing by completed after: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{CompletedBefore: completedBefore})
+	if err != nil {
+		t.Errorf("list builds by completed before failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id6 || !builds[0].Completed.Before(completedBefore) {
+		t.Errorf("bad result for listing by completed before: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{StartedAfter: startedAfter})
+	if err != nil {
+		t.Errorf("list builds by started after failed: %v", err)
+	}
+	if len(builds) != 6 {
+		t.Errorf("bad result for listing by started after: %+v", builds)
+	}
+
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{StartedBefore: startedBefore})
+	if err != nil {
+		t.Errorf("list builds by started before failed: %v", err)
+	}
+	if len(builds) != 6 {
+		t.Errorf("bad result for listing by started before: %+v", builds)
+	}
+
+	// limit
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{StartedBefore: startedBefore, Limit: 2})
+	if err != nil {
+		t.Errorf("list builds by started before with limit failed: %v", err)
+	}
+	if len(builds) != 2 {
+		t.Errorf("bad result for listing by started before with limit: %+v", builds)
+	}
+
+	// impossible set of options should return no results
+	timestamp = startedBefore
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{
+		StartedAfter:  timestamp,
+		StartedBefore: timestamp.Add(-1 * time.Hour),
+	})
+	if err != nil {
+		t.Errorf("impossible options failed: %v", err)
+	}
+	if len(builds) != 0 {
+		t.Errorf("bad result for impossible options: %+v", builds)
+	}
+
+	// verify boolean ANDs
+	id7, _ := dl.CreateBuild(ctx, models.Build{GitHubRepo: "foo/bar2", GitHubRef: "1234", ImageRepos: []string{"abc", "def"}})
+	dl.SetBuildStatus(ctx, id7, models.BuildStatusRunning)
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{
+		StartedAfter:   startedAfter,
+		WithGitHubRepo: "foo/bar2",
+		WithGitHubRef:  "1234",
+		WithImageRepo:  "def",
+		WithStatus:     models.BuildStatusRunning,
+	})
+	if err != nil {
+		t.Errorf("multiple options failed: %v", err)
+	}
+	if len(builds) != 1 || builds[0].ID != id7 {
+		t.Errorf("bad result for AND check multiple options: %+v", builds)
+	}
+
+	// change one of the conditionals to not match anything
+	builds, err = dl.ListBuilds(ctx, datalayer.ListBuildsOptions{
+		StartedAfter:   startedBefore,
+		WithGitHubRepo: "foo/bar2",
+		WithGitHubRef:  "1234",
+		WithImageRepo:  "invalid", // won't match
+		WithStatus:     models.BuildStatusRunning,
+	})
+	if err != nil {
+		t.Errorf("non-matching multiple options failed: %v", err)
+	}
+	if len(builds) != 0 {
+		t.Errorf("non-matching multiple options should return no results: %+v", builds)
 	}
 }
 
