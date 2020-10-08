@@ -88,6 +88,8 @@ func (bs BuildStatus) TerminalState() bool {
 		fallthrough
 	case BuildStatusFailure:
 		fallthrough
+	case BuildStatusSkipped:
+		fallthrough
 	case BuildStatusCancelled:
 		return true
 	default:
