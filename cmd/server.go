@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"log"
+	"os"
 	"time"
 
 	// Import pprof handlers into http.DefaultServeMux
@@ -41,7 +42,33 @@ var defaultcachemaxmode bool
 var tlscert, tlskey string
 var jcinterval, jcage time.Duration
 
+// serverAndRunnerFlags adds flags shared by the "server" and "runbuild" commands
+func serverAndRunnerFlags(cmd *cobra.Command) {
+	// Secrets
+	cmd.PersistentFlags().StringVar(&vaultConfig.Addr, "vault-addr", os.Getenv("VAULT_ADDR"), "Vault URL (if using Vault secret backend)")
+	cmd.PersistentFlags().StringVar(&vaultConfig.Token, "vault-token", os.Getenv("VAULT_TOKEN"), "Vault token (if using token auth & Vault secret backend)")
+	cmd.PersistentFlags().BoolVar(&vaultConfig.TokenAuth, "vault-token-auth", false, "Use Vault token-based auth (if using Vault secret backend)")
+	cmd.PersistentFlags().BoolVar(&vaultConfig.K8sAuth, "vault-k8s-auth", false, "Use Vault k8s auth (if using Vault secret backend)")
+	cmd.PersistentFlags().StringVar(&vaultConfig.K8sJWTPath, "vault-k8s-jwt-path", "/var/run/secrets/kubernetes.io/serviceaccount/token", "Vault k8s JWT file path (if using k8s auth & Vault secret backend)")
+	cmd.PersistentFlags().StringVar(&vaultConfig.K8sRole, "vault-k8s-role", "", "Vault k8s role (if using k8s auth & Vault secret backend)")
+	cmd.PersistentFlags().StringVar(&vaultConfig.K8sAuthPath, "vault-k8s-auth-path", "kubernetes", "Vault k8s auth path (if using k8s auth & Vault secret backend)")
+	cmd.PersistentFlags().StringVar(&secretsbackend, "secrets-backend", "vault", "Secret backend (one of: vault,env,json,filetree)")
+	cmd.PersistentFlags().StringVar(&sf.JSONFile, "secrets-json-file", "secrets.json", "Secret JSON file path (if using json backend)")
+	cmd.PersistentFlags().StringVar(&sf.FileTreeRoot, "secrets-filetree-root", "/vault/secrets/", "Secrets filetree root path (if using filetree backend)")
+	cmd.PersistentFlags().StringVar(&sf.Mapping, "secrets-mapping", "", "Secrets mapping template string (required)")
+
+	// AWS S3 Cache
+	cmd.PersistentFlags().StringVar(&awsConfig.Region, "aws-region", "us-west-2", "AWS region")
+	cmd.PersistentFlags().StringVar(&awsConfig.CacheBucket, "s3-cache-bucket", "", "AWS S3 cache bucket")
+	cmd.PersistentFlags().StringVar(&awsConfig.CacheKeyPrefix, "s3-cache-key-pfx", "", "AWS S3 cache key prefix")
+
+	// ECR
+	cmd.PersistentFlags().BoolVar(&awsConfig.EnableECR, "ecr", false, "Enable AWS ECR support")
+	cmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryHosts, "ecr-registry-hosts", []string{}, "ECR registry hosts (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
+}
+
 func init() {
+	serverAndRunnerFlags(serverCmd)
 	serverCmd.PersistentFlags().StringVar(&serverConfig.HTTPSAddr, "https-addr", "0.0.0.0:4001", "REST HTTPS listen address")
 	serverCmd.PersistentFlags().StringVar(&serverConfig.GRPCAddr, "grpc-addr", "0.0.0.0:4000", "gRPC listen address")
 	serverCmd.PersistentFlags().StringVar(&tracesvcname, "trace-svc", "furan2", "APM trace service name (optional)")

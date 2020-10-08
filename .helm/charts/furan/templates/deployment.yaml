@@ -52,7 +52,7 @@ spec:
             - "--vault-addr"
             - "{{ .Values.vault.address }}"
             {{ if .Values.vault.use_token_auth -}}
-            - "--vault-token-auth"
+            - "--vault-token-auth=true"
             - "--vault-token"
             - "{{ .Values.vault.token }}"
             {{ end }} # if token auth

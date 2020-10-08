@@ -111,3 +111,18 @@ func (rb *RemoteBuilder) MonitorBuild(ctx context.Context, id uuid.UUID) (furanr
 		BuildId: id.String(),
 	})
 }
+
+func (rb *RemoteBuilder) ListBuilds(ctx context.Context, req furanrpc.ListBuildsRequest) ([]furanrpc.BuildStatusResponse, error) {
+	resp, err := rb.c.ListBuilds(ctx, &req)
+	if err != nil {
+		return nil, fmt.Errorf("error listing builds: %w", err)
+	}
+	out := make([]furanrpc.BuildStatusResponse, len(resp.Builds))
+	for i := range resp.Builds {
+		bs := resp.Builds[i]
+		if bs != nil {
+			out[i] = *bs
+		}
+	}
+	return out, nil
+}

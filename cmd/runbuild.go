@@ -40,6 +40,7 @@ var buildid, bkaddr string
 var runbuildtimeout time.Duration
 
 func init() {
+	serverAndRunnerFlags(runbuildCmd)
 	runbuildCmd.PersistentFlags().StringVar(&buildid, "build-id", "", "Build ID")
 	runbuildCmd.PersistentFlags().StringVar(&bkaddr, "buildkit-addr", "", "BuildKit UNIX socket address (unix:///path/to/socket)")
 	runbuildCmd.PersistentFlags().DurationVar(&runbuildtimeout, "timeout", 30*time.Minute, "max build duration/timeout")

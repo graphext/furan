@@ -23,6 +23,7 @@ var migrationsPath, postgresURI, migrationCommand string
 var uriFromVault, verboseMigrations bool
 
 func init() {
+	serverAndRunnerFlags(migrateCmd)
 	migrateCmd.Flags().StringVar(&migrationCommand, "cmd", "up", "Migration command (one of: up, down, version)")
 	migrateCmd.Flags().StringVar(&migrationsPath, "migrations-path", "migrations", "Path to migrations files")
 	migrateCmd.Flags().StringVar(&postgresURI, "postgres-uri", "", "PostgreSQL connection URL (ex: postgres://user:pwd@localhost:5432/furan?sslmode=enable)")
