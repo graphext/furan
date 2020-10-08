@@ -160,8 +160,9 @@ func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 
 	if b.Request.SkipIfExists {
 		allexist := true
+		tags := append(b.Tags, opts.CommitSHA)
 		for _, irepo := range b.ImageRepos {
-			exists, _, err := m.TCheck.AllTagsExist(append(b.Tags, opts.CommitSHA), irepo)
+			exists, _, err := m.TCheck.AllTagsExist(tags, irepo)
 			if err != nil {
 				return fmt.Errorf("error checking for tags: %v: %w", irepo, err)
 			}
@@ -171,6 +172,7 @@ func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 			}
 		}
 		if allexist {
+			m.DL.AddEvent(ctx2, b.ID, fmt.Sprintf("all tags exist in all image repos: %v; skipping", tags))
 			// set build as skipped
 			if err := m.DL.SetBuildAsCompleted(ctx2, b.ID, models.BuildStatusSkipped); err != nil {
 				return fmt.Errorf("error setting build as skipped: %w", err)

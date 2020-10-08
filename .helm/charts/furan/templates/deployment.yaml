@@ -13,6 +13,8 @@ spec:
   template:
     metadata:
       labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
 {{ include "labels" . | indent 8 }}
       annotations:
 {{- if .Values.annotations }}
