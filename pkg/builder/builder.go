@@ -48,13 +48,22 @@ func (m *Manager) Start(ctx context.Context, opts models.BuildOpts) error {
 		return fmt.Errorf("error running build job: %w", err)
 	}
 
-	select {
-	case <-ctx.Done():
-		return fmt.Errorf("context cancelled")
-	case err := <-j.Error():
-		return fmt.Errorf("job error: %w", err)
-	case <-j.Running():
-		return nil
+	start := time.Now().UTC()
+	t := time.NewTicker(20 * time.Second)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("context cancelled")
+		case <-t.C:
+			m.DL.AddEvent(ctx, b.ID, fmt.Sprintf("waiting for build handoff... (%v elapsed)", time.Since(start)))
+			continue
+		case err := <-j.Error():
+			return fmt.Errorf("job error: %w", err)
+		case <-j.Running():
+			return nil
+		}
 	}
 }
 
