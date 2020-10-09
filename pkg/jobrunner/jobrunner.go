@@ -357,7 +357,6 @@ func (jw *JobWatcher) processEvent(e watch.Event) bool {
 			jw.e <- fmt.Errorf("watch modified event object is not a job: %T", e.Object)
 			return true
 		}
-		jw.dl.AddEvent(context.Background(), jw.buildID, fmt.Sprintf("job event received: %v; status: %+v", e.Type, j.Status))
 		if j.Status.Succeeded > 0 {
 			jw.dl.AddEvent(context.Background(), jw.buildID, "job marked as succeeded/finished unexpectedly, ending watch")
 			jw.r <- struct{}{}

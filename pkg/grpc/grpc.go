@@ -215,6 +215,8 @@ func (gr *Server) buildevent(id uuid.UUID, msg string, args ...interface{}) {
 // once the build job is running
 var DefaultJobHandoffTimeout = 5 * time.Minute
 
+var errorEventPause = 500 * time.Millisecond
+
 // StartBuild creates a new asynchronous build job
 func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*furanrpc.BuildRequestResponse, error) {
 	if req.GetBuild().GithubRepo == "" {
@@ -336,7 +338,15 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		gr.buildevent(id, "creating build job")
 		if err := gr.BM.Start(ctx2, opts); err != nil {
 			gr.logf("error starting build job: %v", err)
-			gr.buildevent(id, "error starting build job: %v", err)
+			var msg string
+			select {
+			case <-ctx2.Done():
+				msg = fmt.Sprintf("timeout waiting for build handoff (%v): check to see if the job is schedulable and has cpu/mem requests that the k8s cluster can provide", jht)
+			default:
+				msg = fmt.Sprintf("error starting build job: %v", err)
+			}
+			gr.buildevent(id, msg)
+			time.Sleep(errorEventPause) // pause to allow error message to be received by listeners
 			// new context because the error could be caused by context cancellation
 			if err2 := gr.DL.SetBuildAsCompleted(context.Background(), id, models.BuildStatusFailure); err2 != nil {
 				gr.logf("error setting build as failed: %v: %v", id, err2)

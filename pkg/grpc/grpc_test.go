@@ -234,6 +234,9 @@ func TestServer_StartBuild(t *testing.T) {
 				},
 				Opts: tt.fields.Opts,
 			}
+			olderrpause := errorEventPause
+			defer func() { errorEventPause = olderrpause }()
+			errorEventPause = 0
 			cred := tt.args.req.Build.GithubCredential // StartBuild will clear out the request credential
 			got, err := gr.StartBuild(ctx, tt.args.req)
 			if err != nil {
