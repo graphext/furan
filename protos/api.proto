@@ -38,6 +38,19 @@ message BuildCacheOpts {
   bool max_mode = 2; // BuildKit cache "max mode" (default: false)
 }
 
+// BuildResources specifies optional requests and limits for the BuildKit container.
+// This uses the same syntax as k8s objects (ex: "2G", "100m").
+// If empty, reasonable defaults will be used.
+// Use this only if a particular build needs significantly more resources and is failing due to OOM or CPU starvation.
+// The server may reject excessively large values.
+// Kubernetes may have difficulty scheduling build jobs with high resource requests, leading to build timeouts.
+message BuildResources {
+  string cpu_request = 1;
+  string cpu_limit = 2;
+  string memory_request = 3;
+  string memory_limit = 4;
+}
+
 message BuildDefinition {
   string github_repo = 1;
   string github_credential = 2;
@@ -47,6 +60,7 @@ message BuildDefinition {
   bool tag_with_commit_sha = 6;
   map<string, string> args = 7;
   BuildCacheOpts cache_options = 8;
+  BuildResources resources = 9; // Optional build resources for BuildKit
 }
 
 message PushRegistryDefinition {

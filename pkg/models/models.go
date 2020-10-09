@@ -169,6 +169,7 @@ type BuildOpts struct {
 	RelativeDockerfilePath string                  `json:"relative_dockerfile_path"`
 	BuildArgs              map[string]string       `json:"build_args"`
 	Cache                  furanrpc.BuildCacheOpts `json:"cache_opts"`
+	Resources              furanrpc.BuildResources `json:"resources"`
 }
 
 // Job describes methods on a single abstract build job

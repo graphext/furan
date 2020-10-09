@@ -12,6 +12,7 @@ import (
 	"github.com/gofrs/uuid"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
@@ -27,10 +28,12 @@ type ImageInfo struct {
 	Namespace, PodName, Image string
 	ImagePullSecrets          []string
 	RootArgs                  []string // All args prior to the "server" command (secrets setup, etc)
+	Resources                 [2]corev1.ResourceList
 }
 
-// JobFactoryFunc is a function that generates a new image build Job given an ImageInfo
-type JobFactoryFunc func(info ImageInfo, build models.Build) *batchv1.Job
+// JobFactoryFunc is a function that generates a new image build Job given an ImageInfo and an optional set of
+// buildkit resource requests and limits
+type JobFactoryFunc func(info ImageInfo, build models.Build, bkresources [2]corev1.ResourceList) *batchv1.Job
 
 type K8sJobRunner struct {
 	client    kubernetes.Interface
@@ -133,7 +136,39 @@ func (kr K8sJobRunner) image() (ImageInfo, error) {
 		return out, fmt.Errorf("server command not found in furan args: %+v", fargs)
 	}
 
+	out.Resources[0] = pod.Spec.Containers[furancidx].Resources.Requests
+	out.Resources[1] = pod.Spec.Containers[furancidx].Resources.Limits
+
 	return out, nil
+}
+
+func resources(b models.Build) [2]corev1.ResourceList {
+	out := [2]corev1.ResourceList{}
+	if b.BuildOptions.Resources.CpuRequest != "" {
+		if out[0] == nil {
+			out[0] = corev1.ResourceList{}
+		}
+		out[0][corev1.ResourceCPU] = resource.MustParse(b.BuildOptions.Resources.CpuRequest)
+	}
+	if b.BuildOptions.Resources.MemoryRequest != "" {
+		if out[0] == nil {
+			out[0] = corev1.ResourceList{}
+		}
+		out[0][corev1.ResourceMemory] = resource.MustParse(b.BuildOptions.Resources.MemoryRequest)
+	}
+	if b.BuildOptions.Resources.CpuLimit != "" {
+		if out[1] == nil {
+			out[1] = corev1.ResourceList{}
+		}
+		out[1][corev1.ResourceCPU] = resource.MustParse(b.BuildOptions.Resources.CpuLimit)
+	}
+	if b.BuildOptions.Resources.MemoryLimit != "" {
+		if out[1] == nil {
+			out[1] = corev1.ResourceList{}
+		}
+		out[1][corev1.ResourceMemory] = resource.MustParse(b.BuildOptions.Resources.MemoryLimit)
+	}
+	return out
 }
 
 // Run starts a new Furan build job and returns immediately
@@ -141,7 +176,7 @@ func (kr K8sJobRunner) Run(build models.Build) (models.Job, error) {
 	if kr.JobFunc == nil || kr.client == nil {
 		return nil, fmt.Errorf("JobFunc is required")
 	}
-	j := kr.JobFunc(kr.imageInfo, build)
+	j := kr.JobFunc(kr.imageInfo, build, resources(build))
 	jo, err := kr.client.BatchV1().Jobs(kr.imageInfo.Namespace).Create(context.Background(), j, metav1.CreateOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error creating job: %w", err)

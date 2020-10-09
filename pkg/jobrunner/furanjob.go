@@ -8,6 +8,7 @@ import (
 	"github.com/jinzhu/copier"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/dollarshaveclub/furan/pkg/models"
@@ -73,6 +74,10 @@ var furanjob = batchv1.Job{
 								MountPath: bkSocketMountPath,
 							},
 						},
+						Resources: corev1.ResourceRequirements{
+							Limits:   corev1.ResourceList{},
+							Requests: corev1.ResourceList{},
+						},
 					},
 					corev1.Container{
 						Name:            "buildkitd",
@@ -87,6 +92,16 @@ var furanjob = batchv1.Job{
 							corev1.VolumeMount{
 								Name:      "bksocket",
 								MountPath: bkSocketMountPath,
+							},
+						},
+						Resources: corev1.ResourceRequirements{
+							Requests: corev1.ResourceList{
+								corev1.ResourceCPU:    resource.MustParse("100m"),
+								corev1.ResourceMemory: resource.MustParse("512M"),
+							},
+							Limits: corev1.ResourceList{
+								corev1.ResourceCPU:    resource.MustParse("1"),
+								corev1.ResourceMemory: resource.MustParse("2G"),
 							},
 						},
 					},
@@ -119,7 +134,7 @@ func truncateName(s string, n uint) string {
 var JobLabel = "created-by:furan2"
 
 // FuranJobFunc is a JobFactoryFunc that generates a Kubernetes Job to execute a build
-func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
+func FuranJobFunc(info ImageInfo, build models.Build, bkresources [2]corev1.ResourceList) *batchv1.Job {
 	var j batchv1.Job
 	if err := copier.Copy(&j, &furanjob); err != nil {
 		panic(fmt.Errorf("error deep copying struct: %w", err))
@@ -159,6 +174,14 @@ func FuranJobFunc(info ImageInfo, build models.Build) *batchv1.Job {
 		j.Spec.Template.Spec.ImagePullSecrets = append(
 			j.Spec.Template.Spec.ImagePullSecrets,
 			corev1.LocalObjectReference{Name: ips})
+	}
+	j.Spec.Template.Spec.Containers[0].Resources.Requests = info.Resources[0]
+	j.Spec.Template.Spec.Containers[0].Resources.Limits = info.Resources[1]
+	if bkresources[0] != nil {
+		j.Spec.Template.Spec.Containers[1].Resources.Requests = bkresources[0]
+	}
+	if bkresources[1] != nil {
+		j.Spec.Template.Spec.Containers[1].Resources.Limits = bkresources[1]
 	}
 	return &j
 }

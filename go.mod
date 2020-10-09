@@ -70,6 +70,6 @@ require (
 	gopkg.in/DataDog/dd-trace-go.v1 v1.25.0
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	k8s.io/api v0.19.1
-	k8s.io/apimachinery v0.19.1
+	k8s.io/apimachinery v0.19.2
 	k8s.io/client-go v0.19.1
 )

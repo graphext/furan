@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
@@ -15,6 +16,7 @@ func TestFuranJobFunc(t *testing.T) {
 	type args struct {
 		info  ImageInfo
 		build models.Build
+		bkr   [2]corev1.ResourceList
 	}
 	tests := []struct {
 		name    string
@@ -90,7 +92,7 @@ func TestFuranJobFunc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := FuranJobFunc(tt.args.info, tt.args.build)
+			got := FuranJobFunc(tt.args.info, tt.args.build, tt.args.bkr)
 			if tt.verifyf != nil {
 				if err := tt.verifyf(got, tt.args.build); err != nil {
 					t.Errorf("error: %v", err)

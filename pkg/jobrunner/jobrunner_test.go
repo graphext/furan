@@ -50,7 +50,7 @@ func TestK8sJobRunner_Run(t *testing.T) {
 					Image:            "acme/foo:bar",
 					ImagePullSecrets: []string{"asdf"},
 				},
-				JobFunc: func(info ImageInfo, build models.Build) *batchv1.Job {
+				JobFunc: func(info ImageInfo, build models.Build, bkr [2]corev1.ResourceList) *batchv1.Job {
 					j := &batchv1.Job{}
 					j.Name = "foo-build-" + build.ID.String()
 					j.Labels = map[string]string{"build_id": build.ID.String()}

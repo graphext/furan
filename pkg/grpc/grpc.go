@@ -10,18 +10,28 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/golang/protobuf/proto"
 	"github.com/jhump/protoreflect/grpcreflect"
-	"google.golang.org/grpc/codes"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
+	"k8s.io/apimachinery/pkg/api/resource"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
 	"github.com/dollarshaveclub/furan/pkg/models"
 )
+
+// MaxResourceLimits contains the maximum allowable quantities for build resource requests/limits if supplied in build
+// API requests. If unset, the zero value for any field will result in no allowed build resource overrides for that
+// field in requests. Since build resource requests/limits are optional, this means that only the defaults would be used.
+type MaxResourceLimits struct {
+	MaxCPUReq resource.Quantity
+	MaxMemReq resource.Quantity
+	MaxCPULim resource.Quantity
+	MaxMemLim resource.Quantity
+}
 
 type Options struct {
 	// TraceSvcName is the service name for APM tracing (optional)
@@ -33,6 +43,7 @@ type Options struct {
 	Cache                   furanrpc.BuildCacheOpts
 	LogFunc                 func(msg string, args ...interface{})
 	JobHandoffTimeout       time.Duration
+	MaxResources            MaxResourceLimits
 }
 
 // DefaultCacheOpts is the cache options that will be used if not overridden in Options
@@ -261,6 +272,46 @@ func (gr *Server) StartBuild(ctx context.Context, req *furanrpc.BuildRequest) (*
 		RelativeDockerfilePath: dockerfile,
 		BuildArgs:              req.GetBuild().GetArgs(),
 		Cache:                  copts,
+	}
+
+	if req.Build.Resources != nil {
+		if cr := req.Build.Resources.CpuRequest; cr != "" {
+			q, err := resource.ParseQuantity(cr)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid cpu request: %v", err)
+			}
+			if q.Value() > gr.Opts.MaxResources.MaxCPUReq.Value() {
+				return nil, status.Errorf(codes.InvalidArgument, "cpu request exceeds limit (%v): %v", gr.Opts.MaxResources.MaxCPUReq.String(), q.String())
+			}
+		}
+		if cl := req.Build.Resources.CpuLimit; cl != "" {
+			q, err := resource.ParseQuantity(cl)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid cpu limit: %v", err)
+			}
+			if q.Value() > gr.Opts.MaxResources.MaxCPULim.Value() {
+				return nil, status.Errorf(codes.InvalidArgument, "cpu limit exceeds max limit (%v): %v", gr.Opts.MaxResources.MaxCPULim.String(), q.String())
+			}
+		}
+		if mr := req.Build.Resources.MemoryRequest; mr != "" {
+			q, err := resource.ParseQuantity(mr)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid memory request: %v", err)
+			}
+			if q.Value() > gr.Opts.MaxResources.MaxMemReq.Value() {
+				return nil, status.Errorf(codes.InvalidArgument, "memory request exceeds limit (%v): %v", gr.Opts.MaxResources.MaxMemReq.String(), q.String())
+			}
+		}
+		if ml := req.Build.Resources.MemoryLimit; ml != "" {
+			q, err := resource.ParseQuantity(ml)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid memory limit: %v", err)
+			}
+			if q.Value() > gr.Opts.MaxResources.MaxMemLim.Value() {
+				return nil, status.Errorf(codes.InvalidArgument, "memory limit exceeds max limit (%v): %v", gr.Opts.MaxResources.MaxMemLim.String(), q.String())
+			}
+		}
+		opts.Resources = *req.Build.Resources
 	}
 
 	b.BuildOptions = opts

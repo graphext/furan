@@ -3,14 +3,16 @@ package cmd
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
-	"os"
-	"time"
 
 	// Import pprof handlers into http.DefaultServeMux
 	_ "net/http/pprof"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
+	"k8s.io/apimachinery/pkg/api/resource"
 
 	"github.com/dollarshaveclub/furan/pkg/builder"
 	"github.com/dollarshaveclub/furan/pkg/config"
@@ -41,6 +43,37 @@ var defaultcachetype, tracesvcname string
 var defaultcachemaxmode bool
 var tlscert, tlskey string
 var jcinterval, jcage time.Duration
+
+type maxResourceLimits struct {
+	CPUReq, MemReq, CPULim, MemLim string
+}
+
+func (mr maxResourceLimits) process() (*grpc.MaxResourceLimits, error) {
+	out := &grpc.MaxResourceLimits{}
+	q, err := resource.ParseQuantity(mr.CPUReq)
+	if err != nil {
+		return nil, fmt.Errorf("max cpu req is invalid: %w", err)
+	}
+	out.MaxCPUReq = q
+	q, err = resource.ParseQuantity(mr.MemReq)
+	if err != nil {
+		return nil, fmt.Errorf("max mem req is invalid: %w", err)
+	}
+	out.MaxMemReq = q
+	q, err = resource.ParseQuantity(mr.CPULim)
+	if err != nil {
+		return nil, fmt.Errorf("max cpu limit is invalid: %w", err)
+	}
+	out.MaxCPULim = q
+	q, err = resource.ParseQuantity(mr.MemLim)
+	if err != nil {
+		return nil, fmt.Errorf("max cpu limit is invalid: %w", err)
+	}
+	out.MaxMemLim = q
+	return out, nil
+}
+
+var maxResources maxResourceLimits
 
 // serverAndRunnerFlags adds flags shared by the "server" and "runbuild" commands
 func serverAndRunnerFlags(cmd *cobra.Command) {
@@ -84,6 +117,12 @@ func init() {
 	// Default cache options
 	serverCmd.PersistentFlags().StringVar(&defaultcachetype, "default-cache-type", "disabled", "Default cache type (if not specified in build request): s3, inline, disabled")
 	serverCmd.PersistentFlags().BoolVar(&defaultcachemaxmode, "default-cache-max-mode", false, "Cache max mode by default")
+
+	// Max resource requests/limits allowed
+	serverCmd.PersistentFlags().StringVar(&maxResources.CPUReq, "max-cpu-request", "2", "Maximum build CPU request allowed (if empty, forbid API clients from setting this value at all)")
+	serverCmd.PersistentFlags().StringVar(&maxResources.MemReq, "max-mem-request", "16G", "Maximum build memory request allowed  (if empty, forbid API clients from setting this value at all)")
+	serverCmd.PersistentFlags().StringVar(&maxResources.CPULim, "max-cpu-limit", "4", "Maximum build CPU limit allowed (if empty, forbid API clients from setting this value at all)")
+	serverCmd.PersistentFlags().StringVar(&maxResources.MemLim, "max-mem-limit", "64G", "Maximum build memory limit allowed (if empty, forbid API clients from setting this value at all)")
 
 	RootCmd.AddCommand(serverCmd)
 }
@@ -137,12 +176,18 @@ func server(cmd *cobra.Command, args []string) {
 		cert = c
 	}
 
+	mr, err := maxResources.process()
+	if err != nil {
+		clierr("error in max resource limits: %v", err)
+	}
+
 	gopts := grpc.Options{
 		TraceSvcName:            tracesvcname,
 		CredentialDecryptionKey: dbConfig.CredEncKeyArray,
 		Cache:                   cachedefaults(),
 		TLSCertificate:          cert,
 		LogFunc:                 log.Printf,
+		MaxResources:            *mr,
 	}
 
 	grs := grpc.Server{

@@ -29,7 +29,7 @@ var triggerCmd = &cobra.Command{
 }
 
 var triggerBuildRequest = furanrpc.BuildRequest{
-	Build: &furanrpc.BuildDefinition{},
+	Build: &furanrpc.BuildDefinition{Resources: &furanrpc.BuildResources{}},
 	Push:  &furanrpc.PushDefinition{},
 }
 
@@ -59,6 +59,10 @@ func init() {
 	triggerCmd.PersistentFlags().BoolVar(&monitorBuild, "monitor", true, "Monitor build after triggering")
 	triggerCmd.PersistentFlags().DurationVar(&rpctimeout, "timeout", 30*time.Second, "Timeout for RPC calls")
 	triggerCmd.PersistentFlags().DurationVar(&buildtimeout, "build-timeout", 30*time.Minute, "Timeout for build duration")
+	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Resources.CpuRequest, "cpu-request", "", "override BuildKit container CPU request (optional)")
+	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Resources.MemoryRequest, "mem-request", "", "override BuildKit container memory request (optional)")
+	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Resources.CpuLimit, "cpu-limit", "", "override BuildKit container CPU limit (optional)")
+	triggerCmd.PersistentFlags().StringVar(&triggerBuildRequest.Build.Resources.MemoryLimit, "mem-limit", "", "override BuildKit container memory limit (optional)")
 	RootCmd.AddCommand(triggerCmd)
 }
 
