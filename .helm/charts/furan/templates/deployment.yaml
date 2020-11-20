@@ -40,7 +40,7 @@ spec:
       {{ end }}
       containers:
       - name: docker
-        image: docker:17.06.1-ce-dind
+        image: docker:19.03.13-dind
         imagePullPolicy: IfNotPresent
         args:
           - --storage-driver=overlay2
