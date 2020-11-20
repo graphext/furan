@@ -22,8 +22,8 @@ spec:
       terminationGracePeriodSeconds: 30
       volumes:
         - name: vault
-          configMap:
-            name: vault
+          secret:
+            secretName: vault-dummy-secrets
             defaultMode: 420
       containers:
         - name: {{ .Chart.Name }}
