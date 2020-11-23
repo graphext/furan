@@ -115,9 +115,9 @@ func getDockercfg() error {
 			if err != nil {
 				return fmt.Errorf("dockercfg: couldn't decode auth string: %v: %v", k, err)
 			}
-			as := strings.Split(string(ab), ":")
+			as := strings.SplitN(string(ab), ":", 2)
 			if len(as) != 2 {
-				return fmt.Errorf("dockercfg: malformed auth string: %v: %v: %v", k, v.Auth, string(ab))
+				return fmt.Errorf("dockercfg: malformed auth string")
 			}
 			v.Username = as[0]
 			v.Password = as[1]
