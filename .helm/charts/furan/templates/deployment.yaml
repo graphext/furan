@@ -128,6 +128,9 @@ spec:
       {{ end }}
         - name: CONSUL_HTTP_ADDR
           value: {{ .Values.consulAddr }}
+        envFrom:
+        - secretRef:
+            name: default-build-args
         ports:
         - containerPort: {{ .Values.service.httpInternalPort }}
         - containerPort: {{ .Values.service.grpcInternalPort }}
