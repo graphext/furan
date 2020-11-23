@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -269,6 +270,14 @@ func (ib *ImageBuilder) getFullImageNames(ctx context.Context, req *lib.BuildReq
 	return names, nil
 }
 
+func expandBuildArgs(args map[string]string) map[string]string {
+	buildArgs := make(map[string]string)
+	for k, v := range args {
+		buildArgs[k] = os.ExpandEnv(v)
+	}
+	return buildArgs
+}
+
 // tagCheck checks the existence of tags in the registry or the S3 object
 // returns true if build/push should be performed
 func (ib *ImageBuilder) tagCheck(ctx context.Context, req *lib.BuildRequest) (bool, error) {
@@ -436,7 +445,7 @@ func (ib *ImageBuilder) dobuild(ctx context.Context, req *lib.BuildRequest, rbi 
 		// if req.Push.Registry.Repo is empty this will return static auth configs only (with ECR if configured)
 		AuthConfigs: ib.addECRtoAuth(req.GetPush().GetRegistry().GetRepo()),
 		NoCache:     true,
-		BuildArgs:   req.Build.Args,
+		BuildArgs:   expandBuildArgs(req.Build.Args),
 	}
 	buildSpan, ctx := tracer.StartSpanFromContext(ctx, "image_builder.dobuild")
 	defer func() {
