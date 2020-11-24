@@ -7,7 +7,7 @@ target_branches:
 application:
   chart_path: '.helm/charts/furan'
   chart_vars_repo_path: 'militarpancho/furan@master:.helm/charts/furan/values.yaml'
-  image: quay.io/dollarshaveclub/furan
+  image: eu.gcr.io/graphext-0/testing/furan
   value_overrides:
     - "resources.requests.memory=100M"
     - "resources.requests.cpu=10m"
