@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+{{ include "labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+{{ include "labels" . | indent 6 }}
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+{{ include "labels" . | indent 8 }}
+      annotations:
+{{- if .Values.annotations }}
+      {{- range $key, $value := .Values.annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+{{- end }}
+      {{- if .Values.vault.agentInjector.enabled }}
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/log-level: "{{ .Values.vault.agentInjector.logLevel }}"
+        vault.hashicorp.com/auth-path: "{{ .Values.vault.k8sAuthPath }}"
+        vault.hashicorp.com/role: "{{ .Values.serviceAccountName }}"
+        vault.hashicorp.com/agent-init-first: "{{ .Values.vault.agentInjector.initFirst }}"
+{{ include "vault-agent-default-kv1-secrets-v1-template" . | indent 8 }}     
+      {{- end }}
+    spec:
+      serviceAccountName: "{{ .Values.serviceAccountName }}"
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecrets | quote }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/usr/local/bin/furan"
+          args:
+            # all secrets-related args *must* come before the "server" command
+            # these will be copied and injected into build job definitions
+            - "--secrets-backend"
+            - "{{ .Values.app.secrets_backend }}"
+            - "--secrets-mapping"
+            - "{{ .Values.app.secrets_mapping }}"
+            {{ if eq .Values.app.secrets_backend "vault" -}}
+            - "--vault-addr"
+            - "{{ .Values.vault.address }}"
+            {{ if .Values.vault.use_token_auth -}}
+            - "--vault-token-auth=true"
+            - "--vault-token"
+            - "{{ .Values.vault.token }}"
+            {{ end }} # if token auth
+            {{ if .Values.vault.use_k8s_auth }}
+            - "--vault-k8s-auth"
+            - "--vault-k8s-role"
+            - "{{ .Values.serviceAccountName }}"
+            - "--vault-k8s-auth-path"
+            - "{{ .Values.vault.auth_path }}"
+            {{ end }} # if k8s auth
+            {{ end }} # if vault
+            - "--aws-region" # S3 and ECR
+            - "{{ .Values.app.aws.region }}"
+            {{ if .Values.app.aws.s3_cache_enabled }}
+            - "--s3-cache-bucket"
+            - "{{ .Values.app.aws.s3bucket }}"
+            - "--s3-cache-key-pfx"
+            - "{{ .Values.app.aws.s3keypfx }}"
+            {{ end }} # if s3 cache enabled
+            # === End auto-injected job flags ===
+            - 'server'
+            - '--grpc-addr'
+            - '0.0.0.0:{{ .Values.service.internalPort }}'
+            {{ if .Values.app.use_dev_cert -}}
+            - "--tls-cert-file"
+            - "/opt/tlscert/tls.crt"
+            - "--tls-key-file"
+            - "/opt/tlscert/tls.key"
+            {{ end }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+              protocol: TCP
+          env:
+            # downward API values required for job runner
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            {{ if .Values.app.use_dev_cert }}
+            - name: tlscert
+              mountPath: /opt/tlscert
+            {{ end }}
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{  .Values.livenessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.service.internalPort }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{  .Values.readinessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.service.internalPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        {{ if .Values.app.use_dev_cert }}
+        - name: tlscert
+          secret:
+            secretName: tlscert
+        {{ end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}

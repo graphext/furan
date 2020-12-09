@@ -1,14 +1,13 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"time"
 
-	"github.com/dollarshaveclub/furan/generated/lib"
+	"github.com/gofrs/uuid"
 	"github.com/spf13/cobra"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
+
+	"github.com/dollarshaveclub/furan/pkg/client"
 )
 
 // triggerCmd represents the trigger command
@@ -16,53 +15,36 @@ var cancelCmd = &cobra.Command{
 	Use:   "cancel",
 	Short: "Cancel a running build",
 	Long:  `Cancel a running build in a remote Furan cluster`,
-	Run:   cancel,
+	RunE:  cancel,
 }
 
-var cancelReq = &lib.BuildCancelRequest{}
+var cancelBuildID string
 
 func init() {
-	cancelCmd.PersistentFlags().StringVar(&remoteFuranHost, "remote-host", "", "Remote Furan server with gRPC port (eg: furan.me.com:4001)")
-	cancelCmd.PersistentFlags().BoolVar(&discoverFuranHost, "consul-discovery", false, "Discover Furan hosts via Consul")
-	cancelCmd.PersistentFlags().StringVar(&consulFuranSvcName, "svc-name", "furan", "Consul service name for Furan hosts")
-	cancelCmd.PersistentFlags().StringVar(&cancelReq.BuildId, "build-id", "", "Build ID")
+	setclientflags(cancelCmd)
+	cancelCmd.PersistentFlags().StringVar(&cancelBuildID, "build-id", "", "Build ID")
 	RootCmd.AddCommand(cancelCmd)
 }
 
-func cancel(cmd *cobra.Command, args []string) {
-	if remoteFuranHost == "" {
-		if !discoverFuranHost || consulFuranSvcName == "" {
-			clierr("remote host or consul discovery is required")
-		}
-	}
-
-	if cancelReq.BuildId == "" {
-		clierr("build ID is required")
-	}
-
-	var remoteHost string
-	if discoverFuranHost {
-		n, err := getFuranServerFromConsul(consulFuranSvcName)
-		if err != nil {
-			clierr("error discovering Furan hosts: %v", err)
-		}
-		remoteHost = fmt.Sprintf("%v:%v", n.addr, n.port)
-	} else {
-		remoteHost = remoteFuranHost
-	}
-
-	log.Printf("connecting to %v", remoteHost)
-	conn, err := grpc.Dial(remoteHost, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(connTimeoutSecs*time.Second))
+func cancel(cmd *cobra.Command, args []string) error {
+	rb, err := client.New(clientops)
 	if err != nil {
-		clierr("error connecting to remote host: %v", err)
+		return fmt.Errorf("error creating rpc client: %w", err)
 	}
-	defer conn.Close()
+	defer rb.Close()
 
-	c := lib.NewFuranExecutorClient(conn)
-
-	resp, err := c.CancelBuild(context.Background(), cancelReq)
+	id, err := uuid.FromString(cancelBuildID)
 	if err != nil {
-		rpcerr(err, "CancelBuild", nil)
+		return fmt.Errorf("malformed or invalid build id: %w", err)
 	}
-	log.Printf("%v\n", *resp)
+
+	ctx := context.Background()
+
+	err = rb.CancelBuild(ctx, id)
+	if err != nil {
+		return fmt.Errorf("error sending cancel request: %w", err)
+	}
+
+	fmt.Println("build cancellation requested: " + id.String())
+	return nil
 }

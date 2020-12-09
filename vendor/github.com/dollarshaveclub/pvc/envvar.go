@@ -36,7 +36,8 @@ func (ebg *envVarBackendGetter) sanitizeName(name string) string {
 	f := func(r rune) rune {
 		i := int(r)
 		switch {
-		case (i > 64 && i < 91) || i == 95:
+		// rune is alphanumeric or an underscore
+		case (i > 64 && i < 91) || (i > 47 && i < 58) || i == 95:
 			return r
 		default:
 			return '_'
@@ -51,9 +52,9 @@ func (ebg *envVarBackendGetter) Get(id string) ([]byte, error) {
 		return nil, fmt.Errorf("error mapping id to var name: %v", err)
 	}
 	vname = ebg.sanitizeName(vname)
-	secret, exists := os.LookupEnv(vname)
+	val, exists := os.LookupEnv(vname)
 	if !exists {
 		return nil, fmt.Errorf("secret not found: %v", vname)
 	}
-	return []byte(secret), nil
+	return []byte(val), nil
 }

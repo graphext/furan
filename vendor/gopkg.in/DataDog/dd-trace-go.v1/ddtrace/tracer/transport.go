@@ -1,3 +1,8 @@
+// Unless explicitly stated otherwise all files in this repository are licensed
+// under the Apache License Version 2.0.
+// This product includes software developed at Datadog (https://www.datadoghq.com/).
+// Copyright 2016-2020 Datadog, Inc.
+
 package tracer
 
 import (
@@ -10,17 +15,16 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/DataDog/dd-trace-go.v1/internal"
+	"gopkg.in/DataDog/dd-trace-go.v1/internal/version"
 )
 
-var (
-	// TODO(gbbr): find a more effective way to keep this up to date,
-	// e.g. via `go generate`
-	tracerVersion = "v1.10.0"
-
+var defaultClient = &http.Client{
 	// We copy the transport to avoid using the default one, as it might be
 	// augmented with tracing and we don't want these calls to be recorded.
 	// See https://golang.org/pkg/net/http/#DefaultTransport .
-	defaultRoundTripper = &http.Transport{
+	Transport: &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
 			Timeout:   30 * time.Second,
@@ -31,14 +35,15 @@ var (
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
-	}
-)
+	},
+	Timeout: defaultHTTPTimeout,
+}
 
 const (
 	defaultHostname    = "localhost"
 	defaultPort        = "8126"
 	defaultAddress     = defaultHostname + ":" + defaultPort
-	defaultHTTPTimeout = time.Second             // defines the current timeout before giving up with the send process
+	defaultHTTPTimeout = 2 * time.Second         // defines the current timeout before giving up with the send process
 	traceCountHeader   = "X-Datadog-Trace-Count" // header containing the number of traces in the payload
 )
 
@@ -59,16 +64,16 @@ type transport interface {
 // running on a non-default port, if it's located on another machine, or when
 // otherwise needing to customize the transport layer, for instance when using
 // a unix domain socket.
-func newTransport(addr string, roundTripper http.RoundTripper) transport {
-	if roundTripper == nil {
-		roundTripper = defaultRoundTripper
+func newTransport(addr string, client *http.Client) transport {
+	if client == nil {
+		client = defaultClient
 	}
-	return newHTTPTransport(addr, roundTripper)
+	return newHTTPTransport(addr, client)
 }
 
 // newDefaultTransport return a default transport for this tracing client
 func newDefaultTransport() transport {
-	return newHTTPTransport(defaultAddress, defaultRoundTripper)
+	return newHTTPTransport(defaultAddress, defaultClient)
 }
 
 type httpTransport struct {
@@ -78,27 +83,26 @@ type httpTransport struct {
 }
 
 // newHTTPTransport returns an httpTransport for the given endpoint
-func newHTTPTransport(addr string, roundTripper http.RoundTripper) *httpTransport {
+func newHTTPTransport(addr string, client *http.Client) *httpTransport {
 	// initialize the default EncoderPool with Encoder headers
 	defaultHeaders := map[string]string{
 		"Datadog-Meta-Lang":             "go",
 		"Datadog-Meta-Lang-Version":     strings.TrimPrefix(runtime.Version(), "go"),
 		"Datadog-Meta-Lang-Interpreter": runtime.Compiler + "-" + runtime.GOARCH + "-" + runtime.GOOS,
-		"Datadog-Meta-Tracer-Version":   tracerVersion,
+		"Datadog-Meta-Tracer-Version":   version.Tag,
 		"Content-Type":                  "application/msgpack",
+	}
+	if cid := internal.ContainerID(); cid != "" {
+		defaultHeaders["Datadog-Container-ID"] = cid
 	}
 	return &httpTransport{
 		traceURL: fmt.Sprintf("http://%s/v0.4/traces", resolveAddr(addr)),
-		client: &http.Client{
-			Transport: roundTripper,
-			Timeout:   defaultHTTPTimeout,
-		},
-		headers: defaultHeaders,
+		client:   client,
+		headers:  defaultHeaders,
 	}
 }
 
 func (t *httpTransport) send(p *payload) (body io.ReadCloser, err error) {
-	// prepare the client and send the payload
 	req, err := http.NewRequest("POST", t.traceURL, p)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create http request: %v", err)
@@ -112,6 +116,7 @@ func (t *httpTransport) send(p *payload) (body io.ReadCloser, err error) {
 	if err != nil {
 		return nil, err
 	}
+	p.waitClose()
 	if code := response.StatusCode; code >= 400 {
 		// error, check the body for context information and
 		// return a nice error.

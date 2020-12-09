@@ -5,36 +5,38 @@ target_branches:
   - master
 
 application:
-  chart_path: '.helm/charts/furan'
-  chart_vars_repo_path: 'dollarshaveclub/helm-charts@master:releases/kube.shave.io/furan/dqa.yaml'
-  image: quay.io/dollarshaveclub/furan
+  chart_path: '.helm/charts/furan2'
+  #chart_vars_repo_path: 'dollarshaveclub/helm-charts@v2:releases/kube-uw2-110/furan/dqa.yaml'
+  image: '932427637498.dkr.ecr.us-west-2.amazonaws.com/furan2'
   value_overrides:
-    - "resources.requests.memory=100M"
-    - "resources.requests.cpu=10m"
-    - "docker_resources.requests.memory=200M"
-    - "docker_resources.requests.cpu=20m"
-    - "image.pullPolicy=IfNotPresent"
-    - "metrics_disabled=true"
-    - "vault.addr=http://furan-vault:8200"
-    - "db.nodes=furan-scylladb"
-    - "kafkaBrokers=furan-kafka-furan:9092"
+    - 'createServiceAccount=true'
+    - 'createRole=true'
+    - 'is_dqa=true'
+    - 'run_migrations=true'
+    - 'app.use_dev_cert=true'
+    - 'app.aws.s3_cache_enabled=true'
+    - 'app.aws.s3bucket=dsc-furan2-test'
+    - 'app.aws.s3keypfx=furan2-local/'
 
 dependencies:
   direct:
-    - name: kafka
-      chart_path: '.helm/charts/kafka'
-      chart_vars_path: '.helm/charts/kafka/values.yaml'
-      requires:
-        - zookeeper
-    - name: zookeeper
-      chart_path: '.helm/charts/zookeeper'
-      chart_vars_path: '.helm/charts/zookeeper/values.yaml'
-    - name: scylladb
-      chart_path: '.helm/charts/scylladb'
-      chart_vars_path:  '.helm/charts/scylladb/values.yaml'
-    - name: consul
-      chart_path: '.helm/charts/consul'
-      chart_vars_path: '.helm/charts/consul/values.yaml'
+    - name: postgres
+      chart_repo_path: 'helm/charts@ee52835ec879e82f46141810b63a09e182c43886:stable/postgresql'
+      chart_vars_repo_path: 'helm/charts@ee52835ec879e82f46141810b63a09e182c43886:stable/postgresql/values.yaml'
+      value_overrides:
+        - "image.tag=11"
+        - "postgresqlPassword=root"
+        - "postgresqlDatabase=furan"
+        - "persistence.enabled=false"
+        - "fullnameOverride=postgresql"
     - name: vault
-      chart_path: '.helm/charts/vault'
-      chart_vars_path: '.helm/charts/vault/values.yaml'
+      chart_repo_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault'
+      chart_repo_vars_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault/values.yaml'
+      value_overrides:
+        - 'image.pullPolicy=Always'
+        - 'secrets.github/token=asdf'
+        - 'secrets.quay/token=asdf'
+        - 'secrets.aws/access_key_id=asdf'
+        - 'secrets.aws/secret_access_key=asdf'
+        - 'secrets.db/uri=postgresql://postgres:root@postgresql:5432/furan?sslmode=disable'
+        - 'secrets.db/credential_encryption_key=few4vbLeR13ykH1orWVowfUsGNiv2cXx'
