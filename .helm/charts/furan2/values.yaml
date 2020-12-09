@@ -1,9 +1,9 @@
 replicaCount: 1
 createServiceAccount: false
 createRole: false
-serviceAccountName: furan-development
+serviceAccountName: furan2
 image:
-  repository: 932427637498.dkr.ecr.us-west-2.amazonaws.com/furan
+  repository: 932427637498.dkr.ecr.us-west-2.amazonaws.com/furan2
   tag: master
   pullPolicy: IfNotPresent
   pullSecrets: ""
@@ -27,7 +27,7 @@ vault:
   token: "root"
   use_token_auth: true
   use_k8s_auth: false
-  k8sAuthPath: "auth/kube.shave.io" 
+  k8sAuthPath: "kube.shave.io"
   agentInjector:
     enabled: false
     initFirst: true
