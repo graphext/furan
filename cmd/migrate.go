@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"path"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -51,9 +50,7 @@ func domigrations(cmd *cobra.Command, args []string) {
 		// TODO: Implement secrets fetching for URI
 		clierr("not implemented yet!")
 	}
-	m, err := migrate.New(
-		path.Join("file://", migrationsPath),
-		postgresURI)
+	m, err := migrate.New("file://"+migrationsPath, postgresURI)
 	if err != nil {
 		clierr("error creating migrations client: %v", err)
 	}
