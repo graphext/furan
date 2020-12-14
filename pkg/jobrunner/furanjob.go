@@ -161,6 +161,7 @@ func FuranJobFunc(info ImageInfo, build models.Build, bkresources [2]corev1.Reso
 		"dest-repo":     fmt.Sprintf("%v", build.ImageRepos),
 		"image-tags":    strings.Join(build.Tags, ","),
 	}
+	j.Spec.Template.Spec.ServiceAccountName = info.ServiceAccount
 	j.Spec.Template.Spec.Containers[0].Image = info.Image
 	j.Spec.Template.Spec.Containers[0].Args = append(
 		j.Spec.Template.Spec.Containers[0].Args,

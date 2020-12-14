@@ -25,10 +25,10 @@ import (
 // ImageInfo models information about /this/ currently running Furan pod/container
 // These are the values that are injected into build jobs
 type ImageInfo struct {
-	Namespace, PodName, Image string
-	ImagePullSecrets          []string
-	RootArgs                  []string // All args prior to the "server" command (secrets setup, etc)
-	Resources                 [2]corev1.ResourceList
+	Namespace, PodName, Image, ServiceAccount string
+	ImagePullSecrets                          []string
+	RootArgs                                  []string // All args prior to the "server" command (secrets setup, etc)
+	Resources                                 [2]corev1.ResourceList
 }
 
 // JobFactoryFunc is a function that generates a new image build Job given an ImageInfo and an optional set of
@@ -123,6 +123,8 @@ func (kr K8sJobRunner) image() (ImageInfo, error) {
 	if out.Image == "" {
 		return out, fmt.Errorf("furan container not found in pod")
 	}
+
+	out.ServiceAccount = pod.Spec.ServiceAccountName
 
 	// "RootArgs" are all arguments prior to the "server" command
 	out.RootArgs = []string{}
