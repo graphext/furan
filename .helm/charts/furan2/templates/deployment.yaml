@@ -35,10 +35,12 @@ spec:
       dnsPolicy: {{ .Values.dnsPolicy }}
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
+      {{ if .Values.image.pullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecrets | quote }}
+      {{ end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: 'furan'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
@@ -57,15 +59,15 @@ spec:
             - "--vault-token-auth=true"
             - "--vault-token"
             - "{{ .Values.vault.token }}"
-            {{ end }} # if token auth
+            {{ end }}
             {{ if .Values.vault.use_k8s_auth }}
-            - "--vault-k8s-auth"
+            - "--vault-k8s-auth=true"
             - "--vault-k8s-role"
-            - "{{ .Values.serviceAccountName }}"
+            - "{{ .Values.vault.role }}"
             - "--vault-k8s-auth-path"
-            - "{{ .Values.vault.auth_path }}"
-            {{ end }} # if k8s auth
-            {{ end }} # if vault
+            - "{{ .Values.vault.k8sAuthPath }}"
+            {{ end }}
+            {{ end }}
             - "--aws-region" # S3 and ECR
             - "{{ .Values.app.aws.region }}"
             {{ if .Values.app.aws.s3_cache_enabled }}
@@ -73,12 +75,12 @@ spec:
             - "{{ .Values.app.aws.s3bucket }}"
             - "--s3-cache-key-pfx"
             - "{{ .Values.app.aws.s3keypfx }}"
-            {{ end }} # if s3 cache enabled
+            {{ end }}
             # === End auto-injected job flags ===
             - 'server'
             - '--grpc-addr'
             - '0.0.0.0:{{ .Values.service.internalPort }}'
-            {{ if .Values.app.use_dev_cert -}}
+            {{ if or .Values.app.tls.use_dev_cert .Values.app.tls.from_secret -}}
             - "--tls-cert-file"
             - "/opt/tlscert/tls.crt"
             - "--tls-key-file"
@@ -98,7 +100,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
           volumeMounts:
-            {{ if .Values.app.use_dev_cert }}
+            {{ if or .Values.app.tls.use_dev_cert .Values.app.tls.from_secret }}
             - name: tlscert
               mountPath: /opt/tlscert
             {{ end }}
@@ -121,10 +123,15 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
-        {{ if .Values.app.use_dev_cert }}
+        {{ if .Values.app.tls.use_dev_cert }}
         - name: tlscert
           secret:
             secretName: tlscert
+        {{ end }}
+        {{ if .Values.app.tls.from_secret }}
+        - name: tlscert
+          secret:
+            secretName: '{{ .Values.app.tls.from_secret }}'
         {{ end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:

@@ -15,7 +15,9 @@ annotations:
 app:
   secrets_backend: "vault"
   secrets_mapping: "secret/{{ .ID }}"
-  use_dev_cert: false
+  tls:
+    use_dev_cert: false
+    from_secret: ''
   aws:
     s3_cache_enabled: false
     region: us-west-2
@@ -28,6 +30,7 @@ vault:
   use_token_auth: true
   use_k8s_auth: false
   k8sAuthPath: "kube.shave.io"
+  role: "furan2"
   agentInjector:
     enabled: false
     initFirst: true
