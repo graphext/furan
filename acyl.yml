@@ -11,8 +11,9 @@ application:
   value_overrides:
     - "resources.requests.memory=100M"
     - "resources.requests.cpu=10m"
+    - "concurrency=1"
     - "docker_resources.requests.memory=2000M"
-    - "docker_resources.requests.cpu=20m"
+    - "docker_resources.requests.cpu=200m"
     - "image.pullPolicy=IfNotPresent"
     - "metrics_disabled=true"
     - "vault.addr=http://furan-vault:8200"

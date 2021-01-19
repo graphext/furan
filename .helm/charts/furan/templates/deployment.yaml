@@ -92,6 +92,9 @@ spec:
           - --s3-error-log-bucket
           - {{ .Values.s3_error_log_bucket }}
         {{ end }}
+        {{ if .Values.concurrency }}
+          - --concurrency={{ .Values.concurrency }}
+        {{ end }}
           - --gc-interval
           - '86400'
         {{ if .Values.metrics_disabled }}
