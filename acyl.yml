@@ -11,7 +11,7 @@ application:
   value_overrides:
     - "resources.requests.memory=100M"
     - "resources.requests.cpu=10m"
-    - "docker_resources.requests.memory=200M"
+    - "docker_resources.requests.memory=2000M"
     - "docker_resources.requests.cpu=20m"
     - "image.pullPolicy=IfNotPresent"
     - "metrics_disabled=true"
