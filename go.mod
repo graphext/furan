@@ -26,6 +26,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200730172259-9f28837c1d93+incompatible // indirect
 	github.com/dollarshaveclub/pvc v1.0.0
+	github.com/ghodss/yaml v1.0.0
 	github.com/gofrs/flock v0.8.0 // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/gogo/googleapis v1.4.0 // indirect
@@ -42,8 +43,8 @@ require (
 	github.com/jackc/pgtype v1.4.2
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/jhump/protoreflect v1.7.0
-	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/mholt/archiver/v3 v3.3.0
+	github.com/mitchellh/go-ps v1.0.0
 	github.com/moby/buildkit v0.7.2
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/runc v1.0.0-rc92 // indirect
@@ -60,7 +61,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20200930132711-30421366ff76 // indirect
+	golang.org/x/sync v0.0.0-20200930132711-30421366ff76
 	golang.org/x/sys v0.0.0-20201005172224-997123666555 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.6 // indirect

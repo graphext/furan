@@ -43,6 +43,7 @@ var defaultcachetype, tracesvcname string
 var defaultcachemaxmode bool
 var tlscert, tlskey string
 var jcinterval, jcage time.Duration
+var builderimg string
 
 type maxResourceLimits struct {
 	CPUReq, MemReq, CPULim, MemLim string
@@ -88,7 +89,7 @@ func serverAndRunnerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&secretsbackend, "secrets-backend", "vault", "Secret backend (one of: vault,env,json,filetree)")
 	cmd.PersistentFlags().StringVar(&sf.JSONFile, "secrets-json-file", "secrets.json", "Secret JSON file path (if using json backend)")
 	cmd.PersistentFlags().StringVar(&sf.FileTreeRoot, "secrets-filetree-root", "/vault/secrets/", "Secrets filetree root path (if using filetree backend)")
-	cmd.PersistentFlags().StringVar(&sf.Mapping, "secrets-mapping", "", "Secrets mapping template string (required)")
+	cmd.PersistentFlags().StringVar(&sf.Mapping, "secrets-mapping", "{{.ID}}", "Secrets mapping template string (required)")
 
 	// AWS S3 Cache
 	cmd.PersistentFlags().StringVar(&awsConfig.Region, "aws-region", "us-west-2", "AWS region")
@@ -105,6 +106,9 @@ func init() {
 	serverCmd.PersistentFlags().StringVar(&serverConfig.HTTPSAddr, "https-addr", "0.0.0.0:4001", "REST HTTPS listen address")
 	serverCmd.PersistentFlags().StringVar(&serverConfig.GRPCAddr, "grpc-addr", "0.0.0.0:4000", "gRPC listen address")
 	serverCmd.PersistentFlags().StringVar(&tracesvcname, "trace-svc", "furan2", "APM trace service name (optional)")
+
+	// Builder image
+	serverCmd.PersistentFlags().StringVar(&builderimg, "builder-image", "", "Buildkit builder container image override (optional)")
 
 	// Job cleanup
 	serverCmd.PersistentFlags().DurationVar(&jcinterval, "job-cleanup-interval", 30*time.Minute, "Build job cleanup check interval")
@@ -151,6 +155,10 @@ func server(cmd *cobra.Command, args []string) {
 	}
 
 	ctx := context.Background()
+
+	if builderimg != "" {
+		jobrunner.BuildKitImage = builderimg
+	}
 
 	jr, err := jobrunner.NewInClusterRunner(dl)
 	if err != nil {

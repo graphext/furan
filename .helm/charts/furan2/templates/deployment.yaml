@@ -50,12 +50,14 @@ spec:
             # these will be copied and injected into build job definitions
             - "--secrets-backend"
             - "{{ .Values.app.secrets_backend }}"
+            {{ if .Values.app.secrets_mapping }}
             - "--secrets-mapping"
-            - "{{ .Values.app.secrets_mapping }}"
-            {{ if eq .Values.app.secrets_backend "vault" -}}
+            - {{ .Values.app.secrets_mapping }}
+            {{ end }}
+            {{ if eq .Values.app.secrets_backend "vault" }}
             - "--vault-addr"
             - "{{ .Values.vault.address }}"
-            {{ if .Values.vault.use_token_auth -}}
+            {{ if .Values.vault.use_token_auth }}
             - "--vault-token-auth=true"
             - "--vault-token"
             - "{{ .Values.vault.token }}"
@@ -86,10 +88,23 @@ spec:
             - "--tls-key-file"
             - "/opt/tlscert/tls.key"
             {{ end }}
+            {{ if .Values.app.builder_image }}
+            - "--builder-image"
+            - "{{ .Values.app.builder_image }}"
+            {{ end }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               protocol: TCP
           env:
+            {{ if eq .Values.app.secrets_backend "env" }}
+              {{ range .Values.app.env_secret_names }}
+            - name: '{{ .env_var }}'
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ .secret }}'
+                  key: '{{ .data_key }}'
+              {{ end }}
+            {{ end }}
             # downward API values required for job runner
             - name: POD_NAMESPACE
               valueFrom:
@@ -99,6 +114,12 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            {{ if .Values.app.verbose }}
+            - name: GRPC_GO_LOG_VERBOSITY_LEVEL
+              value: '99'
+            - name: GRPC_GO_LOG_SEVERITY_LEVEL
+              value: 'info'
+            {{ end }}
           volumeMounts:
             {{ if or .Values.app.tls.use_dev_cert .Values.app.tls.from_secret }}
             - name: tlscert

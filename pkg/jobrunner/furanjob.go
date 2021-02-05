@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jinzhu/copier"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -19,6 +18,7 @@ var (
 	jobCompletions           = int32(1)
 	jobBackoffLimit          = int32(3)
 	jobActiveDeadlineSeconds = int64(60 * 60) // 1 hour
+	shareProcessNamespace    = true
 )
 
 const (
@@ -26,100 +26,103 @@ const (
 	bkSocketName      = "buildkitd.sock"
 )
 
-// furanjob models a Job to execute a single image build/push
+// furanjob returns a Job to execute a single image build/push
 // It utilizes BuildKit listening on a UNIX socket, shared with the Furan container by an emptyDir volume
 // The Furan container (sidecar, in a sense) executes the build/push via the BuildKit gRPC API, records progress in the
 // database and exits cleanly when finished
-var furanjob = batchv1.Job{
-	ObjectMeta: metav1.ObjectMeta{
-		Name:        "",
-		Namespace:   "",
-		Labels:      nil,
-		Annotations: nil,
-	},
-	Spec: batchv1.JobSpec{
-		Parallelism:           &jobParallelism,
-		Completions:           &jobCompletions,
-		ActiveDeadlineSeconds: &jobActiveDeadlineSeconds,
-		BackoffLimit:          &jobBackoffLimit,
-		Template: corev1.PodTemplateSpec{
-			ObjectMeta: metav1.ObjectMeta{
-				// Metadata is set below
-				Name: "",
-				Annotations: map[string]string{
-					"container.apparmor.security.beta.kubernetes.io/buildkitd": "unconfined",
-					"container.seccomp.security.alpha.kubernetes.io/buildkitd": "unconfined",
-				},
-			},
-			Spec: corev1.PodSpec{
-				RestartPolicy: corev1.RestartPolicyOnFailure,
-				Containers: []corev1.Container{
-					corev1.Container{
-						Name:            "furan",
-						Image:           "", // injected below with the image tag set on the server pod creating the job
-						ImagePullPolicy: "IfNotPresent",
-						Command: []string{
-							"/usr/local/bin/furan",
-						},
-						Args: []string{
-							// all root flags are injected here (secrets setup, etc)
-							"runbuild",
-							"--buildkit-addr",
-							"unix://" + bkSocketMountPath + "/" + bkSocketName,
-							// "--build-id <id>" is injected here
-						},
-						VolumeMounts: []corev1.VolumeMount{
-							corev1.VolumeMount{
-								Name:      "bksocket",
-								MountPath: bkSocketMountPath,
-							},
-						},
-						Resources: corev1.ResourceRequirements{
-							Limits:   corev1.ResourceList{},
-							Requests: corev1.ResourceList{},
-						},
-					},
-					corev1.Container{
-						Name:            "buildkitd",
-						Image:           "moby/buildkit:v0.7.2-rootless",
-						ImagePullPolicy: "IfNotPresent",
-						Args: []string{
-							"--oci-worker-no-process-sandbox",
-							"--addr",
-							"unix://" + bkSocketMountPath + "/" + bkSocketName,
-						},
-						VolumeMounts: []corev1.VolumeMount{
-							corev1.VolumeMount{
-								Name:      "bksocket",
-								MountPath: bkSocketMountPath,
-							},
-						},
-						Resources: corev1.ResourceRequirements{
-							Requests: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("100m"),
-								corev1.ResourceMemory: resource.MustParse("512M"),
-							},
-							Limits: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("1"),
-								corev1.ResourceMemory: resource.MustParse("2G"),
-							},
-						},
+func furanjob() batchv1.Job {
+	return batchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "",
+			Namespace:   "",
+			Labels:      nil,
+			Annotations: nil,
+		},
+		Spec: batchv1.JobSpec{
+			Parallelism:           &jobParallelism,
+			Completions:           &jobCompletions,
+			ActiveDeadlineSeconds: &jobActiveDeadlineSeconds,
+			BackoffLimit:          &jobBackoffLimit,
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					// Metadata is set below
+					Name: "",
+					Annotations: map[string]string{
+						"container.apparmor.security.beta.kubernetes.io/buildkitd": "unconfined",
+						"container.seccomp.security.alpha.kubernetes.io/buildkitd": "unconfined",
 					},
 				},
-				Volumes: []corev1.Volume{
-					corev1.Volume{
-						Name: "bksocket",
-						VolumeSource: corev1.VolumeSource{
-							EmptyDir: &corev1.EmptyDirVolumeSource{
-								Medium: corev1.StorageMediumMemory,
+				Spec: corev1.PodSpec{
+					ShareProcessNamespace: &shareProcessNamespace,
+					RestartPolicy:         corev1.RestartPolicyNever,
+					Containers: []corev1.Container{
+						corev1.Container{
+							Name:            "furan",
+							Image:           "", // injected below with the image tag set on the server pod creating the job
+							ImagePullPolicy: "IfNotPresent",
+							Command: []string{
+								"/usr/local/bin/furan",
+							},
+							Args: []string{
+								// all root flags are injected here (secrets setup, etc)
+								"runbuild",
+								"--buildkit-addr",
+								"unix://" + bkSocketMountPath + "/" + bkSocketName,
+								// "--build-id <id>" is injected here
+							},
+							VolumeMounts: []corev1.VolumeMount{
+								corev1.VolumeMount{
+									Name:      "bksocket",
+									MountPath: bkSocketMountPath,
+								},
+							},
+							Resources: corev1.ResourceRequirements{
+								Limits:   corev1.ResourceList{},
+								Requests: corev1.ResourceList{},
+							},
+						},
+						corev1.Container{
+							Name:            "buildkitd",
+							Image:           BuildKitImage,
+							ImagePullPolicy: "IfNotPresent",
+							Args: []string{
+								"--oci-worker-no-process-sandbox",
+								"--addr",
+								"unix://" + bkSocketMountPath + "/" + bkSocketName,
+							},
+							VolumeMounts: []corev1.VolumeMount{
+								corev1.VolumeMount{
+									Name:      "bksocket",
+									MountPath: bkSocketMountPath,
+								},
+							},
+							Resources: corev1.ResourceRequirements{
+								Requests: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("100m"),
+									corev1.ResourceMemory: resource.MustParse("512M"),
+								},
+								Limits: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("1"),
+									corev1.ResourceMemory: resource.MustParse("2G"),
+								},
 							},
 						},
 					},
+					Volumes: []corev1.Volume{
+						corev1.Volume{
+							Name: "bksocket",
+							VolumeSource: corev1.VolumeSource{
+								EmptyDir: &corev1.EmptyDirVolumeSource{
+									Medium: corev1.StorageMediumMemory,
+								},
+							},
+						},
+					},
+					ImagePullSecrets: nil,
 				},
-				ImagePullSecrets: nil,
 			},
 		},
-	},
+	}
 }
 
 // truncateName returns the first n runes of s if the length exceeds N
@@ -133,12 +136,11 @@ func truncateName(s string, n uint) string {
 // JobLabel is a label added to every build job to aid search/aggregation
 var JobLabel = "created-by:furan2"
 
+var BuildKitImage = "932427637498.dkr.ecr.us-west-2.amazonaws.com/furan2-builder:v0.7.2-rootless"
+
 // FuranJobFunc is a JobFactoryFunc that generates a Kubernetes Job to execute a build
 func FuranJobFunc(info ImageInfo, build models.Build, bkresources [2]corev1.ResourceList) *batchv1.Job {
-	var j batchv1.Job
-	if err := copier.Copy(&j, &furanjob); err != nil {
-		panic(fmt.Errorf("error deep copying struct: %w", err))
-	}
+	j := furanjob()
 	j.Namespace = info.Namespace
 	j.Name = truncateName("furan-build-"+strings.Replace(build.GitHubRepo, "/", "-", -1)+"-"+build.ID.String(), 63)
 	jlabel := strings.Split(JobLabel, ":")
@@ -171,6 +173,10 @@ func FuranJobFunc(info ImageInfo, build models.Build, bkresources [2]corev1.Reso
 		info.RootArgs,
 		j.Spec.Template.Spec.Containers[0].Args...,
 	)
+	for i := range info.EnvVars {
+		env := info.EnvVars[i]
+		j.Spec.Template.Spec.Containers[0].Env = append(j.Spec.Template.Spec.Containers[0].Env, env)
+	}
 	for _, ips := range info.ImagePullSecrets {
 		j.Spec.Template.Spec.ImagePullSecrets = append(
 			j.Spec.Template.Spec.ImagePullSecrets,
