@@ -14,10 +14,12 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+
+	"github.com/mitchellh/go-ps"
 
 	"github.com/dollarshaveclub/furan/pkg/datalayer"
 	"github.com/dollarshaveclub/furan/pkg/models"
-	"github.com/mitchellh/go-ps"
 )
 
 // Manager is an object that performs high-level management of image builds
@@ -160,6 +162,11 @@ func (m *Manager) Run(ctx context.Context, buildID uuid.UUID) (err error) {
 			cf()
 			cancelled.set(true)
 		}
+	}()
+
+	span, ctx := tracer.StartSpanFromContext(ctx, "syncbuild", tracer.Tag("source-repo", b.GitHubRepo))
+	defer func() {
+		span.Finish(tracer.WithError(err))
 	}()
 
 	// ensure the build is always marked as completed

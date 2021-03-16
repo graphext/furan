@@ -1,7 +1,7 @@
 // Unless explicitly stated otherwise all files in this repository are licensed
 // under the Apache License Version 2.0.
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
-// Copyright 2016-2020 Datadog, Inc.
+// Copyright 2016 Datadog, Inc.
 
 // Package ext contains a set of Datadog-specific constants. Most of them are used
 // for setting span metadata.
@@ -82,4 +82,7 @@ const (
 	// ManualDrop is a tag which specifies that the trace to which this span
 	// belongs to should be dropped when set to true.
 	ManualDrop = "manual.drop"
+
+	// RuntimeID is a tag that contains a unique id for this process.
+	RuntimeID = "runtime-id"
 )

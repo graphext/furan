@@ -1,11 +1,12 @@
 // Unless explicitly stated otherwise all files in this repository are licensed
 // under the Apache License Version 2.0.
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
-// Copyright 2016-2020 Datadog, Inc.
+// Copyright 2016 Datadog, Inc.
 
 package tracer
 
 import (
+	"context"
 	"math"
 	"net"
 	"net/http"
@@ -17,9 +18,12 @@ import (
 
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/ext"
+	"gopkg.in/DataDog/dd-trace-go.v1/internal"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/globalconfig"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/log"
 	"gopkg.in/DataDog/dd-trace-go.v1/internal/version"
+
+	"github.com/DataDog/datadog-go/statsd"
 )
 
 // config holds the tracer configuration.
@@ -27,11 +31,21 @@ type config struct {
 	// debug, when true, writes details to logs.
 	debug bool
 
+	// lambda, when true, enables the lambda trace writer
+	logToStdout bool
+
+	// logStartup, when true, causes various startup info to be written
+	// when the tracer starts.
+	logStartup bool
+
 	// serviceName specifies the name of this application.
 	serviceName string
 
 	// version specifies the version of this application
 	version string
+
+	// env contains the environment that this application will run under.
+	env string
 
 	// sampler specifies the sampler that will be used for sampling traces.
 	sampler Sampler
@@ -79,16 +93,21 @@ type config struct {
 	// tickChan specifies a channel which will receive the time every time the tracer must flush.
 	// It defaults to time.Ticker; replaced in tests.
 	tickChan <-chan time.Time
+
+	// noDebugStack disables the collection of debug stack traces globally. No traces reporting
+	// errors will record a stack trace when this option is set.
+	noDebugStack bool
 }
 
 // StartOption represents a function that can be provided as a parameter to Start.
 type StartOption func(*config)
 
-// defaults sets the default values for a config.
-func defaults(c *config) {
+// newConfig renders the tracer configuration based on defaults, environment variables
+// and passed user opts.
+func newConfig(opts ...StartOption) *config {
+	c := new(config)
 	c.sampler = NewAllSampler()
 	c.agentAddr = defaultAddress
-
 	statsdHost, statsdPort := "localhost", "8125"
 	if v := os.Getenv("DD_AGENT_HOST"); v != "" {
 		statsdHost = v
@@ -98,6 +117,9 @@ func defaults(c *config) {
 	}
 	c.dogstatsdAddr = net.JoinHostPort(statsdHost, statsdPort)
 
+	if internal.BoolEnv("DD_TRACE_ANALYTICS_ENABLED", false) {
+		globalconfig.SetAnalyticsRate(1.0)
+	}
 	if os.Getenv("DD_TRACE_REPORT_HOSTNAME") == "true" {
 		var err error
 		c.hostname, err = os.Hostname()
@@ -105,34 +127,100 @@ func defaults(c *config) {
 			log.Warn("unable to look up hostname: %v", err)
 		}
 	}
+	if v := os.Getenv("DD_TRACE_SOURCE_HOSTNAME"); v != "" {
+		c.hostname = v
+	}
 	if v := os.Getenv("DD_ENV"); v != "" {
-		WithEnv(v)(c)
+		c.env = v
 	}
 	if v := os.Getenv("DD_SERVICE"); v != "" {
 		c.serviceName = v
 		globalconfig.SetServiceName(v)
-	} else {
-		c.serviceName = filepath.Base(os.Args[0])
 	}
 	if ver := os.Getenv("DD_VERSION"); ver != "" {
 		c.version = ver
 	}
 	if v := os.Getenv("DD_TAGS"); v != "" {
-		for _, tag := range strings.Split(v, ",") {
+		sep := " "
+		if strings.Index(v, ",") > -1 {
+			// falling back to comma as separator
+			sep = ","
+		}
+		for _, tag := range strings.Split(v, sep) {
 			tag = strings.TrimSpace(tag)
 			if tag == "" {
 				continue
 			}
 			kv := strings.SplitN(tag, ":", 2)
-			k := strings.TrimSpace(kv[0])
-			switch len(kv) {
-			case 1:
-				WithGlobalTag(k, "")(c)
-			case 2:
-				WithGlobalTag(k, strings.TrimSpace(kv[1]))(c)
+			key := strings.TrimSpace(kv[0])
+			if key == "" {
+				continue
+			}
+			var val string
+			if len(kv) == 2 {
+				val = strings.TrimSpace(kv[1])
+			}
+			WithGlobalTag(key, val)(c)
+		}
+	}
+	if _, ok := os.LookupEnv("AWS_LAMBDA_FUNCTION_NAME"); ok {
+		// AWS_LAMBDA_FUNCTION_NAME being set indicates that we're running in an AWS Lambda environment.
+		// See: https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
+		c.logToStdout = true
+	}
+	c.logStartup = internal.BoolEnv("DD_TRACE_STARTUP_LOGS", true)
+	c.runtimeMetrics = internal.BoolEnv("DD_RUNTIME_METRICS_ENABLED", false)
+	c.debug = internal.BoolEnv("DD_TRACE_DEBUG", false)
+	for _, fn := range opts {
+		fn(c)
+	}
+	WithGlobalTag(ext.RuntimeID, globalconfig.RuntimeID())(c)
+	if c.env == "" {
+		if v, ok := c.globalTags["env"]; ok {
+			if e, ok := v.(string); ok {
+				c.env = e
 			}
 		}
 	}
+	if c.version == "" {
+		if v, ok := c.globalTags["version"]; ok {
+			if ver, ok := v.(string); ok {
+				c.version = ver
+			}
+		}
+	}
+	if c.serviceName == "" {
+		if v, ok := c.globalTags["service"]; ok {
+			if s, ok := v.(string); ok {
+				c.serviceName = s
+				globalconfig.SetServiceName(s)
+			}
+		} else {
+			c.serviceName = filepath.Base(os.Args[0])
+		}
+	}
+	if c.transport == nil {
+		c.transport = newTransport(c.agentAddr, c.httpClient)
+	}
+	if c.propagator == nil {
+		c.propagator = NewPropagator(nil)
+	}
+	if c.logger != nil {
+		log.UseLogger(c.logger)
+	}
+	if c.debug {
+		log.SetLevel(log.LevelDebug)
+	}
+	if c.statsd == nil {
+		client, err := statsd.New(c.dogstatsdAddr, statsd.WithMaxMessagesPerPayload(40), statsd.WithTags(statsTags(c)))
+		if err != nil {
+			log.Warn("Runtime and health metrics disabled: %v", err)
+			c.statsd = &statsd.NoOpClient{}
+		} else {
+			c.statsd = client
+		}
+	}
+	return c
 }
 
 func statsTags(c *config) []string {
@@ -143,6 +231,9 @@ func statsTags(c *config) []string {
 	}
 	if c.serviceName != "" {
 		tags = append(tags, "service:"+c.serviceName)
+	}
+	if c.env != "" {
+		tags = append(tags, "env:"+c.env)
 	}
 	if c.hostname != "" {
 		tags = append(tags, "host:"+c.hostname)
@@ -173,10 +264,26 @@ func WithPrioritySampling() StartOption {
 	}
 }
 
+// WithDebugStack can be used to globally enable or disable the collection of stack traces when
+// spans finish with errors. It is enabled by default. This is a global version of the NoDebugStack
+// FinishOption.
+func WithDebugStack(enabled bool) StartOption {
+	return func(c *config) {
+		c.noDebugStack = !enabled
+	}
+}
+
 // WithDebugMode enables debug mode on the tracer, resulting in more verbose logging.
 func WithDebugMode(enabled bool) StartOption {
 	return func(c *config) {
 		c.debug = enabled
+	}
+}
+
+// WithLambdaMode enables lambda mode on the tracer, for use with AWS Lambda.
+func WithLambdaMode(enabled bool) StartOption {
+	return func(c *config) {
+		c.logToStdout = enabled
 	}
 }
 
@@ -221,7 +328,9 @@ func WithAgentAddr(addr string) StartOption {
 // WithEnv sets the environment to which all traces started by the tracer will be submitted.
 // The default value is the environment variable DD_ENV, if it is set.
 func WithEnv(env string) StartOption {
-	return WithGlobalTag(ext.Environment, env)
+	return func(c *config) {
+		c.env = env
+	}
 }
 
 // WithGlobalTag sets a key/value pair which will be set as a tag on all spans
@@ -257,6 +366,18 @@ func WithHTTPClient(client *http.Client) StartOption {
 	return func(c *config) {
 		c.httpClient = client
 	}
+}
+
+// WithUDS configures the HTTP client to dial the Datadog Agent via the specified Unix Domain Socket path.
+func WithUDS(socketPath string) StartOption {
+	return WithHTTPClient(&http.Client{
+		Transport: &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", socketPath)
+			},
+		},
+		Timeout: defaultHTTPTimeout,
+	})
 }
 
 // WithAnalytics allows specifying whether Trace Search & Analytics should be enabled
@@ -312,6 +433,13 @@ func WithSamplingRules(rules []SamplingRule) StartOption {
 func WithServiceVersion(version string) StartOption {
 	return func(cfg *config) {
 		cfg.version = version
+	}
+}
+
+// WithHostname allows specifying the hostname with which to mark outgoing traces.
+func WithHostname(name string) StartOption {
+	return func(c *config) {
+		c.hostname = name
 	}
 }
 
