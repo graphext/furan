@@ -16,8 +16,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
 	"github.com/mholt/archiver/v3"
 
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 type CacheManager struct {

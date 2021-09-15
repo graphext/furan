@@ -16,7 +16,7 @@ import (
 	"github.com/mholt/archiver/v3"
 	"golang.org/x/oauth2"
 
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 // GitHubFetcher represents a github data fetcher

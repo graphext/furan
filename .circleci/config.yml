@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.15
+      - image: circleci/golang:1.17
       - image: circleci/postgres:12-alpine-ram
         environment:
           POSTGRES_USER: postgres

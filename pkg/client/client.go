@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	fgrpc "github.com/dollarshaveclub/furan/pkg/grpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	fgrpc "github.com/dollarshaveclub/furan/v2/pkg/grpc"
 )
 
 type rpcCreds struct {

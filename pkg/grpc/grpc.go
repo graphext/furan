@@ -18,10 +18,10 @@ import (
 	grpctrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/google.golang.org/grpc"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/dollarshaveclub/furan/pkg/config"
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/config"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 // MaxResourceLimits contains the maximum allowable quantities for build resource requests/limits if supplied in build

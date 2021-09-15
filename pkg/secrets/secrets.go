@@ -8,7 +8,7 @@ import (
 
 	"github.com/dollarshaveclub/pvc"
 
-	"github.com/dollarshaveclub/furan/pkg/config"
+	"github.com/dollarshaveclub/furan/v2/pkg/config"
 )
 
 type BackendType int

@@ -9,7 +9,7 @@ import (
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 func TestFuranJobFunc(t *testing.T) {

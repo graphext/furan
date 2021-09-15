@@ -14,9 +14,9 @@ import (
 	"github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/util/progress/progressui"
 
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 
 	"fmt"
 

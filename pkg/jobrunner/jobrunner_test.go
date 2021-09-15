@@ -18,9 +18,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 func TestK8sJobRunner_Run(t *testing.T) {

@@ -1,6 +1,6 @@
 package jobrunner
 
-import "github.com/dollarshaveclub/furan/pkg/models"
+import "github.com/dollarshaveclub/furan/v2/pkg/models"
 
 type FakeJob struct {
 	ErrorChan   chan error

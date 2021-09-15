@@ -7,7 +7,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/spf13/cobra"
 
-	"github.com/dollarshaveclub/furan/pkg/client"
+	"github.com/dollarshaveclub/furan/v2/pkg/client"
 )
 
 // triggerCmd represents the trigger command

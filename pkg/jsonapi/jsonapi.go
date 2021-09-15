@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	fgrpc "github.com/dollarshaveclub/furan/pkg/grpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	fgrpc "github.com/dollarshaveclub/furan/v2/pkg/grpc"
 	"github.com/gorilla/mux"
 	"golang.org/x/net/context"
 )

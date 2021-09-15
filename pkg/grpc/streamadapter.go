@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
 )
 
 // MonitorStreamAdapter allows the Monitor streaming RPC to be consumed by non-gRPC clients

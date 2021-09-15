@@ -14,13 +14,13 @@ import (
 
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/mocktracer"
 
-	"github.com/dollarshaveclub/furan/pkg/buildkit"
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/github"
-	"github.com/dollarshaveclub/furan/pkg/jobrunner"
-	"github.com/dollarshaveclub/furan/pkg/models"
-	"github.com/dollarshaveclub/furan/pkg/tagcheck"
+	"github.com/dollarshaveclub/furan/v2/pkg/buildkit"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/github"
+	"github.com/dollarshaveclub/furan/v2/pkg/jobrunner"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/tagcheck"
 )
 
 func TestManager_Start(t *testing.T) {

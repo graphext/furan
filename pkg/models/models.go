@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/nacl/secretbox"
 
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
 )
 
 //go:generate stringer -type=BuildStatus

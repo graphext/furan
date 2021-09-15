@@ -18,8 +18,8 @@ import (
 
 	"github.com/mitchellh/go-ps"
 
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 // Manager is an object that performs high-level management of image builds

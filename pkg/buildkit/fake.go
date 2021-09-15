@@ -3,7 +3,7 @@ package buildkit
 import (
 	"context"
 
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 type FakeBuilder struct {

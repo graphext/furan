@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/dollarshaveclub/furan/pkg/config"
-	"github.com/dollarshaveclub/furan/pkg/secrets"
+	"github.com/dollarshaveclub/furan/v2/pkg/config"
+	"github.com/dollarshaveclub/furan/v2/pkg/secrets"
 )
 
 var awsConfig config.AWSConfig

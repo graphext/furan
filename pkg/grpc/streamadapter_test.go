@@ -8,8 +8,8 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 func TestMonitorStreamAdapter_RecvMsg(t *testing.T) {

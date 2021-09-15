@@ -12,14 +12,14 @@ import (
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 
-	"github.com/dollarshaveclub/furan/pkg/auth"
-	"github.com/dollarshaveclub/furan/pkg/builder"
-	"github.com/dollarshaveclub/furan/pkg/buildkit"
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/github"
-	"github.com/dollarshaveclub/furan/pkg/models"
-	"github.com/dollarshaveclub/furan/pkg/s3"
-	"github.com/dollarshaveclub/furan/pkg/tagcheck"
+	"github.com/dollarshaveclub/furan/v2/pkg/auth"
+	"github.com/dollarshaveclub/furan/v2/pkg/builder"
+	"github.com/dollarshaveclub/furan/v2/pkg/buildkit"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/github"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/s3"
+	"github.com/dollarshaveclub/furan/v2/pkg/tagcheck"
 )
 
 var runbuildCmd = &cobra.Command{

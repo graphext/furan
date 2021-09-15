@@ -15,14 +15,14 @@ import (
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/dollarshaveclub/furan/pkg/builder"
-	"github.com/dollarshaveclub/furan/pkg/config"
-	"github.com/dollarshaveclub/furan/pkg/datalayer"
-	"github.com/dollarshaveclub/furan/pkg/generated/furanrpc"
-	"github.com/dollarshaveclub/furan/pkg/github"
-	"github.com/dollarshaveclub/furan/pkg/grpc"
-	"github.com/dollarshaveclub/furan/pkg/jobrunner"
-	"github.com/dollarshaveclub/furan/pkg/models"
+	"github.com/dollarshaveclub/furan/v2/pkg/builder"
+	"github.com/dollarshaveclub/furan/v2/pkg/config"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/github"
+	"github.com/dollarshaveclub/furan/v2/pkg/grpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/jobrunner"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 )
 
