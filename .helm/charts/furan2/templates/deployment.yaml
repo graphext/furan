@@ -106,6 +106,10 @@ spec:
             - "--builder-image"
             - "{{ .Values.app.builder_image }}"
             {{ end }}
+            {{ if .Values.app.testing_seed_api_key }}
+            - "--testing-seed-api-key"
+            - "{{ .Values.app.testing_seed_api_key }}"
+            {{ end }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               protocol: TCP

@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/spf13/cobra"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -115,6 +116,7 @@ func init() {
 	serverAndRunnerFlags(serverCmd)
 	serverCmd.PersistentFlags().StringVar(&serverConfig.HTTPSAddr, "https-addr", "0.0.0.0:4001", "REST HTTPS listen address")
 	serverCmd.PersistentFlags().StringVar(&serverConfig.GRPCAddr, "grpc-addr", "0.0.0.0:4000", "gRPC listen address")
+	serverCmd.PersistentFlags().StringVar(&serverConfig.SeedKey, "testing-seed-api-key", "", "Initial hardcoded API key (INSECURE, for testing only)")
 	serverCmd.PersistentFlags().StringVar(&tracesvcname, "trace-svc", "furan2", "APM trace service name (optional)")
 
 	// Builder image
@@ -181,6 +183,17 @@ func server(cmd *cobra.Command, args []string) {
 	dl, err := datalayer.NewPostgresDBLayer(dbConfig.PostgresURI)
 	if err != nil {
 		clierr("error configuring database: %v", err)
+	}
+
+	if serverConfig.SeedKey != "" {
+		log.Println("WARNING: seed api key set, not suitable for production use!")
+		id, err := uuid.FromString(serverConfig.SeedKey)
+		if err != nil {
+			clierr("invalid seed key: %v", err)
+		}
+		if err := dl.CreateSeedAPIKey(context.Background(), id); err != nil {
+			clierr("error creating seed key: %v", err)
+		}
 	}
 
 	ctx := context.Background()

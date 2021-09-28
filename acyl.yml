@@ -19,6 +19,7 @@ application:
     - 'app.aws.s3_cache_enabled=true'
     - 'app.aws.s3bucket=dsc-furan2-test'
     - 'app.aws.s3keypfx=furan2-local/'
+    - 'app.testing_seed_api_key=b9ad35b2-8918-492e-bb18-47c2365b6c86'
 
 dependencies:
   direct:

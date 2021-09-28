@@ -4,7 +4,7 @@ COPY . /tmp/furan
 RUN cd /tmp/furan && \
 CGO_ENABLED=0 go build -mod=vendor
 
-FROM alpine:3.11
+FROM alpine:3.13
 
 RUN mkdir -p /opt/migrations /opt/testing && \
 apk --no-cache add ca-certificates && apk --no-cache upgrade
