@@ -13,6 +13,7 @@ extend google.protobuf.MethodOptions {
 service FuranExecutor {
   rpc StartBuild (BuildRequest) returns (BuildRequestResponse) { option (read_only) = false; }
   rpc GetBuildStatus (BuildStatusRequest) returns (BuildStatusResponse) { option (read_only) = true; }
+  rpc GetBuildEvents (BuildStatusRequest) returns (BuildEventsResponse) { option (read_only) = true; }
   rpc MonitorBuild (BuildStatusRequest) returns (stream BuildEvent) { option (read_only) = true; }
   rpc CancelBuild (BuildCancelRequest) returns (BuildCancelResponse) { option (read_only) = false; }
   rpc ListBuilds (ListBuildsRequest) returns (ListBuildsResponse) { option (read_only) = true; }
@@ -54,7 +55,7 @@ message BuildResources {
 message BuildDefinition {
   string github_repo = 1;
   string github_credential = 2;
-  string dockerfile_path = 3;
+  string dockerfile_path = 3; // must be a directory containing a file named "dockerfile" or "Dockerfile"
   string ref = 4; // GitHub ref (sha/branch/tag)
   repeated string tags = 5;
   bool tag_with_commit_sha = 6;
@@ -120,6 +121,12 @@ message BuildEvent {
   string build_id = 1;
   string message = 2;
   BuildState current_state = 3;
+}
+
+message BuildEventsResponse {
+  string build_id = 1;
+  BuildState current_state = 2;
+  repeated string messages = 3;
 }
 
 // ListBuildsRequest models a request to list builds. Each parameter is combined
