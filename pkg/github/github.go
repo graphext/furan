@@ -12,7 +12,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v38/github"
 	"github.com/mholt/archiver/v3"
 	"golang.org/x/oauth2"
 
@@ -53,7 +53,7 @@ func (gf *GitHubFetcher) Fetch(ctx context.Context, repo, ref, destinationPath s
 	opt := &github.RepositoryContentGetOptions{
 		Ref: ref,
 	}
-	aurl, resp, err := gf.c.Repositories.GetArchiveLink(ctx, rs[0], rs[1], github.Tarball, opt)
+	aurl, resp, err := gf.c.Repositories.GetArchiveLink(ctx, rs[0], rs[1], github.Tarball, opt, false)
 	if err != nil {
 		return fmt.Errorf("error getting archive link: %v", err)
 	}

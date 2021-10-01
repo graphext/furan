@@ -30,8 +30,8 @@ require (
 	github.com/gogo/googleapis v1.4.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.0
-	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-cmp v0.5.6
+	github.com/google/go-github/v38 v38.1.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.0
@@ -76,7 +76,6 @@ require (
 	github.com/Microsoft/go-winio v0.4.15-0.20200908182639-5b44b70ab3ab // indirect
 	github.com/andybalholm/brotli v0.0.0-20190621154722-5f990b63d2d6 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/evanphx/json-patch v4.9.0+incompatible // indirect
 	github.com/go-logr/logr v0.2.0 // indirect

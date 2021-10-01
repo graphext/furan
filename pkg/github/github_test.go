@@ -11,7 +11,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v38/github"
 )
 
 // modified copypasta from https://github.com/google/go-github/blob/master/github/github_test.go
