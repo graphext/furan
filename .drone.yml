@@ -1,0 +1,27 @@
+---
+kind: pipeline
+name: publish-image
+steps:
+- name: publish
+  image: militarpancho1/drone-plugins-gcr:20.10.8
+  privileged: true
+  settings:
+    mtu: 1460
+    json_key:
+      from_secret: GCR_TOKEN
+    registry: eu.gcr.io
+    repo: eu.gcr.io/graphext-development/furan
+    tags:
+    - latest
+    - ${DRONE_COMMIT_SHA}
+  when:
+    branch:
+    - master
+    event:
+      exclude:
+      - pull_request
+---
+kind: signature
+hmac: 3dacb5bd40ea9407641753a9815d69e1f94c3483c55dc583e17c5d9dbadbd1d3
+
+...
