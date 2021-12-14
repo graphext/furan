@@ -1,7 +1,7 @@
 <p align="center">
 <img with="304" height="300" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/12437/furan_icon.svg" alt="Furan" />
 </p>
-<h1 align="center">Furan</h1>
+<h1 align="center">Furan 2</h1>
 
 -----
 
@@ -11,36 +11,51 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/dollarshaveclub/furan)](https://goreportcard.com/report/github.com/dollarshaveclub/furan)
 
-Furan is a horizontally-scalable Docker build microservice (API) that builds and pushes Docker images from a specified GitHub repository to a specified target (registry or S3).
+Furan 2 is a scalable, Kubernetes-native Docker build microservice (API) that builds and pushes Docker images from a specified GitHub repository to a specified image repository.
+
+Furan supports [gRPC](https://grpc.io) and JSON clients, and runs builds asynchronously using [BuildKit](https://github.com/moby/buildkit) in single-shot, rootless
+Kubernetes Jobs.
+
+Furan supports pushing build artifacts to the following image repository services:
+
+- [Quay.io](https://quay.io)
+- [AWS ECR](https://aws.amazon.com/ecr/)
+
+(Both public and private image repositories are supported.)
+
+Expressed in plain English, Furan handles build requests such as: 
+
+*"Build the GitHub repository acme/foo at commit SHA xxx using the Dockerfile in the root, and push the resulting image to the image repository at quay.io/acme/foo:tagname."*
+
+Furan is a core part of the Dollar Shave Club software delivery pipeline and is used programmatically by services such as [Acyl](https://github.com/dollarshaveclub/acyl).
+
+
+<h3>Architecture</h3>
+
+Furan's only runtime dependencies are PostgreSQL and Kubernetes.
+
+![Architecture](./docs/architecture.png)
+
+<h3>API</h3>
+
+At a high level, the Furan API consists of the following RPCs:
+
+1. StartBuild (asynchronously begin a build/push job)
+2. MonitorBuild (get a realtime stream of build messages for a running job)
+3. GetBuildStatus (get the status of a running job)
+4. ListBuilds (get a list of build jobs according to a set of criteria)
+5. CancelBuild (abort an actively running job)
+
+For more details, see the [protobuf definition](protos/api.proto).
+
+<h3>Differences between Furan 1 and 2</h3>
+
+Furan 1 did not require Kubernetes, and executed builds in the same server process via an external Docker Engine. If running
+in Kubernetes, this was a Docker-in-Docker (DinD) sidecar. To support the asynchronous API, Furan 1 had a large set
+of dependencies including Kafka, Consul and Cassandra/ScyllaDB.
+
+In contrast, Furan 2 has greatly decreased runtime dependencies, simplified deployment and more efficient use of compute
+resources and now requires Kubernetes. Furan 2 uses BuildKit instead of Docker Engine and uses rootless build jobs by default. Furan 2 also now
+supports build cache.
 
 <h3 align="center">&middot;&middot;&middot;</h3>
-
-## What is Furan's advantage?
-
--  **Furan is fast!** Optimized for build speed, Furan runs operations in memory instead of disk. Optionally, it can be configured to run all builds within a RAM disk. Furan streams directly from GitHub to a local Docker daemon without temporary files.
-
--  **Furan is stateless!** Furan is deployed as an essentially stateless API application, allowing it to be scaled out. Furan does not shell out to execute docker commands. It leverages the Docker Engine API.
-
--  **Furan is hookable!** Furan is triggered on demand via GRPC or HTTPS. Builds can be triggered on one node and monitored on any other (allows round-robin load balancing).
-
--  **Furan supports Docker pushs and S3 Deploys!** Furan supports pushing to Docker registries (public or private) as well as pre-squashing and deploying tarballs directly to S3.
-
-- **Furan is secure!** Furan integrates with [Vault](https://www.vaultproject.io) for secure storage of service credentials (Docker registries, AWS). Furan supports token and AppID authentication.
-
-- **Furan is instrumented!** Furan has full Datadog integration so you can monitor the size of your docker images over time, build durations, build failures and more. [Screenshot](https://s3.amazonaws.com/dsc-misc/furan-datadog-dashboard.png)
-
-## API
-
-The native API for Furan is based on [GRPC](http://www.grpc.io) and supports
-a number of RPC calls. See the [protobuf definition](https://github.com/dollarshaveclub/furan/blob/master/protos/models.proto#L5-L10)
-for details.
-
-An [HTTPS adapter](https://github.com/dollarshaveclub/furan/blob/master/HTTP-API.md) is
-available for testing convenience.
-
-## Docs
--  [Quick Start](https://github.com/dollarshaveclub/furan/blob/master/docs/QUICKSTART.md)
-
-## CLI
-
-See the help output for full details: ``furan --help``

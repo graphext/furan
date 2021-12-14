@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package furanrpc;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MethodOptions {
+  bool read_only = 1000;
+}
+
+// FuranExecutor is the Furan service definition
+// The custom option read_only determines the permissions level needed for that method
+service FuranExecutor {
+  rpc StartBuild (BuildRequest) returns (BuildRequestResponse) { option (read_only) = false; }
+  rpc GetBuildStatus (BuildStatusRequest) returns (BuildStatusResponse) { option (read_only) = true; }
+  rpc GetBuildEvents (BuildStatusRequest) returns (BuildEventsResponse) { option (read_only) = true; }
+  rpc MonitorBuild (BuildStatusRequest) returns (stream BuildEvent) { option (read_only) = true; }
+  rpc CancelBuild (BuildCancelRequest) returns (BuildCancelResponse) { option (read_only) = false; }
+  rpc ListBuilds (ListBuildsRequest) returns (ListBuildsResponse) { option (read_only) = true; }
+}
+
+// From https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message BuildCacheOpts {
+  enum CacheType {
+    UNKNOWN = 0;
+    DISABLED = 1;
+    S3 = 2; // manually cache to/from the S3 bucket configured server-side
+    INLINE = 3; // BuildKit OCI inline cache
+  }
+  CacheType type = 1;
+  bool max_mode = 2; // BuildKit cache "max mode" (default: false)
+}
+
+// BuildResources specifies optional requests and limits for the BuildKit container.
+// This uses the same syntax as k8s objects (ex: "2G", "100m").
+// If empty, reasonable defaults will be used.
+// Use this only if a particular build needs significantly more resources and is failing due to OOM or CPU starvation.
+// The server may reject excessively large values.
+// Kubernetes may have difficulty scheduling build jobs with high resource requests, leading to build timeouts.
+message BuildResources {
+  string cpu_request = 1;
+  string cpu_limit = 2;
+  string memory_request = 3;
+  string memory_limit = 4;
+}
+
+message BuildDefinition {
+  string github_repo = 1;
+  string github_credential = 2;
+  string dockerfile_path = 3; // must be a directory containing a file named "dockerfile" or "Dockerfile"
+  string ref = 4; // GitHub ref (sha/branch/tag)
+  repeated string tags = 5;
+  bool tag_with_commit_sha = 6;
+  map<string, string> args = 7;
+  BuildCacheOpts cache_options = 8;
+  BuildResources resources = 9; // Optional build resources for BuildKit
+}
+
+message PushRegistryDefinition {
+  string repo = 1;
+}
+
+message PushDefinition {
+  repeated PushRegistryDefinition registries = 1;
+}
+
+// Requests
+
+message BuildRequest {
+  BuildDefinition build = 1;
+  PushDefinition push = 2;
+  bool skip_if_exists = 3; // all tags exist in all image repos
+}
+
+message BuildStatusRequest {
+  string build_id = 1;
+}
+
+message BuildCancelRequest {
+  string build_id = 1;
+}
+
+// Responses
+
+message BuildRequestResponse {
+  string build_id = 1;
+}
+
+message BuildCancelResponse {
+  string build_id = 1;
+}
+
+enum BuildState {
+  UNKNOWN = 0;
+  NOTSTARTED = 1;
+  SKIPPED = 2;
+  RUNNING = 3;
+  FAILURE = 4;
+  SUCCESS = 5;
+  CANCEL_REQUESTED = 6;
+  CANCELLED = 7;
+}
+
+message BuildStatusResponse {
+  string build_id = 1;
+  BuildRequest build_request = 2;
+  BuildState state = 3;
+  Timestamp started = 4;
+  Timestamp completed = 5;
+}
+
+message BuildEvent {
+  string build_id = 1;
+  string message = 2;
+  BuildState current_state = 3;
+}
+
+message BuildEventsResponse {
+  string build_id = 1;
+  BuildState current_state = 2;
+  repeated string messages = 3;
+}
+
+// ListBuildsRequest models a request to list builds. Each parameter is combined
+// with an implicit logical AND.
+// Example:
+//   with_github_repo = "foo/bar"
+//   AND
+//   with_build_state = SUCCESS
+//   AND
+//   started_after = <1 week ago>
+//   AND
+//   completed_before = <24 hours ago>
+message ListBuildsRequest {
+  string with_github_repo = 1;
+  string with_github_ref = 2;
+  string with_image_repo = 3;
+  BuildState with_build_state = 4;
+  Timestamp completed_after = 5;
+  Timestamp started_after = 6;
+  Timestamp completed_before = 7;
+  Timestamp started_before = 8;
+  uint32 limit = 9;
+}
+
+message ListBuildsResponse {
+  repeated BuildStatusResponse builds = 1;
+}

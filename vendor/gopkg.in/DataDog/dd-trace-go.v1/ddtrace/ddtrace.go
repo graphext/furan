@@ -1,3 +1,8 @@
+// Unless explicitly stated otherwise all files in this repository are licensed
+// under the Apache License Version 2.0.
+// This product includes software developed at Datadog (https://www.datadoghq.com/).
+// Copyright 2016 Datadog, Inc.
+
 // Package ddtrace contains the interfaces that specify the implementations of Datadog's
 // tracing library, as well as a set of sub-packages containing various implementations:
 // our native implementation ("tracer"), a wrapper that can be used with Opentracing
@@ -25,8 +30,7 @@ type Tracer interface {
 	// Inject injects a span context into the given carrier.
 	Inject(context SpanContext, carrier interface{}) error
 
-	// Stop stops the active tracer and sets the global tracer to a no-op. Calls to
-	// Stop should be idempotent.
+	// Stop stops the tracer. Calls to Stop should be idempotent.
 	Stop()
 }
 
@@ -91,6 +95,12 @@ type FinishConfig struct {
 
 	// NoDebugStack will prevent any set errors from generating an attached stack trace tag.
 	NoDebugStack bool
+
+	// StackFrames specifies the number of stack frames to be attached in spans that finish with errors.
+	StackFrames uint
+
+	// SkipStackFrames specifies the offset at which to start reporting stack frames from the stack.
+	SkipStackFrames uint
 }
 
 // StartSpanConfig holds the configuration for starting a new span. It is usually passed
@@ -112,4 +122,10 @@ type StartSpanConfig struct {
 	// Force-set the SpanID, rather than use a random number. If no Parent SpanContext is present,
 	// then this will also set the TraceID to the same value.
 	SpanID uint64
+}
+
+// Logger implementations are able to log given messages that the tracer might output.
+type Logger interface {
+	// Log prints the given message.
+	Log(msg string)
 }

@@ -2,223 +2,276 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
+	"io"
 	"io/ioutil"
-	"os"
-	"strings"
-
-	docker "github.com/docker/engine-api/client"
-
-	"github.com/dollarshaveclub/furan/generated/lib"
-	"github.com/dollarshaveclub/furan/lib/buildcontext"
-	"github.com/dollarshaveclub/furan/lib/builder"
-	"github.com/dollarshaveclub/furan/lib/datalayer"
-	githubfetch "github.com/dollarshaveclub/furan/lib/github_fetch"
-	"github.com/dollarshaveclub/furan/lib/kafka"
-	"github.com/dollarshaveclub/furan/lib/s3"
-	"github.com/dollarshaveclub/furan/lib/squasher"
-	"github.com/dollarshaveclub/furan/lib/tagcheck"
-	"github.com/dollarshaveclub/furan/lib/vault"
-
 	"log"
+	"net"
+	"os"
+	"sync"
+	"time"
 
+	"github.com/ghodss/yaml"
+	"github.com/gofrs/uuid"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+
+	"github.com/dollarshaveclub/furan/v2/pkg/client"
+	"github.com/dollarshaveclub/furan/v2/pkg/datalayer"
+	"github.com/dollarshaveclub/furan/v2/pkg/generated/furanrpc"
+	"github.com/dollarshaveclub/furan/v2/pkg/models"
 )
 
 // integrationCmd represents the integration command
 var integrationCmd = &cobra.Command{
 	Use:   "integration",
 	Short: "Run a set of integration tests",
-	Long: `Run integration tests locally.
+	Long: `Run integration tests in a k8s cluster.
 
-Uses secrets from either env vars or JSON file. Both will use --vault-path-prefix for naming.
+This command assumes that it is running in a Job pod in k8s. 
+Furan server must also be running in the same cluster.
 
-Env var: <vault path prefix>_<secret name>   Example: SECRET_PRODUCTION_FURAN_AWS_ACCESS_KEY_ID
-JSON file (object): { "secret/production/furan/aws/access_key_id": "asdf" }
-
-Pass a JSON file containing options for the integration test (see testdata/integration.json).`,
-	Run: integration,
+Pass a YAML file containing options for the integration test (see testdata/integration.json).`,
+	RunE: integration,
 }
 
-var integrationOptionsFile string
+var integrationTestsFile, furanaddr string
+var furanServerConnectTimeout time.Duration
 
-type IntegrationOptions struct {
-	GitHubRepo       string   `json:"github_repo"`
-	Ref              string   `json:"ref"`
-	ImageRepo        string   `json:"image_repo"`
-	SkipIfExists     bool     `json:"skip"`
-	ECRRegistryHosts []string `json:"ecr_registry_hosts"`
+// K8sSecretNames defines the k8s secrets containing various secret values for the integration test
+type K8sSecretNames struct {
+	GitHubToken string `json:"github_token"`
 }
 
-func (iops IntegrationOptions) BuildRequest() *lib.BuildRequest {
-	return &lib.BuildRequest{
-		Build: &lib.BuildDefinition{
-			GithubRepo:       iops.GitHubRepo,
-			Ref:              iops.Ref,
-			TagWithCommitSha: true,
-		},
-		Push: &lib.PushDefinition{
-			Registry: &lib.PushRegistryDefinition{
-				Repo: iops.ImageRepo,
-			},
-		},
-		SkipIfExists: iops.SkipIfExists,
-	}
+type IntegrationTest struct {
+	Name          string                   `json:"name"`
+	Build         furanrpc.BuildDefinition `json:"build"`
+	ImageRepos    []string                 `json:"image_repos"`
+	SkipIfExists  bool                     `json:"skip_if_exists"`
+	ExpectFailure bool                     `json:"expect_failure"`
+	ExpectSkipped bool                     `json:"expect_skipped"`
+	SecretNames   K8sSecretNames           `json:"secret_names"`
+}
+
+type IntegrationTests struct {
+	Tests []IntegrationTest `json:"tests"`
 }
 
 func init() {
-	integrationCmd.Flags().BoolVar(&vaultConfig.EnvVars, "env-var-secrets", false, "use environment variable secrets (uses vault-path-prefix for naming scheme)")
-	integrationCmd.Flags().StringVar(&vaultConfig.JSONFile, "json-secrets-file", "", "JSON secrets file")
-	integrationCmd.Flags().StringVar(&integrationOptionsFile, "integration-options-file", "testdata/integration.json", "JSON integration options file")
+	integrationCmd.Flags().StringVar(&integrationTestsFile, "integration-tests-file", "/opt/testing/integration.yaml", "YAML integration tests file")
+	integrationCmd.Flags().StringVar(&furanaddr, "furan-addr", "furan:4000", "furan server address")
+	integrationCmd.Flags().DurationVar(&furanServerConnectTimeout, "furan-timeout", 2*time.Minute, "timeout for furan server to be up and ready")
 	RootCmd.AddCommand(integrationCmd)
 }
 
-const chanCapacity = 100000
+type buildMap struct {
+	sync.RWMutex
+	builds map[string]uuid.UUID
+}
 
-func integration(cmd *cobra.Command, args []string) {
-	vaultConfig.TokenAuth = false
-	vaultConfig.AppID = ""
-	vaultConfig.K8sJWTPath = ""
-	vault.SetupVault(&vaultConfig, &awsConfig, &dockerConfig, &gitConfig, &serverConfig, awscredsprefix)
-
-	f, err := os.Open(integrationOptionsFile)
+func integration(cmd *cobra.Command, args []string) error {
+	f, err := os.Open(integrationTestsFile)
 	if err != nil {
-		log.Fatalf("error opening integration options file: %v", err)
+		return fmt.Errorf("error opening integration tests file: %w", err)
 	}
 	defer f.Close()
 
-	intops := map[string]IntegrationOptions{}
-	if err := json.NewDecoder(f).Decode(&intops); err != nil {
-		log.Fatalf("error unmarshaling integration options file: %v", err)
-	}
-
-	logger = log.New(os.Stderr, "", log.LstdFlags)
-	nlogger := log.New(ioutil.Discard, "", log.LstdFlags)
-
-	mc, err := newDatadogCollector()
+	fi, err := f.Stat()
 	if err != nil {
-		log.Fatalf("error creating Datadog collector: %v", err)
+		return fmt.Errorf("error getting file info: %w", err)
 	}
 
-	err = getDockercfg()
+	if fi.Size() > 10_000_000 {
+		return fmt.Errorf("integration test exceeds max size: %v", fi.Size())
+	}
+
+	td, err := ioutil.ReadAll(f)
 	if err != nil {
-		clierr("error getting dockercfg: %v", err)
+		return fmt.Errorf("error reading file: %w", err)
 	}
 
-	gf := githubfetch.NewGitHubFetcher(gitConfig.Token)
-	dc, err := docker.NewEnvClient()
+	var tests IntegrationTests
+	if err := yaml.Unmarshal(td, &tests); err != nil {
+		return fmt.Errorf("error decoding integration tests file: %w", err)
+	}
+
+	kc, err := NewInClusterK8sClient()
 	if err != nil {
-		clierr("error creating Docker client: %v", err)
+		return fmt.Errorf("error getting k8s client: %w", err)
 	}
 
-	osm := s3.NewS3StorageManager(awsConfig, mc, logger)
-	is := squasher.NewDockerImageSquasher(logger)
-	itc := tagcheck.NewRegistryTagChecker(&dockerConfig, logger.Printf)
-	s3errcfg := builder.S3ErrorLogConfig{
-		PushToS3: false,
+	if len(tests.Tests) == 0 {
+		return fmt.Errorf("no tests defined")
 	}
-
-	km := kafka.NewFakeEventBusProducer(chanCapacity)
-	dl := &datalayer.FakeDataLayer{}
-
-	ib, err := builder.NewImageBuilder(
-		km,
-		dl,
-		gf,
-		dc,
-		mc,
-		osm,
-		is,
-		itc,
-		dockerConfig.DockercfgContents,
-		s3errcfg,
-		nlogger)
-	if err != nil {
-		clierr("error creating image builder: %v", err)
-	}
-
-	tester := integrationTester{
-		DL:  dl,
-		IB:  ib,
-		EBC: km,
-	}
-
-	for name, ops := range intops {
-		log.Printf("running test: %v\n", name)
-		tester.RunTest(ops)
-	}
-
-	log.Println("all tests successful")
-}
-
-type integrationTester struct {
-	DL  datalayer.DataLayer
-	IB  *builder.ImageBuilder
-	EBC kafka.EventBusConsumer
-}
-
-func streamMessage(rawmsg string) string {
-	stream := struct {
-		Stream string `json:"stream"`
-	}{}
-	if err := json.Unmarshal([]byte(rawmsg), &stream); err != nil {
-		return rawmsg
-	}
-	return stream.Stream
-}
-
-func (it *integrationTester) RunTest(opts IntegrationOptions) {
-
-	req := opts.BuildRequest()
-
-	c := make(chan *lib.BuildEvent, chanCapacity)
-	s := make(chan struct{})
-	defer close(s)
-
-	go func() {
-		for e := range c {
-			if e != nil && e.Message != "" {
-				if msg := streamMessage(e.Message); msg != "" {
-					log.Println(msg)
-				}
-			}
-		}
-	}()
 
 	ctx := context.Background()
 
-	it.IB.SetECRConfig(awsConfig.AccessKeyID, awsConfig.SecretAccessKey, opts.ECRRegistryHosts)
-
-	id, err := it.DL.CreateBuild(ctx, req)
-	if err != nil {
-		log.Fatalf("error creating build: %v", err)
-	}
-
-	ctx = buildcontext.NewBuildIDContext(ctx, id, nil)
-
-	if err := it.EBC.SubscribeToTopic(c, s, id); err != nil {
-		log.Fatalf("error subscribing to build events: %v", nil)
-	}
-
-	imageid, err := it.IB.Build(ctx, req, id)
-	if err != nil {
-		if req.SkipIfExists && strings.Contains(err.Error(), "build not necessary") {
-			log.Println("push not needed, ending test")
-			return
+	for i := range tests.Tests {
+		sn := tests.Tests[i].SecretNames.GitHubToken
+		s, err := kc.CoreV1().Secrets(os.Getenv("POD_NAMESPACE")).Get(ctx, sn, v1.GetOptions{})
+		if err != nil {
+			return fmt.Errorf("error getting secret: %v: %w", sn, err)
 		}
-		log.Fatalf("test failed: %v", err)
+		tests.Tests[i].Build.GithubCredential = string(s.Data["token"])
 	}
 
-	switch {
-	case req.GetPush().Registry != nil:
-		if err := it.IB.PushBuildToRegistry(ctx, req); err != nil {
-			log.Fatalf("error pushing to registry: %v", err)
+	apikey, err := GetAPIKey()
+	if err != nil {
+		return fmt.Errorf("error getting api key: %w", err)
+	}
+
+	if err := WaitForFuranServer(furanaddr); err != nil {
+		return fmt.Errorf("error verifying furan server is running: %w", err)
+	}
+
+	fc, err := client.New(client.Options{
+		Address:               furanaddr,
+		APIKey:                apikey.String(),
+		TLSInsecureSkipVerify: true,
+	})
+	defer fc.Close()
+
+	var eg errgroup.Group
+
+	var bm buildMap
+	bm.builds = make(map[string]uuid.UUID, len(tests.Tests))
+
+	for i := range tests.Tests {
+		t := tests.Tests[i]
+		p := &furanrpc.PushDefinition{
+			Registries: make([]*furanrpc.PushRegistryDefinition, len(t.ImageRepos)),
 		}
-	case req.GetPush().S3 != nil:
-		if err := it.IB.PushBuildToS3(ctx, imageid, req); err != nil {
-			log.Fatalf("error pushing to S3: %v", err)
+		for i := range t.ImageRepos {
+			p.Registries[i] = &furanrpc.PushRegistryDefinition{
+				Repo: t.ImageRepos[i],
+			}
+		}
+		n := i
+		eg.Go(func() error {
+			fmt.Printf("starting build: %v: %v\n", n, t.Name)
+			bid, err := fc.StartBuild(ctx, furanrpc.BuildRequest{
+				Build:        &t.Build,
+				Push:         p,
+				SkipIfExists: t.SkipIfExists,
+			})
+			if err != nil {
+				return fmt.Errorf("error starting build: %v: %w", t.Name, err)
+			}
+
+			bm.Lock()
+			bm.builds[t.Name] = bid
+			bm.Unlock()
+
+			fmt.Printf("build started: %v: %v: %v\n", n, t.Name, bid)
+			return monitorIntegrationBuild(ctx, bid, t.ExpectFailure, t.ExpectSkipped, fc)
+		})
+	}
+
+	if err := eg.Wait(); err != nil {
+		return fmt.Errorf("failure: %w", err)
+	}
+
+	bm.Lock()
+	defer bm.Unlock()
+	for name, id := range bm.builds {
+		bs, err := fc.GetBuildStatus(ctx, id)
+		if err != nil {
+			fmt.Printf("error getting build status: %v: %v: %v", id, name, err)
+			continue
+		}
+		fmt.Printf("build status: %v: %v: %v\n", id, name, bs.State)
+	}
+
+	return nil
+}
+
+func monitorIntegrationBuild(ctx context.Context, bid uuid.UUID, fail, skip bool, fc *client.RemoteBuilder) error {
+	s, err := fc.MonitorBuild(ctx, bid)
+	if err != nil {
+		return fmt.Errorf("error monitoring build %v: %w", bid, err)
+	}
+	for {
+		ev, err := s.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("error getting build event (%v): %w", bid, err)
+		}
+		var status string
+		if ev.CurrentState != furanrpc.BuildState_RUNNING {
+			status = fmt.Sprintf(" (status: %v)", ev.CurrentState)
+		}
+		log.Printf("%v: %v%v\n", bid, ev.Message, status)
+	}
+	bs, err := fc.GetBuildStatus(ctx, bid)
+	if err != nil {
+		return fmt.Errorf("error getting final build status: %w", err)
+	}
+	duration := " "
+	if bs.Started != nil && bs.Completed != nil {
+		d := models.TimeFromRPCTimestamp(*bs.Completed).Sub(models.TimeFromRPCTimestamp(*bs.Started))
+		duration = fmt.Sprintf(" (duration: %v) ", d)
+	}
+	log.Printf("build completed: state: %v%v\n", bs.State, duration)
+	switch bs.State {
+	case furanrpc.BuildState_FAILURE:
+		if !fail {
+			return fmt.Errorf("unexpected build failure")
+		}
+	case furanrpc.BuildState_SUCCESS:
+		if fail {
+			return fmt.Errorf("wanted build failure but it succeeded instead")
+		}
+	case furanrpc.BuildState_SKIPPED:
+		if !skip {
+			return fmt.Errorf("unexpected build skipped")
 		}
 	default:
-		log.Println("no push defined")
+		return fmt.Errorf("unexpected final build status: %v", bs.State)
+	}
+	return nil
+}
+
+func NewInClusterK8sClient() (kubernetes.Interface, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, fmt.Errorf("error getting in-cluster config: %w", err)
+	}
+	kc, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("error getting client: %w", err)
+	}
+	return kc, nil
+}
+
+func GetAPIKey() (uuid.UUID, error) {
+	db, err := datalayer.NewRawPGClient(os.Getenv("DB_URI"), 1)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("error getting postgres client: %w", err)
+	}
+	var key uuid.UUID
+	err = db.QueryRow(context.Background(), `SELECT id FROM api_keys WHERE name = 'root' LIMIT 1;`).Scan(&key)
+	return key, err
+}
+
+func WaitForFuranServer(addr string) error {
+	deadline := time.Now().UTC().Add(furanServerConnectTimeout)
+	for {
+		now := time.Now().UTC()
+		if now.Equal(deadline) || now.After(deadline) {
+			return fmt.Errorf("timeout waiting for furan server (%v)", furanServerConnectTimeout)
+		}
+		conn, err := net.Dial("tcp", addr)
+		if err != nil {
+			log.Printf("error connecting to furan server: waiting & retrying...")
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		conn.Close()
+		return nil
 	}
 }

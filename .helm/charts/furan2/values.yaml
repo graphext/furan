@@ -1,0 +1,121 @@
+replicaCount: 1
+createServiceAccount: false
+createRole: false
+serviceAccountName: furan2
+image:
+  repository: 932427637498.dkr.ecr.us-west-2.amazonaws.com/furan2
+  tag: master
+  pullPolicy: IfNotPresent
+  pullSecrets: ""
+
+run_migrations: false
+
+annotations:
+
+app:
+  verbose: false
+  builder_image: ''
+  secrets_backend: "vault"
+  secrets_mapping: ""
+  testing_seed_api_key: ''
+  datadog:
+    apm: true
+    profiling: true
+    addr: 'datadog:8126'
+    service: 'furan2'
+    environment: 'development'
+  # if using the "env" secrets backend, map these k8s secret names
+  # to the corresponding env vars
+  env_secret_names:
+    - env_var: "GITHUB_TOKEN"
+      secret: "github-token"
+      data_key: "token"
+    - env_var: "QUAY_TOKEN"
+      secret: "quay-token"
+      data_key: "token"
+    - env_var: "AWS_ACCESS_KEY_ID"
+      secret: "aws-access-key"
+      data_key: "access_key_id"
+    - env_var: "AWS_SECRET_ACCESS_KEY"
+      secret: "aws-access-key"
+      data_key: "secret_access_key"
+    - env_var: "DB_URI"
+      secret: "db"
+      data_key: "uri"
+    - env_var: "DB_CREDENTIAL_ENCRYPTION_KEY"
+      secret: "db"
+      data_key: "credential_encryption_key"
+  tls:
+    use_dev_cert: false
+    from_secret: ''
+  aws:
+    s3_cache_enabled: false
+    region: us-west-2
+    s3bucket: ''
+    s3keypfx: ''
+
+vault:
+  address: "http://vault:8200"
+  token: "root"
+  use_token_auth: true
+  use_k8s_auth: false
+  k8sAuthPath: "kube.shave.io"
+  role: "furan2"
+  agentInjector:
+    enabled: false
+    initFirst: true
+    logLevel: info
+  secretsPrefix: secret/services/furan/qa
+  secrets:
+  - path: db/uri
+    key: value
+  - path: db/credential_encryption_key
+    key: value
+  - path: github/token
+    key: value
+  - path: quay/token
+    key: value
+
+service:
+  name: furan
+  type: ClusterIP
+  externalPort: 4000
+  internalPort: 4000
+
+ingress:
+  enabled: false
+  hosts:
+    - furan.development.shave.io
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+
+livenessProbe:
+  initialDelaySeconds: 100
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+dnsPolicy: ClusterFirst
+dnsConfig:
+  options:
+    - name: ndots
+      value: "2"
+    - name: attempts
+      value: "5"
+    - name: timeout
+      value: "1"
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
