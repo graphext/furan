@@ -33,14 +33,14 @@ dependencies:
         - "postgresqlDatabase=furan"
         - "persistence.enabled=false"
         - "fullnameOverride=postgresql"
-    - name: vault
-      chart_repo_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault'
-      chart_repo_vars_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault/values.yaml'
-      value_overrides:
-        - 'image.pullPolicy=Always'
-        - 'secrets.github/token=asdf'
-        - 'secrets.quay/token=asdf'
-        - 'secrets.aws/access_key_id=asdf'
-        - 'secrets.aws/secret_access_key=asdf'
-        - 'secrets.db/uri=postgresql://postgres:root@postgresql:5432/furan?sslmode=disable'
-        - 'secrets.db/credential_encryption_key=few4vbLeR13ykH1orWVowfUsGNiv2cXx'
+    # - name: vault
+    #   chart_repo_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault'
+    #   chart_repo_vars_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault/values.yaml'
+    #   value_overrides:
+    #     - 'image.pullPolicy=Always'
+    #     - 'secrets.github/token=asdf'
+    #     - 'secrets.quay/token=asdf'
+    #     - 'secrets.aws/access_key_id=asdf'
+    #     - 'secrets.aws/secret_access_key=asdf'
+    #     - 'secrets.db/uri=postgresql://postgres:root@postgresql:5432/furan?sslmode=disable'
+    #     - 'secrets.db/credential_encryption_key=few4vbLeR13ykH1orWVowfUsGNiv2cXx'
