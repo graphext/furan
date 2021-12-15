@@ -18,12 +18,12 @@ app:
   secrets_backend: "env"
   secrets_mapping: ""
   testing_seed_api_key: ""
-  # datadog:
-  #   apm: true
-  #   profiling: true
-  #   addr: 'datadog:8126'
-  #   service: 'furan2'
-  #   environment: 'development'
+  datadog:
+    apm: false
+    profiling: false
+    addr: 'datadog:8126'
+    service: 'furan2'
+    environment: 'development'
   # # if using the "env" secrets backend, map these k8s secret names
   # # to the corresponding env vars
   env_secret_names:
@@ -67,14 +67,14 @@ vault:
     logLevel: info
   secretsPrefix: secret/services/furan/qa
   secrets:
-  - path: db/uri
-    key: value
-  - path: db/credential_encryption_key
-    key: value
-  - path: github/token
-    key: value
-  - path: quay/token
-    key: value
+    - path: db/uri
+      key: value
+    - path: db/credential_encryption_key
+      key: value
+    - path: github/token
+      key: value
+    - path: quay/token
+      key: value
 
 service:
   name: furan
