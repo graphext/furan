@@ -7,7 +7,7 @@ target_branches:
 application:
   chart_path: '.helm/charts/furan2'
   #chart_vars_repo_path: 'dollarshaveclub/helm-charts@v2:releases/kube-uw2-110/furan/dqa.yaml'
-  chart_vars_repo_path: 'militarpancho/furan@master:.helm/charts/furan/values.yaml'
+  chart_vars_repo_path: 'militarpancho/furan@master:.helm/charts/furan2/values.yaml'
   image: eu.gcr.io/graphext-development/furan2
   value_overrides:
     - 'createServiceAccount=true'
