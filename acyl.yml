@@ -16,7 +16,6 @@ application:
     - 'run_migrations=true'
     - 'app.secrets_mapping=secret/{{ .ID }}'
     - 'app.tls.use_dev_cert=true'
-
     # - 'app.builder_image=furan2-builder:dqa'
     # - 'app.aws.s3_cache_enabled=true'
     # - 'app.aws.s3bucket=dsc-furan2-test'
