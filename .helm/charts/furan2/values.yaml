@@ -14,7 +14,7 @@ annotations:
 
 app:
   verbose: true
-  builder_image: ""
+  builder_image: "eu.gcr.io/graphext-development/furan-builder:v0.7.2-rootless"
   secrets_backend: "vault"
   secrets_mapping: ""
   testing_seed_api_key: ""
