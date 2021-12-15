@@ -16,11 +16,11 @@ application:
     - 'run_migrations=true'
     - 'app.secrets_mapping=secret/{{ .ID }}'
     - 'app.tls.use_dev_cert=true'
+    - 'app.testing_seed_api_key=b9ad35b2-8918-492e-bb18-47c2365b6c86'
     # - 'app.builder_image=furan2-builder:dqa'
     # - 'app.aws.s3_cache_enabled=true'
     # - 'app.aws.s3bucket=dsc-furan2-test'
     # - 'app.aws.s3keypfx=furan2-local/'
-    # - 'app.testing_seed_api_key=b9ad35b2-8918-492e-bb18-47c2365b6c86'
 
 dependencies:
   direct:
