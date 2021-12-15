@@ -15,7 +15,7 @@ annotations:
 app:
   verbose: true
   builder_image: ""
-  secrets_backend: "env"
+  secrets_backend: "vault"
   secrets_mapping: ""
   testing_seed_api_key: ""
   datadog:
