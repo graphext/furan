@@ -99,6 +99,7 @@ func runbuild(cmd *cobra.Command, args []string) error {
 			AccessKeyID:     awsConfig.AccessKeyID,
 			SecretAccessKey: awsConfig.SecretAccessKey,
 		},
+		GCR: &tagcheck.GCRChecker {ServiceAccount: gcrConfig.ServiceAccount}
 	}
 
 	bks, err := buildkit.NewBuildSolver(bkaddr, cm, dl)
@@ -108,7 +109,7 @@ func runbuild(cmd *cobra.Command, args []string) error {
 	bks.LogF = log.Printf
 	bks.AuthProviderFunc = func() []session.Attachable {
 		return []session.Attachable{
-			auth.New(quayConfig.Token, awsConfig.AccessKeyID, awsConfig.SecretAccessKey),
+			auth.New(quayConfig.Token, awsConfig.AccessKeyID, awsConfig.SecretAccessKey, gcrConfig.ServiceAccount),
 		}
 	}
 

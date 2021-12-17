@@ -68,6 +68,15 @@ func quaySecrets() {
 	}
 }
 
+var gcrConfig config.GCRConfig
+
+func gcrSecrets() {
+	secretsSetup()
+	if err := sf.GCR(&gcrConfig); err != nil {
+		clierr("error getting quay secrets: %v", err)
+	}
+}
+
 func awsSecrets() {
 	secretsSetup()
 	if err := sf.AWS(&awsConfig); err != nil {

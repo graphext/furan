@@ -115,6 +115,15 @@ func (f *Fetcher) Quay(qc *config.QuayConfig) error {
 	return f.sc.Fill(qc)
 }
 
+func (f *Fetcher) GCR(gc *config.GCRConfig) error {
+	if f.sc == nil {
+		if err := f.init(); err != nil {
+			return err
+		}
+	}
+	return f.sc.Fill(gc)
+}
+
 func (f *Fetcher) AWS(ac *config.AWSConfig) error {
 	if f.sc == nil {
 		if err := f.init(); err != nil {
