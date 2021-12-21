@@ -73,7 +73,7 @@ var gcrConfig config.GCRConfig
 func gcrSecrets() {
 	secretsSetup()
 	if err := sf.GCR(&gcrConfig); err != nil {
-		clierr("error getting quay secrets: %v", err)
+		clierr("error getting gcr secrets: %v", err)
 	}
 }
 

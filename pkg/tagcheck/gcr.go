@@ -13,14 +13,14 @@ import (
 // - Any successful response indicates the tag exists
 // - A 404 response means the tag does not exist
 // This API call requires a valid OAuth bearer token with repo:read permissions
-var GCRAPIEndpoint = "https://eu.gcr.io/v2/%s/%s/tags/lis"
+var GCRAPIEndpoint = "https://eu.gcr.io/v2/%s/%s/tags/list"
 
 type GCRChecker struct {
 	ServiceAccount, endpoint string
 	hc                       http.Client
 }
 
-// IsQuay returns whether repo is hosted on eu.gcr.io
+// IsGCR returns whether repo is hosted on eu.gcr.io
 func (gc GCRChecker) IsGCR(repo string) bool {
 	return strings.HasPrefix(repo, "eu.gcr.io/")
 }
