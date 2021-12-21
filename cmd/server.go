@@ -37,6 +37,7 @@ var serverCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		gitHubSecrets()
 		awsSecrets()
+		gcrSecrets()
 		quaySecrets()
 		dbSecrets()
 	},

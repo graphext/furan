@@ -32,6 +32,7 @@ created by pkg/jobrunner.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		gitHubSecrets()
 		awsSecrets()
+		gcrSecrets()
 		quaySecrets()
 		dbSecrets()
 	},

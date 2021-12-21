@@ -34,7 +34,7 @@ type AWSConfig struct {
 }
 
 type GCRConfig struct {
-	ServiceAccount string
+	ServiceAccount string `secret:"gcr/service_account"`
 }
 
 type DBConfig struct {

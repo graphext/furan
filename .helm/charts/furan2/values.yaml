@@ -62,7 +62,7 @@ vault:
   k8sAuthPath: "kube.shave.io"
   role: "furan2"
   agentInjector:
-    enabled: true
+    enabled: false
     initFirst: true
     logLevel: info
   secretsPrefix: secret/services/furan/qa
