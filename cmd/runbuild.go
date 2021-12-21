@@ -99,7 +99,7 @@ func runbuild(cmd *cobra.Command, args []string) error {
 			AccessKeyID:     awsConfig.AccessKeyID,
 			SecretAccessKey: awsConfig.SecretAccessKey,
 		},
-		GCR: &tagcheck.GCRChecker {ServiceAccount: gcrConfig.ServiceAccount}
+		GCR: &tagcheck.GCRChecker{ServiceAccount: gcrConfig.ServiceAccount},
 	}
 
 	bks, err := buildkit.NewBuildSolver(bkaddr, cm, dl)

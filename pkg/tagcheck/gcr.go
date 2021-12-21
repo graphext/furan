@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	googauth "golang.org/x/oauth2/google"
 )
 
 // - Any successful response indicates the tag exists
@@ -34,7 +36,7 @@ func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
 		gc.endpoint = GCRAPIEndpoint
 	}
 
-	err := json.Unmarshal([]byte(gc.ServiceAccount), serviceAccount)
+	err := json.Unmarshal([]byte(gc.ServiceAccount), &serviceAccount)
 
 	if err != nil {
 		return false, fmt.Errorf("error parsing gcr credentials: %w", err)
@@ -53,7 +55,12 @@ func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
 		return false, fmt.Errorf("error getting jwt access token from google: %w", err)
 	}
 
-	r.Header.Add("Authorization", "Bearer "+ts)
+	bearer_token, err := ts.Token()
+	if err != nil {
+		return false, fmt.Errorf("error getting jwt access token from google: %w", err)
+	}
+
+	r.Header.Add("Authorization", "Bearer "+bearer_token.AccessToken)
 	resp, err := gc.hc.Do(r)
 	if err != nil {
 		return false, fmt.Errorf("error performing API call: %w", err)
@@ -63,7 +70,7 @@ func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
 	case http.StatusOK:
 		b, _ := ioutil.ReadAll(resp.Body)
 		var tags []string
-		err := json.Unmarshal(b, tags)
+		err := json.Unmarshal(b, &tags)
 		if err != nil {
 			return false, fmt.Errorf("error parsing returned tags: %w", err)
 		}
