@@ -20,6 +20,7 @@ var (
 	jobActiveDeadlineSeconds = int64(60 * 60) // 1 hour
 	shareProcessNamespace    = true
 	scPrivileged             = true
+	optionalDefaultBuildArgs = true
 )
 
 const (
@@ -86,6 +87,16 @@ func furanjob() batchv1.Job {
 							Name:            "buildkitd",
 							Image:           BuildKitImage,
 							ImagePullPolicy: "IfNotPresent",
+							EnvFrom: []corev1.EnvFromSource{
+								corev1.EnvFromSource{
+									SecretRef: &corev1.SecretEnvSource{
+										LocalObjectReference: corev1.LocalObjectReference{
+											Name: "default-build-args",
+										},
+										Optional: &optionalDefaultBuildArgs,
+									},
+								},
+							},
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: &scPrivileged,
 							},
@@ -117,6 +128,14 @@ func furanjob() batchv1.Job {
 							VolumeSource: corev1.VolumeSource{
 								EmptyDir: &corev1.EmptyDirVolumeSource{
 									Medium: corev1.StorageMediumMemory,
+								},
+							},
+						},
+						corev1.Volume{
+							Name: "default-build-args",
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: "default-build-args",
 								},
 							},
 						},
