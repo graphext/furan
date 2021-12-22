@@ -106,8 +106,8 @@ func serverAndRunnerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringSliceVar(&awsConfig.ECRRegistryHosts, "ecr-registry-hosts", []string{}, "ECR registry hosts (ex: 123456789.dkr.ecr.us-west-2.amazonaws.com) to authorize for base images")
 
 	// APM/Profiling
-	cmd.PersistentFlags().BoolVar(&apmConfig.APM, "enable-apm", true, "Enable APM")
-	cmd.PersistentFlags().BoolVar(&apmConfig.Profiling, "enable-profiling", true, "Enable continuous profiling")
+	cmd.PersistentFlags().BoolVar(&apmConfig.APM, "enable-apm", false, "Enable APM")
+	cmd.PersistentFlags().BoolVar(&apmConfig.Profiling, "enable-profiling", false, "Enable continuous profiling")
 	cmd.PersistentFlags().StringVar(&apmConfig.Addr, "apm-addr", "datadog:8126", "APM/profiling agent address")
 	cmd.PersistentFlags().StringVar(&apmConfig.App, "apm-svc-name", "furan2", "APM/profiling service name")
 	cmd.PersistentFlags().StringVar(&apmConfig.Environment, "apm-env-name", "development", "APM/profiling environment")
