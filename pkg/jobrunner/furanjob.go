@@ -65,6 +65,16 @@ func furanjob() batchv1.Job {
 							Command: []string{
 								"/usr/local/bin/furan",
 							},
+							EnvFrom: []corev1.EnvFromSource{
+								corev1.EnvFromSource{
+									SecretRef: &corev1.SecretEnvSource{
+										LocalObjectReference: corev1.LocalObjectReference{
+											Name: "default-build-args",
+										},
+										Optional: &optionalDefaultBuildArgs,
+									},
+								},
+							},
 							Args: []string{
 								// all root flags are injected here (secrets setup, etc)
 								"runbuild",
@@ -87,16 +97,6 @@ func furanjob() batchv1.Job {
 							Name:            "buildkitd",
 							Image:           BuildKitImage,
 							ImagePullPolicy: "IfNotPresent",
-							EnvFrom: []corev1.EnvFromSource{
-								corev1.EnvFromSource{
-									SecretRef: &corev1.SecretEnvSource{
-										LocalObjectReference: corev1.LocalObjectReference{
-											Name: "default-build-args",
-										},
-										Optional: &optionalDefaultBuildArgs,
-									},
-								},
-							},
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: &scPrivileged,
 							},
@@ -136,6 +136,7 @@ func furanjob() batchv1.Job {
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
 									SecretName: "default-build-args",
+									Optional:   &optionalDefaultBuildArgs,
 								},
 							},
 						},
