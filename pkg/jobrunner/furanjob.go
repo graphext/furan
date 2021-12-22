@@ -19,6 +19,7 @@ var (
 	jobBackoffLimit          = int32(3)
 	jobActiveDeadlineSeconds = int64(60 * 60) // 1 hour
 	shareProcessNamespace    = true
+	scPrivileged             = true
 )
 
 const (
@@ -85,8 +86,10 @@ func furanjob() batchv1.Job {
 							Name:            "buildkitd",
 							Image:           BuildKitImage,
 							ImagePullPolicy: "IfNotPresent",
+							SecurityContext: &corev1.SecurityContext{
+								Privileged: &scPrivileged,
+							},
 							Args: []string{
-								"--oci-worker-no-process-sandbox",
 								"--addr",
 								"unix://" + bkSocketMountPath + "/" + bkSocketName,
 							},
