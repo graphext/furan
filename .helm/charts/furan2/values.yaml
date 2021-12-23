@@ -57,7 +57,7 @@ app:
 vault:
   address: "http://vault:8200"
   token: "root"
-  use_token_auth: true
+  use_token_auth: false
   use_k8s_auth: false
   k8sAuthPath: "kube.shave.io"
   role: "furan2"

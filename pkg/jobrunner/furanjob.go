@@ -117,7 +117,7 @@ func furanjob() batchv1.Job {
 								},
 								Limits: corev1.ResourceList{
 									corev1.ResourceCPU:    resource.MustParse("1"),
-									corev1.ResourceMemory: resource.MustParse("2G"),
+									corev1.ResourceMemory: resource.MustParse("6G"),
 								},
 							},
 						},
