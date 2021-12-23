@@ -63,7 +63,7 @@ spec:
             - "{{ .Values.vault.token }}"
             {{ end }}
             {{ if .Values.vault.use_k8s_auth }}
-            - "--vault-k8s-auth=true"
+            - "--vault-k8s-auth"
             - --vault-k8s-role={{ .Values.vault.role | quote }}
             - --vault-k8s-auth-path={{ .Values.vault.k8sAuthPath | quote }}
             {{ end }}
