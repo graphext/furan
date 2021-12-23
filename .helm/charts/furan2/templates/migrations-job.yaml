@@ -54,7 +54,7 @@ spec:
             {{ if .Values.vault.use_k8s_auth }}
             - "--vault-k8s-auth"
             - --vault-k8s-role={{ .Values.vault.role | quote }}
-            - --vault-k8s-auth-path={{ .Values.vault.k8sAuthPath | quote }}
+            - --vault-k8s-auth-path={{ .Values.vault.k8sAuthPath }}
             {{ end }}
             {{ end }}
             - "migrate"
