@@ -65,10 +65,6 @@ spec:
       - name: kubectl
         hostPath:
           path: /usr/bin/kubectl
-      - name: ca-cert
-        hostPath:
-          path: /var/state/root.cert
-          type: File
       containers:
       - name: create-furan-tls-secrets
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -87,8 +83,6 @@ spec:
         volumeMounts:
         - name: kubectl
           mountPath: /usr/local/bin/kubectl
-        - name: ca-cert
-          mountPath: /var/state/ca.cert
         command:
         - 'sh'
         - '-c'
@@ -141,5 +135,4 @@ spec:
             --namespace ${POD_NAMESPACE} \
             --from-file=tls.key=${TMPDIR}/furan.key \
             --from-file=tls.crt=${TMPDIR}/furan.crt \
-            --from-file=furan.ca=/var/state/ca.cert
 {{ end }}
