@@ -71,12 +71,12 @@ spec:
           type: File
       containers:
       - name: create-furan-tls-secrets
-	image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: IfNotPresent
         env:
         - name: SERVICE
           value: {{ .Values.service.name }}
-	- name: POD_NAMESPACE
+        - name: POD_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
