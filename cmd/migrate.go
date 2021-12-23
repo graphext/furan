@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -19,14 +20,15 @@ var migrateCmd = &cobra.Command{
 }
 
 var migrationsPath, postgresURI, migrationCommand string
-var uriFromVault, verboseMigrations bool
+var uriFromVault, uriFromEnv, verboseMigrations bool
 
 func init() {
 	serverAndRunnerFlags(migrateCmd)
 	migrateCmd.Flags().StringVar(&migrationCommand, "cmd", "up", "Migration command (one of: up, down, version)")
 	migrateCmd.Flags().StringVar(&migrationsPath, "migrations-path", "migrations", "Path to migrations files")
 	migrateCmd.Flags().StringVar(&postgresURI, "postgres-uri", "", "PostgreSQL connection URL (ex: postgres://user:pwd@localhost:5432/furan?sslmode=enable)")
-	migrateCmd.Flags().BoolVar(&uriFromVault, "db-uri-from-vault", false, "Fetch DB URI from Vault or secrets provider (see root command for details and options)")
+	migrateCmd.Flags().BoolVar(&uriFromVault, "db-uri-from-vault", false, "Fetch DB URI from Vault (see root command for details and options)")
+	migrateCmd.Flags().BoolVar(&uriFromEnv, "db-uri-from-env", false, "Fetch DB URI from environment variable named DB_URI")
 	migrateCmd.Flags().BoolVar(&verboseMigrations, "verbose", false, "verbose mode")
 	RootCmd.AddCommand(migrateCmd)
 }
@@ -46,9 +48,19 @@ func (ml *migrationLogger) Verbose() bool {
 }
 
 func domigrations(cmd *cobra.Command, args []string) {
-	if uriFromVault {
-		// TODO: Implement secrets fetching for URI
-		clierr("not implemented yet!")
+	switch {
+	case postgresURI != "":
+		break
+	case uriFromVault:
+		dbSecrets()
+		postgresURI = dbConfig.PostgresURI
+	case uriFromEnv:
+		postgresURI = os.Getenv("DB_URI")
+		if postgresURI == "" {
+			clierr("DB_URI missing from environment")
+		}
+	default:
+		clierr("at least one postgres URI option is required (vault, env, or explicitly provided)")
 	}
 	m, err := migrate.New("file://"+migrationsPath, postgresURI)
 	if err != nil {
