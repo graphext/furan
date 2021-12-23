@@ -23,6 +23,8 @@ rules:
   - certificates.k8s.io
   resources:
   - signers
+  verbs:
+  - sign
   resourceNames:
   - kubernetes.io/legacy-unknown
 - apiGroups:
