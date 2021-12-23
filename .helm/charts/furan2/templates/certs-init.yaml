@@ -4,6 +4,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: csr-creator
+  annotations:
+    "helm.sh/hook": 'pre-install'
+    "helm.sh/hook-delete-policy": before-hook-creation
 rules:
 - apiGroups:
   - certificates.k8s.io
@@ -40,6 +43,9 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: furan-init-tls
+  annotations:
+    "helm.sh/hook": 'pre-install'
+    "helm.sh/hook-delete-policy": before-hook-creation
 subjects:
 - kind: ServiceAccount
   name: furan2
