@@ -1,4 +1,4 @@
-{{ if .Values.tls.from_secret }}
+{{ if .Values.app.tls.from_secret }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -81,7 +81,7 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
         - name: SECRET_NAME
-          value: {{ .Values.tls.from_secret }}
+          value: {{ .Values.app.tls.from_secret }}
         - name: TMPDIR
           value: /tmp
         volumeMounts:
