@@ -59,7 +59,7 @@ vault:
   token: "root"
   use_token_auth: false
   use_k8s_auth: false
-  k8sAuthPath: "kube.shave.io"
+  k8sAuthPath: "kubernetes"
   role: "furan2"
   agentInjector:
     enabled: false
