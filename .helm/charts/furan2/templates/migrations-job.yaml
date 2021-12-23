@@ -19,7 +19,7 @@ spec:
         release: {{.Release.Name | quote }}
         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
-      serviceAccountName: {{ .Values.serviceaccount }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:
         - name: "{{ .Values.image.pullSecret }}"
       restartPolicy: Never
