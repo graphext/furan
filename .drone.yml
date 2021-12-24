@@ -10,7 +10,7 @@ steps:
     json_key:
       from_secret: GCR_TOKEN
     registry: eu.gcr.io
-    repo: eu.gcr.io/graphext-development/furan
+    repo: eu.gcr.io/graphext-development/furan2
     tags:
     - latest
     - ${DRONE_COMMIT_SHA}
@@ -22,6 +22,6 @@ steps:
       - pull_request
 ---
 kind: signature
-hmac: 3dacb5bd40ea9407641753a9815d69e1f94c3483c55dc583e17c5d9dbadbd1d3
+hmac: 170d6fe644f9bb68bac8f631cc0bfca9eaedbf9ca160cc35674a626f81604e15
 
 ...
