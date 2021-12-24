@@ -262,7 +262,7 @@ func (m *Manager) killbuildkitd() error {
 	}
 	for _, p := range psl {
 		// if not using rootless buildkit, change this to "buildkitd"
-		if p.Executable() == "rootlesskit" {
+		if p.Executable() == "buildkitd" {
 			err = syscall.Kill(p.Pid(), syscall.SIGTERM)
 			if err != nil {
 				return fmt.Errorf("error sending SIGTERM to buildkitd: %w", err)

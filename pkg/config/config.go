@@ -33,6 +33,10 @@ type AWSConfig struct {
 	ECRRegistryHosts []string
 }
 
+type GCRConfig struct {
+	ServiceAccount string `secret:"gcr/service_account"`
+}
+
 type DBConfig struct {
 	PostgresURI             string `secret:"db/uri"`
 	CredentialEncryptionKey []byte `secret:"db/credential_encryption_key"`

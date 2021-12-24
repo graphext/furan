@@ -19,7 +19,7 @@ spec:
         release: {{.Release.Name | quote }}
         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
-      serviceAccountName: {{ .Values.serviceaccount }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:
         - name: "{{ .Values.image.pullSecret }}"
       restartPolicy: Never
@@ -47,13 +47,15 @@ spec:
             {{ if .Values.app.secrets_mapping }}
             - "--secrets-mapping"
             - "{{ .Values.app.secrets_mapping }}"
+            {{ if eq .Values.app.secrets_backend "vault" }}
+            - "--vault-addr"
+            - "{{ .Values.vault.address }}"
             {{ end }}
             {{ if .Values.vault.use_k8s_auth }}
             - "--vault-k8s-auth"
-            - "--vault-k8s-role"
-            - "{{ .Values.vault.role }}"
-            - "--vault-k8s-auth-path"
-            - "{{ .Values.vault.auth_path }}"
+            - --vault-k8s-role={{ .Values.vault.role }}
+            - --vault-k8s-auth-path={{ .Values.vault.k8sAuthPath }}
+            {{ end }}
             {{ end }}
             - "migrate"
             - "up"

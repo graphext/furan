@@ -1,0 +1,154 @@
+{{ if .Values.app.tls.from_secret }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: csr-creator
+  annotations:
+    "helm.sh/hook": 'pre-install'
+    "helm.sh/hook-delete-policy": before-hook-creation
+rules:
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests
+  - certificatesigningrequests/approval
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - signers
+  verbs:
+  - approve
+  resourceNames:
+  - kubernetes.io/legacy-unknown
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - patch
+- apiGroups:
+  - extensions
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - rollout
+  - get
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: furan-init-tls
+  annotations:
+    "helm.sh/hook": 'pre-install'
+    "helm.sh/hook-delete-policy": before-hook-creation
+subjects:
+- kind: ServiceAccount
+  name: furan2
+  namespace: "{{ .Release.Namespace }}"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csr-creator
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: furan-init-tls
+  annotations:
+    "helm.sh/hook": 'pre-install'
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: furan2
+      volumes:
+      - name: kubectl
+        hostPath:
+          path: /usr/bin/kubectl
+      containers:
+      - name: create-furan-tls-secrets
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVICE
+          value: {{ .Values.service.name }}
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SECRET_NAME
+          value: {{ .Values.app.tls.from_secret }}
+        - name: TMPDIR
+          value: /tmp
+        volumeMounts:
+        - name: kubectl
+          mountPath: /usr/local/bin/kubectl
+        command:
+        - 'sh'
+        - '-c'
+        - |
+          set -e
+          apk add openssl
+          openssl genrsa -out ${TMPDIR}/furan.key 2048
+          cat <<EOF >${TMPDIR}/csr.conf
+          [req]
+          req_extensions = v3_req
+          distinguished_name = req_distinguished_name
+          [req_distinguished_name]
+          [ v3_req ]
+          basicConstraints = CA:FALSE
+          keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+          extendedKeyUsage = serverAuth
+          subjectAltName = @alt_names
+          [alt_names]
+          DNS.1 = ${SERVICE}
+          DNS.2 = ${SERVICE}.${POD_NAMESPACE}
+          DNS.3 = ${SERVICE}.${POD_NAMESPACE}.svc
+          DNS.4 = ${SERVICE}.${POD_NAMESPACE}.svc.cluster.local
+          IP.1 = 127.0.0.1
+          EOF
+          openssl req -new -key ${TMPDIR}/furan.key -subj "/CN=${SERVICE}.${POD_NAMESPACE}.svc" -out ${TMPDIR}/server.csr -config ${TMPDIR}/csr.conf
+          export CSR_NAME=furan-csr-$RANDOM
+          cat <<EOF >${TMPDIR}/csr.yaml
+          apiVersion: certificates.k8s.io/v1beta1
+          kind: CertificateSigningRequest
+          metadata:
+            name: ${CSR_NAME}
+          spec:
+            signerName: kubernetes.io/legacy-unknown
+            groups:
+            - system:authenticated
+            request: $(cat ${TMPDIR}/server.csr | base64 | tr -d '\n')
+            usages:
+            - digital signature
+            - key encipherment
+            - server auth
+          EOF
+          kubectl create -f ${TMPDIR}/csr.yaml
+          until kubectl get csr ${CSR_NAME}; do
+            sleep 2
+          done
+          kubectl certificate approve ${CSR_NAME}
+          sleep 20
+          serverCert=$(kubectl get csr ${CSR_NAME} -o jsonpath='{.status.certificate}')
+          echo "${serverCert}" | openssl base64 -d -A -out ${TMPDIR}/furan.crt
+          kubectl create secret generic ${SECRET_NAME} \
+            --namespace ${POD_NAMESPACE} \
+            --from-file=tls.key=${TMPDIR}/furan.key \
+            --from-file=tls.crt=${TMPDIR}/furan.crt \
+{{ end }}

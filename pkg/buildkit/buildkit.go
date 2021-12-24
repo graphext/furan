@@ -183,7 +183,7 @@ func (bks *BuildSolver) genSolveOpt(b models.Build, opts models.BuildOpts) (bkcl
 		},
 	}
 	for k, v := range opts.BuildArgs {
-		sopts.FrontendAttrs["build-arg:"+k] = v
+		sopts.FrontendAttrs["build-arg:"+k] = os.ExpandEnv(v)
 	}
 	if bks.AuthProviderFunc != nil {
 		sopts.Session = bks.AuthProviderFunc()

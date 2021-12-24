@@ -28,7 +28,7 @@ spec:
         vault.hashicorp.com/auth-path: "{{ .Values.vault.k8sAuthPath }}"
         vault.hashicorp.com/role: "{{ .Values.serviceAccountName }}"
         vault.hashicorp.com/agent-init-first: "{{ .Values.vault.agentInjector.initFirst }}"
-{{ include "vault-agent-default-kv1-secrets-v1-template" . | indent 8 }}     
+{{ include "vault-agent-default-kv1-secrets-v1-template" . | indent 8 }}
       {{- end }}
     spec:
       serviceAccountName: "{{ .Values.serviceAccountName }}"
@@ -63,11 +63,9 @@ spec:
             - "{{ .Values.vault.token }}"
             {{ end }}
             {{ if .Values.vault.use_k8s_auth }}
-            - "--vault-k8s-auth=true"
-            - "--vault-k8s-role"
-            - "{{ .Values.vault.role }}"
-            - "--vault-k8s-auth-path"
-            - "{{ .Values.vault.k8sAuthPath }}"
+            - "--vault-k8s-auth"
+            - --vault-k8s-role={{ .Values.vault.role }}
+            - --vault-k8s-auth-path={{ .Values.vault.k8sAuthPath }}
             {{ end }}
             {{ end }}
             - "--aws-region" # S3 and ECR

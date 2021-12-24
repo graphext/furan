@@ -19,16 +19,18 @@ import (
 type Provider struct {
 	QuayIOToken                  string
 	AccessKeyID, SecretAccessKey string // AWS credentials scoped to ECR only
+	GCRCredentials               string
 	ECRAuthClientFactoryFunc     func(s *awssession.Session, cfg *aws.Config) ecrapi.Client
 }
 
 var _ session.Attachable = &Provider{}
 
-func New(quaytkn, awskeyid, awskey string) session.Attachable {
+func New(quaytkn, awskeyid, awskey, gcrcreds string) session.Attachable {
 	return &Provider{
 		QuayIOToken:     quaytkn,
 		AccessKeyID:     awskeyid,
 		SecretAccessKey: awskey,
+		GCRCredentials:  gcrcreds,
 	}
 }
 
@@ -52,6 +54,9 @@ func (p *Provider) Credentials(ctx context.Context, req *bkauth.CredentialsReque
 	case isQuay(req.Host):
 		username = "$oauthtoken"
 		secret = p.QuayIOToken
+	case isGCR(req.Host):
+		username = "_json_key"
+		secret = p.GCRCredentials
 	case strings.HasSuffix(req.Host, ".docker.io"): // allow anonymous pulls from Docker Hub (with empty creds)
 		break
 	default:
@@ -72,6 +77,11 @@ func isECR(host string) bool {
 // isQuay returns whether host is quay.io
 func isQuay(host string) bool {
 	return host == "quay.io"
+}
+
+// isGCR returns whether host is eu.gcr.io
+func isGCR(host string) bool {
+	return host == "eu.gcr.io"
 }
 
 func (p *Provider) GetECRAuth(serverURL string) (string, string, error) {
