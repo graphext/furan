@@ -36,7 +36,10 @@ dependencies:
         - "fullnameOverride=postgresql-furan"
     - name: minio
       chart_repo_path: 'graphext/graphext@master:.helm/charts/minio'
-      chart_vars_path: '.helm/charts/minio/values.yaml'
+      chart_vars_repo_path: 'graphext/graphext@master:.helm/charts/minio/values.yaml'
+      value_overrides:
+      - 'buckets=[{"name":"furan2-cache","access":"none","purge":"false"}]'
+      - 'storage_request=200Gi'
   environment:
     - name: vault
       chart_repo_path: 'dollarshaveclub/vault-dev-docker@master:.helm/charts/vault'
