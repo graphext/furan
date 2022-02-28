@@ -90,6 +90,7 @@ func runbuild(cmd *cobra.Command, args []string) error {
 		SecretAccessKey: awsConfig.SecretAccessKey,
 		Region:          awsConfig.Region,
 		Bucket:          awsConfig.CacheBucket,
+		Host:            awsConfig.CacheHost,
 		Keypfx:          awsConfig.CacheKeyPrefix,
 		DL:              dl,
 	}

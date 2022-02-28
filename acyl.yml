@@ -22,6 +22,7 @@ application:
     - 'app.aws.s3_cache_enabled=true'
     - 'app.aws.s3bucket=furan2-cache'
     - 'app.aws.s3keypfx=furan2-acyl/'
+    - 'app.aws.s3host=minio'
 
 dependencies:
   direct:

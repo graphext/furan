@@ -52,6 +52,7 @@ app:
     s3_cache_enabled: false
     region: us-west-2
     s3bucket: ""
+    s3host: ""
     s3keypfx: ""
 
 vault:

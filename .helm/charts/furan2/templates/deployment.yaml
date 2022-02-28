@@ -73,6 +73,8 @@ spec:
             {{ if .Values.app.aws.s3_cache_enabled }}
             - "--s3-cache-bucket"
             - "{{ .Values.app.aws.s3bucket }}"
+            - "--s3-cache-host"
+            - "{{ .Values.app.aws.s3host }}"
             - "--s3-cache-key-pfx"
             - "{{ .Values.app.aws.s3keypfx }}"
             {{ end }}

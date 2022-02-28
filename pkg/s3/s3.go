@@ -22,7 +22,7 @@ import (
 
 type CacheManager struct {
 	AccessKeyID, SecretAccessKey string // AWS credentials scoped to S3 only
-	Region, Bucket, Keypfx       string
+	Region, Bucket, Keypfx, Host string
 	DL                           datalayer.DataLayer
 	S3UploaderFactoryFunc        func(s *session.Session) s3manageriface.UploaderAPI
 	S3DownloaderFactoryFunc      func(s *session.Session) s3manageriface.DownloaderAPI
@@ -32,8 +32,11 @@ var _ models.CacheFetcher = &CacheManager{}
 
 func (cm *CacheManager) dlclient() (s3manageriface.DownloaderAPI, error) {
 	sess, err := session.NewSession(&aws.Config{
-		Region:      &cm.Region,
-		Credentials: credentials.NewStaticCredentials(cm.AccessKeyID, cm.SecretAccessKey, ""),
+		Region:           &cm.Region,
+		Credentials:      credentials.NewStaticCredentials(cm.AccessKeyID, cm.SecretAccessKey, ""),
+		Endpoint:         &cm.Host,
+		DisableSSL:       aws.Bool(true),
+		S3ForcePathStyle: aws.Bool(true),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error getting aws session: %v", err)
@@ -48,8 +51,11 @@ func (cm *CacheManager) dlclient() (s3manageriface.DownloaderAPI, error) {
 
 func (cm *CacheManager) ulclient() (s3manageriface.UploaderAPI, error) {
 	sess, err := session.NewSession(&aws.Config{
-		Region:      &cm.Region,
-		Credentials: credentials.NewStaticCredentials(cm.AccessKeyID, cm.SecretAccessKey, ""),
+		Region:           &cm.Region,
+		Credentials:      credentials.NewStaticCredentials(cm.AccessKeyID, cm.SecretAccessKey, ""),
+		Endpoint:         &cm.Host,
+		DisableSSL:       aws.Bool(true),
+		S3ForcePathStyle: aws.Bool(true),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error getting aws session: %v", err)

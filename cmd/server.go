@@ -97,8 +97,9 @@ func serverAndRunnerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&sf.Mapping, "secrets-mapping", "{{.ID}}", "Secrets mapping template string (required)")
 
 	// AWS S3 Cache
-	cmd.PersistentFlags().StringVar(&awsConfig.Region, "aws-region", "us-west-2", "AWS region")
+	cmd.PersistentFlags().StringVar(&awsConfig.Region, "aws-region", "us-east-1", "AWS region")
 	cmd.PersistentFlags().StringVar(&awsConfig.CacheBucket, "s3-cache-bucket", "", "AWS S3 cache bucket")
+	cmd.PersistentFlags().StringVar(&awsConfig.CacheHost, "s3-cache-host", "", "AWS S3 cache host")
 	cmd.PersistentFlags().StringVar(&awsConfig.CacheKeyPrefix, "s3-cache-key-pfx", "", "AWS S3 cache key prefix")
 
 	// ECR
