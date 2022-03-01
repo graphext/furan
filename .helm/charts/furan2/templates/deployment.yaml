@@ -106,6 +106,12 @@ spec:
             - "--builder-image"
             - "{{ .Values.app.builder_image }}"
             {{ end }}
+            {{ if .Values.app.aws.s3_cache_enabled }}
+            - "--default-cache-type"
+            - "s3"
+            - "--default-cache-max-mode"
+            - "true"
+            {{ end }}
             {{ if .Values.app.testing_seed_api_key }}
             - "--testing-seed-api-key"
             - "{{ .Values.app.testing_seed_api_key }}"
