@@ -9,7 +9,7 @@ steps:
     mtu: 1460
     json_key:
       from_secret: GCR_TOKEN
-    registry: eu.gcr.io
+    registry: europe-west1-docker.pkg.dev
     repo: europe-west1-docker.pkg.dev/graphext-development/docker/furan2
     tags:
     - latest
@@ -22,6 +22,6 @@ steps:
       - pull_request
 ---
 kind: signature
-hmac: eeeb684f8e3fbe9786f65e372ff6248726a238b0b8d4aba7ac542ddba93ab281
+hmac: ffa7a24e7c03bfef79981d9759baebd46266d42d40ac40265c3eafc072144f91
 
 ...
