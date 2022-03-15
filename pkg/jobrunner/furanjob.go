@@ -52,6 +52,7 @@ func furanjob() batchv1.Job {
 					Annotations: map[string]string{
 						"container.apparmor.security.beta.kubernetes.io/buildkitd": "unconfined",
 						"container.seccomp.security.alpha.kubernetes.io/buildkitd": "unconfined",
+						"cluster-autoscaler.kubernetes.io/safe-to-evict":           "true",
 					},
 				},
 				Spec: corev1.PodSpec{
