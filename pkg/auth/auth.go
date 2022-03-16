@@ -79,9 +79,9 @@ func isQuay(host string) bool {
 	return host == "quay.io"
 }
 
-// isGCR returns whether host is eu.gcr.io
+// isGCR returns whether host is europe-west1-docker.pkg.dev
 func isGCR(host string) bool {
-	return host == "eu.gcr.io"
+	return host == "europe-west1-docker.pkg.dev"
 }
 
 func (p *Provider) GetECRAuth(serverURL string) (string, string, error) {

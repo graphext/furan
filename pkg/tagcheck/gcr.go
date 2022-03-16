@@ -11,7 +11,7 @@ import (
 // - Any successful response indicates the tag exists
 // - A 404 response means the tag does not exist
 // This API call requires a valid OAuth bearer token with repo:read permissions
-var GCRAPIEndpoint = "https://eu.gcr.io/v2/%s/tags/list"
+var GCRAPIEndpoint = "https://europe-west1-docker.pkg.dev/v2/%s/tags/list"
 
 type GCRChecker struct {
 	ServiceAccount, endpoint string
@@ -22,9 +22,9 @@ type GCRTagsList struct {
 	Tags []string `json:"tags"`
 }
 
-// IsGCR returns whether repo is hosted on eu.gcr.io
+// IsGCR returns whether repo is hosted on europe-west1-docker.pkg.dev
 func (gc GCRChecker) IsGCR(repo string) bool {
-	return strings.HasPrefix(repo, "eu.gcr.io/")
+	return strings.HasPrefix(repo, "europe-west1-docker.pkg.dev/")
 }
 
 func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
@@ -32,7 +32,7 @@ func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
 		gc.endpoint = GCRAPIEndpoint
 	}
 
-	reponame := strings.Replace(repo, "eu.gcr.io/", "", 1)
+	reponame := strings.Replace(repo, "europe-west1-docker.pkg.dev/", "", 1)
 	route := fmt.Sprintf(gc.endpoint, reponame)
 
 	r, err := http.NewRequest("GET", route, nil)
@@ -70,10 +70,10 @@ func (gc GCRChecker) checkTag(repo, tag string) (bool, error) {
 	}
 }
 
-// AllTagsExist returns whether all tags exist in repo (eu.gcr.io/[repo name]), and returns missing tags (if any)
+// AllTagsExist returns whether all tags exist in repo (europe-west1-docker.pkg.dev/[repo name]), and returns missing tags (if any)
 func (gc GCRChecker) AllTagsExist(tags []string, repo string) (bool, []string, error) {
 	if !gc.IsGCR(repo) {
-		return false, nil, fmt.Errorf("not a eu.gcr.io repo")
+		return false, nil, fmt.Errorf("not a europe-west1-docker.pkg.dev repo")
 	}
 	missing := []string{}
 	for _, t := range tags {
