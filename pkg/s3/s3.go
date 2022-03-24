@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -137,7 +138,15 @@ func (cm *CacheManager) Save(ctx context.Context, b models.Build, path string) e
 	tgz.OverwriteExisting = true
 	cm.DL.AddEvent(ctx, b.ID, "archiving build cache snapshot")
 	start := time.Now().UTC()
-	if err := tgz.Archive([]string{path}, f.Name()); err != nil {
+	cache_files_info, err := ioutil.ReadDir(path)
+	var cache_files []string
+	for _, f := range cache_files_info {
+		cache_files = append(cache_files, filepath.Join(path, f.Name()))
+	}
+	if err != nil {
+		return fmt.Errorf("error listing cache files: %w", err)
+	}
+	if err := tgz.Archive(cache_files, f.Name()); err != nil {
 		return fmt.Errorf("error archiving build cache: %w", err)
 	}
 	cm.DL.AddEvent(ctx, b.ID, fmt.Sprintf("archived build cache (elapsed: %v)", time.Since(start)))
