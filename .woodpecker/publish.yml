@@ -30,7 +30,7 @@ steps:
   - name: publish
     image: woodpeckerci/plugin-kaniko
     settings:
-      repo: graphext-development/docker/furan
+      repo: graphext-development/docker/furan2
       <<: *kaniko_settings
       tags:
         - latest
