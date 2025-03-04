@@ -58,7 +58,7 @@ func furanjob() batchv1.Job {
 				Spec: corev1.PodSpec{
 					ShareProcessNamespace: &shareProcessNamespace,
 					RestartPolicy:         corev1.RestartPolicyNever,
-					NodeSelector: corev1.NodeSelector{
+					NodeSelector: map[string]string{
 						"role": "furan-node",
 					},
 					Containers: []corev1.Container{
