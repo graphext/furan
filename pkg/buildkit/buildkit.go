@@ -290,7 +290,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 		return fmt.Errorf("error verifying that buildkit is available: %w", err)
 	}
 
-	resp, err := bks.bc.Solve(ctx, nil, sopts, c)
+	_, err = bks.bc.Solve(ctx, nil, sopts, c)
 	if err != nil {
 		return fmt.Errorf("error running solver: %w", err)
 	}
@@ -298,8 +298,7 @@ func (bks *BuildSolver) Build(ctx context.Context, opts models.BuildOpts) error 
 		// non-fatal error if we can't save cache
 		bks.dl.AddEvent(ctx, opts.BuildID, fmt.Sprintf("warning: error saving build cache: %v", err))
 	}
-	msg := fmt.Sprintf("solve success: %+v", resp.ExporterResponse)
-	if err := bks.dl.AddEvent(ctx, opts.BuildID, msg); err != nil {
+	if err := bks.dl.AddEvent(ctx, opts.BuildID, "solve success"); err != nil {
 		bks.log("error adding success event: build: %v: %v", opts.BuildID, err)
 	}
 	return nil
