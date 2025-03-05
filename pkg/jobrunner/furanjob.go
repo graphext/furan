@@ -17,7 +17,8 @@ var (
 	jobParallelism           = int32(1)
 	jobCompletions           = int32(1)
 	jobBackoffLimit          = int32(3)
-	jobActiveDeadlineSeconds = int64(30) // 30 seconds
+	ttlSecondsAfterFinished  = int32(30)
+	jobActiveDeadlineSeconds = int64(30 * 60) // 30 minutes
 	shareProcessNamespace    = true
 	scPrivileged             = true
 	optionalDefaultBuildArgs = true
@@ -41,10 +42,11 @@ func furanjob() batchv1.Job {
 			Annotations: nil,
 		},
 		Spec: batchv1.JobSpec{
-			Parallelism:           &jobParallelism,
-			Completions:           &jobCompletions,
-			ActiveDeadlineSeconds: &jobActiveDeadlineSeconds,
-			BackoffLimit:          &jobBackoffLimit,
+			Parallelism:             &jobParallelism,
+			Completions:             &jobCompletions,
+			ActiveDeadlineSeconds:   &jobActiveDeadlineSeconds,
+			BackoffLimit:            &jobBackoffLimit,
+			TTLSecondsAfterFinished: &ttlSecondsAfterFinished,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					// Metadata is set below
