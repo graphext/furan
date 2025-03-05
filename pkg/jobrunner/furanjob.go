@@ -17,7 +17,7 @@ var (
 	jobParallelism           = int32(1)
 	jobCompletions           = int32(1)
 	jobBackoffLimit          = int32(3)
-	jobActiveDeadlineSeconds = int64(60 * 20) // 20 minutes
+	jobActiveDeadlineSeconds = int64(30) // 30 seconds
 	shareProcessNamespace    = true
 	scPrivileged             = true
 	optionalDefaultBuildArgs = true
@@ -116,12 +116,12 @@ func furanjob() batchv1.Job {
 							},
 							Resources: corev1.ResourceRequirements{
 								Requests: corev1.ResourceList{
-									corev1.ResourceCPU:    resource.MustParse("2"),
-									corev1.ResourceMemory: resource.MustParse("24G"),
+									corev1.ResourceCPU:    resource.MustParse("3"),
+									corev1.ResourceMemory: resource.MustParse("28G"),
 								},
 								Limits: corev1.ResourceList{
 									corev1.ResourceCPU:    resource.MustParse("3"),
-									corev1.ResourceMemory: resource.MustParse("24G"),
+									corev1.ResourceMemory: resource.MustParse("28G"),
 								},
 							},
 						},
