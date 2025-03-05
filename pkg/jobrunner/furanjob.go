@@ -17,7 +17,7 @@ var (
 	jobParallelism           = int32(1)
 	jobCompletions           = int32(1)
 	jobBackoffLimit          = int32(3)
-	jobActiveDeadlineSeconds = int64(60 * 20) // 20 minutes
+	jobActiveDeadlineSeconds = int64(30) // 30 seconds
 	shareProcessNamespace    = true
 	scPrivileged             = true
 	optionalDefaultBuildArgs = true
