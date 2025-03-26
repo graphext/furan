@@ -63,6 +63,14 @@ func furanjob() batchv1.Job {
 					NodeSelector: map[string]string{
 						"role": "furan-node",
 					},
+					Tolerations: []corev1.Toleration{
+						corev1.Toleration{
+							Key:      "role",
+							Operator: corev1.TolerationOpEqual,
+							Value:    "furan-node",
+							Effect:   corev1.TaintEffectNoSchedule,
+						},
+					},
 					Containers: []corev1.Container{
 						corev1.Container{
 							Name:            "furan",
